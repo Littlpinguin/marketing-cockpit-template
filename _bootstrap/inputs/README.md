@@ -7,7 +7,7 @@ Optional. Drop any existing brand or company material **before** running `/brand
 Anything that describes your company, brand, voice, or strategy:
 
 - `brand-guide.pdf` (or `.md`, `.docx`)
-- `editorial-charter.md`
+- `editorial-charter.md` (voice / tone / vocabulary rules)
 - `pitch-deck.pdf` or `.pptx`
 - `personas.md`
 - `vision-mission.md`

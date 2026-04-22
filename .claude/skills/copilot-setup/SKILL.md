@@ -54,7 +54,7 @@ When `/tools-setup` records a tool choice:
    - `ready` → no action, the connector file already exists.
    - `stub` → prompt the user: "This tool has no built-in connector yet. The wizard will generate a TODO stub at `_integrations/qdrant/sources/<tool>.py`. You or your developer will need to implement it before the first sync."
    - `unsupported` → refuse and list supported alternatives.
-4. Regenerate any role `CLAUDE.md` that references this tool category from the matching template in `_templates/role-claudemd/`.
+4. Regenerate any role `CLAUDE.md` that references this tool category: read `_templates/role-claudemd/<role>.md`, substitute tool placeholders, write to `<role>/CLAUDE.md`. Always back up the previous version to `.setup-archive/role-claudemd-<ISO8601>/` before overwriting.
 
 ## Security rules echo
 

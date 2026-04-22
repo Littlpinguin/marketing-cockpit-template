@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [0.2.0] — Wizard-driven setup
 
 ### Added
-- **Slash-command wizard** (`.claude/commands/`) replaces the monolithic bootstrap interview. Entry point: `/start-copilot`. Sub-commands: `/brand-discover`, `/tools-setup`, `/seed-corpus`, `/connect-qdrant`, `/validate-setup`, `/health-check`.
+- **Slash-command wizard** (`.claude/commands/`) replaces the v0.1 monolithic interview. Entry point: `/start-copilot`. Sub-commands: `/brand-discover`, `/tools-setup`, `/seed-corpus`, `/connect-qdrant`, `/validate-setup`, `/health-check`.
 - **Shared wizard skill** at `.claude/skills/copilot-setup/SKILL.md` — central logic (placeholder lint, tool registry, security rules, `.setup-completed` schema) loaded by every wizard command.
 - **Brand discovery** from public signals: the wizard fetches the company website, up to 5 recent blog posts and 5-10 social posts the user links, then proposes a draft design system, voice, vocabulary, personas. Everything is reviewed section-by-section before being written to `01-brand/`.
 - **Tool-aware generation**: role `CLAUDE.md` files are rendered from `_templates/role-claudemd/` based on actual tools selected in `/tools-setup`. No more `{{EDITORIAL_CALENDAR_TOOL}}` leaking into operational docs.

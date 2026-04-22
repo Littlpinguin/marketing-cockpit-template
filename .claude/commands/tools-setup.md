@@ -78,7 +78,7 @@ For each chosen tool:
 #### If `connector_status == "stub"`
 1. Explain: "There's no built-in connector for `<tool>` yet. I'll generate a stub at `_integrations/qdrant/sources/<tool>.py` (for ingestion) and `_integrations/connectors/<tool>.py` (for push). The stubs have TODO comments. You or your developer implement them before first sync."
 2. Confirm the user accepts this.
-3. Generate the stubs from `_templates/connector-stub.py.tpl` (read the stub template, substitute `<tool>` and category, write the output files).
+3. Generate the stub from `_templates/connector-stub.py.tpl`. Substitute `{{TOOL_NAME}}`, `{{TOOL_CATEGORY}}`, `{{ENV_KEYS_BLOCK}}` (human-readable list of required env keys), and `{{REQUIRED_ENV_KEYS_LIST}}` (Python list literal). Write the result to `_integrations/connectors/<tool>.py`.
 4. Record the env keys the stub expects in `.env.example`.
 
 #### If `none`
@@ -100,7 +100,7 @@ Present the diff to the user before writing:
 
 ### Step 5 — Regenerate role `CLAUDE.md`
 
-For each of the 9 role folders, read the template at `_templates/role-claudemd/<role>.tpl` and substitute:
+For each of the 9 role folders, read the template at `_templates/role-claudemd/<role>.md` and substitute:
 - `{{EDITORIAL_CALENDAR_TOOL}}` → the actual chosen tool name, or the line is removed if `none`
 - `{{EMAIL_MARKETING_TOOL}}`, `{{EVENTS_PLATFORM_TOOL}}`, etc. — same logic
 - Conditional blocks (`{{#if QDRANT_ENABLED}}…{{/if}}`) — keep or remove based on intent recorded

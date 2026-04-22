@@ -34,8 +34,8 @@
         "convertkit": ["CONVERTKIT_API_KEY"]
       },
       "tools": {
-        "mailerlite": { "connector_status": "ready",    "connector_path": "_integrations/connectors/mailerlite.py" },
-        "mailchimp":  { "connector_status": "ready",    "connector_path": "_integrations/connectors/mailchimp.py" },
+        "mailerlite": { "connector_status": "stub", "dry_run_payload": "scripts/dry-run-push.py supports mailerlite" },
+        "mailchimp":  { "connector_status": "stub", "dry_run_payload": "scripts/dry-run-push.py supports mailchimp" },
         "resend":     { "connector_status": "stub" },
         "brevo":      { "connector_status": "stub" },
         "convertkit": { "connector_status": "stub" },
@@ -53,8 +53,8 @@
         "gitbook":    ["GITBOOK_API_TOKEN"]
       },
       "tools": {
-        "outline":    { "connector_status": "ready", "connector_path": "_integrations/qdrant/sources/outline.py" },
-        "notion":     { "connector_status": "ready", "connector_path": "_integrations/qdrant/sources/notion.py" },
+        "outline":    { "connector_status": "ready_ingestion_only", "connector_path": "_integrations/qdrant/sources/outline.py" },
+        "notion":     { "connector_status": "ready_ingestion_only", "connector_path": "_integrations/qdrant/sources/notion.py" },
         "confluence": { "connector_status": "stub" },
         "gitbook":    { "connector_status": "stub" },
         "custom":     { "connector_status": "stub" },
@@ -106,7 +106,7 @@
         "qdrant": ["QDRANT_URL", "QDRANT_API_KEY", "QDRANT_COLLECTION", "GOOGLE_AI_API_KEY"]
       },
       "tools": {
-        "qdrant": { "connector_status": "ready", "connector_path": "_integrations/qdrant/" },
+        "qdrant": { "connector_status": "ready", "connector_path": "_integrations/qdrant/", "note": "Full pipeline: sync, MCP server, embeddings" },
         "none":   { "connector_status": "disabled" }
       }
     },
@@ -157,9 +157,10 @@
     }
   },
   "connector_status_legend": {
-    "ready":       "Built-in connector exists and has been exercised. Use as-is.",
-    "stub":        "No connector yet. The wizard will scaffold a TODO stub. Implementation required before first sync / push.",
-    "unsupported": "Category/tool combination not supported by design.",
-    "disabled":    "Category is off for this project. No connector, no env vars."
+    "ready":                 "Full connector exists (ingestion + push where applicable). Use as-is.",
+    "ready_ingestion_only":  "Ingestion into Qdrant works out of the box. No push-side code yet — implement if needed.",
+    "stub":                  "No connector yet. The wizard will scaffold a TODO stub (or a dry-run payload builder exists in scripts/dry-run-push.py as a starting point). Implementation required before first push.",
+    "unsupported":           "Category/tool combination not supported by design.",
+    "disabled":              "Category is off for this project. No connector, no env vars."
   }
 }

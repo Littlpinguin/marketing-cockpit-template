@@ -199,7 +199,7 @@ Once all five sections are validated (or explicitly skipped), write these files.
 - `01-brand/messaging-framework.md` — central message, per-persona sub-messages, top 10 numbers, CTA types
 - `01-brand/_gaps.md` — skipped items to revisit later (only if any)
 
-Use the templates at `_templates/brand/` as the structure. Inject the validated values in place of placeholders.
+Read `_templates/brand/voice.md`, `_templates/brand/style-guide.md`, `_templates/brand/personas.md`, `_templates/brand/messaging-framework.md`. Substitute the validated values in place of `{{PLACEHOLDERS}}`. Write the result to `01-brand/<same-filename>.md`.
 
 ### Step 6 — Fill root CLAUDE.md visual reference
 

@@ -131,16 +131,20 @@ TRANSCRIPT_TIMESTAMP_H3 = re.compile(r"^### \d{1,2}:\d{2}:\d{2}")
 
 def chunk_by_transcript_section(text: str, target_tokens: int = 800, max_tokens: int = 1200) -> list[str]:
     """
-    Chunk a Gemini-formatted meeting transcript:
-      - Structural H3 headings (### Résumé, ### Étapes suivantes, ### Détails) always flush
-        and start a new chunk. They are rare (3-5 per meeting).
-      - Timestamp H3 headings (### HH:MM:SS) are treated as in-section markers: they DO NOT
+    Chunk a Gemini-formatted meeting transcript.
+
+    Works with transcripts produced in English (### Summary, ### Next steps, ### Details)
+    or French (### Résumé, ### Étapes suivantes, ### Détails) — the logic keys on whether
+    an H3 is a timestamp or a structural heading, not on the heading text itself.
+
+      - Structural H3 headings always flush and start a new chunk. Rare (3-5 per meeting).
+      - Timestamp H3 headings (### HH:MM:SS) are in-section markers: they DO NOT
         flush unless the current chunk already exceeds target_tokens. This prevents a meeting
         with 70+ timestamps from producing 70+ micro-chunks.
-      - In the Détails section, bullets are grouped by token budget.
+      - Inside the "Details" section, bullets are grouped by token budget.
       - Hard cap at max_tokens to avoid unbounded chunks.
 
-    Before this fix: a typical 1h meeting produced 114 chunks (1 per bullet + 1 per timestamp).
+    Before this logic: a typical 1h meeting produced 114 chunks (1 per bullet + 1 per timestamp).
     After: the same meeting produces ~15-25 chunks, each carrying enough context for retrieval.
     """
     if not text.strip():
@@ -166,12 +170,14 @@ def chunk_by_transcript_section(text: str, target_tokens: int = 800, max_tokens:
         is_timestamp = bool(TRANSCRIPT_TIMESTAMP_H3.match(line))
         is_structural = is_h3 and not is_timestamp
 
-        # Structural H3 (Résumé, Étapes suivantes, Détails, etc.): always a new chunk
+        # Structural H3 (Summary / Résumé, Next steps / Étapes suivantes, Details / Détails, etc.)
+        # always opens a new chunk.
         if is_structural:
             flush()
+            lower = stripped.lower()
             in_details = (
-                stripped.lower().startswith("### détails")
-                or stripped.lower().startswith("### details")
+                lower.startswith("### détails")
+                or lower.startswith("### details")
             )
             current = [line]
             continue

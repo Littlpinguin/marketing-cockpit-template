@@ -1,12 +1,12 @@
 # Marketing Copilot Template — Qdrant pipeline configuration
 #
-# This file is the single source of truth for:
+# Single source of truth for:
 #   - How the Qdrant collection is configured (dim, distance, batch)
 #   - Which embedder and enrichers are active
 #   - Which sources to scan and how
 #   - Which functionalities (editorial calendar, email marketing, ...) map to which tool
 #
-# The bootstrap interview fills in the {{placeholders}} during Phase 3.
+# The wizard (/tools-setup + /connect-qdrant) fills the {{placeholders}}.
 # The runbook (runbook.md in this directory) is the process documentation;
 # any change to this config must be reflected in the runbook in the same commit.
 
@@ -41,16 +41,17 @@ logging:
 # Functionalities — tool-agnostic mapping
 # ------------------------------------------------------------------------
 # Each functionality lists which tool backs it. The connector is selected
-# based on the tool name. If the tool is not in the built-in list, the
-# bootstrap generates a custom connector stub. If enabled=false, the
-# functionality is skipped entirely during sync.
+# based on the tool name. If the tool has no built-in connector, the
+# wizard generates a stub at `_integrations/connectors/<tool>.py`. When
+# enabled=false, the functionality is skipped entirely during sync.
 #
-# Built-in connectors currently available:
-#   - editorial_calendar: notion
-#   - email_marketing: (none yet — stubs for mailerlite, mailchimp, resend, brevo)
-#   - knowledge_base: outline
-#   - events_platform: (none yet — stub for livestorm)
-#   - crm: (none yet)
+# Built-in connectors currently shipped (v0.2.0):
+#   - editorial_calendar: notion (ingestion)
+#   - knowledge_base:     outline (ingestion)
+#   - email_marketing:    none (dry-run payload builders for mailerlite, mailchimp
+#                         in scripts/dry-run-push.py — real push stubs required)
+#   - events_platform:    none (stubs to implement)
+#   - crm:                none (stubs to implement)
 
 functionalities:
   editorial_calendar:
@@ -81,7 +82,7 @@ functionalities:
     config:
       url: "{{KNOWLEDGE_BASE_URL}}"
       api_key_env: "{{KNOWLEDGE_BASE_ENV_KEY}}"
-      # mapping collection name → id, filled during bootstrap
+      # Collection-name -> id mapping, filled during /tools-setup
       collections: {}
 
   events_platform:
@@ -107,7 +108,7 @@ functionalities:
     skill: "mcp__qdrant__qdrant_search"
 
 # ------------------------------------------------------------------------
-# Enrichers — ordre d'exécution strict, contrôlable via enabled
+# Enrichers — strict execution order, toggle via enabled
 # ------------------------------------------------------------------------
 enrichers:
   hash:
@@ -120,9 +121,9 @@ enrichers:
     provider: gemini
     model: gemini-2.5-flash
     prompt: |
-      Résume ce contenu {{COMPANY_NAME}} en 2 phrases maximum.
-      Factuel, sans enjoliver, sans adjectif inutile. Pas de "ce texte parle de".
-      Commence directement par l'information principale.
+      Summarize this {{COMPANY_NAME}} content in at most 2 sentences.
+      Factual, no embellishment, no filler adjectives. Do not start with
+      "this text is about". Lead directly with the main information.
     max_output_tokens: 150
     fail_silent: true
 
@@ -131,20 +132,21 @@ enrichers:
     provider: gemini
     model: gemini-2.5-flash
     prompt: |
-      Extrais de ce texte les entités suivantes, uniquement sous forme de LISTE PLATE de chaînes de caractères (pas d'objets, pas de catégories, pas d'imbrication).
+      Extract the following entities from this text as a FLAT LIST of strings
+      (no objects, no categories, no nesting).
 
-      Types d'entités à extraire :
-      - clients / customers mentionnés
-      - membres de l'équipe / stakeholders
-      - outils et produits mentionnés
-      - chiffres-clés factuels (ex: "8.8/10", "100+ experts", "+19.8%")
-      - lieux géographiques significatifs
+      Entity types to extract:
+      - clients or customers mentioned
+      - team members / stakeholders
+      - tools and products mentioned
+      - factual key numbers (e.g. "8.8/10", "100+ experts", "+19.8%")
+      - significant geographic locations
 
-      Format STRICT (une seule clé "entities", liste plate de strings) :
+      STRICT format (single key "entities", flat list of strings):
       {"entities": ["Client1", "Tool1", "8.8/10", "Paris"]}
 
-      N'utilise PAS de format {"type": "...", "value": "..."}. UNIQUEMENT une liste plate.
-      Pas de commentaire, pas de balise markdown, pas de texte avant ou après le JSON.
+      Do NOT use {"type": "...", "value": "..."} format. ONLY a flat list.
+      No comments, no markdown fences, no text before or after the JSON.
     max_output_tokens: 400
     fail_silent: true
 
@@ -153,14 +155,15 @@ enrichers:
     provider: gemini
     model: gemini-2.5-flash
     prompt: |
-      Extrais de ce texte les 3 à 5 affirmations factuelles principales.
-      Chaque affirmation doit être courte (max 15 mots), vérifiable, sans subjectivité, sans jugement de valeur.
+      Extract the 3 to 5 main factual claims from this text.
+      Each claim must be short (max 15 words), verifiable, non-subjective,
+      no value judgement.
 
-      Format STRICT (une seule clé "claims", liste plate de strings) :
-      {"claims": ["Affirmation 1.", "Affirmation 2.", "Affirmation 3."]}
+      STRICT format (single key "claims", flat list of strings):
+      {"claims": ["Claim 1.", "Claim 2.", "Claim 3."]}
 
-      N'utilise PAS de format {"text": "...", "category": "..."}. UNIQUEMENT une liste plate.
-      Pas de commentaire, pas de balise markdown, pas de texte avant ou après le JSON.
+      Do NOT use {"text": "...", "category": "..."} format. ONLY a flat list.
+      No comments, no markdown fences, no text before or after the JSON.
     max_output_tokens: 400
     fail_silent: true
 
@@ -170,16 +173,16 @@ enrichers:
     model: gemini-2.5-flash
     applies_to_types: [transcript]
     prompt: |
-      Ce document est un compte-rendu de réunion.
-      Extrais les décisions prises et les actions à faire.
-      Retourne un JSON : {"decisions": ["..."], "action_items": [{"who": "...", "what": "...", "when": "..."}]}
-      Si pas de décision ou pas d'action, retourne une liste vide.
-      Pas de commentaire, pas de balise markdown.
+      This document is a meeting transcript.
+      Extract the decisions made and the action items.
+      Return JSON: {"decisions": ["..."], "action_items": [{"who": "...", "what": "...", "when": "..."}]}
+      If no decision or no action item, return an empty list.
+      No comments, no markdown fences.
     max_output_tokens: 800
     fail_silent: true
 
 # ------------------------------------------------------------------------
-# Sources — ce qui est ingéré dans Qdrant
+# Sources — what gets ingested into Qdrant
 # ------------------------------------------------------------------------
 sources:
 
@@ -326,10 +329,10 @@ sources:
     chunking: sliding_window
     chunk_size_tokens: 600
     chunk_overlap_tokens: 100
-    collections: {}   # Filled during bootstrap: {"Collection Name": "uuid-..."}
+    collections: {}   # Filled during /tools-setup: {"Collection Name": "uuid-..."}
 
 # ------------------------------------------------------------------------
-# Exclusions globales
+# Global exclusions
 # ------------------------------------------------------------------------
 global_exclusions:
   filenames:
@@ -349,6 +352,8 @@ global_exclusions:
     - /node_modules/
     - /.git/
     - /_bootstrap/inputs/
+    - /_examples/
+    - /.setup-archive/
   filename_patterns:
     - "*[WIP]*"
     - "*_wip.*"

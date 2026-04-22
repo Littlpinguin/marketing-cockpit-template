@@ -1,9 +1,11 @@
 """
-sources/notion.py – Connecteur pour le calendrier éditorial Notion.
+sources/notion.py — connector for a Notion editorial-calendar database.
 
-Requête la base Notion via l'API REST officielle, filtre sur Statut =
-"✅  Programmés/diffusés" (2 espaces !) et Validé = true, puis fetch le contenu
-(blocs) de chaque page et le concatène en markdown léger.
+Queries the Notion database via the official REST API, filters on a
+configurable Status value (e.g. "✅  Scheduled" — watch out for double spaces
+and emoji prefixes when copied from Notion UI), optionally requires a
+`Validated` checkbox, then fetches each page's blocks and flattens them into
+light markdown for indexing.
 """
 
 from __future__ import annotations

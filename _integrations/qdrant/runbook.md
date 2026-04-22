@@ -31,100 +31,100 @@ GOOGLE_AI_API_KEY=AIzaSy...
 pip install qdrant-client google-genai python-dotenv pyyaml requests mcp
 ```
 
-### Initialisation (à faire UNE fois)
+### Initialization (one-off)
 ```bash
 cd _integrations/qdrant
-python3 init_collection.py      # crée la collection avec le schéma + index payload
+python3 init_collection.py      # creates the collection with schema + payload indexes
 ```
-Idempotent : si la collection existe déjà avec le bon schéma, ne fait rien.
+Idempotent: if the collection already exists with the correct schema, it's a no-op.
 
-## Commandes disponibles (stables, ne jamais les renommer)
+## Available commands (stable — never rename)
 
 ```bash
 cd _integrations/qdrant
 
-# Ingestion incrémentale de toutes les sources actives dans config.yaml
+# Incremental ingestion of every source active in config.yaml
 python3 sync.py --all
 
-# Une seule source
+# Single source
 python3 sync.py --source notion
 python3 sync.py --source brand
 python3 sync.py --source newsletters
 python3 sync.py --source transcripts
 
-# Dry-run : affiche ce qui serait ingéré, n'écrit rien
+# Dry-run: print what would be ingested, write nothing
 python3 sync.py --all --dry-run
 python3 sync.py --source notion --dry-run
 
-# Stats du registre
+# Registry stats
 python3 sync.py --stats
 
-# Ré-ingestion totale d'une source (purge les points Qdrant correspondants + re-scan)
+# Full re-ingestion of one source (purges Qdrant points for that source + rescans)
 python3 sync.py --source brand --force
 
-# Audit : vérifie la cohérence registry ↔ Qdrant
+# Audit: verify registry ↔ Qdrant consistency
 python3 sync.py --verify
 
-# Test de requête sémantique (debug)
+# Sample semantic query (debug)
 python3 sync.py --query "your question here" --top 5
 ```
 
-## Les 6 phases du pipeline
+## The 6-phase pipeline
 
-### Phase 1 – Détection des changements
+### Phase 1 — Change detection
 
-Pour chaque source active dans `config.yaml` :
+For every active source in `config.yaml`:
 
-1. **Filesystem** : glob le pattern, exclusions globales + locales appliquées.
-2. **Notion** : appel REST `POST /v1/databases/{id}/query` avec filtre sur le statut et la checkbox Validé.
-3. **Outline** : `POST /api/documents.list` par collection configurée.
-4. **Transcripts** : scan récursif, parsing du format Gemini.
+1. **Filesystem**: glob the pattern, apply global + local exclusions.
+2. **Notion**: REST call `POST /v1/databases/{id}/query` with filters on status and optional validation checkbox.
+3. **Outline**: `POST /api/documents.list` per configured collection.
+4. **Transcripts**: recursive scan, Gemini-format parsing.
 
-Pour chaque élément trouvé :
-- Calcul du **content hash** (SHA-256 du texte normalisé).
-- Comparaison au registre :
-  - Pas de trace → **nouveau**, à ingérer
-  - Hash différent → **modifié**, delete puis ré-ingérer
-  - Hash identique → **skip**
+For every matched item:
+- Compute the **content hash** (SHA-256 of normalized text).
+- Compare to the registry:
+  - Not present → **new**, ingest
+  - Hash differs → **modified**, delete then re-ingest
+  - Hash identical → **skip**
 
-### Phase 2 – Chunking
+### Phase 2 — Chunking
 
-Stratégies par type de contenu :
-- **`whole`** : posts courts, emails (1 chunk = 1 doc entier)
-- **`by_section_h2`** : newsletters, articles blog (split par section H2)
-- **`sliding_window`** : brand docs, longs documents (chunks 600 tokens, overlap 100)
-- **`by_transcript_section`** : transcripts Gemini (sections structurelles + bullets Détails groupés par budget de tokens 800-1200)
+Strategies per content type:
+- **`whole`**: short posts, emails (1 chunk = full document)
+- **`by_section_h2`**: newsletters, blog articles (split per H2 section)
+- **`sliding_window`**: brand docs, long documents (600-token chunks, 100-token overlap)
+- **`by_transcript_section`**: Gemini transcripts (structural sections + Details bullets grouped by 800-1200 token budget)
 
-### Phase 3 – Enrichissement (ordre strict)
+### Phase 3 — Enrichment (strict order)
 
-1. **`hash`** – SHA-256 pour dédup
-2. **`summary`** – 2 phrases factuelles via Gemini 2.5 Flash
-3. **`entities`** – extraction de clients, personnes, outils, chiffres, lieux
-4. **`claims`** – 3 à 5 affirmations factuelles
-5. **`meeting`** – décisions et action items (transcripts uniquement)
+1. **`hash`** — SHA-256 for deduplication
+2. **`summary`** — 2 factual sentences via Gemini 2.5 Flash
+3. **`entities`** — extraction of clients, people, tools, numbers, locations
+4. **`claims`** — 3 to 5 factual statements
+5. **`meeting`** — decisions and action items (transcripts only)
 
-Chaque enricher peut échouer silencieusement (log WARN). Le chunk est ingéré avec ce qui est disponible.
+Each enricher may fail silently (WARN log). The chunk is ingested with whatever fields are available.
 
-**Important pour Gemini 2.5 Flash** : le `thinkingConfig: {thinkingBudget: 0}` est obligatoire dans les generationConfig sinon le modèle consomme tout le budget en réflexion interne avant de produire la réponse. Ce paramètre est déjà câblé dans `enrichers/__init__.py`.
+**Important for Gemini 2.5 Flash**: `thinkingConfig: {thinkingBudget: 0}` is mandatory in `generationConfig`. Without it, the model consumes its entire budget in internal reasoning before producing output. Already wired in `enrichers/__init__.py`.
 
-### Phase 4 – Embedding Gemini
+### Phase 4 — Gemini embedding
 
-- Modèle : `gemini-embedding-001` (API `embedContent`)
-- Dimensions : 3072 natives
-- Task type : `RETRIEVAL_DOCUMENT` à l'ingestion, `RETRIEVAL_QUERY` à la requête
-- Input = `content_text` brut (pas le résumé)
-- Retry : 3 tentatives avec backoff 1s/4s/16s
-- Rate limit : `sleep 0.2s` entre appels
+- Model: `gemini-embedding-001` (API `embedContent`)
+- Dimensions: 3072 native
+- Task type: `RETRIEVAL_DOCUMENT` at ingestion, `RETRIEVAL_QUERY` at query
+- Input: raw `content_text` (not the summary)
+- Retry: 3 attempts with 1s/4s/16s backoff
+- Rate limit: `sleep 0.2s` between calls
 
-### Phase 5 – Upsert Qdrant
+### Phase 5 — Qdrant upsert
 
-- ID déterministe : `uuid5(namespace, source_file + chunk_index)` – ré-ingérer le même contenu produit les mêmes IDs
-- Delete des anciens points avant upsert en cas de update (évite les fantômes)
-- Batch 50 points par appel
+- Deterministic IDs: `uuid5(namespace, source_file + chunk_index)` — reingesting the same content produces the same IDs
+- Delete old points before upsert on update (avoids ghost entries)
+- Batch 50 points per call
 
-### Phase 6 – Mise à jour du registre
+### Phase 6 — Registry update
 
-Après chaque doc ingéré avec succès, MAJ de `registry.json` :
+After every successfully ingested doc, `registry.json` is updated:
 
 ```json
 {
@@ -146,44 +146,44 @@ Après chaque doc ingéré avec succès, MAJ de `registry.json` :
 }
 ```
 
-Le registre est **commité dans git** : c'est l'état de vérité.
+The registry is the **state of truth**. It lives gitignored by default since content hashes change frequently.
 
-## Serveur MCP (utilisation dans Claude Code)
+## MCP server (inside Claude Code)
 
-Une fois la base ingérée, le serveur MCP custom (`mcp_server.py`) est exposé dans Claude Code via `.mcp.json`. Il offre 3 outils que les skills appellent directement :
+Once the collection is populated, the custom MCP server (`mcp_server.py`) is exposed to Claude Code via `.mcp.json`. It offers 3 tools skills call directly:
 
-- **`mcp__qdrant__qdrant_search(query, top, filter_type, filter_source_key, filter_channel)`** – recherche sémantique avec filtres optionnels
-- **`mcp__qdrant__qdrant_find_similar(text, top, exclude_source_file, threshold)`** – anti-répétition pour brand-check
-- **`mcp__qdrant__qdrant_stats()`** – état de la collection
+- **`mcp__qdrant__qdrant_search(query, top, filter_type, filter_source_key, filter_channel)`** — semantic search with optional filters
+- **`mcp__qdrant__qdrant_find_similar(text, top, exclude_source_file, threshold)`** — anti-repetition check for brand-check
+- **`mcp__qdrant__qdrant_stats()`** — collection state
 
 ## Troubleshooting
 
-### `{"error":"forbidden"}` sur toutes les requêtes Qdrant
-- Probable : clé de management au lieu de clé cluster. Va sur Qdrant Cloud → Access Management → Create Database API Key.
-- Vérifier aussi que le cluster n'est pas en pause (free tier s'auto-suspend après inactivité).
+### `{"error":"forbidden"}` on every Qdrant request
+- Most likely: management key instead of cluster API key. Go to Qdrant Cloud → Access Management → Create Database API Key.
+- Also check the cluster is not paused (free tier auto-suspends after inactivity).
 
-### Gemini retourne 429 (rate limit)
-- Diminue `batch_size` dans `config.yaml`
-- Augmente `sleep_between_calls_sec`
+### Gemini returns 429 (rate limit)
+- Lower `batch_size` in `config.yaml`
+- Raise `sleep_between_calls_sec`
 
-### Gemini 2.5 Flash retourne des résumés tronqués ("N2 s", "X est une")
-- Le `thinkingBudget: 0` est manquant dans `generationConfig`. Vérifier `enrichers/__init__.py`.
+### Gemini 2.5 Flash returns truncated summaries (e.g. "Acme s", "X is a")
+- `thinkingBudget: 0` missing from `generationConfig`. Check `enrichers/__init__.py`.
 
-### Drift entre registry et Qdrant après `--force`
-- Bug historique : la branche `--force` ne passait pas `existing` pour deleter les anciens points. Corrigé en 0.1.0.
-- Si drift persistant : `python3 sync.py --verify` pour diagnostiquer, puis nettoyage manuel via scroll + delete.
+### Drift between registry and Qdrant after `--force`
+- Historical bug: the `--force` branch didn't pass `existing` to delete old points. Fixed in 0.1.0.
+- If drift persists: `python3 sync.py --verify` to diagnose, then manual scroll + delete.
 
-### Notion filter ne retourne rien
-- Vérifier l'exact match du statut. Copier depuis Notion directement, ne pas retaper (caractères invisibles comme 2 espaces après un emoji).
+### Notion filter returns nothing
+- Verify exact status match. Copy from Notion directly — do not retype (invisible characters such as double spaces after an emoji are common).
 
-## Historique des runs significatifs
+## Run history
 
-Consigner ici tout changement structurel (nouvelle source, nouveau champ de payload, changement de modèle d'embedding). Format : `YYYY-MM-DD – Changement – Impact`.
+Log here any structural change (new source, new payload field, embedding model change). Format: `YYYY-MM-DD — change — impact`.
 
-- **{{SETUP_DATE}}** – Initialisation du pipeline pour {{COMPANY_NAME}}.
+- **{{SETUP_DATE}}** — pipeline initialized for {{COMPANY_NAME}}.
 
-## Ce que ce runbook NE couvre PAS (volontairement)
+## Out of scope (intentionally)
 
-- **Orchestration cron** – géré séparément dans `cron/`
-- **Ingestion d'images** – hors scope, les images sont référencées par chemin dans le payload mais pas embedded
-- **Performance scores** (engagement, taux d'ouverture) – hors scope v1
+- **Cron orchestration** — handled separately in `cron/`
+- **Image ingestion** — images referenced by path in payloads; not embedded
+- **Performance scores** (engagement, open rate) — out of scope for v0.2

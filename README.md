@@ -108,18 +108,20 @@ Enable any time with `/connect-qdrant`. Disable by editing `.setup-completed.fea
 ### Tool agnosticism (per-tool status below)
 
 <!-- tool-status:start -->
-| Category | Default options | Ready connectors |
-|---|---|---|
-| Editorial calendar | Notion, Airtable, Trello, ClickUp, Google Sheets, custom, none | **Notion** ✅ — others are stubs |
-| Email marketing | MailerLite, Mailchimp, Resend, Brevo, ConvertKit, custom, none | **MailerLite** ✅, **Mailchimp** ✅ — others are stubs |
-| Knowledge base | Outline, Notion, Confluence, GitBook, custom, none | **Outline** ✅, **Notion** ✅ — others are stubs |
-| Events platform | Livestorm, Zoom, Riverside, Google Meet, custom, none | All stubs (v0.2.1 roadmap) |
-| CRM | HubSpot, Pipedrive, Odoo, Notion, Airtable, custom, none | All stubs |
-| Semantic memory | Qdrant (+ Google AI for embeddings) | **Qdrant** ✅ |
-| Image generation | Gemini `gemini-3-pro-image-preview` | **Gemini** ✅ |
-| Web analytics | GA4, Plausible, Fathom, custom, none | All stubs |
-| Social scheduler | Buffer, Hootsuite, Later, Typefully, custom, none | All stubs |
+| Category | Default options | Ingestion (→ Qdrant) | Push (→ external tool) |
+|---|---|---|---|
+| Editorial calendar | Notion, Airtable, Trello, ClickUp, Google Sheets, custom, none | **Notion** ✅ | 🟠 stub (dry-run payload ready for Notion) |
+| Email marketing | MailerLite, Mailchimp, Resend, Brevo, ConvertKit, custom, none | — | 🟠 stub (dry-run payload ready for MailerLite, Mailchimp) |
+| Knowledge base | Outline, Notion, Confluence, GitBook, custom, none | **Outline** ✅, **Notion** ✅ | 🟠 stub (dry-run payload ready for Outline) |
+| Events platform | Livestorm, Zoom, Riverside, Google Meet, custom, none | — | 🟠 all stubs |
+| CRM | HubSpot, Pipedrive, Odoo, Notion, Airtable, custom, none | — | 🟠 all stubs |
+| Semantic memory | Qdrant (+ Google AI for embeddings) | **Qdrant** ✅ (full pipeline: sync, MCP server, embeddings) | n/a |
+| Image generation | Gemini `gemini-3-pro-image-preview` | n/a | **Gemini** ✅ |
+| Web analytics | GA4, Plausible, Fathom, custom, none | — | 🟠 all stubs |
+| Social scheduler | Buffer, Hootsuite, Later, Typefully, custom, none | — | 🟠 all stubs |
 <!-- tool-status:end -->
+
+**Legend**: ✅ ready / 🟠 stub or dry-run only / — not applicable. A "dry-run payload ready" entry means `scripts/dry-run-push.py` builds the correct payload shape and verifies env vars — the remaining work is the real HTTP call, typically under an hour per connector. See `_integrations/connectors/README.md` for the contract.
 
 For a stub, `/tools-setup` scaffolds a TODO file at `_integrations/connectors/<tool>.py`. Implementation is typically an hour. See `_integrations/CONTRIBUTING.md` for the connector contract.
 

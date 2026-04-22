@@ -1,12 +1,14 @@
 """
-sources/transcripts.py – Connecteur pour les transcriptions Google Meet/Gemini.
+sources/transcripts.py — connector for Google Meet / Gemini meeting transcripts.
 
-Les transcriptions dans _sources/transcriptions/ sont des markdown au format
-Gemini Notes (titre, Résumé, Étapes suivantes, Détails). Le chunking spécifique
-est fait en phase 2 par utils.chunk_by_transcript_section.
+Transcripts in `_sources/transcriptions/` are markdown files in Gemini Notes
+format (title, Summary / Résumé, Next steps / Étapes suivantes, Details /
+Détails — EN and FR variants both handled). Section-aware chunking is done
+in phase 2 by `utils.chunk_by_transcript_section`.
 
-Ce connecteur se contente de lister les fichiers et d'extraire quelques méta
-(date depuis le nom de fichier, client si le chemin est sous transcriptions/clients/X).
+This connector lists files and extracts metadata:
+  - date from the filename
+  - client from the path (if under `transcriptions/clients/<name>/`)
 """
 
 from __future__ import annotations
