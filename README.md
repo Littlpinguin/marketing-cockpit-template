@@ -123,7 +123,7 @@ Enable any time with `/connect-qdrant`. Disable by editing `.setup-completed.fea
 
 **Legend**: ✅ ready / 🟠 stub or dry-run only / — not applicable. A "dry-run payload ready" entry means `scripts/dry-run-push.py` builds the correct payload shape and verifies env vars — the remaining work is the real HTTP call, typically under an hour per connector. See `_integrations/connectors/README.md` for the contract.
 
-For a stub, `/tools-setup` scaffolds a TODO file at `_integrations/connectors/<tool>.py`. Implementation is typically an hour. See `_integrations/CONTRIBUTING.md` for the connector contract.
+For a stub, `/tools-setup` scaffolds a TODO file at `_integrations/connectors/<tool>.py` from `_templates/connector-stub.py.tpl`. Implementation is typically an hour. See [`_integrations/connectors/README.md`](_integrations/connectors/README.md) for the full connector contract.
 
 ---
 
@@ -151,8 +151,8 @@ Three principles drive the design (full detail in [`docs/architecture.md`](docs/
 **Version 0.2.0 — alpha.**
 
 - Wizard-driven setup replaces the v0.1 monolithic interview.
-- 9 role folders, 9 skills, Qdrant pipeline, Gemini image generation, brand-check hook.
-- 4 ready connectors (Notion, Outline, MailerLite, Mailchimp). Others are stubs — contributions welcome.
+- 9 role folders, 9 production skills, Qdrant pipeline, Gemini image generation, brand-check hook.
+- Ingestion connectors ready: **Notion** (editorial calendar + KB), **Outline** (KB), **Qdrant + Gemini** (full semantic memory pipeline). Push connectors: all stubs today — `scripts/dry-run-push.py` builds correct payloads for Notion, MailerLite, Mailchimp, and Outline as starting points for your own implementation. See the tool-status table above.
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the full version history.
 
