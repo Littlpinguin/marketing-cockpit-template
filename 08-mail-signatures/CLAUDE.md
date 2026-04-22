@@ -1,54 +1,68 @@
-# 08-mail-signatures – Générateur de signatures email {{COMPANY_NAME}}
+# 08-mail-signatures — HTML email signature generator
 
-## Rôle
-Tu génères et maintiens les signatures email HTML pour les membres de {{COMPANY_NAME}}. Ces signatures sont intégrées dans Gmail, Outlook, Apple Mail, ou le client email de chacun.
+## Role
 
-## Références obligatoires
-- Style guide : `../01-brand/style-guide.md`
-- Couleurs et typographie : voir la section design system de `../01-brand/style-guide.md`
-- Personnes et rôles : `../01-brand/parties-prenantes.md`
+Generate HTML email signatures for team members of {{COMPANY_NAME}}, consistent with the brand style guide. This is a utility folder, not a content-producing role. No brand-check gate — but the output must render correctly across Gmail, Outlook, and Apple Mail.
 
-## Contraintes techniques des signatures email
+## Mandatory references
 
-Les clients email sont notoirement limités en support HTML/CSS. Règles incontournables :
+- Style guide: `../01-brand/style-guide.md` (colors, fonts, logo)
+- Team list: `../01-brand/stakeholders.md` (names and roles)
 
-1. **Tables pour le layout** – les `<div>` flexbox/grid ne marchent pas partout. Utiliser des `<table>` nested.
-2. **Styles inline uniquement** – Gmail ignore la plupart des styles dans `<style>`. Tout doit être sur chaque balise.
-3. **Polices système uniquement** – Google Fonts ne se charge pas dans Outlook Desktop. Fallback sur `Arial`, `Helvetica`, `sans-serif`.
-4. **Images externes hostées** – les images doivent être publiquement accessibles via HTTPS (pas de data URI qui casse dans Outlook). Les héberger sur un CDN ou le site de la marque.
-5. **Largeur max 600px** – standard responsive email.
-6. **Pas de JavaScript** – aucun client email ne l'exécute.
-7. **Testé sur au moins 3 clients** : Gmail web, Apple Mail, Outlook Desktop.
+## Email client constraints
 
-## Structure d'une signature
+Email clients are notoriously limited for HTML/CSS. Non-negotiables:
 
-Pour chaque membre de l'équipe, une signature contient :
+1. **Tables for layout** — `<div>` flex/grid is not universally supported. Nested `<table>` is the safe path.
+2. **Inline styles only** — Gmail strips most `<style>` blocks. Every style goes directly on the tag.
+3. **System fonts** — Google Fonts do not load in Outlook Desktop. Fallback: `Arial`, `Helvetica`, `sans-serif`.
+4. **Externally hosted images** — HTTPS-accessible via CDN or brand site. No data URIs (Outlook breaks on those).
+5. **Max width 600 px** — standard responsive email.
+6. **No JavaScript** — no email client executes it.
+7. **Test on at least 3 clients**: Gmail web, Apple Mail, Outlook Desktop.
 
-- Nom et rôle
-- Entreprise ({{COMPANY_NAME}}) avec logo
-- Coordonnées (email, téléphone optionnel)
-- Lien site web
-- Liens sociaux (LinkedIn principalement)
-- Un élément visuel de marque (logo, bandeau, séparateur coloré)
-- Optionnel : CTA (newsletter, dernier webinar, livre blanc)
+## Signature content
 
-## Template de base
+Per member:
+- Full name
+- Role / title
+- Company with logo
+- Email, phone (optional)
+- Website link
+- LinkedIn (primary social)
+- One brand visual element (logo band, accent separator)
+- Optional CTA (newsletter, upcoming event, whitepaper)
 
-Un template HTML de base est dans `template.html`. Il utilise les placeholders `{{NAME}}`, `{{ROLE}}`, `{{EMAIL}}`, `{{PHONE}}`, `{{LINKEDIN_URL}}`, etc.
+## Template
+
+See `./template.html`. Placeholders: `{{NAME}}`, `{{ROLE}}`, `{{EMAIL}}`, `{{PHONE}}`, `{{LINKEDIN_URL}}`.
+
+Brand tokens injected:
+- `{{BRAND_COLOR_PRIMARY}}` — name and accent border
+- `{{BRAND_COLOR_DARK}}` — body text
+- `{{BRAND_FONT_PRIMARY}}` — with Arial fallback
+- Logo: `../01-brand/assets/logo-email-signature.png` (size per style guide)
 
 ## Workflow
 
-1. Demander les infos du membre : nom, rôle, email, téléphone, LinkedIn, photo (optionnelle)
-2. Remplir le template
-3. **Brand check** – vérifier que les couleurs, la typo et le logo correspondent à `{{BRAND_COLOR_PRIMARY}}`, `{{BRAND_FONT_PRIMARY}}`, etc.
-4. Exporter le HTML final dans `signatures/<prénom>-<nom>.html`
-5. Fournir au membre le HTML à copier-coller dans son client email, avec une capture d'écran du rendu attendu
-6. Tester la signature dans Gmail / Outlook / Apple Mail en s'envoyant un email test
+1. Gather member data: name, role, email, phone, LinkedIn, optional photo (square, 100×100 minimum).
+2. Fill the template by substituting placeholders. Use `./members.yaml` if you maintain the team data there.
+3. Write output to `./generated/<slug>.html`.
+4. Generate a plain-text fallback at `./generated/<slug>.txt`.
+5. Visual sanity check: open HTML in a browser, confirm logo renders, separator color matches, phone/LinkedIn show only if provided, no broken image paths.
+6. Test in Gmail + Outlook + Apple Mail by sending yourself an email with the signature pasted.
 
-## Skill associé
-- `brand-check` – validation du respect du style guide
+## Deployment
 
-## Ce que ce rôle ne fait PAS
-- ❌ Rédiger du contenu éditorial (→ autres rôles)
-- ❌ Gérer les alias email ou les comptes (→ admin IT)
-- ❌ Créer les logos ou assets (→ `06-graphic-design/`)
+Each member copies the HTML from `./generated/<slug>.html` into their email client settings. No central signature management unless a third-party tool is configured — if so, configure that separately.
+
+## Skills associated
+
+- `brand-check` — optional, for color/logo conformance verification
+
+## What this utility does NOT do
+
+- ❌ Produce editorial content
+- ❌ Manage email aliases or accounts (→ IT admin)
+- ❌ Design logos or create brand assets (→ `06-graphic-design/`)
+- ❌ Push signatures to clients automatically

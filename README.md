@@ -1,218 +1,172 @@
 # Marketing Copilot Template
 
-> 🇫🇷 [Lire en français](README.fr.md)
+A role-based AI marketing copilot you clone once per company, run a wizard against, and use every day through Claude Code. English-only repo; produces content in any language configured at setup.
 
-> An opinionated, role-based AI marketing copilot for Claude Code with semantic memory, brand-enforcement hooks, and tool-agnostic integrations. Bootstrap in 30 minutes for any company.
-
-**Recommended model**: Claude Opus 4.6. The system is designed to take advantage of Opus' long-context reasoning and strategic planning. Smaller models will work but with noticeable degradation on content-strategy, brand-check, and copy-editing tasks.
+**Recommended model**: Claude Sonnet 4.6. The brand doctrine and per-role `CLAUDE.md` files provide enough context that Sonnet handles strategic reasoning, brand-check, and copy-editing at quality. Opus is overkill for most sessions; Haiku is a reasonable fallback for short, routine tasks (single-post drafting, quick replies).
 
 ---
 
-## What this is
+## Before you start (disclaimer)
 
-A complete, opinionated scaffolding to turn Claude Code into a full-stack marketing copilot for your company. It assumes:
+This template produces an **operational framework**, not a polished marketing output on day one. A qualitative result requires:
 
-- You have a brand (voice, values, personas, proof points) worth enforcing consistently
-- You publish content across multiple channels (LinkedIn, newsletters, blog, events, web)
-- You want AI agents that learn from your past content, not invent from scratch every time
-- You want deterministic brand compliance, not "I'll try to remember the rules"
+- A brand universe (voice, colors, personas, proof points) — the wizard helps you shape this
+- At least some public content to calibrate against (website + a few recent posts/articles) — without it, the "voice" the copilot captures will be generic
+- Your real tools wired in (email platform, editorial calendar, CMS) — without them, the copilot drafts but you publish manually
 
-The template ships with:
+**Security non-negotiables** (full rules in [`SECURITY.md`](SECURITY.md)):
 
-- **9 role folders** organized like a marketing team: `01-brand/`, `02-strategy/`, `03-social-media/`, `04-email/`, `05-web-content/`, `06-graphic-design/`, `07-events/`, `08-mail-signatures/`, `09-blog-seo/`. Each folder has a `CLAUDE.md` that teaches Claude Code how to operate in that role.
-- **9 skills** (in `.agents/skills/`) that encode marketing best practices adapted to your brand: `brand-check`, `social-content`, `email`, `copywriting`, `copy-editing`, `content-strategy`, `seo`, `event-marketing`, and `image-generation` (brand-compliant visuals via Gemini nano-banana-pro).
-- **Qdrant-based semantic memory** (`_integrations/qdrant/`) that ingests everything you publish and everything in your brand doctrine, so every agent can ask "has this been said before?" and "what does the doctrine say about X?" in 500ms.
-- **Brand-compliant AI image generation** via Gemini `gemini-3-pro-image-preview` (nano-banana-pro). Every prompt is automatically prefixed with your color palette, typography, illustration style, and banned visual tropes, so every generated image respects the brand without manual prompting.
-- **A brand-check hook** that fires automatically after any content write and blocks delivery if the draft violates brand standards.
-- **A weekly multi-source sync** (macOS launchd) that keeps the memory up to date without you thinking about it.
-- **A bootstrap interview** that onboards your company in about 30 minutes, starting from your website URL and any brand docs you already have.
+- Never paste API keys in chat. Secrets live in `.env` only (gitignored).
+- Dry-run before any production push (`scripts/dry-run-push.py`).
+- Scope Bash permissions narrowly; don't grant broad `rm:*` or `git push --force:*`.
+- Verify API endpoints and package names — Claude can hallucinate them.
+- Don't share transcripts publicly if they contain internal URLs, drafts, or customer data.
 
-## Philosophy
+---
 
-Three principles drive every design decision:
+## Quickstart
 
-1. **Brand as truth** — `01-brand/` is the source of truth. Every other role defers to it. Any contradiction is flagged before publication, not after.
-2. **Retrieval-first** — Every creative act is preceded by a semantic search: "has this been said already?", "what's the canonical phrasing?", "what chiffres are backed by the doctrine?" No invention without verification.
-3. **Hook-enforced** — The harness enforces the workflow, not Claude's willpower. A PostToolUse hook fires the brand check whenever content is written in a production folder. The system is deterministic, not hopeful.
+```bash
+# 1. Clone the template under a project name that makes sense for you
+git clone <this-repo> my-company-copilot
+cd my-company-copilot
+
+# 2. Install Python deps
+python3 -m pip install pyyaml python-dotenv requests
+# Optional, only if you'll enable Qdrant:
+# python3 -m pip install qdrant-client google-genai mcp
+
+# 3. Create .env from the template
+cp .env.example .env
+
+# 4. Open in Claude Code on Sonnet 4.6 (or Opus if you prefer)
+claude .
+
+# 5. Launch the wizard
+/start-copilot
+```
+
+The wizard takes 30-60 minutes depending on how much public material you have. It walks you through brand discovery, tool setup, optional Qdrant activation, and a validation sample before writing `.setup-completed`.
+
+---
 
 ## Who this is for
 
 **Good fit**:
-- SaaS companies with a clear brand voice and multiple content channels
-- Agencies publishing for themselves (not for clients directly)
-- Collectives and freelance groups that need consistency without a full-time editor
-- Consultancies with proprietary data (benchmarks, reports, case studies) to surface in content
-- Any team that publishes 5+ pieces of content per week across 2+ channels
+- SaaS, B2B, consultancies, collectives, agencies with a clear brand voice
+- Teams publishing 5+ pieces of content per week across 2+ channels
+- Organizations with proprietary data (benchmarks, reports, case studies) to surface
+- Any team that wants deterministic brand compliance, not hopeful compliance
 
 **Poor fit**:
-- Mass-market B2C with no strong doctrine (every piece is a one-off)
-- Single-channel publishers (just LinkedIn, just blog) who don't need cross-channel coordination
-- Teams that don't have brand guidelines yet (build them first, then come back)
+- Mass-market B2C with no brand doctrine
+- Teams without existing brand guidelines (build them first, then come back)
+- Organizations that can't keep an API key in a local `.env` for operational reasons
 
-## Architecture at a glance
+---
 
-```
-your-company-copilot/
-├── CLAUDE.md                         # Orchestrator + bootstrap detector
-├── 01-brand/                         # Source of truth (editorial charter, personas, messaging)
-├── 02-strategy/                      # Editorial planning, pillars, KPIs
-├── 03-social-media/                  # LinkedIn, Discord, WhatsApp
-├── 04-email/                         # Newsletters, promos, sales outreach, nurturing
-├── 05-web-content/                   # Landing pages, HTML artifacts
-├── 06-graphic-design/                # Visual creation, briefs, AI image prompts
-├── 07-events/                        # Event communication plans
-├── 08-mail-signatures/               # HTML signatures per member
-├── 09-blog-seo/                      # Long-form SEO content
-├── .agents/skills/                   # 8 role-specific skills
-├── .claude/hooks/                    # brand-check-reminder.py
-├── _integrations/qdrant/             # Semantic memory pipeline
-│   ├── sync.py                       # CLI (sync, query, verify, stats)
-│   ├── mcp_server.py                 # MCP server wrapping Gemini + Qdrant
-│   ├── config.yaml                   # Sources, enrichers, functionalities mapping
-│   ├── runbook.md                    # Full workflow documentation
-│   └── cron/                         # Weekly launchd job with drift detection
-├── _sources/                         # Raw inputs (transcripts, reports, veille/research)
-└── _bootstrap/                       # Interview protocol and templates (run once at setup)
-```
+## How it works
 
-## Quickstart
+### The wizard (run once, resumable)
 
-### 1. Prerequisites
+| Command | Purpose |
+|---|---|
+| `/start-copilot` | Entry point. Orchestrates the full setup. |
+| `/brand-discover` | Analyze your website + recent posts/articles; propose a design system, voice, and personas; validate section by section; write to `01-brand/`. |
+| `/tools-setup` | Pick tools per category (email, CRM, editorial calendar, events, KB). Regenerate role `CLAUDE.md` with your real tool names. Update `.env.example`. |
+| `/seed-corpus` | Optional. Ingest recent content into Qdrant or into archive folders so the copilot starts with real memory. |
+| `/connect-qdrant` | Optional. Enable semantic memory. Callable any time. |
+| `/validate-setup` | Placeholder lint + sample generation + voice check. Writes `.setup-completed` on approval. |
+| `/health-check` | Ongoing. Verify env vars, MCP servers, hook wiring, cron. Run monthly. |
 
-- [Claude Code](https://claude.com/claude-code) installed
-- macOS (for the launchd cron — Linux/WSL users can adapt to systemd or cron)
-- Python 3.11+
-- A [Qdrant Cloud](https://cloud.qdrant.io) account (free tier works, 1 GB)
-- A [Google AI Studio](https://aistudio.google.com/apikey) API key for Gemini embeddings
+### The roles (9 folders, one `CLAUDE.md` each)
 
-### 2. Clone and install
-
-```bash
-git clone https://github.com/YOUR_USERNAME/marketing-copilot-template.git your-company-copilot
-cd your-company-copilot
-
-pip install qdrant-client google-genai python-dotenv pyyaml requests mcp
-```
-
-### 3. Open in Claude Code
-
-```bash
-claude .
-```
-
-Claude will detect that `.setup-completed` does not exist and will automatically start the bootstrap interview (see `_bootstrap/interview.md`). The interview walks you through:
-
-- **Phase 0 — Discovery**: Claude analyzes your website and any brand documents you drop into `_bootstrap/inputs/` (vision, mission, brand guide, pitch deck, existing content samples)
-- **Phase 1 — Identity validation**: Claude presents what it understood and you correct anything wrong
-- **Phase 2 — Personas**: 2-4 personas built collaboratively with your help
-- **Phase 3 — Functionalities**: you pick which functionalities you want (editorial calendar, email marketing, knowledge base, events, CRM) and which tool backs each one. The system is tool-agnostic — you can plug Notion, Airtable, MailerLite, Mailchimp, Outline, Confluence, or a custom connector.
-- **Phase 4 — Skills personalization**: tweak the 8 skills to match your voice
-
-At the end of the interview, Claude:
-- Writes your answers into the appropriate CLAUDE.md files and skills
-- Initializes the Qdrant collection (if you enabled it)
-- Runs an initial ingestion of your brand documents
-- Creates the `.setup-completed` marker
-
-Expected duration: 20-40 minutes depending on how much existing material you have.
-
-### 4. Start operating
-
-Open Claude Code and ask for anything:
+Each numbered folder represents one marketing function. Claude Code loads the matching `CLAUDE.md` when you work in that folder.
 
 ```
-> Rédige un post LinkedIn sur [topic]
-> Prépare la newsletter de [month]
-> Crée une landing page pour [product]
-> Plan de com complet pour [event]
-> Que dit notre doctrine sur [subject] ?
+01-brand/                ← single source of truth: voice, style-guide, personas, messaging
+02-strategy/             ← editorial planning, pillars, KPIs
+03-social-media/         ← LinkedIn, Discord, WhatsApp
+04-email/                ← newsletters, promos, sales outreach, nurturing
+05-web-content/          ← landing pages, standalone HTML
+06-graphic-design/       ← visuals, AI image generation
+07-events/               ← webinars, launches, comm plans
+08-mail-signatures/      ← HTML signatures per team member
+09-blog-seo/             ← long-form articles, keyword research
 ```
 
-Each request triggers the relevant role, which consults Qdrant for past content and brand doctrine, drafts the piece, runs the brand-check, and delivers.
+### The skills (`.claude/skills/`)
 
-## Features in detail
+`brand-check`, `social-content`, `email`, `copywriting`, `copy-editing`, `content-strategy`, `seo`, `event-marketing`, `image-generation`. Each skill has an English `SKILL.md` with preflight, workflow, and Qdrant-conditional branches. `brand-check` fires automatically via a PostToolUse hook after any write in production folders.
 
-### Semantic memory (Qdrant + Gemini)
+### Semantic memory (optional — volume-dependent)
 
-Every piece of content you publish, every meeting transcript, every page of your brand doctrine, and every article in your knowledge base gets indexed with Google's `gemini-embedding-001` (3072 native dimensions) and stored in Qdrant. At retrieval time, the MCP server exposes 3 tools to Claude:
+Qdrant is **optional**. Below ~10 published pieces per month, the file-based fallback (reading `01-brand/` and recent archives directly) is fast enough and zero-dependency. Above that, Qdrant pays off: anti-repetition across months of content, semantic retrieval from the brand doctrine in 500 ms, cross-channel consistency checks.
 
-- `qdrant_search(query, top, filters)` — semantic retrieval with optional filters (type, source, channel)
-- `qdrant_find_similar(text, threshold, exclude_source_file)` — anti-repetition check before publishing
-- `qdrant_stats()` — collection stats and registry health
+Enable any time with `/connect-qdrant`. Disable by editing `.setup-completed.features.qdrant.enabled`.
 
-Each document is enriched at ingestion time with:
-- A 2-sentence summary (Gemini 2.5 Flash)
-- Flat entity list (clients, people, tools, figures, locations)
-- 3-5 factual claims
-- Content hash (SHA-256) for deduplication
-- For meetings: decisions and action items extracted from the transcript
+### Tool agnosticism (per-tool status below)
 
-### Brand-check hook
+<!-- tool-status:start -->
+| Category | Default options | Ready connectors |
+|---|---|---|
+| Editorial calendar | Notion, Airtable, Trello, ClickUp, Google Sheets, custom, none | **Notion** ✅ — others are stubs |
+| Email marketing | MailerLite, Mailchimp, Resend, Brevo, ConvertKit, custom, none | **MailerLite** ✅, **Mailchimp** ✅ — others are stubs |
+| Knowledge base | Outline, Notion, Confluence, GitBook, custom, none | **Outline** ✅, **Notion** ✅ — others are stubs |
+| Events platform | Livestorm, Zoom, Riverside, Google Meet, custom, none | All stubs (v0.2.1 roadmap) |
+| CRM | HubSpot, Pipedrive, Odoo, Notion, Airtable, custom, none | All stubs |
+| Semantic memory | Qdrant (+ Google AI for embeddings) | **Qdrant** ✅ |
+| Image generation | Gemini `gemini-3-pro-image-preview` | **Gemini** ✅ |
+| Web analytics | GA4, Plausible, Fathom, custom, none | All stubs |
+| Social scheduler | Buffer, Hootsuite, Later, Typefully, custom, none | All stubs |
+<!-- tool-status:end -->
 
-Whenever Claude writes or edits a Markdown or HTML file in `03-social-media/`, `04-email/`, `05-web-content/`, `07-events/`, or `09-blog-seo/`, a `PostToolUse` hook injects a system reminder that forces Claude to invoke the `brand-check` skill before delivering. The skill applies a 5-point filter (vocabulary, tone, proof, audience, visual) and a Qdrant-powered anti-repetition check. Verdicts: ✅ PASS / 🟠 FIX / 🔴 BLOCK. No draft ships without passing.
+For a stub, `/tools-setup` scaffolds a TODO file at `_integrations/connectors/<tool>.py`. Implementation is typically an hour. See `_integrations/CONTRIBUTING.md` for the connector contract.
 
-### Incremental sync
+---
 
-`sync.py` is idempotent. Running it twice in a row does nothing the second time because a local `registry.json` tracks content hashes and deleted point IDs. On content change, it surgically removes the old chunks before re-inserting. No drift between Qdrant and the local source of truth.
+## Philosophy
 
-Weekly automation via macOS launchd (`cron/run-weekly-sync.sh`) covers all sources. A `--verify` drift check runs after each sync; a macOS notification fires if drift is detected.
+Three principles drive the design (full detail in [`docs/architecture.md`](docs/architecture.md)):
 
-### Brand-compliant image generation
+1. **Brand as truth** — `01-brand/` is the source. Everything defers to it. Contradictions are flagged before publication.
+2. **Retrieval-first when it pays** — Qdrant is recommended at scale, skipped at lower volume. Skills handle both paths.
+3. **Hook-enforced** — The harness enforces the workflow, not Claude's willpower. PostToolUse fires brand-check automatically.
 
-The `image-generation` skill wraps Google's `gemini-3-pro-image-preview` (a.k.a. nano-banana-pro) with your brand guidelines automatically injected. You describe what you need in plain language — "a hero image for our landing page about SEO" — and the skill:
+---
 
-1. Reads `01-brand/style-guide.md` to pull your color palette, typography, illustration style, and banned visual tropes (stock photos, generic office imagery, etc.)
-2. Prefixes your prompt with these constraints in a structured way that Gemini respects
-3. Generates the image and saves it to `06-graphic-design/outputs/` with a metadata sidecar noting the prompt used
-4. Flags visible breaches of your style guide for review
+## What this is not
 
-This uses the same `GOOGLE_AI_API_KEY` as the embeddings and enrichment — one key, three capabilities. Activation is automatic if the key is present.
+- It is **not** a replacement for your judgment on what to publish.
+- It is **not** a substitute for a brand strategy. It encodes the strategy; it doesn't invent it.
+- It is **not** a zero-dependency system. Claude Code is required; Google AI + Qdrant are recommended at scale.
+- It is **not** a content-marketing plug-and-play. Without a voice doctrine and real corpus, the output will read generic.
 
-### Tool-agnostic functionalities
+---
 
-The `config.yaml` describes your stack by functionality, not by tool:
+## Status
 
-```yaml
-functionalities:
-  editorial_calendar:
-    tool: notion              # or airtable, trello, google-sheets, custom, none
-    enabled: true
-  email_marketing:
-    tool: mailerlite          # or mailchimp, convertkit, brevo, resend, custom, none
-    enabled: true
-  knowledge_base:
-    tool: outline             # or notion, confluence, gitbook, custom, none
-    enabled: false
-```
+**Version 0.2.0 — alpha.**
 
-Swapping a tool means changing one line. Built-in connectors cover the most common tools; for anything else, a "custom" stub is generated with clear TODO comments so you can implement your own connector in under an hour.
+- Wizard-driven setup replaces the v0.1 monolithic interview.
+- 9 role folders, 9 skills, Qdrant pipeline, Gemini image generation, brand-check hook.
+- 4 ready connectors (Notion, Outline, MailerLite, Mailchimp). Others are stubs — contributions welcome.
 
-## Is Qdrant mandatory?
+See [`CHANGELOG.md`](CHANGELOG.md) for the full version history.
 
-**Technically no, practically yes.** The system works without Qdrant — the skills fall back to reading files directly — but you lose ~80% of the value:
-
-- No anti-repetition check (agents will happily write the same LinkedIn post twice)
-- No cross-channel consistency (a claim in a blog post may contradict last month's newsletter)
-- No fast retrieval from your brand doctrine (each agent has to re-read `01-brand/` every session)
-- No meeting-to-content surfacing (transcripts stay invisible)
-
-You can run the bootstrap without Qdrant, operate for a few weeks to see if the rest of the system fits, then enable Qdrant later via `_integrations/qdrant/init_collection.py`. Enabling it takes about 5 minutes once you have a cluster URL and API key.
+---
 
 ## Contributing
 
-PRs welcome. This template is meant to evolve. Areas of interest:
-- New source connectors (Airtable, Confluence, GitBook, ClickUp, ...)
-- New enrichers (sentiment, tonality match, pillar classifier)
-- Linux/WSL cron equivalents (systemd timers)
-- More skills (PR newsletter, case study builder, report ghostwriter)
-- Translations of the bootstrap interview to other languages
+PRs welcome. Top-of-mind work:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) (if present) for guidelines.
+- Connector implementations for the current stubs (Airtable, Resend, Brevo, Livestorm, HubSpot, ...)
+- Linux/WSL cron equivalents (the current cron is macOS launchd)
+- Enrichers (sentiment, pillar classifier, tonality match)
+- Additional skills (PR newsletter, case-study builder, report ghostwriter)
 
-## Credits
-
-Inspired by the real-world setup of a digital transformation consulting collective that needed a marketing copilot to keep 100+ members and 8 brand channels aligned. The original implementation is private; this template is the distilled, anonymized, publishable version.
+---
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [`LICENSE`](LICENSE).

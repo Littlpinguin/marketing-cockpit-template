@@ -1,0 +1,165 @@
+{
+  "$schema": "./tools.schema.json",
+  "version": "0.2.0",
+  "description": "Canonical registry of tools supported by the Marketing Copilot Template. Connector status is the contract the user sees during /tools-setup.",
+  "categories": {
+    "editorial_calendar": {
+      "label": "Editorial calendar",
+      "role_folders": ["02-strategy", "03-social-media", "04-email", "09-blog-seo"],
+      "env_keys": {
+        "notion":        ["NOTION_API_KEY", "NOTION_EDITORIAL_DATABASE_ID"],
+        "airtable":      ["AIRTABLE_API_KEY", "AIRTABLE_BASE_ID", "AIRTABLE_TABLE_NAME"],
+        "trello":        ["TRELLO_API_KEY", "TRELLO_TOKEN", "TRELLO_BOARD_ID"],
+        "clickup":       ["CLICKUP_API_TOKEN", "CLICKUP_LIST_ID"],
+        "google-sheets": ["GOOGLE_SHEETS_CREDENTIALS_PATH", "GOOGLE_SHEETS_SHEET_ID"]
+      },
+      "tools": {
+        "notion":        { "connector_status": "ready",        "connector_path": "_integrations/qdrant/sources/notion.py" },
+        "airtable":      { "connector_status": "stub" },
+        "trello":        { "connector_status": "stub" },
+        "clickup":       { "connector_status": "stub" },
+        "google-sheets": { "connector_status": "stub" },
+        "custom":        { "connector_status": "stub" },
+        "none":          { "connector_status": "disabled" }
+      }
+    },
+    "email_marketing": {
+      "label": "Email marketing",
+      "role_folders": ["04-email"],
+      "env_keys": {
+        "mailerlite": ["MAILERLITE_API_KEY", "MAILERLITE_GROUP_ID"],
+        "mailchimp":  ["MAILCHIMP_API_KEY", "MAILCHIMP_AUDIENCE_ID", "MAILCHIMP_SERVER_PREFIX"],
+        "resend":     ["RESEND_API_KEY"],
+        "brevo":      ["BREVO_API_KEY"],
+        "convertkit": ["CONVERTKIT_API_KEY"]
+      },
+      "tools": {
+        "mailerlite": { "connector_status": "ready",    "connector_path": "_integrations/connectors/mailerlite.py" },
+        "mailchimp":  { "connector_status": "ready",    "connector_path": "_integrations/connectors/mailchimp.py" },
+        "resend":     { "connector_status": "stub" },
+        "brevo":      { "connector_status": "stub" },
+        "convertkit": { "connector_status": "stub" },
+        "custom":     { "connector_status": "stub" },
+        "none":       { "connector_status": "disabled" }
+      }
+    },
+    "knowledge_base": {
+      "label": "Knowledge base",
+      "role_folders": ["01-brand", "02-strategy"],
+      "env_keys": {
+        "outline":    ["OUTLINE_API_KEY", "OUTLINE_URL"],
+        "notion":     ["NOTION_API_KEY", "NOTION_KB_ROOT_ID"],
+        "confluence": ["CONFLUENCE_API_TOKEN", "CONFLUENCE_BASE_URL", "CONFLUENCE_USER_EMAIL"],
+        "gitbook":    ["GITBOOK_API_TOKEN"]
+      },
+      "tools": {
+        "outline":    { "connector_status": "ready", "connector_path": "_integrations/qdrant/sources/outline.py" },
+        "notion":     { "connector_status": "ready", "connector_path": "_integrations/qdrant/sources/notion.py" },
+        "confluence": { "connector_status": "stub" },
+        "gitbook":    { "connector_status": "stub" },
+        "custom":     { "connector_status": "stub" },
+        "none":       { "connector_status": "disabled" }
+      }
+    },
+    "events_platform": {
+      "label": "Events platform",
+      "role_folders": ["07-events"],
+      "env_keys": {
+        "livestorm":   ["LIVESTORM_API_KEY"],
+        "zoom":        ["ZOOM_ACCOUNT_ID", "ZOOM_CLIENT_ID", "ZOOM_CLIENT_SECRET"],
+        "riverside":   ["RIVERSIDE_API_KEY"],
+        "google-meet": ["GOOGLE_MEET_CREDENTIALS_PATH"]
+      },
+      "tools": {
+        "livestorm":   { "connector_status": "stub" },
+        "zoom":        { "connector_status": "stub" },
+        "riverside":   { "connector_status": "stub" },
+        "google-meet": { "connector_status": "stub" },
+        "custom":      { "connector_status": "stub" },
+        "none":        { "connector_status": "disabled" }
+      }
+    },
+    "crm": {
+      "label": "CRM",
+      "role_folders": ["04-email", "07-events"],
+      "env_keys": {
+        "hubspot":   ["HUBSPOT_API_KEY"],
+        "pipedrive": ["PIPEDRIVE_API_TOKEN", "PIPEDRIVE_DOMAIN"],
+        "odoo":      ["ODOO_URL", "ODOO_DB", "ODOO_USER", "ODOO_API_KEY"],
+        "notion":    ["NOTION_API_KEY", "NOTION_CRM_DATABASE_ID"],
+        "airtable":  ["AIRTABLE_API_KEY", "AIRTABLE_CRM_BASE_ID"]
+      },
+      "tools": {
+        "hubspot":   { "connector_status": "stub" },
+        "pipedrive": { "connector_status": "stub" },
+        "odoo":      { "connector_status": "stub" },
+        "notion":    { "connector_status": "stub" },
+        "airtable":  { "connector_status": "stub" },
+        "custom":    { "connector_status": "stub" },
+        "none":      { "connector_status": "disabled" }
+      }
+    },
+    "semantic_memory": {
+      "label": "Semantic memory",
+      "role_folders": ["01-brand", "02-strategy", "03-social-media", "04-email", "09-blog-seo"],
+      "env_keys": {
+        "qdrant": ["QDRANT_URL", "QDRANT_API_KEY", "QDRANT_COLLECTION", "GOOGLE_AI_API_KEY"]
+      },
+      "tools": {
+        "qdrant": { "connector_status": "ready", "connector_path": "_integrations/qdrant/" },
+        "none":   { "connector_status": "disabled" }
+      }
+    },
+    "image_generation": {
+      "label": "Image generation",
+      "role_folders": ["06-graphic-design"],
+      "env_keys": {
+        "gemini": ["GOOGLE_AI_API_KEY", "GOOGLE_AI_IMAGE_MODEL"]
+      },
+      "tools": {
+        "gemini": { "connector_status": "ready", "connector_path": ".claude/skills/image-generation/" },
+        "none":   { "connector_status": "disabled" }
+      }
+    },
+    "web_analytics": {
+      "label": "Web analytics",
+      "role_folders": ["02-strategy", "05-web-content", "09-blog-seo"],
+      "env_keys": {
+        "ga4":      ["GA4_PROPERTY_ID", "GA4_CREDENTIALS_PATH"],
+        "plausible":["PLAUSIBLE_API_KEY", "PLAUSIBLE_SITE_ID"],
+        "fathom":   ["FATHOM_API_TOKEN", "FATHOM_SITE_ID"]
+      },
+      "tools": {
+        "ga4":       { "connector_status": "stub" },
+        "plausible": { "connector_status": "stub" },
+        "fathom":    { "connector_status": "stub" },
+        "custom":    { "connector_status": "stub" },
+        "none":      { "connector_status": "disabled" }
+      }
+    },
+    "social_scheduler": {
+      "label": "Social scheduler",
+      "role_folders": ["03-social-media"],
+      "env_keys": {
+        "buffer":    ["BUFFER_ACCESS_TOKEN"],
+        "hootsuite": ["HOOTSUITE_API_KEY"],
+        "later":     ["LATER_API_KEY"],
+        "typefully": ["TYPEFULLY_API_KEY"]
+      },
+      "tools": {
+        "buffer":    { "connector_status": "stub" },
+        "hootsuite": { "connector_status": "stub" },
+        "later":     { "connector_status": "stub" },
+        "typefully": { "connector_status": "stub" },
+        "custom":    { "connector_status": "stub" },
+        "none":      { "connector_status": "disabled" }
+      }
+    }
+  },
+  "connector_status_legend": {
+    "ready":       "Built-in connector exists and has been exercised. Use as-is.",
+    "stub":        "No connector yet. The wizard will scaffold a TODO stub. Implementation required before first sync / push.",
+    "unsupported": "Category/tool combination not supported by design.",
+    "disabled":    "Category is off for this project. No connector, no env vars."
+  }
+}

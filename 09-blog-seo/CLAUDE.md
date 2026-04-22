@@ -1,149 +1,169 @@
-# 09-blog-seo – Blog & SEO Manager {{COMPANY_NAME}}
+# 09-blog-seo — blog & SEO manager {{COMPANY_NAME}}
 
-## Rôle
-Tu gères la stratégie de contenu blog et SEO pour {{COMPANY_NAME}}. Tu recherches les mots-clés pertinents, rédiges des articles optimisés, et suis les performances de positionnement.
+## Role
 
-## Références obligatoires
-- Charte éditoriale : `../01-brand/charte-editoriale.md`
-- Personas : `../01-brand/personas.md`
-- Messaging framework : `../01-brand/messaging-framework.md`
-- Piliers de contenu : `../02-strategy/content-pillars.md`
+You plan, write, and optimize long-form content for the blog. Scope covers keyword research, content briefs, drafting, on-page SEO, and publishing to {{BLOG_CMS}}.
 
-## Plateforme de publication
-- **CMS** : {{BLOG_CMS}} (WordPress, Ghost, Hashnode, dev.to, custom, ...)
-- **URL pattern** : `{{COMPANY_WEBSITE}}/blog/<slug>/`
+## Mandatory references
 
-## Structure du dossier
+- Voice: `../01-brand/voice.md`
+- Messaging framework: `../01-brand/messaging-framework.md`
+- Personas: `../01-brand/personas.md`
+- Pillars: `../02-strategy/content-pillars.md`
+- SEO clusters: `./keyword-research/clusters.md`
+
+## Platform
+
+- **CMS**: {{BLOG_CMS}} (e.g. WordPress, Ghost, Hashnode, static Next.js)
+- **URL pattern**: `{{COMPANY_WEBSITE}}/blog/<slug>/`
+- **Publishing method**: see `./publishing-playbook.md` (manual or via API/webhook)
+
+## Directory structure
 
 ```
 09-blog-seo/
-├── CLAUDE.md                  ← Ce fichier
-├── keyword-research/          ← Recherches de mots-clés par thématique
-│   └── YYYY-MM-thematique.md
-├── content-briefs/            ← Briefs de contenu avant rédaction
+├── CLAUDE.md
+├── keyword-research/                     ← research by cluster
+│   ├── clusters.md                       ← master cluster map
+│   └── <cluster>/serp-analysis-<kw>.md
+├── content-briefs/                       ← one brief per article
 │   └── brief-<slug>.md
-├── articles/                  ← Articles rédigés (drafts + publiés)
+├── articles/                             ← drafts and published pieces
 │   └── YYYY-MM-DD-<slug>.md
-└── seo-audit/                 ← Audits SEO ponctuels
-    └── YYYY-MM-audit.md
+└── seo-audit/                            ← quarterly audits
+    └── YYYY-Q-audit.md
 ```
 
-## Workflow de création d'article
+## Workflow — new article
 
-### 1. Recherche de mots-clés
-- Identifier le cluster thématique (voir `../02-strategy/content-pillars.md`)
-- Rechercher les mots-clés avec volume et difficulté
-- Identifier les questions des personas ({{PERSONA_1_NAME}}, {{PERSONA_2_NAME}}, ...)
-- Analyser les top 5 résultats actuels pour chaque mot-clé cible
-- Sauvegarder dans `keyword-research/`
+### 1. Keyword research
+
+- Identify the target cluster (`keyword-research/clusters.md`) and primary keyword.
+- Gather top 5 ranking articles for the primary keyword; analyze structure, depth, intent.
+- File findings in `./keyword-research/<cluster>/serp-analysis-<kw>.md`.
 
 ### 2. Content brief
-- Mot-clé principal + mots-clés secondaires (3 à 5)
-- Intent de recherche (informationnel, commercial, transactionnel)
-- Structure proposée (H1, H2s, H3s)
-- Sources de données {{COMPANY_NAME}} à intégrer (voir messaging-framework)
-- CTA principal de l'article
-- Persona cible
-- Sauvegarder dans `content-briefs/`
 
-### 3. Récupérer le matériel existant via Qdrant (si activé)
-```
-qdrant_search(query="<sujet de l'article>", top=10)
-```
-Usage des hits :
-- **brand-doc** → doctrine à citer mot pour mot
-- **newsletter / linkedin-post / promo** → angles déjà testés, tournures validées
-- **transcript** → décisions internes, citations utilisables
-- **report-data** (si disponible) → chiffres officiels à réutiliser
+File at `./content-briefs/brief-<slug>.md`. Include:
+- Primary keyword
+- Secondary keywords (5-10)
+- Target intent (informational / commercial / transactional)
+- Target persona
+- Word count range
+- Structure (H1 → H2s → H3s)
+- Proof points to include (from `messaging-framework.md`)
+- Internal links planned
+- Meta title (60 chars max), meta description (155 chars max)
+- Proposed slug
 
-**Règle critique** : chaque affirmation factuelle dans l'article doit s'appuyer sur un résultat Qdrant ou une source externe citée. Jamais de fait inventé.
+{{COMPANY_MAIN_CONTACT}} approves the brief before drafting.
 
-### 4. Rédaction
-- Suivre le brief et la charte éditoriale
-- Longueur cible : 1500-2500 mots (selon la concurrence)
-- Bilingue si applicable : rédiger dans la langue principale, puis adapter
-- Intégrer les données et citations
+### 3. Consult prior work
 
-### 5. Optimisation SEO on-page
-- Title tag : < 60 caractères, mot-clé en début
-- Meta description : < 155 caractères, avec CTA implicite
-- URL slug : court, avec mot-clé, en minuscules
-- H1 unique, H2s avec variations du mot-clé
-- Internal linking : lier vers d'autres pages de {{COMPANY_WEBSITE}}
-- Images : alt text descriptif, nommage fichier avec mot-clé
-- Schema markup : Article, FAQ (si pertinent), Organization
+- **If Qdrant is enabled**:
+  ```
+  qdrant_search(query="<primary keyword>", top=10, filter_source_key="blog")
+  ```
+  Use hits to avoid cannibalization and surface existing pieces to link from/to.
 
-### 6. Brand check obligatoire
+- **If Qdrant is disabled**: scan `./articles/` filenames and frontmatter for keyword overlap; scan `01-brand/messaging-framework.md` for established positions on the topic.
 
-### 7. Publication
-- Copier le contenu dans {{BLOG_CMS}}
-- Ajouter les images et les meta tags
-- Configurer catégories et tags
-- Soumettre à l'indexation Google (via Search Console)
+### 4. Draft
 
-## Règles SEO
+- `copywriting` skill for narrative; `seo` skill overlay for structure.
+- Target length: {{CONTENT_CADENCE_BLOG}} context + 1500-2500 words default.
+- Bilingual if applicable — write primary language first, adapt culturally for the second.
+- First draft lands in `./articles/YYYY-MM-DD-<slug>.md` with frontmatter:
 
-### Contenu
-- **Données d'abord** : chaque article contient au minimum 3 données chiffrées sourcées
-- **Pas de keyword stuffing** : densité naturelle, écrire pour les humains
-- **Liens internes** : minimum 3 liens vers d'autres pages de {{COMPANY_WEBSITE}} par article
-- **Liens externes** : 1-2 liens vers des sources autoritaires
-- **Mise à jour** : revisiter les articles tous les 6 mois pour actualiser les données
-
-### Technique
-- Temps de chargement < 3s (images optimisées, pas de scripts lourds)
-- Mobile-first : tout le contenu lisible sur petit écran
-- Structured data (JSON-LD) pour chaque article
-- Canonical URLs correctement configurés
-- Sitemap XML à jour
-
-### Ce qu'on ne fait pas
-- Pas de contenu IA générique sans valeur ajoutée spécifique à {{COMPANY_NAME}}
-- Pas d'articles < 800 mots (trop court pour ranker)
-- Pas de duplication de contenu entre langues (adaptation, pas traduction mot-à-mot)
-- Pas de link building artificiel
-
-## Format d'un article (frontmatter)
-
-```markdown
+```yaml
 ---
-title: "Article Title"
-slug: article-slug
+title: "..."
+slug: "..."
 date: YYYY-MM-DD
 author: {{COMPANY_NAME}}
-category: [Pilier 1 | Pilier 2 | ...]
-tags: [tag1, tag2, tag3]
-keyword_primary: "main keyword"
+category: [pillar]
+tags: [tag1, tag2]
+keyword_primary: "..."
 keywords_secondary: ["kw2", "kw3"]
-meta_description: "155 chars max"
+meta_title: "..."
+meta_description: "..."
+persona: "..."
+cluster: "..."
+language: en | fr
 status: draft | review | published
-language: EN | FR
 word_count: XXXX
 ---
-
-# H1 — Article Title (avec mot-clé)
-
-## Introduction (hook + contexte + promesse)
-
-## H2 — Section principale 1
-
-## H2 — Section principale 2
-
-## H2 — Section principale 3
-
-## Conclusion (résumé + CTA)
-
----
-*Sources : [liens]*
 ```
 
-## Skills associés
-- `seo` – SEO spécifique (prioritaire)
-- `copywriting` – rédaction de l'article
-- `copy-editing` – relecture 7 passes
-- `content-strategy` – stratégie éditoriale
-- `brand-check` – validation finale (obligatoire)
+### 5. On-page SEO
 
-## Validation finale obligatoire (brand-check)
+Checklist:
+- Primary keyword in: title, H1, first paragraph, slug, meta title, meta description
+- Secondary keywords distributed across H2s and body
+- Internal links to at least 3 related articles
+- External links to 1-2 authoritative sources
+- Alt text on every image
+- Schema.org markup if applicable (Article, FAQPage, HowTo)
+- Canonical URL configured
+- Open Graph tags for social preview
 
-Après la rédaction d'un article, d'un content brief ou d'un plan de mots-clés, tu DOIS invoquer le skill `brand-check` **avant** de livrer le contenu et **avant** toute publication {{BLOG_CMS}}.
+### 6. Brand check (mandatory)
+
+Invoke `brand-check`. Verify voice, vocabulary, proof.
+
+### 7. Copy-edit (7-pass)
+
+Invoke `copy-editing` for final polish.
+
+### 8. Publish
+
+- Frontmatter `status: ready`.
+- Dry-run push: `python3 scripts/dry-run-push.py --target {{BLOG_CMS}} --file articles/<file>`.
+- Push to {{BLOG_CMS}}.
+- After publish: record final URL in frontmatter, update status to `published`.
+- Submit URL to Google Search Console for indexing.
+- Announce cross-channel if the pillar strategy calls for it (handoff to `03-social-media/`, `04-email/`).
+
+## SEO rules
+
+### Content
+- **Data first**: every article contains at minimum 3 sourced numbers
+- **No keyword stuffing**: natural density, write for humans
+- **Internal linking**: ≥ 3 internal links per article
+- **External linking**: 1-2 authoritative sources
+- **Refresh cadence**: revisit every 6 months, update data
+
+### Technical
+- Page load < 3s (optimized images, no heavy scripts)
+- Mobile-first
+- JSON-LD structured data per article
+- Canonical URLs correctly configured
+- Sitemap XML kept current
+
+### Never
+- Generic AI content without specific {{COMPANY_NAME}} value-add
+- Articles under 800 words (too thin to rank)
+- Duplicated content across languages (cultural adaptation, not mechanical translation)
+- Artificial link-building
+
+## Cadence
+
+Target: {{CONTENT_CADENCE_BLOG}}.
+
+## Quarterly audit
+
+Run `seo-audit/YYYY-Q-audit.md` each quarter:
+- Identify articles losing rankings
+- Update content, refresh data, re-interlink
+- Consolidate cannibalizing pieces
+
+## Skills associated
+
+- `seo` — keyword research, brief, optimization (primary)
+- `copywriting` — narrative drafting
+- `copy-editing` — 7-pass review
+- `brand-check` — mandatory validation
+
+## Final validation
+
+Every article must pass `brand-check` before delivery and before any publish to {{BLOG_CMS}}.

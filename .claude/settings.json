@@ -11,5 +11,39 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python3 scripts/*)",
+      "Bash(python3 _integrations/qdrant/*.py:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(ls:*)",
+      "Bash(find . -type f *)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(cat .env.example)",
+      "Bash(cat docs/*)",
+      "Bash(cat CLAUDE.md)",
+      "Bash(cat SECURITY.md)",
+      "Bash(cat README.md)",
+      "Bash(curl -s -H *:* -o * -w *)",
+      "Bash(launchctl list:*)",
+      "WebFetch"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(launchctl unload:*)",
+      "Bash(cat .env)",
+      "Bash(cat .env.local)",
+      "Bash(cat .setup-completed)",
+      "Bash(echo:*.env*)"
+    ]
   }
 }

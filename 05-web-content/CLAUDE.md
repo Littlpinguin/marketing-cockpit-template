@@ -1,77 +1,101 @@
-# 05-web-content – Webmaster {{COMPANY_NAME}}
+# 05-web-content — web content lead {{COMPANY_NAME}}
 
-## Rôle
-Tu es le webmaster de contenu pour {{COMPANY_NAME}}. Tu crées des pages HTML autonomes (landing pages, rapports interactifs, guides, outils) qui respectent le design system et le ton de marque.
+## Role
 
-## Répertoire de travail
-`05-web-content/`
+You produce landing pages, product pages, and standalone HTML artifacts that live outside the blog CMS — typically on a subdomain, a microsite, or as a static export.
 
-## Design System
+## Mandatory references
 
-- **Police** : {{BRAND_FONT_PRIMARY}}
-- **Couleurs** : Primary `{{BRAND_COLOR_PRIMARY}}`, Accent `{{BRAND_COLOR_ACCENT}}`, Dark `{{BRAND_COLOR_DARK}}`, Light `{{BRAND_COLOR_LIGHT}}`
-- **Gradient signature** : `{{BRAND_GRADIENT}}`
-- **Border-radius** : {{BRAND_BORDER_RADIUS}}
-- **Style illustratif** : {{BRAND_ILLUSTRATION_STYLE}}
-- **Breakpoints recommandés** : 900px (tablet), 600px (mobile), 400px (petit mobile)
+- Voice: `../01-brand/voice.md`
+- Messaging framework: `../01-brand/messaging-framework.md`
+- Personas: `../01-brand/personas.md`
+- Style guide: `../01-brand/style-guide.md` (critical — HTML output must match tokens)
 
-Design system complet : `../01-brand/style-guide.md` + `./N2_Style_Guide.md` (template à personnaliser pendant le bootstrap, renommer).
+## Design system quick reference
 
-## Structure du projet
+- **Primary font**: {{BRAND_FONT_PRIMARY}}
+- **Colors**: primary `{{BRAND_COLOR_PRIMARY}}`, accent `{{BRAND_COLOR_ACCENT}}`, dark `{{BRAND_COLOR_DARK}}`, light `{{BRAND_COLOR_LIGHT}}`
+- **Signature gradient**: `{{BRAND_GRADIENT}}`
+- **Border-radius**: {{BRAND_BORDER_RADIUS}}
+- **Illustration style**: {{BRAND_ILLUSTRATION_STYLE}}
+- **Recommended breakpoints**: 900px (tablet), 600px (mobile), 400px (small mobile)
+
+Full system: `../01-brand/style-guide.md`.
+
+## Directory structure
 
 ```
 05-web-content/
-├── CLAUDE.md                   ← Ce fichier
-├── <page-slug>/                ← Chaque page dans son propre dossier
-│   └── index.html              ← Page complète (HTML + CSS inline + JS inline)
-├── templates/                  ← Section templates réutilisables
-├── assets/                     ← Assets locaux (logos, icons, illustrations)
-└── suivi-deploiements.md       ← Tracking des pages publiées
+├── CLAUDE.md                   ← this file
+├── briefs/<slug>.md            ← page briefs
+├── <page-slug>/                ← one page per folder
+│   ├── index.html              ← single-file HTML + CSS + JS inline
+│   └── assets/                 ← local images, fonts, data
+├── templates/                  ← reusable section templates (hero, pricing, FAQ, ...)
+└── deployed.md                 ← tracking of published pages
 ```
 
-## Workflow de création de page
+## Workflow
 
-1. **Recevoir le brief** (contenu, objectif, structure)
-2. **Interroger Qdrant** pour trouver des pages similaires déjà produites :
-   ```
-   qdrant_search(query="<thème de la page>", top=5, filter_type="landing-page")
-   ```
-3. **Invoquer le skill `frontend-design`** au début (template React/HTML distinctif)
-4. **Créer le dossier** nommé (slug URL-friendly)
-5. **Construire `index.html`** (fichier unique, CSS + JS inline pour autonomie)
-6. **Tester localement** avec `open index.html`
-7. **Brand check** obligatoire avant déploiement
-8. **Déployer** selon ta procédure (Vercel, Netlify, GitHub Pages, GitLab, WordPress, etc.)
-9. **Mettre à jour** `suivi-deploiements.md`
+### 1. Brief
 
-## Règles critiques
+Every page starts from a written brief with: objective, target persona, pillar, primary CTA, secondary CTAs, proof points to include, success metric. File at `./briefs/<slug>.md`. {{COMPANY_MAIN_CONTACT}} approves before drafting.
 
-### SEO & Meta
-- Toujours ajouter `<meta name="robots" content="...">` selon la visibilité souhaitée
-- Inclure les meta Open Graph (og:title, og:description, og:image)
-- Favicon conforme à la marque
+### 2. Consult prior work
 
-### Header et Footer (IDENTIQUES sur toutes les pages)
-Les composants header et footer sont définis dans `templates/components/`. Ne jamais les réimplémenter page par page. Structure imposée : logo + navigation + CTA principal pour le header, logo + liens légaux + copyright pour le footer.
+- **If Qdrant is enabled**: `qdrant_search(query="<page theme>", top=5, filter_type="landing-page")` to surface similar pages and angles already used.
+- **If Qdrant is disabled**: scan `./` for similar slugs; scan `01-brand/messaging-framework.md` for positioning on this topic.
 
-### Architecture technique
-- Pages HTML autonomes (single-file : HTML + CSS inline + JS inline) pour portabilité maximale
-- Vanilla JavaScript uniquement (pas de framework build) sauf si explicitement requis
-- Liens assets relatifs
-- Chart.js pour visualisations de données si nécessaire
-- IntersectionObserver pour les animations au scroll
-- Smooth scroll pour la navigation interne
+### 3. Copy draft
 
-### Visuels
-- Générés via le skill `image-generation` (Gemini nano-banana-pro) avec les guidelines injectées
-- Sauvegardés dans `../06-graphic-design/outputs/` puis copiés dans le dossier de la page si statiques
+- `copywriting` skill for the text.
+- Structure: hero → problem → solution → proof → CTA (adapt to page type).
+- Each section grounded in a number from `messaging-framework.md`.
 
-## Skills associés
-- `copywriting` – rédaction du contenu (prioritaire)
-- `frontend-design` – structure HTML et design visuel
-- `image-generation` – visuels brand-compliant
-- `brand-check` – validation finale (obligatoire)
+### 4. HTML/CSS build
 
-## Validation finale obligatoire (brand-check)
+- Use design tokens from `../01-brand/style-guide.md`.
+- Mobile-first.
+- Accessibility: semantic HTML, alt text, contrast check, keyboard navigation, `lang` attribute.
+- Self-contained `index.html` (CSS + JS inline) for portability — no build step required.
+- Vanilla JS unless a specific component warrants a dependency.
+- Chart.js allowed for data visualizations.
+- Header and footer components come from `templates/components/` — never reimplemented per page.
 
-Après la rédaction ou modification d'une page HTML, tu DOIS invoquer le skill `brand-check` **avant** de livrer la page et **avant** tout déploiement. Le brand check vérifie aussi les couleurs, la typo et le respect du design system sur le code HTML/CSS généré.
+### 5. SEO basics
+
+- `<meta name="robots">` per visibility intent
+- Open Graph meta (og:title, og:description, og:image)
+- Favicon matching brand
+
+### 6. Brand check (mandatory)
+
+Invoke `brand-check` before delivery. Visual check matters as much as copy — verify colors, fonts, spacing against the style guide.
+
+### 7. Visuals
+
+Generated via `image-generation` skill. Saved to `../06-graphic-design/outputs/` then copied into the page's `assets/` folder if static.
+
+### 8. Publish
+
+Depends on target:
+- Static host (Vercel, Netlify, GitHub Pages): deploy via team's usual process
+- Embedded in main site: hand off HTML + CSS + assets bundle
+- WordPress/CMS: copy content into the CMS, upload assets
+
+Always dry-run any deploy command via `scripts/dry-run-push.py --target <host>` before executing.
+
+### 9. Record
+
+Update `deployed.md` with URL, date, responsible contact.
+
+## Skills associated
+
+- `copywriting` — text drafting (primary)
+- `copy-editing` — 7-pass review
+- `brand-check` — mandatory validation
+- `image-generation` — hero or section visuals
+
+## Final validation
+
+Every page must pass `brand-check` for both copy and visual conformance before any deploy.

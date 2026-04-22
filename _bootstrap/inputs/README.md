@@ -1,10 +1,10 @@
-# Bootstrap inputs — Drop your existing material here
+# Bootstrap inputs — drop zone
 
-This folder is where you drop any existing brand or company material **before** answering the bootstrap interview. Claude Code will read everything here during Phase 0 (Discovery) and pre-fill as much as possible, so you don't have to retype information that already exists somewhere.
+Optional. Drop any existing brand or company material **before** running `/brand-discover`. The wizard will read everything here and fold it into the draft doctrine, so you don't retype information that already exists.
 
 ## What to drop here
 
-Anything that describes your company, brand, voice, or strategy. Common examples:
+Anything that describes your company, brand, voice, or strategy:
 
 - `brand-guide.pdf` (or `.md`, `.docx`)
 - `editorial-charter.md`
@@ -13,32 +13,26 @@ Anything that describes your company, brand, voice, or strategy. Common examples
 - `vision-mission.md`
 - `positioning-statement.md`
 - `messaging-framework.md`
-- `writing-samples/` (a folder with 5-10 of your best past posts, emails, or articles)
-- `website-dump.md` (if Claude can't fetch your website, paste your homepage text here)
+- `writing-samples/` — a folder with 5-10 of your best past posts, emails, or articles
+- `website-dump.md` — if Claude can't reach your website, paste the homepage text here
 
 ## Accepted formats
 
-- **Markdown (`.md`)** — ideal, read as-is
-- **Plain text (`.txt`)** — read as-is
-- **PDF** — Claude will try to extract text via `pdftotext` or similar
-- **Word (`.docx`)** — Claude may ask you to export as PDF first
-- **PowerPoint (`.pptx`)** — same
-- **Screenshots (`.png`, `.jpg`)** — Claude will try to OCR / describe
+- **Markdown (`.md`)** and **plain text (`.txt`)** — read as-is
+- **PDF** — extracted via `pdftotext` if available
+- **Word (`.docx`)** or **PowerPoint (`.pptx`)** — wizard will ask you to export as PDF or paste the relevant section
+- **Screenshots (`.png`, `.jpg`)** — described / OCR'd best-effort
 
-## What Claude does with this content
+## What the wizard does with this content
 
-1. Reads every file recursively during Phase 0 of the interview
-2. Cross-references with what it extracted from your website (`WebFetch`)
-3. Detects contradictions (e.g. website says "100+ clients", pitch deck says "50+")
-4. Builds a draft company profile and asks you to validate/correct it section by section
-5. Writes the validated profile into `01-brand/`
+`/brand-discover` reads this folder recursively, cross-references with `WebFetch` of your website, detects contradictions (e.g. website says "100+ clients", pitch deck says "50+"), and builds a draft company profile. Nothing is written to `01-brand/` until you validate section by section.
 
-## Privacy and security
+## Privacy
 
-- This folder is **git-ignored** by default. Your raw material stays local and is never committed.
-- After the bootstrap, the original files remain here for reference. You can delete them manually if you prefer.
-- The bootstrap process writes into `01-brand/` which IS committed — review those files before pushing to a public repo.
+- This folder is **gitignored** by default. Your raw material stays local.
+- After setup, these files move to `.setup-archive/v0.2-inputs/` so the live tree stays clean.
+- The wizard writes to `01-brand/` — those files are tracked. Review before pushing a public repo.
 
-## After the bootstrap
+## Re-running later
 
-Once `.setup-completed` exists, this folder is no longer read automatically. You can still drop new material here manually and run the interview again with `cd _bootstrap && claude -p interview.md` to refresh the brand profile.
+To refresh the brand profile with new material, drop new files here and run `/brand-discover` again. The wizard is idempotent — it asks what has changed rather than starting from scratch.

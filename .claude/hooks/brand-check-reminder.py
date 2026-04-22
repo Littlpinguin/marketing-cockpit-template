@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """
-PostToolUse hook: rappelle Claude d'invoquer le skill brand-check-n2 après
-toute écriture ou édition de contenu dans un dossier de production N2.
+PostToolUse hook: remind Claude to invoke the brand-check skill after any
+Write/Edit of content in a production folder.
 
-Déclencheurs :
-- Outils Write ou Edit
-- Chemin contenant /03-social-media/, /04-email/, /05-web-content/,
-  /07-events/ ou /09-blog-seo/
-- Extension .md ou .html
+Triggers:
+- Write or Edit tool
+- Path containing /03-social-media/, /04-email/, /05-web-content/,
+  /07-events/, or /09-blog-seo/
+- Extension .md or .html
 
-Exclusions :
-- CLAUDE.md, README.md, STATUS.md (méta)
-- Sous-dossiers templates/, examples/, archives/, drafts/wip/ (références)
-- Fichiers techniques (.py, .js, .sh, .json, etc.)
+Exclusions:
+- CLAUDE.md, README.md, STATUS.md (meta)
+- Subfolders templates/, examples/, archives/, drafts/wip/ (references)
+- Technical files (.py, .js, .sh, .json, etc.)
+- Files marked [WIP] in the name
 """
 
 import json
@@ -75,16 +76,15 @@ def main() -> int:
         return 0
 
     reminder = (
-        "🎯 BRAND CHECK REQUIRED\n\n"
-        f"Tu viens d'écrire ou d'éditer `{os.path.basename(file_path)}` "
-        f"dans un dossier de production N2 (`{file_path}`).\n\n"
-        "**AVANT de rendre la main à l'utilisateur**, tu DOIS invoquer le skill "
-        "`brand-check-n2` via l'outil Skill pour valider ce draft contre les "
-        "standards de marque N2 (filtre 5 points : vocabulaire, ton, preuve, "
-        "audience, visuel).\n\n"
-        "Applique toutes les corrections 🟠 avant livraison. Remonte tout 🔴 à "
-        "l'utilisateur. N'annonce PAS que c'est validé tant que brand-check-n2 "
-        "n'a pas retourné ✅ PASS. Cette étape est non-négociable."
+        "BRAND CHECK REQUIRED\n\n"
+        f"You just wrote or edited `{os.path.basename(file_path)}` "
+        f"in a production folder (`{file_path}`).\n\n"
+        "**Before handing back to the user**, you MUST invoke the `brand-check` "
+        "skill via the Skill tool to validate this draft against the brand "
+        "standards (5-point filter: vocabulary, tone, proof, audience, visual).\n\n"
+        "Apply all 🟠 corrections before delivery. Surface every 🔴 to the user. "
+        "Do NOT announce the draft as validated until brand-check returns "
+        "✅ PASS. This step is non-negotiable."
     )
 
     output = {

@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://marketing-copilot-template/docs/setup-completed.schema.json",
+  "title": "Setup completion metadata",
+  "description": "Shape of .setup-completed, written by /validate-setup at the end of the wizard. Consumed by operational skills and /health-check.",
+  "type": "object",
+  "required": ["version", "completed_at", "company", "language", "bilingual", "tools", "features"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Template version that ran the wizard.",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when validate-setup succeeded."
+    },
+    "company": {
+      "type": "string",
+      "minLength": 1
+    },
+    "company_website": {
+      "type": "string",
+      "format": "uri"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["en", "fr", "es", "de", "pt", "it"]
+    },
+    "bilingual": {
+      "type": "boolean",
+      "description": "True if the copilot produces bilingual content by default."
+    },
+    "bilingual_rules": {
+      "type": "string",
+      "description": "Free-form description of how the second language is produced. Required only when bilingual=true."
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["editorial_calendar", "email_marketing", "knowledge_base", "events_platform", "crm"],
+      "properties": {
+        "editorial_calendar": { "$ref": "#/$defs/toolEntry" },
+        "email_marketing":    { "$ref": "#/$defs/toolEntry" },
+        "knowledge_base":     { "$ref": "#/$defs/toolEntry" },
+        "events_platform":    { "$ref": "#/$defs/toolEntry" },
+        "crm":                { "$ref": "#/$defs/toolEntry" },
+        "web_analytics":      { "$ref": "#/$defs/toolEntry" },
+        "social_scheduler":   { "$ref": "#/$defs/toolEntry" }
+      }
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["qdrant", "image_generation", "weekly_cron"],
+      "properties": {
+        "qdrant": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled":         { "type": "boolean" },
+            "collection":      { "type": "string" },
+            "embedding_model": { "type": "string" },
+            "rationale":       { "type": "string" }
+          }
+        },
+        "image_generation": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "model":   { "type": "string" }
+          }
+        },
+        "weekly_cron": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled":   { "type": "boolean" },
+            "installed": { "type": "boolean" },
+            "schedule":  { "type": "string", "description": "Human-readable schedule, e.g. 'Sunday 22:00 local'" }
+          }
+        }
+      }
+    },
+    "wizard_log": {
+      "type": "array",
+      "description": "Append-only log of wizard commands executed during setup.",
+      "items": {
+        "type": "object",
+        "required": ["command", "at"],
+        "properties": {
+          "command": { "type": "string" },
+          "at":      { "type": "string", "format": "date-time" },
+          "note":    { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "toolEntry": {
+      "type": "object",
+      "required": ["name", "enabled"],
+      "properties": {
+        "name":             { "type": "string", "description": "Tool slug (e.g. 'notion', 'mailerlite', 'none')." },
+        "enabled":          { "type": "boolean" },
+        "connector_status": { "type": "string", "enum": ["ready", "stub", "disabled"] },
+        "resource_id":      { "type": "string", "description": "Optional: database ID, audience ID, board ID, etc." },
+        "notes":            { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,171 +1,186 @@
-# {{COMPANY_NAME}} — Marketing Copilot
+# Marketing Copilot — root orchestrator
 
-> **Model recommendation** : this copilot is designed for **Claude Opus 4.6**. Long-context reasoning and strategic planning are used extensively. Smaller models will work for routine tasks but miss nuances on content-strategy, brand-check, and copy-editing.
+> **Model recommendation.** This copilot is designed for **Claude Sonnet 4.6**. The brand doctrine and per-role CLAUDE.md files are personalized enough that Sonnet 4.6 handles strategic reasoning, brand-check, and copy-editing with quality. Opus is overkill for most sessions; Haiku is a reasonable fallback for short, routine tasks (single-post drafting, short replies).
 
-## Bootstrap detection (runs on every new session until setup is complete)
+## Setup detection — read this first, every session
 
-**If the file `.setup-completed` does NOT exist at the project root, this repository has not been initialized yet. In that case, STOP reading this file and immediately execute the bootstrap interview:**
+If the file `.setup-completed` does **not** exist at the project root, this repo has not been customized for a specific company yet. Do **not** start producing content. Instead, greet the user and suggest:
 
-1. Open `_bootstrap/interview.md` and follow it line by line
-2. Greet the user, verify they're on Opus 4.6
-3. Run the pre-flight checks
-4. Execute Phase 0 (Discovery via `WebFetch` on the company website + reading files in `_bootstrap/inputs/`)
-5. Continue through Phases 1 → 5 as described in the interview
-6. At the end of Phase 5, write `.setup-completed` with the completion metadata and only THEN resume normal operation via this file
+> This template has not been set up yet. Run `/start-copilot` to launch the wizard. It will fetch your website, analyze your recent posts and articles, propose a draft brand doctrine, let you choose your tools, and prepare the repo in 30-60 minutes.
 
-**Do not skip the bootstrap. Do not assume the user knows what needs to happen.** The interview is designed so that a non-technical user can complete it by just answering questions. Claude drives the flow end to end.
-
-**If `.setup-completed` EXISTS, skip the bootstrap section above entirely and continue reading below.**
+If `.setup-completed` exists, skip the bootstrap path entirely and operate normally.
 
 ---
 
-## Identity
-{{COMPANY_NAME}} is {{COMPANY_POSITIONING}}. Founded by {{COMPANY_FOUNDERS}}, based in {{COMPANY_HQ}}, serving {{COMPANY_AUDIENCE_SHORT}}.
+## Security non-negotiables (apply every session)
 
-- **Website**: {{COMPANY_WEBSITE}}
-- **Tagline**: *{{COMPANY_TAGLINE}}*
-- **Marketing lead**: {{COMPANY_MAIN_CONTACT}}
+See `SECURITY.md` for the full rules. The short list:
 
-## Architecture du projet
+1. **Never paste API keys, tokens, or secrets in a chat message or commit.** Use `.env` + `.env.example` with placeholders only. Before every push, grep the diff for secrets.
+2. **Never use destructive Bash commands without explicit user confirmation** — `rm -rf`, `git push --force`, `git reset --hard`, `launchctl` on system-wide agents, anything that sends email or hits an external API.
+3. **Dry-run before production push.** Any connector that writes to Notion / Airtable / Mailchimp / MailerLite / HubSpot / etc. must first emit the payload to stdout via `scripts/dry-run-push.py` and wait for confirmation.
+4. **Verify, do not trust.** Claude can hallucinate API endpoints, field names, package names. Check docs before invoking a new API.
+5. **Do not share transcripts publicly** if they contain internal URLs, paths, draft content, or customer data.
+6. **Disclosure for AI-generated visuals and audio.** When publishing, declare AI involvement per the brand's disclosure policy (set during `/brand-discover`).
 
-Ce dossier est organisé par **rôle**. Chaque sous-dossier contient un `CLAUDE.md` qui définit un rôle IA spécialisé avec ses règles, workflows et templates.
+---
 
-| Dossier | Rôle | Quand l'utiliser |
+## Architecture
+
+This repo is organized by **role**. Each numbered folder represents one marketing function and contains a `CLAUDE.md` that defines the role's scope, inputs, workflow, and validation gates.
+
+| Folder | Role | When to use |
 |---|---|---|
-| `01-brand/` | — (référence) | Source unique de vérité : identité, design, ton, personas |
-| `02-strategy/` | Directeur de communication | Planification, piliers, KPIs, calendrier éditorial |
-| `03-social-media/` | Social Media Manager | LinkedIn, Discord, WhatsApp, autres réseaux |
-| `04-email/` | Email Marketing Manager | Newsletters, promos, sales outreach, nurturing |
-| `05-web-content/` | Webmaster | Landing pages, pages HTML autonomes |
-| `06-graphic-design/` | Directeur artistique | Visuels, carrousels, infographies, génération IA |
-| `07-events/` | Chef de projet événementiel | Webinars, lives, gatherings, plans de com |
-| `08-mail-signatures/` | Générateur de signatures | Signatures email HTML pour les membres |
-| `09-blog-seo/` | Blog & SEO Manager | Articles longs, keyword research, optimisation |
-| `_sources/` | — (matière première) | Transcriptions réunions, données brutes, veille marché, indexé dans Qdrant |
-| `_integrations/` | — (infrastructure) | Qdrant pipeline, MCP server, cron, connecteurs d'outils |
-| `_bootstrap/` | — (onboarding) | Interview guide, templates, inputs pour le premier setup |
+| `01-brand/` | — (reference) | Single source of truth: identity, design system, voice, personas |
+| `02-strategy/` | Head of communications | Editorial planning, pillars, KPIs, cross-channel calendar |
+| `03-social-media/` | Social media manager | LinkedIn, Discord, WhatsApp, other activated channels |
+| `04-email/` | Email marketing manager | Newsletters, promos, sales outreach, lead nurturing |
+| `05-web-content/` | Web content lead | Landing pages, static HTML artifacts |
+| `06-graphic-design/` | Art director | Visuals, carousels, infographics, AI image generation |
+| `07-events/` | Event marketing lead | Webinars, live sessions, gatherings, announcement plans |
+| `08-mail-signatures/` | — (utility) | HTML email signatures per team member |
+| `09-blog-seo/` | Blog & SEO manager | Long-form articles, keyword research, on-page optimization |
+| `_sources/` | — (raw material) | Meeting transcripts, reports, market research — indexed in Qdrant if enabled |
+| `_integrations/` | — (infrastructure) | Qdrant pipeline, MCP server, cron, connector code |
+| `_examples/` | — (starter corpus) | Fictional but realistic content for Qdrant seeding on day one |
 
-### Sous-dossiers de `_sources/` (matière première indexée)
+### `_sources/` subfolders
 
-| Sous-dossier | Contenu | Qui alimente | Automatisation |
-|---|---|---|---|
-| `transcriptions/` | Comptes-rendus de réunions (format structuré Résumé/Étapes suivantes/Détails). Sous-dossiers `internal/` et `clients/<nom>/`. | Dépôt manuel après chaque réunion | À envisager (exports auto) |
-| `reports/` | Données brutes, benchmarks, études quantitatives. Source canonique pour tout chiffre publié. | Dépôt manuel après chaque étude | Non (rythme lent) |
-| `research/` | **Veille marché** : articles externes, notes, analyses concurrents, observations IA/secteur. Point d'atterrissage de toute la veille continue. | À automatiser (voir TODO) | **À implémenter** |
+| Subfolder | Content | Who feeds it |
+|---|---|---|
+| `transcriptions/` | Meeting minutes with `internal/` and `clients/<name>/` subfolders | Dropped manually after each meeting |
+| `reports/` | Raw data, benchmarks, quantitative studies — the canonical source for any number you publish | Manual after each study |
+| `research/` | Market watch: external articles, notes, competitor analysis | Manual drop, or automated feed if configured during `/tools-setup` |
 
-**TODO veille (à personnaliser pendant setup)** : automatiser l'alimentation de `_sources/research/` via un ou plusieurs agents de veille. Pistes : feeds RSS, newsletters parsées via Gmail API, alertes Google, agents web, etc. Tout fichier déposé ici est détecté au prochain sync Qdrant.
+---
 
-## Règles universelles (s'appliquent à tous les rôles)
+## Universal rules (apply to every role)
 
-1. **Toujours lire le `CLAUDE.md` du sous-dossier** avant de produire du contenu
-2. **Toujours consulter `01-brand/`** pour le ton, les couleurs, le vocabulaire (ou interroger Qdrant sur `filter_source_key=brand` si activé)
-3. **Toujours produire en bilingue** si `{{BRAND_BILINGUAL}}` est true, sauf exceptions documentées par canal
-4. **Toujours appuyer les affirmations par des données** — pas d'opinion sans chiffre. Vérifier chaque chiffre contre Qdrant brand si activé.
-5. **Toujours utiliser le vocabulaire de marque** — voir `01-brand/charte-editoriale.md` ou le skill `brand-check`
-6. **Ne jamais utiliser** les termes listés comme interdits dans `01-brand/charte-editoriale.md`
-7. **Vérifier le calendrier éditorial** ({{EDITORIAL_CALENDAR_TOOL}}) avant de proposer du contenu
+1. **Read the role's `CLAUDE.md` first** before producing any content in that folder.
+2. **Defer to `01-brand/`** for voice, vocabulary, colors, typography. If Qdrant is enabled, prefer `qdrant_search(filter_source_key="brand")` over full-file reads.
+3. **Follow the brand language configured at setup.** Monolingual or bilingual is a per-project decision, recorded in `.setup-completed`.
+4. **No claim without a source.** Every factual statement must map to a number in `01-brand/messaging-framework.md` or a cited external reference.
+5. **Never use banned vocabulary** listed in `01-brand/voice.md`.
+6. **Check the editorial calendar** before proposing content, if one is configured.
+7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `09-`. The PostToolUse hook fires a reminder; do not bypass it.
 
-## Intégrations et APIs
+---
 
-> Toutes les clés API sont dans `.env`. Ne jamais les hardcoder ailleurs. Voir `.env.example` pour la liste complète.
+## Integrations — runtime state
 
-### Configurations actives (remplies pendant le bootstrap)
+Runtime configuration lives in `.setup-completed` (JSON). The wizard writes it at the end of `/start-copilot`. Example shape:
 
-```yaml
-functionalities:
-  editorial_calendar:
-    tool: {{EDITORIAL_CALENDAR_TOOL}}
-    enabled: {{EDITORIAL_CALENDAR_ENABLED}}
-    doc: _integrations/{{EDITORIAL_CALENDAR_TOOL}}-setup.md
-
-  email_marketing:
-    tool: {{EMAIL_MARKETING_TOOL}}
-    enabled: {{EMAIL_MARKETING_ENABLED}}
-    doc: _integrations/{{EMAIL_MARKETING_TOOL}}-setup.md
-
-  knowledge_base:
-    tool: {{KNOWLEDGE_BASE_TOOL}}
-    enabled: {{KNOWLEDGE_BASE_ENABLED}}
-
-  events_platform:
-    tool: {{EVENTS_PLATFORM_TOOL}}
-    enabled: {{EVENTS_PLATFORM_ENABLED}}
-
-  crm:
-    tool: {{CRM_TOOL}}
-    enabled: {{CRM_ENABLED}}
-
-  semantic_memory:
-    tool: qdrant
-    enabled: {{QDRANT_ENABLED}}
-    doc: _integrations/qdrant/runbook.md
-    mcp: qdrant-n2 (via .mcp.json)
-    usage: "qdrant_search, qdrant_find_similar, qdrant_stats"
-
-  image_generation:
-    tool: gemini-3-pro-image-preview
-    enabled: {{IMAGE_GENERATION_ENABLED}}
-    skill: image-generation
-    usage: "Generates brand-compliant visuals. Every prompt is auto-prefixed with style guide constraints."
+```json
+{
+  "version": "0.2.0",
+  "company": "...",
+  "language": "en",
+  "bilingual": false,
+  "tools": {
+    "editorial_calendar": { "name": "notion", "enabled": true },
+    "email_marketing":    { "name": "mailerlite", "enabled": true },
+    "knowledge_base":     { "name": "outline", "enabled": false },
+    "events_platform":    { "name": "none", "enabled": false },
+    "crm":                { "name": "none", "enabled": false }
+  },
+  "features": {
+    "qdrant":           { "enabled": false, "rationale": "< 10 pieces/month, file-based memory is sufficient" },
+    "image_generation": { "enabled": true,  "model": "gemini-3-pro-image-preview" },
+    "weekly_cron":      { "enabled": false }
+  }
+}
 ```
 
-### Scripts et skills
+See `docs/setup-completed.schema.json` for the full schema.
 
-| Skill | Usage |
+## Skills (in `.claude/skills/`)
+
+| Skill | Role | Notes |
+|---|---|---|
+| `copilot-setup` | Shared wizard logic | Loaded by every `/start-copilot`, `/brand-discover`, `/tools-setup`, `/seed-corpus`, `/validate-setup`, `/health-check` |
+| `brand-check` | Quality gate before delivery | Mandatory for content in production folders |
+| `social-content` | LinkedIn, Discord, WhatsApp | Respects per-channel cadence and tone |
+| `email` | Newsletter, promo, sales, nurture | Integrates with configured email tool |
+| `copywriting` | Long-form web content | Landing pages, product pages |
+| `copy-editing` | 7-pass review | Data / vocab / tone / clarity / structure / brand / format |
+| `content-strategy` | Planning and cross-channel coordination | Pillar balance, cadence |
+| `seo` | Blog, keyword research, on-page | Publishes per configured CMS |
+| `event-marketing` | Event comm plans | D-60 to D+7 announcement waves |
+| `image-generation` | Brand-compliant visuals via Gemini | Prompt auto-prefixed with brand style |
+
+**Rule**: always prefer this project's skills over generic skills from external plugins. They are tailored to this repo.
+
+---
+
+## Slash commands (in `.claude/commands/`)
+
+| Command | Purpose |
 |---|---|
-| `brand-check` | Validation obligatoire avant livraison. Filtre 5 points (vocabulaire, ton, preuve, audience, visuel) + anti-répétition Qdrant. |
-| `social-content` | Posts LinkedIn, Discord, WhatsApp. Cadence : {{CONTENT_CADENCE_LINKEDIN}}. |
-| `email` | Newsletters, promos, sales outreach, nurturing. Cadence newsletter : {{CONTENT_CADENCE_NEWSLETTER}}. |
-| `copywriting` | Landing pages, pages web, contenus longs. |
-| `copy-editing` | Relecture 7 passes (data, vocabulaire, ton, clarté, structure, brand, format). |
-| `content-strategy` | Planification, équilibre des piliers, coordination cross-canal. |
-| `seo` | Blog, keyword research, optimisation on-page. Cadence : {{CONTENT_CADENCE_BLOG}}. |
-| `event-marketing` | Plans de com événementiels, webinars, gatherings. |
-| `image-generation` | Visuels conformes à la marque via Gemini nano-banana-pro. |
+| `/start-copilot` | Entry point of the wizard. Run once after cloning. Orchestrates the full setup. |
+| `/brand-discover` | Analyze website + social + blog to propose a draft brand doctrine for human validation. |
+| `/tools-setup` | Pick and configure tools per category. Regenerates role `CLAUDE.md` files based on choices. |
+| `/seed-corpus` | Optional: ingest recent content into Qdrant (if enabled) for anti-repetition and retrieval. |
+| `/connect-qdrant` | Optional: enable semantic memory. Callable at any time, not only during setup. |
+| `/validate-setup` | Placeholder lint + sample generation + voice check. Writes `.setup-completed` on success. |
+| `/health-check` | Ongoing: verify env vars, MCP servers, hook wiring, cron state. Run monthly. |
 
-**Règle** : toujours privilégier les skills de ce projet sur les skills génériques de plugins externes. Les skills de ce projet sont adaptés à {{COMPANY_NAME}}.
+---
 
-## Workflows principaux
+## Primary workflows
 
-### Newsletter mensuelle
-1. {{COMPANY_MAIN_CONTACT}} fournit les sujets du mois
-2. Le skill `email` interroge Qdrant pour éviter les répétitions avec les 3 dernières éditions
-3. Rédaction du draft dans `04-email/newsletter/drafts/`
-4. Brand-check automatique via le hook PostToolUse
-5. Validation humaine
-6. Push vers {{EMAIL_MARKETING_TOOL}} via le connecteur
-7. Programmation et envoi
+### Monthly newsletter
+1. Marketing lead supplies topics for the month.
+2. `email` skill queries Qdrant (if enabled) or reads `04-email/newsletter/editions/` to avoid repeats.
+3. Draft lands in `04-email/newsletter/drafts/`.
+4. Brand-check fires automatically via PostToolUse hook.
+5. Human validates.
+6. `scripts/dry-run-push.py --target <email-tool>` emits the payload for review.
+7. On confirmation, the connector pushes to the email tool as a draft.
+8. Scheduling and send are manual in the email tool UI.
 
-### Post social media
-1. Lire le calendrier éditorial ({{EDITORIAL_CALENDAR_TOOL}})
-2. Skill `social-content` + requête Qdrant pour anti-répétition
-3. Rédaction EN + FR (si bilingue activé)
-4. Brand-check automatique
-5. Archive dans `03-social-media/<canal>/examples/` si validé
-6. Publication manuelle ou via API selon le canal
+### Social post
+1. Read the editorial calendar (if configured) to pick topic and pillar.
+2. `social-content` skill queries Qdrant / scans `examples/` for anti-repetition.
+3. Draft in the appropriate channel folder.
+4. Brand-check fires automatically.
+5. Archive to `examples/` on publish.
 
-### Événement complet
-1. Briefing et plan de com via le skill `event-marketing`
-2. Création des entrées dans {{EDITORIAL_CALENDAR_TOOL}} (statut : À faire)
-3. Rédaction distribuée dans les dossiers canaux (03/04/05)
-4. Brand-check à chaque livraison
-5. Création de l'événement dans {{EVENTS_PLATFORM_TOOL}} via API
-6. Publication coordonnée cross-canal
+### Full event
+1. `event-marketing` skill builds the comm plan (D-60 → D+7).
+2. Create editorial calendar entries with status "To do".
+3. Draft content distributed across channel folders.
+4. Brand-check at each delivery.
+5. Create the event on the configured events platform via connector.
+6. Coordinated cross-channel publication.
 
-### Ingestion de nouveau contenu dans Qdrant
-- Manuelle : `python3 _integrations/qdrant/sync.py --source <name>`
-- Automatique : cron launchd hebdomadaire (dimanche 22h00) qui lance `sync.py --all` + audit de dérive
+### Fresh content ingestion into Qdrant (if enabled)
+- Manual: `python3 _integrations/qdrant/sync.py --source <name>`
+- Automated: weekly launchd job (Sunday 22:00) running `sync.py --all` + drift audit.
 
-## Référence rapide — Identité visuelle
+---
 
-- **Police principale** : `{{BRAND_FONT_PRIMARY}}`
-- **Couleurs** :
-  - Primary : `{{BRAND_COLOR_PRIMARY}}`
-  - Accent : `{{BRAND_COLOR_ACCENT}}`
-  - Dark : `{{BRAND_COLOR_DARK}}`
-  - Light : `{{BRAND_COLOR_LIGHT}}`
-- **Gradient signature** : `{{BRAND_GRADIENT}}`
-- **Border-radius** : `{{BRAND_BORDER_RADIUS}}`
-- **Style illustratif** : {{BRAND_ILLUSTRATION_STYLE}}
-- **Interdits visuels** : {{BRAND_BANNED_VISUALS}}
-- **Design system complet** : `01-brand/style-guide.md`
+## When Qdrant is disabled
+
+The system operates without Qdrant. Each skill's `CLAUDE.md` documents its file-based fallback:
+- `brand-check` reads `01-brand/voice.md` directly; anti-repetition check is skipped with an explicit note in the report.
+- `social-content` reads the last 5 files in `<channel>/examples/` to calibrate tone.
+- `email` reads the last 3 editions in `newsletter/editions/`.
+
+Enable Qdrant later via `/connect-qdrant` — takes 5 minutes if you have a Qdrant Cloud URL + Google AI key.
+
+---
+
+## Visual identity quick reference
+
+Once the wizard has run, values appear here. Before that, treat every field below as a placeholder to be filled by `/brand-discover`.
+
+- **Primary font**: `{{BRAND_FONT_PRIMARY}}`
+- **Primary color**: `{{BRAND_COLOR_PRIMARY}}`
+- **Accent color**: `{{BRAND_COLOR_ACCENT}}`
+- **Dark**: `{{BRAND_COLOR_DARK}}`
+- **Light**: `{{BRAND_COLOR_LIGHT}}`
+- **Signature gradient**: `{{BRAND_GRADIENT}}`
+- **Border-radius**: `{{BRAND_BORDER_RADIUS}}`
+- **Illustration style**: `{{BRAND_ILLUSTRATION_STYLE}}`
+- **Banned visual tropes**: `{{BRAND_BANNED_VISUALS}}`
+- **Full style guide**: `01-brand/style-guide.md`

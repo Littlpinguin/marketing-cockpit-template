@@ -1,104 +1,105 @@
-# 01-brand – Gardien de la marque {{COMPANY_NAME}}
+# 01-brand — keeper of the {{COMPANY_NAME}} brand
 
-## Rôle
-Ce dossier est la **source unique de vérité** pour l'identité, le ton, le messaging et l'identité visuelle de {{COMPANY_NAME}}. Il ne produit rien : il est consulté par tous les autres rôles (`02-strategy/` à `09-blog-seo/`) avant toute création de contenu.
+## Role
 
-**Règle absolue** : en cas de contradiction entre `01-brand/` et un autre dossier, `01-brand/` fait foi. Si tu détectes une contradiction, signale-la avant d'agir.
+This folder is the **single source of truth** for identity, voice, messaging, and visual identity. It produces nothing; it is consulted by every other role (`02-strategy/` through `09-blog-seo/`) before any content is created.
 
-## Accès rapide via Qdrant (si activé)
+**Absolute rule.** When `01-brand/` and another folder disagree, `01-brand/` wins. Surface the conflict to the user before acting.
 
-Si Qdrant est activé (`qdrant.enabled: true` dans `config.yaml`), les fichiers de ce dossier sont indexés dans la collection configurée. Pour toute question sur le ton, le vocabulaire, les chiffres, les personas ou la doctrine, la recherche sémantique est plus rapide qu'une lecture complète :
+## When to consult this folder
+
+| You need to… | Read in priority |
+|---|---|
+| Write a post, email, page, event script | `voice.md` + `messaging-framework.md` |
+| Target a specific audience | `personas.md` |
+| Pick a number or a proof point | `messaging-framework.md` (key numbers section) |
+| Use a tagline, quote, or signature phrase | `voice.md` (signature phrases) |
+| Design a visual, pick a color or font | `style-guide.md` |
+| Understand full strategic context | `brand-platform.md` |
+| Identify an internal stakeholder | `stakeholders.md` |
+| Reuse a visual asset | `assets/` |
+
+## File inventory
+
+These files are created by `/brand-discover`. If any are missing or empty, the wizard has not run to completion or the user deliberately skipped the section (see `_gaps.md`).
+
+| File | Content | When to use |
+|---|---|---|
+| `voice.md` | Voice position, preferred/banned vocabulary, typography rules, signature phrases, bilingual rules | **Before every draft** |
+| `messaging-framework.md` | Central message, per-persona messages, top 10 key numbers, CTA patterns, proof hierarchy | **Before every conversion-oriented piece** |
+| `personas.md` | 2-4 personas with goals, frustrations, expectations, channels, main message per persona | **Before any targeted content** |
+| `brand-platform.md` | Full strategic document (mission, vision, positioning, values, architecture) | For deep context |
+| `style-guide.md` | Colors, typography, logo usage, components, illustration style, banned visual tropes | Before any visual creation |
+| `stakeholders.md` | Founders, team, functional roles | When citing a person or assigning an action |
+| `assets/` | Logos, banners, illustrations, photos | Reuse existing visuals before generating new ones |
+
+## Universal brand rules (condensed)
+
+Synthesis of `voice.md` and `style-guide.md`. If you only have a minute, this is what matters.
+
+### Tone
+{{BRAND_VOICE_POSITION}}
+
+### Vocabulary
+- ✅ **Prefer**: {{BRAND_VOCABULARY_PREFERRED}}
+- ❌ **Avoid / ban**: {{BRAND_VOCABULARY_BANNED}}
+
+### Typography and colors
+- **Primary font**: `{{BRAND_FONT_PRIMARY}}`
+- **Primary**: `{{BRAND_COLOR_PRIMARY}}`
+- **Accent**: `{{BRAND_COLOR_ACCENT}}`
+- **Dark**: `{{BRAND_COLOR_DARK}}`
+- **Light**: `{{BRAND_COLOR_LIGHT}}`
+- **Signature gradient**: `{{BRAND_GRADIENT}}`
+- **Border-radius**: `{{BRAND_BORDER_RADIUS}}`
+
+### Visuals
+- ✅ **Prefer**: {{BRAND_ILLUSTRATION_STYLE}}
+- ❌ **Ban**: {{BRAND_BANNED_VISUALS}}
+
+### Signature phrases and taglines
+{{BRAND_TAGLINES}}
+
+### Top key numbers
+{{BRAND_TOP_NUMBERS}}
+
+## Fast access via semantic memory (if enabled)
+
+If Qdrant is enabled (see `.setup-completed` → `features.qdrant.enabled`), this folder is indexed in the configured collection. For any question on voice, vocabulary, numbers, personas, or doctrine, semantic search is faster than a full read:
 
 ```
 mcp__qdrant__qdrant_search(
-  query="<ta question en langage naturel>",
+  query="<your question in natural language>",
   top=5,
   filter_source_key="brand"
 )
 ```
 
-**Règle** : quand une information est disponible via `qdrant_search`, préfère cette route à un `Read` long. Tu économises du contexte et tu remontes précisément le passage pertinent. La lecture complète d'un fichier reste justifiée pour `charte-editoriale.md` (courte, souvent lue en entier) ou pour vérifier l'absence d'un mot interdit.
+**Rule.** When information is available via `qdrant_search`, prefer that route over a long `Read`. Full reads remain justified for `voice.md` (short, often read whole) or to confirm the absence of a banned word.
 
-Si Qdrant est désactivé, lire directement les fichiers ci-dessous.
+If Qdrant is disabled, read the files directly — this folder is small enough that file reads are cheap.
 
-## Quand consulter ce dossier
+## Brand consistency filter (5 points)
 
-| Tu dois… | Lis en priorité |
-|---|---|
-| Rédiger un post, email, page, script d'événement | `charte-editoriale.md` + `messaging-framework.md` |
-| Cibler une audience spécifique | `personas.md` |
-| Choisir un chiffre ou une preuve | `messaging-framework.md` (section chiffres clés) |
-| Utiliser une tagline, citation, formule signature | `charte-editoriale.md` (section formules signature) |
-| Créer un visuel, choisir une couleur, une typo | `style-guide.md` |
-| Comprendre le contexte stratégique global | `plateforme-de-marque.md` |
-| Identifier un interlocuteur interne | `parties-prenantes.md` |
-| Utiliser un asset visuel (logo, bannière, illustration) | `assets/` |
+Before any content ships, the producing role must pass this filter — this is what the `brand-check` skill enforces:
 
-## Inventaire des fichiers
+1. **Vocabulary** — no banned word; preferred vocabulary present where relevant
+2. **Tone** — aligned with `{{BRAND_VOICE_POSITION}}`
+3. **Proof** — every major claim backed by a number from `messaging-framework.md` or a cited external reference
+4. **Audience** — target persona identifiable; main message matches their expectation
+5. **Visual / format** — colors, font, border-radius match `style-guide.md`
 
-Ces fichiers sont créés pendant le bootstrap (Phase 1 – Identity validation). Si certains sont vides ou absents, c'est que la phase n'est pas terminée ou que l'utilisateur a marqué des gaps à compléter plus tard (`_gaps.md`).
+Fail on any point → back to drafting, no publication.
 
-| Fichier | Contenu | Quand s'en servir |
-|---|---|---|
-| `charte-editoriale.md` | Ton, vocabulaire de marque, mots interdits, règles par canal, bilinguisme, valeurs, formules signature | **À lire avant toute rédaction** |
-| `messaging-framework.md` | Message central, messages par audience, top 10 chiffres clés, CTA types, hiérarchie des preuves | **Avant toute création de contenu qui convertit** |
-| `personas.md` | 2-4 personas avec enjeux, frustrations, attentes, canaux, message principal | **Avant tout contenu ciblé** |
-| `plateforme-de-marque.md` | Document stratégique complet (mission, vision, positionnement, valeurs, architecture) | Pour le contexte profond |
-| `style-guide.md` | Identité visuelle : logos, palette, typographie, composants, illustration style, banned visuals | Avant toute création visuelle |
-| `parties-prenantes.md` | Fondateurs, équipe, rôles fonctionnels | Pour citer un membre, assigner une action |
-| `assets/` | Logos, bannières, illustrations, photos, visuels publiés | Réutiliser un visuel existant |
+## Conflicts and updates
 
-## Règles universelles de marque (rappel condensé)
+- **If another `CLAUDE.md` contradicts this folder**: `01-brand/` wins. Surface the conflict.
+- **If a rule is missing**: do not invent. Escalate to {{COMPANY_MAIN_CONTACT}}.
+- **If a number becomes outdated**: update `messaging-framework.md` and `brand-platform.md` together.
 
-Ces règles sont la synthèse de `charte-editoriale.md`. Si tu n'as qu'une minute, c'est ce qu'il faut retenir.
+## What this folder does NOT do
 
-### Ton
-{{BRAND_VOICE_POSITION}}
-
-### Vocabulaire
-- ✅ **Préférer** : {{BRAND_VOCABULARY_PREFERRED}}
-- ❌ **Éviter / interdire** : {{BRAND_VOCABULARY_BANNED}}
-
-### Typographie et couleurs
-- **Police principale** : {{BRAND_FONT_PRIMARY}}
-- **Primary** : `{{BRAND_COLOR_PRIMARY}}`
-- **Accent** : `{{BRAND_COLOR_ACCENT}}`
-- **Dark** : `{{BRAND_COLOR_DARK}}`
-- **Light** : `{{BRAND_COLOR_LIGHT}}`
-- **Gradient signature** : `{{BRAND_GRADIENT}}`
-- **Border-radius** : {{BRAND_BORDER_RADIUS}}
-
-### Visuels
-- ✅ **Préférer** : {{BRAND_ILLUSTRATION_STYLE}}
-- ❌ **Interdire** : {{BRAND_BANNED_VISUALS}}
-
-### Taglines et formules de référence (réutilisables)
-{{BRAND_TAGLINES}}
-
-### Top chiffres clés
-{{BRAND_TOP_NUMBERS}}
-
-## Workflow de vérification de cohérence de marque
-
-Avant de livrer tout contenu, l'agent qui le produit doit passer ce filtre (5 points) :
-
-1. **Vocabulaire** – Aucun mot interdit ? Vocabulaire préféré utilisé ?
-2. **Ton** – Aligné avec `{{BRAND_VOICE_POSITION}}` ?
-3. **Preuve** – Chaque affirmation majeure adossée à un chiffre ou fait issu de `messaging-framework.md` ?
-4. **Audience** – Persona cible identifié ? Message principal correspond à son attente ?
-5. **Visuel** – Couleurs, police, border-radius conformes à `style-guide.md` ?
-
-Si un point échoue → retour en rédaction, pas de publication. C'est exactement ce que fait le skill `brand-check`.
-
-## Conflits et mises à jour
-
-- **Si un autre CLAUDE.md contredit ce dossier** : `01-brand/` fait foi. Signale le conflit.
-- **Si une règle manque** : ne pas inventer. Remonter à {{COMPANY_MAIN_CONTACT}}.
-- **Si un chiffre devient obsolète** : mettre à jour `messaging-framework.md` ET `plateforme-de-marque.md` en même temps.
-
-## Ce que ce dossier ne fait PAS
-
-- ❌ Produire du contenu (→ rôles 03 à 09)
-- ❌ Gérer le calendrier éditorial (→ `02-strategy/` + {{EDITORIAL_CALENDAR_TOOL}})
-- ❌ Créer les visuels (→ `06-graphic-design/` + skill `image-generation`)
-- ❌ Les skills spécialisés (→ `.agents/skills/`) — mais ceux-ci doivent tous lire `01-brand/` avant d'agir.
+- ❌ Produce content (→ roles 03 through 09)
+- ❌ Manage the editorial calendar (→ `02-strategy/` + {{EDITORIAL_CALENDAR_TOOL}})
+- ❌ Create visuals (→ `06-graphic-design/` + `image-generation` skill)
+- ❌ Host the skills themselves (→ `.claude/skills/`) — but every skill must read `01-brand/` before acting.

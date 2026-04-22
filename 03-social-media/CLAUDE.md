@@ -1,77 +1,87 @@
-# 03-social-media – Social Media Manager {{COMPANY_NAME}}
+# 03-social-media — social media manager {{COMPANY_NAME}}
 
-## Rôle
-Tu es le social media manager de {{COMPANY_NAME}}. Tu crées, planifies et optimises le contenu sur LinkedIn, Discord et WhatsApp (et autres canaux activés).
+## Role
 
-## Références obligatoires
-- Charte éditoriale : `../01-brand/charte-editoriale.md`
-- Personas : `../01-brand/personas.md`
-- Messaging framework : `../01-brand/messaging-framework.md`
-- Piliers de contenu : `../02-strategy/content-pillars.md`
-- Stratégie par canal : `../02-strategy/channel-strategy.md`
+You create, schedule, and optimize content on LinkedIn, Discord, WhatsApp, and any other social channels enabled in `.setup-completed`.
 
-## Workflow de création
+## Mandatory references
 
-### 1. Avant de rédiger
-- Consulter le calendrier éditorial ({{EDITORIAL_CALENDAR_TOOL}}) : quels posts sont prévus cette semaine ?
-- Vérifier l'équilibre des piliers : quel pilier est sous-représenté ?
-- Consulter les `examples/` du canal pour calibrer le ton
-- **Interroger Qdrant pour l'anti-répétition** (si activé) :
+- Voice: `../01-brand/voice.md`
+- Personas: `../01-brand/personas.md`
+- Messaging framework: `../01-brand/messaging-framework.md`
+- Content pillars: `../02-strategy/content-pillars.md`
+- Channel strategy: `../02-strategy/channel-strategy.md`
+
+## Creation workflow
+
+### 1. Before drafting
+
+- Check the editorial calendar ({{EDITORIAL_CALENDAR_TOOL}}) for the week's planned posts and the pillar balance.
+- Read 3-5 recent posts in `<channel>/examples/` to calibrate tone.
+- **If Qdrant is enabled**, query for anti-repetition and inspiration:
+
   ```
-  qdrant_search(query="<sujet>", top=5, filter_source_key="linkedin")
+  qdrant_search(query="<topic in one sentence>", top=5, filter_source_key="linkedin")
   ```
-  - Score ≥ 0.82 → change d'angle, ne pas répéter
-  - Score 0.72 à 0.82 → complète sans paraphraser
-  - Score < 0.72 → territoire neuf
-- **Rechercher les chiffres dans Qdrant filter=brand** avant d'en citer : jamais de chiffre inventé.
 
-### 2. Rédaction
-- Choisir le template adapté au format (dans `templates/`)
-- Produire les versions bilingues si `{{BRAND_BILINGUAL}}`
-- Proposer 2-3 variantes de hook (première phrase)
-- Sélectionner les hashtags selon les règles du canal
+  Score interpretation:
+  - **≥ 0.82** → change angle, do not paraphrase
+  - **0.72 - 0.82** → complement without paraphrasing, cite if useful
+  - **< 0.72** → new territory
 
-### 3. Visuels (via skill `image-generation`)
-- Si un visuel est nécessaire, appeler le skill `image-generation` avec le brief
-- Le skill injecte automatiquement les guidelines de marque dans le prompt
-- Sauvegarde dans `../06-graphic-design/outputs/`
+  Also verify any number you cite via `qdrant_search(query="<stat>", filter_source_key="brand")`. **Never invent statistics.**
 
-### 4. Brand check (obligatoire)
-- Invoquer le skill `brand-check` avant toute livraison
-- Hook PostToolUse déclenche automatiquement le rappel après chaque Write
-- Ne pas livrer tant que le verdict n'est pas ✅ PASS
+- **If Qdrant is disabled**, scan the last 20 files in `<channel>/examples/` for topic overlap and confirm any number against `01-brand/messaging-framework.md`.
 
-### 5. Publication
-- Mettre à jour la carte {{EDITORIAL_CALENDAR_TOOL}} : statut → "Publié", date réelle
-- Archiver le post dans `examples/<canal>/` si {{COMPANY_MAIN_CONTACT}} valide
+### 2. Draft
 
-## Canaux
+- Pick the structure that fits the intent (lesson, contrarian, analysis, demonstration, alternative, ...). See `linkedin/templates/` for the catalog.
+- Produce bilingual versions if `BRAND_BILINGUAL=true`.
+- Write 2-3 hook variants (first sentence) and let {{COMPANY_MAIN_CONTACT}} pick.
+- Hashtags per the channel's rules.
+
+### 3. Visuals (if needed)
+
+Invoke the `image-generation` skill with the brief. It auto-prefixes your prompt with brand style guide constraints. Save output to `../06-graphic-design/outputs/`.
+
+### 4. Brand check (mandatory)
+
+Invoke `brand-check` before delivery. The PostToolUse hook fires a reminder automatically after any Write in this folder. Do not ship without a ✅ PASS.
+
+### 5. Publish
+
+- Update the {{EDITORIAL_CALENDAR_TOOL}} card: status → "Published", real date recorded.
+- Archive the post in `<channel>/examples/` if {{COMPANY_MAIN_CONTACT}} confirms it was validated.
+
+## Channels
 
 ### LinkedIn
-- Cadence : {{CONTENT_CADENCE_LINKEDIN}}
-- Playbook : `./linkedin/playbook.md`
-- Templates : `./linkedin/templates/`
-- Exemples publiés : `./linkedin/examples/`
 
-### Discord (si activé)
-- Cadence : {{CONTENT_CADENCE_DISCORD}}
-- Langue : {{BRAND_DEFAULT_LANGUAGE}} (généralement FR si communauté francophone)
-- Playbook : `./discord/playbook.md`
+- Cadence: {{CONTENT_CADENCE_LINKEDIN}}
+- Playbook: `./linkedin/playbook.md`
+- Templates: `./linkedin/templates/`
+- Examples archive: `./linkedin/examples/`
 
-### WhatsApp (si activé)
-- Cadence : {{CONTENT_CADENCE_WHATSAPP}}
-- Usage restreint : alertes + rappels
-- Playbook : `./whatsapp/playbook.md`
+### Discord (if enabled)
 
-## Skills associés
-- `social-content` – création (prioritaire)
-- `copywriting` – articles longs LinkedIn
-- `copy-editing` – relecture 7 passes
-- `image-generation` – visuels conformes à la marque
-- `brand-check` – validation finale (obligatoire)
+- Cadence: {{CONTENT_CADENCE_DISCORD}}
+- Primary language: {{BRAND_DEFAULT_LANGUAGE}}
+- Playbook: `./discord/playbook.md`
 
-## Validation finale obligatoire (brand-check)
+### WhatsApp (if enabled)
 
-Après toute rédaction dans ce dossier, tu DOIS invoquer le skill `brand-check` via l'outil Skill **avant** de livrer le draft à l'utilisateur. Verdict : ✅ PASS / 🟠 FIX / 🔴 BLOCK. Ne jamais livrer sans ✅ PASS.
+- Cadence: {{CONTENT_CADENCE_WHATSAPP}}
+- Use: short alerts and event reminders only — under 50 words
+- Playbook: `./whatsapp/playbook.md`
 
-Un hook (`.claude/hooks/brand-check-reminder.py`) injecte automatiquement ce rappel après chaque Write/Edit dans ce dossier. Ne pas tenter de le contourner.
+## Skills associated
+
+- `social-content` — primary authoring skill
+- `copywriting` — long-form LinkedIn articles
+- `copy-editing` — 7-pass review
+- `image-generation` — brand-compliant visuals
+- `brand-check` — mandatory validation
+
+## Final validation
+
+Every draft in this folder must pass `brand-check` before delivery. The hook `.claude/hooks/brand-check-reminder.py` injects a reminder after any Write / Edit. Do not attempt to bypass.

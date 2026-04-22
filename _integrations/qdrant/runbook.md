@@ -1,29 +1,29 @@
-# Qdrant Pipeline – Runbook
+# Qdrant Pipeline — runbook
 
-> **Statut de ce document** : source de vérité du workflow d'ingestion. Toute modification du code `sync.py` ou des enrichers doit être reflétée ici dans le même commit. Si tu modifies l'un sans l'autre, tu crées une dérive code ↔ doc : tu casses la stabilité de tout le système.
+> **Status of this document**: source of truth for the ingestion workflow. Any change to `sync.py` or the enrichers must be reflected here in the same commit. Drift between code and doc destabilizes the whole system.
 
-## Objectif
+## Purpose
 
-Maintenir une mémoire sémantique unifiée du corpus marketing (contenu publié, transcriptions, doctrine de marque, données internes, knowledge base) accessible par requête vectorielle. Le système est **incrémental** : chaque run n'ingère que le delta depuis le dernier run. **Idempotent** : relancer `sync.py --all` deux fois de suite ne change rien.
+Maintain a unified semantic memory of the marketing corpus (published content, transcripts, brand doctrine, internal data, knowledge base) accessible via vector query. The system is **incremental** — each run ingests only the delta since the previous run. **Idempotent** — rerunning `sync.py --all` back to back is a no-op.
 
-## Architecture résumée
+## Architecture at a glance
 
-- **1 seule collection Qdrant** : nom configuré dans `config.yaml` (par défaut `knowledge`), 3072 dimensions natives (Gemini `gemini-embedding-001`), distance cosinus.
-- **1 registre local** : `registry.json`, versionné dans git. Fait foi sur ce qui est ingéré.
-- **1 fichier de config** : `config.yaml`, décrit les sources, les enrichers actifs, les règles de chunking, et la map des fonctionnalités (editorial_calendar, email_marketing, ...).
-- **Sources** : dossiers locaux (brand, content archives, transcripts, research) + connecteurs API (Notion, Outline, custom).
-- **Enrichers** : hash, summary, entities, claims, meeting (transcripts only). Appliqués en cascade à l'ingestion.
-- **Embedder** : Gemini `gemini-embedding-001` (clé `GOOGLE_AI_API_KEY` dans `.env`).
+- **One Qdrant collection**: name configured in `config.yaml` (default `knowledge`), 3072 native dimensions (Gemini `gemini-embedding-001`), cosine distance.
+- **One local registry**: `registry.json`, gitignored. Source of truth on what is indexed.
+- **One config file**: `config.yaml` — describes sources, active enrichers, chunking rules, and the functionalities map (editorial_calendar, email_marketing, ...).
+- **Sources**: local folders (brand, content archives, transcripts, research) + API connectors (Notion, Outline, custom).
+- **Enrichers**: hash, summary, entities, claims, meeting (transcripts only). Applied in cascade at ingestion.
+- **Embedder**: Gemini `gemini-embedding-001` (key `GOOGLE_AI_API_KEY` in `.env`).
 
-## Prérequis
+## Prerequisites
 
-### Variables d'environnement (`.env`)
+### Environment variables (`.env`)
 ```
 QDRANT_URL=https://xxxxxxxx.region.cloud.qdrant.io
-QDRANT_API_KEY="xxx"                     # Cluster API key (pas management key)
-QDRANT_COLLECTION=knowledge              # or whatever you chose during bootstrap
+QDRANT_API_KEY="xxx"                     # Cluster API key (not a management key)
+QDRANT_COLLECTION=knowledge              # or whatever you chose during setup
 GOOGLE_AI_API_KEY=AIzaSy...
-# Plus les clés optionnelles selon les outils choisis : NOTION_API_KEY, OUTLINE_API_KEY, etc.
+# Plus optional keys based on selected tools: NOTION_API_KEY, OUTLINE_API_KEY, etc.
 ```
 
 ### Dépendances Python

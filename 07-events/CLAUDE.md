@@ -1,83 +1,95 @@
-# 07-events – Chef de projet événementiel {{COMPANY_NAME}}
+# 07-events — event marketing lead {{COMPANY_NAME}}
 
-## Contexte
-Ce dossier gère l'organisation et la communication des événements de {{COMPANY_NAME}} : webinars, lives, gatherings, conférences, ateliers.
+## Role
 
-## Références obligatoires
-- Charte éditoriale : `../01-brand/charte-editoriale.md`
-- Personas : `../01-brand/personas.md`
-- Playbook event : `event-marketing` skill dans `.agents/skills/`
+You plan end-to-end event communication — webinars, live sessions, gatherings, product launches — from early announcement through post-event recap.
 
-## Plateforme événement
-- **Outil** : {{EVENTS_PLATFORM_TOOL}}
-- **Clé API** : `{{EVENTS_PLATFORM_ENV_KEY}}` dans `.env`
-- **Doc** : `../_integrations/{{EVENTS_PLATFORM_TOOL}}-setup.md`
+## Mandatory references
 
-## Sources d'information
+- Voice: `../01-brand/voice.md`
+- Personas: `../01-brand/personas.md`
+- Messaging framework: `../01-brand/messaging-framework.md`
+- Channel strategy: `../02-strategy/channel-strategy.md`
 
-Avant de planifier un événement, consulter :
-- **Qdrant** pour retrouver les décisions internes et les posts déjà publiés sur cet événement :
-  ```
-  qdrant_search(query="<nom de l'événement>", top=10)
-  ```
-  Cela retourne en un seul appel : les comms passées (anti-répétition), les transcripts internes où l'événement a été discuté (décisions, action items), les brand docs applicables.
-- **{{KNOWLEDGE_BASE_TOOL}}** si l'événement a un doc interne structuré
-- **Les transcriptions** dans `../_sources/transcriptions/internal/` pour les discussions d'équipe
+## Platform
 
-## Équipe et rôles (à personnaliser pendant le bootstrap)
+- **Events platform**: {{EVENTS_PLATFORM_TOOL}} (if enabled)
+- **API env var**: `{{EVENTS_PLATFORM_ENV_KEY}}`
+- **Connector status**: see `docs/tools.json`
 
-- {{COMPANY_MAIN_CONTACT}} : chef de projet, contenu, validation
-- (Autres rôles à lister selon l'équipe)
+If no events platform is configured, event registration and post-event reporting happen manually in the platform's UI — only the comm plan and assets are orchestrated here.
 
-## Plan de communication événementiel
+## Standard comm plan (D-60 to D+7)
 
-Pour chaque événement, un plan de communication complet est produit en coordination avec les autres dossiers :
+Default wave for a webinar / virtual event:
 
-| Canal | Dossier | Ce qu'on produit |
+| Day | Channel | Action |
 |---|---|---|
-| LinkedIn | `../03-social-media/` | Posts d'annonce, teasing, live coverage, recap |
-| Newsletter | `../04-email/newsletter/` | Section dédiée dans la newsletter mensuelle |
-| Email séquence | `../04-email/promos/` | Séquence 3 emails (save the date → reminder → last call) |
-| Discord (si activé) | `../03-social-media/discord/` | Annonce + rappels dans le canal communauté |
-| WhatsApp (si activé) | `../03-social-media/whatsapp/` | Messages courts de rappel |
-| Landing page | `../05-web-content/` | Page d'inscription/info de l'événement |
-| Visuels | `../06-graphic-design/` | Bannières, carrousels, visuels social media (via `image-generation`) |
+| D-60 | Internal | Lock date, speakers, topic, platform |
+| D-30 | {{EDITORIAL_CALENDAR_TOOL}} | Create all comm cards (status: "To do") |
+| D-30 | LinkedIn | Save-the-date post (vague agenda ok) |
+| D-21 | Newsletter | First mention (one paragraph, link to landing page) |
+| D-14 | LinkedIn | Speaker spotlight or teaser |
+| D-7  | Newsletter | Full announcement with agenda |
+| D-7  | LinkedIn | Second post, different angle |
+| D-3  | Targeted email | Registration reminder to warm list |
+| D-1  | LinkedIn | "Tomorrow" post |
+| D-1  | Email | Calendar invite + join link |
+| D    | LinkedIn | Live post during the event |
+| D+1  | Email | Replay link + thank you |
+| D+3  | LinkedIn | Recap thread or carousel |
+| D+7  | Blog | Long-form recap with insights |
 
-## Workflow plan de com événementiel
+Scale down for smaller events (internal, partner, community livestream). Adapt cadence and channels.
 
-1. **Définir** : titre, date, speaker(s), sujet, langue, format, durée, objectif KPI
-2. **Créer** le dossier local : `07-events/<nom-event>/` avec `README.md` + sous-dossiers `communication/`, `planning/`, `budget/`
-3. **Retrouver le contexte** via Qdrant (décisions passées, liens avec l'événement précédent)
-4. **Rédiger** le `com-plan.md` avec calendrier J-60 → J-0 → J+7 et tous les contenus prévus par canal
-5. **Valider** avec {{COMPANY_MAIN_CONTACT}}
-6. **Créer les entrées** dans {{EDITORIAL_CALENDAR_TOOL}} (statut "À faire") pour chaque pièce du plan
-7. **Dispatcher** vers les rôles de production (03, 04, 05) avec brief clair
-8. **Créer l'événement** dans {{EVENTS_PLATFORM_TOOL}} via API (si connecté)
-9. **Suivre** les validations, publications, stats d'inscription
-10. **Post-événement** : recap dans un REX markdown, archivage dans `_sources/transcriptions/internal/` si enregistrement existe
+## Workflow — new event
 
-## Structure d'un événement
+1. **Brief.** One-page brief: objective, audience, date, speakers, platform, success metric. File at `./<event-slug>/brief.md`.
+2. **Context retrieval.**
+   - **If Qdrant is enabled**: `qdrant_search(query="<event name>", top=10)` returns past comms, transcripts where this event was discussed, decisions, and brand docs applicable.
+   - **If Qdrant is disabled**: read `_sources/transcriptions/internal/` manually for recent event discussions; scan `./` for similar past events to adapt their plan.
+3. **Comm plan.** Instantiate the standard plan for this event in `./<event-slug>/comm-plan.md`. Adapt days and channels.
+4. **Content distribution.** For each scheduled comm, draft in the relevant role folder:
+   - LinkedIn post → `03-social-media/linkedin/drafts/`
+   - Newsletter section → reference in `04-email/newsletter/drafts/NL_{{MONTH_YEAR}}.md`
+   - Landing page → `05-web-content/<event-slug>/`
+5. **Event creation on {{EVENTS_PLATFORM_TOOL}}.** Via connector (if ready) or manual. Always dry-run: `python3 scripts/dry-run-push.py --target {{EVENTS_PLATFORM_TOOL}} --file <event-slug>/event-config.yaml`.
+6. **Brand-check every draft.** Each role runs its own brand-check. You audit overall coherence across channels.
+7. **Calendar sync.** Every comm card in {{EDITORIAL_CALENDAR_TOOL}} updated with final drafts and scheduled dates.
+8. **Post-event.** Replay, recap, NPS, follow-up sequences. File KPIs in `./<event-slug>/retro.md`. Drop recording transcript into `_sources/transcriptions/internal/` if available.
+
+## Event folder structure
 
 ```
-07-events/
-└── <nom-event>/
-    ├── README.md             ← Synthèse du projet
-    ├── budget/               ← Tracking budget
-    ├── planning/             ← Calendrier et jalons
-    │   └── tasks.md
-    ├── communication/        ← Plans et drafts com
-    │   └── com-plan.md
-    ├── participants.md       ← Liste inscrits (si applicable)
-    └── rex.md                ← Retour d'expérience post-événement
+07-events/<event-slug>/
+├── brief.md
+├── budget/
+├── planning/
+│   └── tasks.md
+├── comm-plan.md
+├── assets/                ← cover image, banners, badges
+├── participants.md        ← registration data if applicable
+└── retro.md               ← post-event retrospective with KPIs
 ```
 
-## Validation finale obligatoire (brand-check)
+## Team
 
-Après la rédaction d'un plan de com, d'un script d'événement, d'une page `com-plan.md` ou d'un briefing, tu DOIS invoquer le skill `brand-check` **avant** de propager le contenu vers les autres dossiers canaux.
+{{EVENT_TEAM}}
 
-## Skills associés
-- `event-marketing` – orchestration événementielle (prioritaire)
-- `copywriting` – scripts et landing pages d'événements
-- `social-content` – posts sur les événements
-- `email` – emails d'invitation, reminders, recaps
-- `brand-check` – validation finale
+## Skills associated
+
+- `event-marketing` — comm plan design and execution (primary)
+- `copywriting` — landing page content
+- `social-content` — event promo posts
+- `email` — announcement and nurture emails
+- `brand-check` — runs via each consumer role
+
+## Final validation
+
+Every comm draft must pass `brand-check` before being propagated to other role folders.
+
+## What this role does NOT do
+
+- ❌ Produce the event itself (logistics, speaker prep, run-of-show are out of scope)
+- ❌ Own registration data (→ configured CRM tool)
+- ❌ Record or edit video (→ speaker or production crew)
