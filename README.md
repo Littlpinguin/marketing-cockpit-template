@@ -156,17 +156,21 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full version history.
 
 ---
 
-## Contributing
+## Extending your copy
 
-PRs welcome. Top-of-mind work:
+This is a template to clone and adapt, not an open-source project soliciting PRs. Once you've run the wizard, your copy is yours — diverge freely.
 
-- Connector implementations for the current stubs (Airtable, Resend, Brevo, Livestorm, HubSpot, ...)
-- Linux/WSL cron equivalents (the current cron is macOS launchd)
-- Enrichers (sentiment, pillar classifier, tonality match)
-- Additional skills (PR newsletter, case-study builder, report ghostwriter)
+Common extensions you'll likely build in your own copy:
+
+- **New connectors** for tools the template doesn't ship ready (Airtable, Resend, Brevo, Livestorm, HubSpot, your in-house CMS). Start from `docs/tools.json` and any existing connector in `_integrations/connectors/` as a pattern.
+- **Linux/WSL cron** equivalents if you're not on macOS (the shipped cron uses launchd; systemd or crontab maps cleanly).
+- **Domain-specific skills** — a PR newsletter generator, a case-study builder, a recurring report ghostwriter, a podcast show-notes skill. Place them in `.claude/skills/<name>/SKILL.md`.
+- **New enrichers** — pillar classifier, sentiment, tonality match — wired in `_integrations/qdrant/config.yaml`.
+
+If you build something reusable and want to share it back to this template upstream, open an issue or a discussion on the source repo — no pressure, no expectation.
 
 ---
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+MIT. See [`LICENSE`](LICENSE). Clone, fork, adapt, ship.
