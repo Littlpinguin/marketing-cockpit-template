@@ -36,9 +36,8 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 | `03-social-media/` | Social media manager | LinkedIn, Discord, WhatsApp, other activated channels |
 | `04-email/` | Email marketing manager | Newsletters, promos, sales outreach, lead nurturing |
 | `05-web-content/` | Web content lead | Landing pages, static HTML artifacts |
-| `06-graphic-design/` | Art director | Visuals, carousels, infographics, AI image generation |
+| `06-graphic-design/` | Art director | Visuals, carousels, infographics, AI imagery, **HTML presentations**, mail signatures |
 | `07-events/` | Event marketing lead | Webinars, live sessions, gatherings, announcement plans |
-| `08-mail-signatures/` | — (utility) | HTML email signatures per team member |
 | `09-blog-seo/` | Blog & SEO manager | Long-form articles, keyword research, on-page optimization |
 | `_sources/` | — (raw material) | Meeting transcripts, reports, market research — indexed in Qdrant if enabled |
 | `_integrations/` | — (infrastructure) | Qdrant pipeline, MCP server, cron, connector code |
@@ -62,7 +61,7 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 4. **No claim without a source.** Every factual statement must map to a number in `01-brand/messaging-framework.md` or a cited external reference.
 5. **Never use banned vocabulary** listed in `01-brand/voice.md`.
 6. **Check the editorial calendar** before proposing content, if one is configured.
-7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `09-`. The PostToolUse hook fires a reminder; do not bypass it.
+7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `09-`, and for any HTML deck produced under `06-graphic-design/presentations/`. The PostToolUse hook fires a reminder; do not bypass it.
 
 ---
 
@@ -107,6 +106,7 @@ See `docs/setup-completed.schema.json` for the full schema.
 | `seo` | Blog, keyword research, on-page | Publishes per configured CMS |
 | `event-marketing` | Event comm plans | D-60 to D+7 announcement waves |
 | `image-generation` | Brand-compliant visuals via Gemini | Prompt auto-prefixed with brand style |
+| `slides` | Editorial-grade HTML presentations | 1920×1080 frame, Playwright QA, clean PDF export |
 
 **Rule**: always prefer this project's skills over generic skills from external plugins. They are tailored to this repo.
 
@@ -152,6 +152,14 @@ See `docs/setup-completed.schema.json` for the full schema.
 4. Brand-check at each delivery.
 5. Create the event on the configured events platform via connector.
 6. Coordinated cross-channel publication.
+
+### Editorial deck (pitch / kickoff / readout)
+1. Brief in `06-graphic-design/presentations/briefs/<slug>.md` (audience, decision, sources).
+2. `slides` skill drafts a slide map (eyebrow + headline per slide, 18–24 slides) for human approval.
+3. On sign-off, deck written to `06-graphic-design/presentations/decks/<slug>.html` from `templates/base.html` + `templates/components/`.
+4. `python scripts/qa.py decks/<slug>.html` until "All slides clean".
+5. Brand-check fires automatically.
+6. Optional: `./scripts/export-pdf.sh decks/<slug>.html` for a PDF leave-behind, or push to a static host (see `presentations/docs/hosting.md`).
 
 ### Fresh content ingestion into Qdrant (if enabled)
 - Manual: `python3 _integrations/qdrant/sync.py --source <name>`

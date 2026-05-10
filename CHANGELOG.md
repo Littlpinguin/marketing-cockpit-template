@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] — Editorial HTML decks + role consolidation
+
+### Added
+- **`slides` skill** at `.claude/skills/slides/SKILL.md` — generates editorial-grade standalone HTML presentations (Monocle / Bloomberg viz / MIT Tech Review print quality bar). 1920×1080 fixed frame scaled responsively, triple navigation (drag-bar + overview panel `O` + quick-jump), Playwright QA mandatory before delivery, clean PDF export via canvas-rasterised gradient text.
+- **`06-graphic-design/presentations/`** — full deck-authoring sub-area with `templates/base.html` (deck skeleton), `templates/components.md` (paste-ready slide layouts catalogue), `tokens.css` (slide-specific CSS variables derived from `01-brand/style-guide.md`), `scripts/qa.py`, `scripts/serve.sh`, `scripts/export-pdf.sh`, `scripts/export_pdf.py`, plus `docs/design-system.md` / `docs/hosting.md` / `docs/pdf-export.md`.
+- **Brand-check gate extended** to HTML decks. The PostToolUse hook now fires on writes under `06-graphic-design/presentations/decks/` in addition to the existing production folders.
+- **"Editorial deck" workflow** added to the root orchestrator's "Primary workflows" section.
+
+### Changed
+- **Role consolidation under `06-graphic-design/`.** The role now covers three sub-areas: visuals (existing), HTML presentations (new), mail signatures (moved from `08-mail-signatures/`). Single `CLAUDE.md` covers all three; sub-area-specific docs live in `06-graphic-design/presentations/docs/` and `06-graphic-design/mail-signatures/README.md`. Cross-area rules (banned visuals, palette discipline, AI disclosure) apply uniformly.
+- **`06-graphic-design/CLAUDE.md`** rewritten to reflect the three-sub-area scope, with quick references to the deck workflow (`./scripts/serve.sh`, `./scripts/export-pdf.sh`, `python scripts/qa.py`).
+- **Root `CLAUDE.md`** updated: role table goes from 9 to 8 entries (08 folded into 06); skill table gains the `slides` row; brand-check rule mentions HTML decks.
+
+### Removed
+- **`08-mail-signatures/`** as a top-level role folder. Content moved verbatim into `06-graphic-design/mail-signatures/README.md` (relative paths updated to reflect the new depth). Numbering keeps a gap (no renumbering of `09-blog-seo/`).
+- `_templates/role-claudemd/08-mail-signatures.md` — superseded by the consolidated `06-graphic-design.md` template.
+
 ## [0.2.0] — Wizard-driven setup
 
 ### Added

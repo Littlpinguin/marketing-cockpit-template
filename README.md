@@ -79,7 +79,7 @@ The wizard takes 30-60 minutes depending on how much public material you have. I
 | `/validate-setup` | Placeholder lint + sample generation + voice check. Writes `.setup-completed` on approval. |
 | `/health-check` | Ongoing. Verify env vars, MCP servers, hook wiring, cron. Run monthly. |
 
-### The roles (9 folders, one `CLAUDE.md` each)
+### The roles (8 folders, one `CLAUDE.md` each)
 
 Each numbered folder represents one marketing function. Claude Code loads the matching `CLAUDE.md` when you work in that folder.
 
@@ -89,15 +89,14 @@ Each numbered folder represents one marketing function. Claude Code loads the ma
 03-social-media/         ← LinkedIn, Discord, WhatsApp
 04-email/                ← newsletters, promos, sales outreach, nurturing
 05-web-content/          ← landing pages, standalone HTML
-06-graphic-design/       ← visuals, AI image generation
+06-graphic-design/       ← visuals, AI imagery, HTML decks (presentations/), mail signatures
 07-events/               ← webinars, launches, comm plans
-08-mail-signatures/      ← HTML signatures per team member
 09-blog-seo/             ← long-form articles, keyword research
 ```
 
 ### The skills (`.claude/skills/`)
 
-`brand-check`, `social-content`, `email`, `copywriting`, `copy-editing`, `content-strategy`, `seo`, `event-marketing`, `image-generation`. Each skill has an English `SKILL.md` with preflight, workflow, and Qdrant-conditional branches. `brand-check` fires automatically via a PostToolUse hook after any write in production folders.
+`brand-check`, `social-content`, `email`, `copywriting`, `copy-editing`, `content-strategy`, `seo`, `event-marketing`, `image-generation`, `slides`. Each skill has an English `SKILL.md` with preflight, workflow, and Qdrant-conditional branches. `brand-check` fires automatically via a PostToolUse hook after any write in production folders, including HTML decks.
 
 ### Semantic memory (optional — volume-dependent)
 
@@ -148,10 +147,10 @@ Three principles drive the design (full detail in [`docs/architecture.md`](docs/
 
 ## Status
 
-**Version 0.2.0 — alpha.**
+**Version 0.3.0 — alpha.**
 
 - Wizard-driven setup replaces the v0.1 monolithic interview.
-- 9 role folders, 9 production skills, Qdrant pipeline, Gemini image generation, brand-check hook.
+- 8 role folders, 10 production skills, Qdrant pipeline, Gemini image generation, brand-check hook, editorial-grade HTML deck generation under `06-graphic-design/presentations/` (1920×1080, Playwright QA, clean PDF export).
 - Ingestion connectors ready: **Notion** (editorial calendar + KB), **Outline** (KB), **Qdrant + Gemini** (full semantic memory pipeline). Push connectors: all stubs today — `scripts/dry-run-push.py` builds correct payloads for Notion, MailerLite, Mailchimp, and Outline as starting points for your own implementation. See the tool-status table above.
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the full version history.

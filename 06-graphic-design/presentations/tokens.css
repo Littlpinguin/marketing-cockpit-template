@@ -1,0 +1,61 @@
+/* ============================================================
+   SLIDE TOKENS — derived from 01-brand/style-guide.md
+   ------------------------------------------------------------
+   These CSS custom properties are inlined into every generated
+   deck (paste them into the :root { ... } block of base.html
+   or your deck file). Edit them here to retune the entire
+   visual system in one place.
+
+   Wizard-filled values: the placeholders below are populated
+   by /brand-discover and /tools-setup based on what was
+   extracted from the brand website. If you arrive on a fresh
+   template clone and still see {{...}} markers, run
+   /start-copilot before generating any deck.
+   ============================================================ */
+
+:root {
+  /* ---------- Colour ---------- */
+  /* Primary brand colour — accents, highlights, hero numbers */
+  --brand-primary: {{BRAND_COLOR_PRIMARY}};
+  --brand-primary-deep: {{BRAND_COLOR_PRIMARY_DEEP}};
+  --brand-primary-soft: {{BRAND_COLOR_PRIMARY_SOFT}};
+
+  /* Accent / secondary colour — gradient pair, secondary highlights */
+  --brand-secondary: {{BRAND_COLOR_ACCENT}};
+  --brand-secondary-deep: {{BRAND_COLOR_ACCENT_DEEP}};
+  --brand-secondary-soft: {{BRAND_COLOR_ACCENT_SOFT}};
+
+  /* Light neutral — primary slide background ("paper") */
+  --brand-neutral-light: {{BRAND_COLOR_LIGHT}};
+  --brand-neutral-light-soft: {{BRAND_COLOR_LIGHT_SOFT}};
+  --brand-neutral-light-deep: {{BRAND_COLOR_LIGHT_DEEP}};
+
+  /* Dark neutral — alternating slide background, primary text on light */
+  --brand-neutral-dark: {{BRAND_COLOR_DARK}};
+  --brand-neutral-dark-soft: {{BRAND_COLOR_DARK_SOFT}};
+  --brand-neutral-dark-deep: {{BRAND_COLOR_DARK_DEEP}};
+
+  /* Hairline rules — both directions */
+  --rule: rgba(0, 0, 0, 0.10);
+  --rule-light: rgba(255, 255, 255, 0.18);
+
+  /* Brand gradient (primary → secondary) */
+  --brand-gradient: {{BRAND_GRADIENT}};
+  --brand-gradient-vertical: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+
+  /* ---------- Type ---------- */
+  /* Display family — used for headlines, hero numbers, body */
+  --font-display: {{BRAND_FONT_PRIMARY}}, system-ui, sans-serif;
+
+  /* Mono family — used for captions, eyebrows, tag labels */
+  --font-mono: {{BRAND_FONT_MONO}}, ui-monospace, monospace;
+
+  /* ---------- Motion ---------- */
+  --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-med:  0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fast: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---------- Geometry ---------- */
+  --radius-tight: {{BRAND_BORDER_RADIUS_TIGHT}};
+  --radius-pill: 999px;
+}

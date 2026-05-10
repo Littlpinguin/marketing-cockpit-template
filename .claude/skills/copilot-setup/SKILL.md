@@ -41,7 +41,7 @@ Call these in order, silently. If any fail, surface the failure with a remediati
 The template uses `{{UPPERCASE_UNDERSCORE}}` placeholders (Mustache-style). The canonical list is `docs/placeholders.json`.
 
 Before any command completes:
-- Run `python3 scripts/lint-placeholders.py --paths 01-brand 02-strategy 03-social-media 04-email 05-web-content 06-graphic-design 07-events 08-mail-signatures 09-blog-seo .claude/skills`.
+- Run `python3 scripts/lint-placeholders.py --paths 01-brand 02-strategy 03-social-media 04-email 05-web-content 06-graphic-design 07-events 09-blog-seo .claude/skills`.
 - If the exit code is non-zero, the command cannot proceed. Surface the list of remaining placeholders and the files they live in.
 - `/validate-setup` is the only command that hard-blocks on residual placeholders — other commands can warn and continue if the user accepts.
 

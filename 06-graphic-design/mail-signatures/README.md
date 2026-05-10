@@ -1,13 +1,11 @@
-# 08-mail-signatures — HTML email signature generator
+# mail-signatures — HTML email signature generator
 
-## Role
-
-Generate HTML email signatures for team members of {{COMPANY_NAME}}, consistent with the brand style guide. This is a utility folder, not a content-producing role. No brand-check gate — but the output must render correctly across Gmail, Outlook, and Apple Mail.
+This is a sub-area of `06-graphic-design`. It generates HTML email signatures for team members of {{COMPANY_NAME}}, consistent with the brand style guide. Utility scope: no brand-check gate — but the output must render correctly across Gmail, Outlook, and Apple Mail.
 
 ## Mandatory references
 
-- Style guide: `../01-brand/style-guide.md` (colors, fonts, logo)
-- Team list: `../01-brand/stakeholders.md` (names and roles)
+- Style guide: `../../01-brand/style-guide.md` (colors, fonts, logo)
+- Team list: `../../01-brand/stakeholders.md` (names and roles)
 
 ## Email client constraints
 
@@ -41,7 +39,7 @@ Brand tokens injected:
 - `{{BRAND_COLOR_PRIMARY}}` — name and accent border
 - `{{BRAND_COLOR_DARK}}` — body text
 - `{{BRAND_FONT_PRIMARY}}` — with Arial fallback
-- Logo: `../01-brand/assets/logo-email-signature.png` (size per style guide)
+- Logo: `../../01-brand/assets/logo-email-signature.png` (size per style guide)
 
 ## Workflow
 
@@ -64,5 +62,5 @@ Each member copies the HTML from `./generated/<slug>.html` into their email clie
 
 - ❌ Produce editorial content
 - ❌ Manage email aliases or accounts (→ IT admin)
-- ❌ Design logos or create brand assets (→ `06-graphic-design/`)
+- ❌ Design logos or create brand assets (→ parent folder `06-graphic-design/`)
 - ❌ Push signatures to clients automatically

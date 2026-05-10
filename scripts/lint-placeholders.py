@@ -35,7 +35,6 @@ DEFAULT_PATHS = [
     "05-web-content",
     "06-graphic-design",
     "07-events",
-    "08-mail-signatures",
     "09-blog-seo",
     ".claude/skills",
     "CLAUDE.md",
@@ -99,7 +98,7 @@ def scan_file(path: Path, allow: set[str]) -> list[tuple[int, str]]:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Lint unresolved {{PLACEHOLDER}} tokens.")
     parser.add_argument("--paths", nargs="*", default=DEFAULT_PATHS, help="Paths to scan (files or directories).")
-    parser.add_argument("--allow", nargs="*", default=["TODO", "MONTH_YEAR", "NAME", "ROLE", "EMAIL", "PHONE", "LINKEDIN_URL"],
+    parser.add_argument("--allow", nargs="*", default=["TODO", "MONTH_YEAR", "NAME", "ROLE", "EMAIL", "PHONE", "LINKEDIN_URL", "DECK_TITLE"],
                         help="Placeholder names to ignore.")
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of human text.")
     args = parser.parse_args(argv)

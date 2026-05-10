@@ -46,9 +46,10 @@ Three principles drive every design decision.
 │  03-social-media/ → social-content skill                         │
 │  04-email/        → email skill (uses {{EMAIL_MARKETING_TOOL}})  │
 │  05-web-content/  → copywriting skill                            │
-│  06-graphic-design/ → image-generation skill                     │
+│  06-graphic-design/ → image-generation + slides skills           │
+│    └── presentations/ → 1920×1080 HTML decks, Playwright QA      │
+│    └── mail-signatures/ → HTML signature template generator      │
 │  07-events/       → event-marketing skill                        │
-│  08-mail-signatures/ → template generator                        │
 │  09-blog-seo/     → seo skill (publishes to {{BLOG_CMS}})        │
 └──────────────────────────────────────────────────────────────────┘
 
@@ -63,6 +64,7 @@ Three principles drive every design decision.
 │  seo                                                             │
 │  event-marketing                                                 │
 │  image-generation  ← brand-prefixed Gemini prompts               │
+│  slides            ← editorial HTML decks, Playwright QA gate    │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐

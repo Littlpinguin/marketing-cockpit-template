@@ -21,12 +21,22 @@
     "visual_identity": [
       { "name": "BRAND_FONT_PRIMARY",       "required": true,  "example": "Inter" },
       { "name": "BRAND_FONT_SECONDARY",     "required": false, "example": "JetBrains Mono" },
+      { "name": "BRAND_FONT_MONO",          "required": false, "example": "'JetBrains Mono'", "used_in": "06-graphic-design/presentations/tokens.css" },
       { "name": "BRAND_COLOR_PRIMARY",      "required": true,  "example": "#1E40AF" },
+      { "name": "BRAND_COLOR_PRIMARY_DEEP", "required": false, "example": "#1A95B0", "used_in": "06-graphic-design/presentations/tokens.css" },
+      { "name": "BRAND_COLOR_PRIMARY_SOFT", "required": false, "example": "rgba(30, 64, 175, 0.12)", "used_in": "06-graphic-design/presentations/tokens.css" },
       { "name": "BRAND_COLOR_ACCENT",       "required": true,  "example": "#F59E0B" },
+      { "name": "BRAND_COLOR_ACCENT_DEEP",  "required": false, "example": "#D49C2C", "used_in": "06-graphic-design/presentations/tokens.css" },
+      { "name": "BRAND_COLOR_ACCENT_SOFT",  "required": false, "example": "rgba(245, 158, 11, 0.12)", "used_in": "06-graphic-design/presentations/tokens.css" },
       { "name": "BRAND_COLOR_DARK",         "required": true,  "example": "#0F172A" },
+      { "name": "BRAND_COLOR_DARK_SOFT",    "required": false, "example": "#3A4049", "used_in": "06-graphic-design/presentations/tokens.css" },
+      { "name": "BRAND_COLOR_DARK_DEEP",    "required": false, "example": "#1B1F25", "used_in": "06-graphic-design/presentations/tokens.css" },
       { "name": "BRAND_COLOR_LIGHT",        "required": true,  "example": "#F8FAFC" },
+      { "name": "BRAND_COLOR_LIGHT_SOFT",   "required": false, "example": "#FDF8EE", "used_in": "06-graphic-design/presentations/tokens.css" },
+      { "name": "BRAND_COLOR_LIGHT_DEEP",   "required": false, "example": "#F2E8CC", "used_in": "06-graphic-design/presentations/tokens.css" },
       { "name": "BRAND_GRADIENT",           "required": false, "example": "linear-gradient(90deg, #1E40AF 0%, #F59E0B 100%)" },
       { "name": "BRAND_BORDER_RADIUS",      "required": false, "example": "12-24px" },
+      { "name": "BRAND_BORDER_RADIUS_TIGHT","required": false, "example": "4px", "used_in": "06-graphic-design/presentations/tokens.css" },
       { "name": "BRAND_ILLUSTRATION_STYLE", "required": true,  "example": "Minimalist line art, isometric, no stock photos" },
       { "name": "BRAND_BANNED_VISUALS",     "required": true,  "example": "stock office photos, handshakes, generic laptops, post-its" }
     ],
@@ -87,6 +97,7 @@
       { "name": "EVENT_TEAM",                 "used_in": "event-marketing" },
       { "name": "IMAGE_GEN_SPECIFIC_RULES",   "used_in": "image-generation" },
       { "name": "IMAGE_GEN_EXAMPLES",         "used_in": "image-generation" },
+      { "name": "SLIDES_SPECIFIC_RULES",      "used_in": "slides" },
       { "name": "BLOG_CMS",                   "used_in": "seo, 09-blog-seo", "example": "WordPress / Ghost / Hashnode" }
     ],
     "tools": [
@@ -110,12 +121,15 @@
       { "name": "QDRANT_COLLECTION" },
       { "name": "IMAGE_GENERATION_ENABLED" }
     ],
+    "decks": [
+      { "name": "DECK_TITLE",   "marker": true, "used_in": "06-graphic-design/presentations/templates/base.html", "description": "Title for an individual deck — replaced when copying base.html into decks/" }
+    ],
     "signatures": [
-      { "name": "NAME",         "used_in": "08-mail-signatures/template.html" },
-      { "name": "ROLE",         "used_in": "08-mail-signatures/template.html" },
-      { "name": "EMAIL",        "used_in": "08-mail-signatures/template.html" },
-      { "name": "PHONE",        "used_in": "08-mail-signatures/template.html", "required": false },
-      { "name": "LINKEDIN_URL", "used_in": "08-mail-signatures/template.html", "required": false }
+      { "name": "NAME",         "used_in": "06-graphic-design/mail-signatures/template.html" },
+      { "name": "ROLE",         "used_in": "06-graphic-design/mail-signatures/template.html" },
+      { "name": "EMAIL",        "used_in": "06-graphic-design/mail-signatures/template.html" },
+      { "name": "PHONE",        "used_in": "06-graphic-design/mail-signatures/template.html", "required": false },
+      { "name": "LINKEDIN_URL", "used_in": "06-graphic-design/mail-signatures/template.html", "required": false }
     ],
     "project_meta": [
       { "name": "PROJECT_SLUG", "required": true, "example": "acme-marketing-copilot" },

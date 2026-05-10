@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{DECK_TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Google Fonts: replace families with whatever brand/tokens.css declares -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   BRAND TOKENS — paste contents of brand/tokens.css here
+   ============================================================ */
+:root {
+  --brand-primary: #23B5D3;
+  --brand-primary-deep: #1A95B0;
+  --brand-primary-soft: rgba(35, 181, 211, 0.12);
+  --brand-secondary: #F0BA4C;
+  --brand-secondary-deep: #D49C2C;
+  --brand-secondary-soft: rgba(240, 186, 76, 0.12);
+  --brand-neutral-light: #FAF2DF;
+  --brand-neutral-light-soft: #FDF8EE;
+  --brand-neutral-light-deep: #F2E8CC;
+  --brand-neutral-dark: #292E35;
+  --brand-neutral-dark-soft: #3A4049;
+  --brand-neutral-dark-deep: #1B1F25;
+  --rule: rgba(41, 46, 53, 0.10);
+  --rule-light: rgba(250, 242, 223, 0.18);
+  --brand-gradient: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  --brand-gradient-vertical: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-med:  0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fast: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-tight: 4px;
+  --radius-pill: 999px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+*:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 4px; border-radius: var(--radius-tight); }
+
+html, body {
+  font-family: var(--font-display);
+  background: var(--brand-neutral-dark);
+  color: var(--brand-neutral-dark);
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'tnum' on;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   STAGE — fixed-size frame (1920x1080) scaled to viewport
+   ============================================================ */
+.stage {
+  position: fixed; inset: 0;
+  overflow: hidden;
+  background: var(--brand-neutral-dark);
+}
+.stage-frame {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 1920px; height: 1080px;
+  background: var(--brand-neutral-light);
+  transform-origin: center center;
+  /* JS sets: transform: translate(-50%, calc(-50% + yShift)) scale(s) */
+  will-change: transform;
+}
+
+.slide {
+  position: absolute; inset: 0;
+  padding: 80px 120px 110px; /* never reduce padding-bottom below 110 */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--ease-med), visibility var(--ease-med);
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+}
+.slide.dark {
+  background: var(--brand-neutral-dark);
+  color: var(--brand-neutral-light);
+}
+
+/* ============================================================
+   CHROME — editorial frame on every slide
+   ============================================================ */
+.chrome {
+  position: absolute;
+  inset: 36px 60px;
+  pointer-events: none;
+  z-index: 5;
+}
+.chrome-row {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chrome-row.top { top: 0; }
+.chrome-row.bottom { bottom: 0; }
+
+.meta-label, .signature, .nav-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--brand-neutral-dark);
+  opacity: 0.62;
+}
+.slide.dark .meta-label,
+.slide.dark .signature,
+.slide.dark .nav-num { color: var(--brand-neutral-light); opacity: 0.7; }
+
+.nav-num strong { font-weight: 700; opacity: 1; }
+
+.brand-mark {
+  width: 56px; height: 26px;
+  color: var(--brand-neutral-dark);
+}
+.slide.dark .brand-mark { color: var(--brand-neutral-light); }
+
+/* ============================================================
+   REVEAL — animation on slide entry
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.slide.active .reveal {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--ease-slow), transform var(--ease-slow);
+}
+.slide.active .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .reveal:nth-child(2) { transition-delay: 0.18s; }
+.slide.active .reveal:nth-child(3) { transition-delay: 0.31s; }
+.slide.active .reveal:nth-child(4) { transition-delay: 0.44s; }
+.slide.active .reveal:nth-child(5) { transition-delay: 0.57s; }
+.slide.active .reveal:nth-child(6) { transition-delay: 0.70s; }
+.slide.active .reveal:nth-child(7) { transition-delay: 0.83s; }
+
+[data-stagger] > * {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.slide.active [data-stagger] > * {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--ease-slow), transform var(--ease-slow);
+}
+.slide.active [data-stagger] > *:nth-child(1) { transition-delay: 0.10s; }
+.slide.active [data-stagger] > *:nth-child(2) { transition-delay: 0.22s; }
+.slide.active [data-stagger] > *:nth-child(3) { transition-delay: 0.34s; }
+.slide.active [data-stagger] > *:nth-child(4) { transition-delay: 0.46s; }
+.slide.active [data-stagger] > *:nth-child(5) { transition-delay: 0.58s; }
+.slide.active [data-stagger] > *:nth-child(6) { transition-delay: 0.70s; }
+.slide.active [data-stagger] > *:nth-child(7) { transition-delay: 0.82s; }
+.slide.active [data-stagger] > *:nth-child(8) { transition-delay: 0.94s; }
+
+/* ============================================================
+   GRADIENT TEXT — anti-clip for transform: scale frames
+   ============================================================ */
+.gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  /* Prevent glyph clipping on huge display sizes */
+  padding: 0.08em 0.06em;
+  margin: -0.08em -0.06em;
+  overflow: visible;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+/* ============================================================
+   TYPOGRAPHY SCALE — tune to your brand
+   ============================================================ */
+h1.display {
+  font-size: 96px;
+  font-weight: 200;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+h1.display strong { font-weight: 700; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: lowercase;
+  color: var(--brand-primary-deep);
+  opacity: 0.85;
+}
+.lede {
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1.4;
+  max-width: 880px;
+  color: var(--brand-neutral-dark-soft);
+}
+.slide.dark .lede { color: var(--brand-neutral-light-soft); opacity: 0.8; }
+
+/* ============================================================
+   NAV RAIL — fixed at bottom of viewport
+   ============================================================ */
+.nav-rail {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 18px;
+  background: rgba(27, 31, 37, 0.88);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--rule-light);
+  border-radius: var(--radius-pill);
+  z-index: 100;
+  font-family: var(--font-mono);
+  color: var(--brand-neutral-light);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--brand-neutral-light);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-tight);
+  transition: background var(--ease-fast);
+}
+.nav-btn:hover { background: rgba(255,255,255,0.08); }
+.nav-counter { min-width: 60px; text-align: center; opacity: 0.8; }
+.nav-progress {
+  width: 240px;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--radius-pill);
+  position: relative;
+  cursor: pointer;
+}
+.nav-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--brand-gradient);
+  border-radius: var(--radius-pill);
+  transition: width var(--ease-fast);
+}
+.nav-progress-handle {
+  position: absolute;
+  top: 50%; transform: translate(-50%, -50%);
+  width: 12px; height: 12px;
+  background: var(--brand-neutral-light);
+  border-radius: 50%;
+  transition: left var(--ease-fast);
+  pointer-events: none;
+}
+
+/* ============================================================
+   OVERVIEW PANEL — toggled by `O` or button
+   ============================================================ */
+.overview {
+  position: fixed; inset: 0;
+  background: rgba(27, 31, 37, 0.95);
+  backdrop-filter: blur(20px);
+  z-index: 200;
+  display: none;
+  padding: 60px 80px;
+  overflow-y: auto;
+}
+.overview.open { display: block; }
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 18px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.overview-thumb {
+  background: var(--brand-neutral-light);
+  border-radius: var(--radius-tight);
+  aspect-ratio: 16/9;
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid transparent;
+  transition: border-color var(--ease-fast), transform var(--ease-fast);
+}
+.overview-thumb:hover { border-color: var(--brand-primary); transform: translateY(-2px); }
+.overview-thumb.current { border-color: var(--brand-secondary); }
+.overview-thumb-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--brand-neutral-dark);
+  opacity: 0.5;
+}
+.overview-thumb-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: lowercase;
+  letter-spacing: 0.08em;
+  color: var(--brand-primary-deep);
+}
+.overview-thumb-heading {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--brand-neutral-dark);
+}
+
+/* ============================================================
+   PRINT — 1 slide = 1 PDF page (1920x1080)
+   ============================================================ */
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  html, body {
+    background: #FFFFFF !important;
+    width: 1920px;
+    height: auto;
+    overflow: visible !important;
+  }
+  body.printing-pdf .nav-rail,
+  body.printing-pdf .overview { display: none !important; }
+  body.printing-pdf .stage {
+    position: static !important;
+    width: 1920px !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+  body.printing-pdf .stage-frame {
+    position: static !important;
+    transform: none !important;
+    width: 1920px !important;
+    height: auto !important;
+    background: transparent !important;
+  }
+  body.printing-pdf .slide {
+    position: relative !important;
+    inset: auto !important;
+    width: 1920px !important;
+    height: 1080px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: hidden !important;
+    page-break-before: always;
+  }
+  body.printing-pdf .slide:first-child { page-break-before: avoid; }
+  /* Reveal animations forced to final state */
+  body.printing-pdf .reveal,
+  body.printing-pdf [data-stagger] > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Component animations: force final state (none of them animate in PDF).
+     Add an entry here for any new animated component you build. */
+  body.printing-pdf .pipeline-anim {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+  body.printing-pdf .roadmap-track::before { transform: scaleX(1) !important; animation: none !important; }
+  body.printing-pdf .roadmap-phase::before { transform: scale(1) !important; animation: none !important; }
+  body.printing-pdf .funnel-bar::before { transform: scaleX(var(--width, 1)) !important; transition: none !important; }
+  body.printing-pdf .dot-grid .d.us { animation: none !important; }
+  /* Filter blur and 1px gradient lines render unreliably in PDF */
+  body.printing-pdf .aurora,
+  body.printing-pdf .dust-grid { display: none !important; }
+  body.printing-pdf * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SVG DEFS — brand logo + gradients
+     Replace the path data below with your brand logo, keeping
+     fill="currentColor" on inner paths (NEVER fill="url(#grad)"
+     because <use>'s shadow DOM does not receive parent CSS).
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="brand-logo" viewBox="0 0 100 50">
+      <!-- TODO: replace with your real brand logo path -->
+      <rect x="2" y="14" width="22" height="22" fill="currentColor"/>
+      <rect x="30" y="14" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3"/>
+      <rect x="58" y="14" width="22" height="22" fill="currentColor" opacity="0.5"/>
+    </symbol>
+    <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="var(--brand-primary)"/>
+      <stop offset="100%" stop-color="var(--brand-secondary)"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ============================================================
+     STAGE
+     ============================================================ -->
+<main class="stage">
+  <div class="stage-frame" id="stage-frame">
+
+    <!-- =====================================================
+         SLIDE 1 — Hero (template)
+         ===================================================== -->
+    <section class="slide active" data-eyebrow="introduction" data-heading="Deck title goes here">
+      <div class="chrome">
+        <div class="chrome-row top">
+          <span class="meta-label">01 · introduction</span>
+          <span class="nav-num"><strong>01</strong> / 03</span>
+        </div>
+        <div class="chrome-row bottom">
+          <span class="signature">internal document · confidential</span>
+          <svg class="brand-mark"><use href="#brand-logo"/></svg>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:32px;">
+        <span class="eyebrow reveal">deck title</span>
+        <h1 class="display reveal">
+          A standalone HTML deck<br>
+          for <span class="gradient-text">the brand</span>.
+        </h1>
+        <p class="lede reveal">
+          Replace this with your hero copy. Keep it under two lines, written in the brand's voice.
+        </p>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 2 — Breathing slide (big number)
+         ===================================================== -->
+    <section class="slide dark" data-eyebrow="breathing" data-heading="Big number">
+      <div class="chrome">
+        <div class="chrome-row top">
+          <span class="meta-label">02 · breathing</span>
+          <span class="nav-num"><strong>02</strong> / 03</span>
+        </div>
+        <div class="chrome-row bottom">
+          <span class="signature">a number worth pausing on</span>
+          <svg class="brand-mark"><use href="#brand-logo"/></svg>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:40px;text-align:center;">
+        <span class="gradient-text reveal" style="font-size:340px;font-weight:200;line-height:1;">
+          78<span style="font-size:0.5em;">%</span>
+        </span>
+        <p class="lede reveal" style="text-align:center;color:var(--brand-neutral-light-soft);">
+          A short sentence that gives this number meaning. One line. No more.
+        </p>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 3 — Decision (template)
+         ===================================================== -->
+    <section class="slide" data-eyebrow="decision" data-heading="Go or no-go?">
+      <div class="chrome">
+        <div class="chrome-row top">
+          <span class="meta-label">03 · decision</span>
+          <span class="nav-num"><strong>03</strong> / 03</span>
+        </div>
+        <div class="chrome-row bottom">
+          <span class="signature">awaiting sign-off</span>
+          <svg class="brand-mark"><use href="#brand-logo"/></svg>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:48px;">
+        <span class="eyebrow reveal">final question</span>
+        <h1 class="display reveal" style="font-size:180px;font-weight:200;">
+          <span class="gradient-text">Go</span> or no-go?
+        </h1>
+        <div class="reveal" style="display:flex;gap:64px;font-family:var(--font-mono);font-size:14px;letter-spacing:0.06em;color:var(--brand-neutral-dark-soft);">
+          <div><strong style="display:block;color:var(--brand-neutral-dark);font-size:18px;font-family:var(--font-display);">budget</strong>your number</div>
+          <div><strong style="display:block;color:var(--brand-neutral-dark);font-size:18px;font-family:var(--font-display);">timeline</strong>your timeline</div>
+          <div><strong style="display:block;color:var(--brand-neutral-dark);font-size:18px;font-family:var(--font-display);">owner</strong>your name</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ============================================================
+     NAV RAIL
+     ============================================================ -->
+<nav class="nav-rail" id="nav-rail">
+  <button class="nav-btn" id="prev-btn" aria-label="Previous">←</button>
+  <span class="nav-counter" id="nav-counter">01 / 03</span>
+  <div class="nav-progress" id="nav-progress" role="slider" aria-label="Slide progress">
+    <div class="nav-progress-fill" id="nav-progress-fill"></div>
+    <div class="nav-progress-handle" id="nav-progress-handle"></div>
+  </div>
+  <button class="nav-btn" id="next-btn" aria-label="Next">→</button>
+  <button class="nav-btn" id="overview-btn" aria-label="Overview">⊞</button>
+  <button class="nav-btn" id="pdf-btn" aria-label="Save as PDF" title="Save as PDF (P)">PDF</button>
+</nav>
+
+<!-- ============================================================
+     OVERVIEW PANEL
+     ============================================================ -->
+<div class="overview" id="overview" role="dialog" aria-label="Slide overview">
+  <div class="overview-grid" id="overview-grid"></div>
+</div>
+
+<script>
+(() => {
+  // -----------------------------------------------------------
+  // Refs & state
+  // -----------------------------------------------------------
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  const frame = document.getElementById('stage-frame');
+  const nav = document.getElementById('nav-rail');
+  const counter = document.getElementById('nav-counter');
+  const progFill = document.getElementById('nav-progress-fill');
+  const progHandle = document.getElementById('nav-progress-handle');
+  const progBar = document.getElementById('nav-progress');
+  const overview = document.getElementById('overview');
+  const overviewGrid = document.getElementById('overview-grid');
+  let current = 0;
+
+  // -----------------------------------------------------------
+  // Responsive fit — transform: scale to viewport
+  // -----------------------------------------------------------
+  function fit() {
+    const navOffset = nav.offsetHeight + 24;
+    const w = window.innerWidth;
+    const h = window.innerHeight - navOffset - 16;
+    const scale = Math.min(w / 1920, h / 1080, 1.5);
+    const yShift = -navOffset / 2;
+    frame.style.transform = `translate(-50%, calc(-50% + ${yShift}px)) scale(${scale})`;
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  // -----------------------------------------------------------
+  // Navigation
+  // -----------------------------------------------------------
+  function go(idx) {
+    idx = Math.max(0, Math.min(total - 1, idx));
+    if (idx === current) return;
+    slides[current].classList.remove('active');
+    slides[idx].classList.add('active');
+    current = idx;
+    updateNav();
+    updateOverview();
+  }
+  function updateNav() {
+    counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    const ratio = total === 1 ? 1 : current / (total - 1);
+    progFill.style.width = (ratio * 100) + '%';
+    progHandle.style.left = (ratio * 100) + '%';
+  }
+  document.getElementById('prev-btn').addEventListener('click', () => go(current - 1));
+  document.getElementById('next-btn').addEventListener('click', () => go(current + 1));
+
+  // Keyboard
+  let numBuffer = '', numTimer = null;
+  document.addEventListener('keydown', (e) => {
+    // Skip when typing in an input
+    if (e.target.matches('input, textarea, [contenteditable]')) return;
+    switch (e.key) {
+      case 'ArrowLeft':
+      case 'PageUp':
+        go(current - 1); e.preventDefault(); break;
+      case 'ArrowRight':
+      case 'PageDown':
+      case ' ':
+        go(current + 1); e.preventDefault(); break;
+      case 'Home': go(0); e.preventDefault(); break;
+      case 'End': go(total - 1); e.preventDefault(); break;
+      case 'o': case 'O':
+        toggleOverview(); e.preventDefault(); break;
+      case 'Escape':
+        if (overview.classList.contains('open')) toggleOverview();
+        break;
+      case 'p': case 'P':
+        if (!e.metaKey && !e.ctrlKey) {
+          printPdf(); e.preventDefault();
+        }
+        break;
+      case 'Enter':
+        if (numBuffer) {
+          const idx = parseInt(numBuffer, 10) - 1;
+          numBuffer = '';
+          if (!isNaN(idx)) go(idx);
+        }
+        break;
+    }
+    if (/^[0-9]$/.test(e.key)) {
+      numBuffer += e.key;
+      clearTimeout(numTimer);
+      numTimer = setTimeout(() => { numBuffer = ''; }, 1500);
+    }
+  });
+
+  // Mouse wheel — debounced
+  let wheelLock = false;
+  document.addEventListener('wheel', (e) => {
+    if (overview.classList.contains('open')) return;
+    if (wheelLock) return;
+    if (Math.abs(e.deltaY) < 30 && Math.abs(e.deltaX) < 30) return;
+    wheelLock = true;
+    setTimeout(() => { wheelLock = false; }, 700);
+    if (e.deltaY > 0 || e.deltaX > 0) go(current + 1);
+    else go(current - 1);
+  }, { passive: true });
+
+  // Touch
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) go(current + 1);
+      else go(current - 1);
+    }
+  }, { passive: true });
+
+  // Drag the progress bar
+  let dragging = false;
+  function idxFromEvent(e) {
+    const rect = progBar.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const ratio = Math.max(0, Math.min(1, x / rect.width));
+    return Math.min(total - 1, Math.round(ratio * (total - 1)));
+  }
+  progBar.addEventListener('mousedown', (e) => { dragging = true; go(idxFromEvent(e)); e.preventDefault(); });
+  window.addEventListener('mousemove', (e) => { if (dragging) go(idxFromEvent(e)); });
+  window.addEventListener('mouseup', () => { dragging = false; });
+  progBar.addEventListener('touchstart', (e) => { dragging = true; go(idxFromEvent(e)); }, { passive: true });
+  progBar.addEventListener('touchmove', (e) => { if (dragging) go(idxFromEvent(e)); }, { passive: true });
+  progBar.addEventListener('touchend', () => { dragging = false; });
+
+  // -----------------------------------------------------------
+  // Overview panel
+  // -----------------------------------------------------------
+  function buildOverview() {
+    overviewGrid.innerHTML = '';
+    slides.forEach((sl, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'overview-thumb';
+      thumb.innerHTML = `
+        <span class="overview-thumb-num">${String(i + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}</span>
+        <div>
+          <span class="overview-thumb-eyebrow">${sl.dataset.eyebrow || ''}</span>
+          <div class="overview-thumb-heading">${sl.dataset.heading || ''}</div>
+        </div>`;
+      thumb.addEventListener('click', () => {
+        go(i);
+        toggleOverview();
+      });
+      overviewGrid.appendChild(thumb);
+    });
+  }
+  function updateOverview() {
+    Array.from(overviewGrid.children).forEach((c, i) => {
+      c.classList.toggle('current', i === current);
+    });
+  }
+  function toggleOverview() {
+    overview.classList.toggle('open');
+    updateOverview();
+  }
+  document.getElementById('overview-btn').addEventListener('click', toggleOverview);
+  buildOverview();
+
+  // -----------------------------------------------------------
+  // PRINT MODE — gradient-text canvas rasterisation
+  // ----------------------------------------------------------
+  // Chromium has a known bug rendering background-clip:text +
+  // linear-gradient inside its PDF pipeline (coloured fringes
+  // around inline-block edges). The fix is to rasterise these
+  // texts to PNG via canvas before window.print(), then restore
+  // them on the afterprint event.
+  // -----------------------------------------------------------
+  // -----------------------------------------------------------
+  // GRADIENT_TEXT_SELECTORS
+  // -----------------------------------------------------------
+  // Every selector that uses `background-clip: text` + `linear-gradient`
+  // MUST be listed here, otherwise the corresponding text will show
+  // coloured fringe artefacts in the PDF (Chromium PDF pipeline bug).
+  //
+  // Append as you add new components. The included examples below
+  // match the components in templates/components.md — uncomment / add
+  // the ones your deck actually uses.
+  // -----------------------------------------------------------
+  const GRADIENT_TEXT_SELECTORS = [
+    '.gradient-text',
+    // '.hero-num',           // hero
+    // '.silence-num',        // silence
+    // '.bigquote-text em',   // bigquote
+    // '.origin-num-pct .num',
+    // '.origin-num-pct .pct',
+    // '.stack-total-num',    // stack-grid
+    // '.budget-num.gradient-text',
+    // '.engage-num',         // engage-stage
+    // '.date-mega .day',     // date-hero
+    // '.decision-q .go',     // decision-stage
+  ];
+
+  function rasterizeAllGradients() {
+    GRADIENT_TEXT_SELECTORS.forEach(sel => {
+      document.querySelectorAll(sel).forEach(rasterizeElement);
+    });
+  }
+
+  function rasterizeElement(el) {
+    if (el.dataset.rasterized === '1') return;
+    const cs = getComputedStyle(el);
+    el.dataset.originalHTML = el.innerHTML;
+
+    // Walk childNodes, collecting text runs and forced line breaks
+    const runs = [];
+    (function walk(node) {
+      node.childNodes.forEach(child => {
+        if (child.nodeType === 3) {
+          if (child.textContent) runs.push({ type: 'text', node: child });
+        } else if (child.nodeType === 1) {
+          if (child.tagName === 'BR') runs.push({ type: 'br' });
+          else walk(child);
+        }
+      });
+    })(el);
+
+    // Group runs into visual lines using Range API
+    const lines = [];
+    let curLine = null;
+    runs.forEach(run => {
+      if (run.type === 'br') {
+        if (curLine) { lines.push(curLine); curLine = null; }
+        lines.push({ text: '', top: 0, height: parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2 });
+        return;
+      }
+      const text = run.node.textContent;
+      const range = document.createRange();
+      range.selectNodeContents(run.node);
+      const rects = Array.from(range.getClientRects());
+      if (!rects.length) return;
+      // approximate one line per rect
+      rects.forEach((r, i) => {
+        const slice = i === 0 && rects.length === 1 ? text : text; // fine-grain split is overkill; whole text per line
+        if (!curLine || Math.abs(curLine.top - r.top) > 4) {
+          if (curLine) lines.push(curLine);
+          curLine = { text: '', top: r.top, height: r.height, left: r.left, right: r.right };
+        }
+        curLine.text += slice;
+        curLine.right = r.right;
+      });
+    });
+    if (curLine) lines.push(curLine);
+    if (!lines.length) return;
+
+    // Resolve gradient stops from the element's background
+    const grad = parseGradient(cs.backgroundImage);
+
+    // Render each line to a canvas → <img>
+    const fontSize = parseFloat(cs.fontSize);
+    const dpr = (window.devicePixelRatio || 1) * 2;
+    const padX = Math.ceil(fontSize * 0.15);
+    const imgs = lines.map(line => {
+      if (!line.text.trim()) return '<br>';
+      const probe = document.createElement('canvas').getContext('2d');
+      probe.font = `${cs.fontStyle} ${cs.fontVariant} ${cs.fontWeight} ${cs.fontSize} / ${cs.lineHeight} ${cs.fontFamily}`;
+      const measured = probe.measureText(line.text).width;
+      const wDom = (line.right || measured) - (line.left || 0);
+      const w = Math.ceil(Math.max(wDom, measured)) + padX * 2;
+      const h = Math.ceil(parseFloat(cs.lineHeight) || fontSize * 1.2);
+      const cvs = document.createElement('canvas');
+      cvs.width = w * dpr;
+      cvs.height = h * dpr;
+      cvs.style.width = w + 'px';
+      cvs.style.height = h + 'px';
+      const ctx = cvs.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.font = probe.font;
+      ctx.textBaseline = 'alphabetic';
+      const lg = ctx.createLinearGradient(0, 0, w, 0);
+      grad.stops.forEach(s => lg.addColorStop(s.pos, s.color));
+      ctx.fillStyle = lg;
+      const baseline = h * 0.78;
+      ctx.fillText(line.text, padX, baseline);
+      return `<img src="${cvs.toDataURL('image/png')}" style="display:inline-block;vertical-align:baseline;width:${w}px;height:${h}px;">`;
+    });
+    el.innerHTML = imgs.join('');
+    el.dataset.rasterized = '1';
+  }
+
+  function parseGradient(bg) {
+    // Default fallback: brand gradient
+    const fallback = {
+      stops: [
+        { pos: 0, color: getCss('--brand-primary') || '#23B5D3' },
+        { pos: 1, color: getCss('--brand-secondary') || '#F0BA4C' },
+      ]
+    };
+    const m = /linear-gradient\(([^)]+)\)/.exec(bg);
+    if (!m) return fallback;
+    const parts = m[1].split(/,(?![^()]*\))/).map(s => s.trim());
+    // first part may be angle; ignore it
+    const stopParts = parts.filter(p => /#|rgb|hsl|var\(/i.test(p));
+    if (!stopParts.length) return fallback;
+    return {
+      stops: stopParts.map((s, i) => {
+        const tokens = s.split(/\s+/);
+        const color = tokens.shift();
+        const posTok = tokens.find(t => /%$/.test(t));
+        const pos = posTok ? parseFloat(posTok) / 100 : i / (stopParts.length - 1);
+        return { pos: Math.max(0, Math.min(1, pos)), color };
+      })
+    };
+  }
+
+  function getCss(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function restoreAllRaster() {
+    document.querySelectorAll('[data-rasterized="1"]').forEach(el => {
+      el.innerHTML = el.dataset.originalHTML;
+      el.removeAttribute('data-rasterized');
+      delete el.dataset.originalHTML;
+    });
+    document.body.classList.remove('printing-pdf');
+  }
+
+  function printPdf() {
+    document.body.classList.add('printing-pdf');
+    rasterizeAllGradients();
+    requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+  }
+  window.addEventListener('afterprint', restoreAllRaster);
+  document.getElementById('pdf-btn').addEventListener('click', printPdf);
+
+  // Globals exposed for headless QA / PDF export scripts
+  window.__enablePrintMode = () => document.body.classList.add('printing-pdf');
+  window.__disablePrintMode = () => document.body.classList.remove('printing-pdf');
+  window.__rasterizeGradients = rasterizeAllGradients;
+  window.__restoreRaster = restoreAllRaster;
+  window.__go = go;
+  window.__total = total;
+})();
+</script>
+</body>
+</html>

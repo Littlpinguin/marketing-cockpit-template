@@ -80,7 +80,7 @@ Logo assets live in `01-brand/assets/`.
 
 ## Components (reusable patterns)
 
-Common UI patterns used on landing pages and decks. Each should exist as HTML snippet in `05-web-content/templates/components/` or as a slide template in `06-graphic-design/templates/`.
+Common UI patterns used on landing pages and decks. Each should exist as HTML snippet in `05-web-content/templates/components/` or as a slide component in `06-graphic-design/presentations/templates/components/`.
 
 - Hero block (headline + sub + CTA)
 - Stats showcase (3-4 big numbers in a row)
