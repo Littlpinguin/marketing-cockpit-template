@@ -3,8 +3,8 @@
 Playwright QA — verify no slide overflows the 1920×1080 frame
 and no content invades the bottom chrome safe zone.
 
-Usage:
-    python scripts/qa.py presentations/your-deck.html [--viewport 1920x1080]
+Usage (run from 06-graphic-design/presentations/):
+    python scripts/qa.py decks/your-deck.html [--viewport 1920x1080]
 
 Requires:
     pip install playwright

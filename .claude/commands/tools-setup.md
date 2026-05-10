@@ -100,7 +100,7 @@ Present the diff to the user before writing:
 
 ### Step 5 — Regenerate role `CLAUDE.md`
 
-For each of the 9 role folders, read the template at `_templates/role-claudemd/<role>.md` and substitute:
+For each of the 8 role folders, read the template at `_templates/role-claudemd/<role>.md` and substitute:
 - `{{EDITORIAL_CALENDAR_TOOL}}` → the actual chosen tool name, or the line is removed if `none`
 - `{{EMAIL_MARKETING_TOOL}}`, `{{EVENTS_PLATFORM_TOOL}}`, etc. — same logic
 - Conditional blocks (`{{#if QDRANT_ENABLED}}…{{/if}}`) — keep or remove based on intent recorded
@@ -109,7 +109,7 @@ Write the result to `<role>/CLAUDE.md`. Back up the previous version to `.setup-
 
 Confirm one by one or in bulk, user's choice:
 
-> I'll regenerate all 9 role `CLAUDE.md` files now. Do you want to review each before writing, or should I proceed in bulk? (review-each / bulk / cancel)
+> I'll regenerate all 8 role `CLAUDE.md` files now. Do you want to review each before writing, or should I proceed in bulk? (review-each / bulk / cancel)
 
 ### Step 6 — Update the README tool-status board
 

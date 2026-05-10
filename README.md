@@ -147,7 +147,7 @@ Three principles drive the design (full detail in [`docs/architecture.md`](docs/
 
 ## Status
 
-**Version 0.3.0 — alpha.**
+**Version 0.3.1 — alpha.**
 
 - Wizard-driven setup replaces the v0.1 monolithic interview.
 - 8 role folders, 10 production skills, Qdrant pipeline, Gemini image generation, brand-check hook, editorial-grade HTML deck generation under `06-graphic-design/presentations/` (1920×1080, Playwright QA, clean PDF export).

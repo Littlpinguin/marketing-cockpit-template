@@ -198,8 +198,9 @@ Once all five sections are validated (or explicitly skipped), write these files.
 - `01-brand/personas.md` — 2-4 personas, each with the full block, plus a persona × channel suggestion matrix (fill the matrix collaboratively if the user has opinions)
 - `01-brand/messaging-framework.md` — central message, per-persona sub-messages, top 10 numbers, CTA types
 - `01-brand/_gaps.md` — skipped items to revisit later (only if any)
+- `06-graphic-design/presentations/tokens.css` — slide CSS variables. Substitute the same colour and font placeholders as `style-guide.md` (`BRAND_COLOR_PRIMARY`, `BRAND_COLOR_ACCENT`, `BRAND_COLOR_DARK`, `BRAND_COLOR_LIGHT`, `BRAND_GRADIENT`, `BRAND_FONT_PRIMARY`, `BRAND_FONT_SECONDARY`). The `_deep` / `_soft` colour variants resolve via `color-mix()` at runtime — no manual derivation needed.
 
-Read `_templates/brand/voice.md`, `_templates/brand/style-guide.md`, `_templates/brand/personas.md`, `_templates/brand/messaging-framework.md`. Substitute the validated values in place of `{{PLACEHOLDERS}}`. Write the result to `01-brand/<same-filename>.md`.
+Read `_templates/brand/voice.md`, `_templates/brand/style-guide.md`, `_templates/brand/personas.md`, `_templates/brand/messaging-framework.md`. Substitute the validated values in place of `{{PLACEHOLDERS}}`. Write the result to `01-brand/<same-filename>.md`. Apply the same substitution pass to `06-graphic-design/presentations/tokens.css` so the slides skill is ready to inline a brand-aligned design system.
 
 ### Step 6 — Fill root CLAUDE.md visual reference
 
@@ -214,6 +215,7 @@ Output:
 > - `01-brand/style-guide.md`
 > - `01-brand/personas.md`
 > - `01-brand/messaging-framework.md`
+> - `06-graphic-design/presentations/tokens.css` (slide design system)
 > - (optional) `01-brand/_gaps.md`
 >
 > You can edit these any time with your text editor. The copilot reads them directly — no rebuild step required.

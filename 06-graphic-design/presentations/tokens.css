@@ -6,34 +6,37 @@
    or your deck file). Edit them here to retune the entire
    visual system in one place.
 
-   Wizard-filled values: the placeholders below are populated
-   by /brand-discover and /tools-setup based on what was
-   extracted from the brand website. If you arrive on a fresh
-   template clone and still see {{...}} markers, run
-   /start-copilot before generating any deck.
+   Wizard-filled values: the {{...}} placeholders below are
+   populated by /brand-discover and /tools-setup based on what
+   was extracted from the brand website. The _deep / _soft
+   variants are derived via color-mix() so the wizard only
+   needs to fill the four base colours.
+
+   If you arrive on a fresh template clone and still see {{...}}
+   markers, run /start-copilot before generating any deck.
    ============================================================ */
 
 :root {
   /* ---------- Colour ---------- */
   /* Primary brand colour — accents, highlights, hero numbers */
   --brand-primary: {{BRAND_COLOR_PRIMARY}};
-  --brand-primary-deep: {{BRAND_COLOR_PRIMARY_DEEP}};
-  --brand-primary-soft: {{BRAND_COLOR_PRIMARY_SOFT}};
+  --brand-primary-deep: color-mix(in srgb, var(--brand-primary), black 12%);
+  --brand-primary-soft: color-mix(in srgb, var(--brand-primary) 12%, transparent);
 
   /* Accent / secondary colour — gradient pair, secondary highlights */
   --brand-secondary: {{BRAND_COLOR_ACCENT}};
-  --brand-secondary-deep: {{BRAND_COLOR_ACCENT_DEEP}};
-  --brand-secondary-soft: {{BRAND_COLOR_ACCENT_SOFT}};
+  --brand-secondary-deep: color-mix(in srgb, var(--brand-secondary), black 12%);
+  --brand-secondary-soft: color-mix(in srgb, var(--brand-secondary) 12%, transparent);
 
   /* Light neutral — primary slide background ("paper") */
   --brand-neutral-light: {{BRAND_COLOR_LIGHT}};
-  --brand-neutral-light-soft: {{BRAND_COLOR_LIGHT_SOFT}};
-  --brand-neutral-light-deep: {{BRAND_COLOR_LIGHT_DEEP}};
+  --brand-neutral-light-soft: color-mix(in srgb, var(--brand-neutral-light), white 35%);
+  --brand-neutral-light-deep: color-mix(in srgb, var(--brand-neutral-light), black 6%);
 
   /* Dark neutral — alternating slide background, primary text on light */
   --brand-neutral-dark: {{BRAND_COLOR_DARK}};
-  --brand-neutral-dark-soft: {{BRAND_COLOR_DARK_SOFT}};
-  --brand-neutral-dark-deep: {{BRAND_COLOR_DARK_DEEP}};
+  --brand-neutral-dark-soft: color-mix(in srgb, var(--brand-neutral-dark), white 14%);
+  --brand-neutral-dark-deep: color-mix(in srgb, var(--brand-neutral-dark), black 18%);
 
   /* Hairline rules — both directions */
   --rule: rgba(0, 0, 0, 0.10);
@@ -47,8 +50,10 @@
   /* Display family — used for headlines, hero numbers, body */
   --font-display: {{BRAND_FONT_PRIMARY}}, system-ui, sans-serif;
 
-  /* Mono family — used for captions, eyebrows, tag labels */
-  --font-mono: {{BRAND_FONT_MONO}}, ui-monospace, monospace;
+  /* Mono family — used for captions, eyebrows, tag labels.
+     Falls back to the brand's secondary font if one was declared,
+     otherwise to the system mono stack. */
+  --font-mono: {{BRAND_FONT_SECONDARY}}, ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
 
   /* ---------- Motion ---------- */
   --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -56,6 +61,6 @@
   --ease-fast: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ---------- Geometry ---------- */
-  --radius-tight: {{BRAND_BORDER_RADIUS_TIGHT}};
+  --radius-tight: 4px;
   --radius-pill: 999px;
 }

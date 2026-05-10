@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.1] — Wizard / slides plumbing fixes (post-0.3.0 audit)
+
+### Fixed
+- **`/brand-discover` now fills `06-graphic-design/presentations/tokens.css`** alongside the four `01-brand/` files. Without this, `/validate-setup`'s placeholder linter would fail on unfilled slide tokens, blocking every setup. The substitution uses the same colour and font placeholders as `01-brand/style-guide.md` — no extra wizard inputs required.
+- **`tokens.css` refactored to derive `_deep`/`_soft` colour variants and the mono font family from values the wizard already captures.** Variants resolve at runtime via `color-mix(in srgb, ...)`; `--font-mono` falls back to `BRAND_FONT_SECONDARY` then to the system mono stack. Removes 10 placeholders that v0.3.0 introduced but never wired to the wizard.
+- **`docs/placeholders.json`** cleaned up — only the placeholders the wizard actually fills are listed in `visual_identity`.
+- **`/tools-setup`** copy updated from "9 role folders" to "8" to reflect the v0.3.0 consolidation.
+- **`scripts/qa.py`** docstring synced with the new `decks/` folder convention.
+
 ## [0.3.0] — Editorial HTML decks + role consolidation
 
 ### Added
