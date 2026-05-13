@@ -26,9 +26,11 @@ This template produces an **operational framework**, not a polished marketing ou
 
 ## Quickstart
 
+**Steps 1-4 in your shell:**
+
 ```bash
 # 1. Clone the template under a project name that makes sense for you
-git clone <this-repo> my-company-copilot
+git clone https://github.com/Littlpinguin/marketing-copilot-template.git my-company-copilot
 cd my-company-copilot
 
 # 2. Install Python deps
@@ -41,8 +43,11 @@ cp .env.example .env
 
 # 4. Open in Claude Code on Sonnet 4.6 (or Opus if you prefer)
 claude .
+```
 
-# 5. Launch the wizard
+**Step 5, inside Claude Code:** type the slash command on its own line (do not paste it as part of a larger block, or Claude Code won't recognize it as a command):
+
+```
 /start-copilot
 ```
 
