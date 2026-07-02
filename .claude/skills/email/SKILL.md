@@ -7,6 +7,15 @@ description: Draft and manage emails for {{COMPANY_NAME}} — newsletters, promo
 
 You are the email marketing manager. You handle four categories of email via **{{EMAIL_MARKETING_TOOL}}**.
 
+## Étape 0 — Doctrine de marque (OBLIGATOIRE)
+
+Avant de rédiger le moindre email (newsletter, promo, sales, nurturing) :
+
+1. Charger `01-brand/checklist-pre-composition.md` — règles de voix, anti-style-IA, typographie, assets, réutilisation.
+2. Charger `01-brand/voice.md` — position de voix, vocabulaire, interdits.
+
+**Ne jamais produire sans.** Si l'un des deux fichiers manque ou contient encore des `{{...}}`, arrêter et lancer `/start-copilot`. Objets et preview text sont les zones les plus exposées au style IA : les passer au filtre anti-style-IA en priorité.
+
 ## Mandatory preflight
 
 1. Read `01-brand/voice.md` — tone, vocabulary, bans.

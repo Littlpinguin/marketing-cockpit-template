@@ -1,0 +1,45 @@
+{
+  "periode": "2026-05",
+  "libelle": "Mai 2026 (démo)",
+  "genere_le": "2026-06-02",
+  "sources": {
+    "ga4": "données fictives de démonstration",
+    "search_console": "données fictives de démonstration",
+    "social": "postiz (fictif)",
+    "emailing": "{{EMAIL_MARKETING_TOOL}} (fictif)"
+  },
+  "kpis": {
+    "trafic": { "sessions": 4310, "utilisateurs": 3520, "pages_vues": 9840, "duree_moyenne_s": 88 },
+    "conversions": {
+      "total": 71, "taux_pct": 1.6,
+      "par_objectif": [
+        { "nom": "Demande de démo", "total": 26 },
+        { "nom": "Inscription newsletter", "total": 45 }
+      ]
+    },
+    "emailing": { "campagnes": 2, "emails_envoyes": 3280, "taux_ouverture_pct": 39.8, "taux_clic_pct": 3.6, "desabonnements": 9, "nouveaux_abonnes": 96 },
+    "social": { "posts_publies": 12, "impressions": 54100, "interactions": 1690, "taux_engagement_pct": 3.1, "nouveaux_abonnes": 150 }
+  },
+  "seo": {
+    "clics": 1080, "impressions": 79400, "ctr_pct": 1.4, "position_moyenne": 15.1,
+    "top_requetes": [
+      { "requete": "exemple requête marque", "clics": 120, "impressions": 4300, "position": 4.6 }
+    ]
+  },
+  "top_pages": [
+    { "url": "https://exemple.tld/blog/article-phare", "titre": "Article phare (fictif)", "sessions": 520, "conversions": 9 },
+    { "url": "https://exemple.tld/offre", "titre": "Page offre (fictif)", "sessions": 410, "conversions": 14 }
+  ],
+  "top_posts": [
+    { "canal": "linkedin", "titre": "Post coulisses produit (fictif)", "date": "2026-05-14", "impressions": 9800, "interactions": 310, "url": "" }
+  ],
+  "social_par_canal": [
+    { "canal": "linkedin", "posts": 8, "impressions": 43000, "interactions": 1420, "abonnes": 3190, "nouveaux_abonnes": 130 },
+    { "canal": "instagram", "posts": 4, "impressions": 11100, "interactions": 270, "abonnes": 1180, "nouveaux_abonnes": 20 }
+  ],
+  "analyse_md": "## Ce qu'il faut retenir\n\nMois de référence **fictif** servant de point de comparaison pour la démonstration du dashboard.\n\n- Le trafic est porté par deux articles de blog\n- L'emailing reste le canal le plus efficace en conversion",
+  "recommandations": [
+    "Ceci est une donnée de démonstration : remplacez ces fichiers par les snapshots réels du client.",
+    "Le schéma complet est décrit dans dashboard/data-schema.md."
+  ]
+}

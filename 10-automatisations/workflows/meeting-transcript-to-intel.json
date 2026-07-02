@@ -1,0 +1,330 @@
+{
+  "name": "Intel - Analyser - Transcriptions meetings",
+  "active": false,
+  "nodes": [
+    {
+      "id": "sticky-doc",
+      "name": "Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-120, -240],
+      "parameters": {
+        "content": "## Meeting transcript -> 00-intel/inbox\n\nLE workflow qui alimente la memoire d'intelligence du copilot.\n\nFlux : webhook (outil de transcription) -> validation -> analyse LLM -> classification (interne / client / prospect / veille) -> note markdown deposee dans le dossier d'echange -> notification.\n\nAvant activation :\n1. Changer le chemin du webhook (non devinable) et configurer l'outil de transcription pour POSTer dessus\n2. Selectionner vos credentials (LLM + SMTP) dans le vault n8n\n3. Verifier le chemin d'ecriture (/data/intel-drop par defaut, monte dans docker-compose) et le mecanisme de synchronisation vers 00-intel/inbox/ du repo (voir workflows/README.md)\n4. Assigner l'error workflow global",
+        "height": 340,
+        "width": 460,
+        "color": 3
+      }
+    },
+    {
+      "id": "webhook-transcript",
+      "name": "Recevoir transcription",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "meeting-transcript-CHANGEZ-MOI",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "validate-payload",
+      "name": "Valider payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 300],
+      "parameters": {
+        "jsCode": "// Validation defensive de l'input AVANT tout traitement (et avant tout appel LLM payant).\nconst body = $input.first().json.body || $input.first().json;\n\nconst transcript = (body.transcript || body.transcription || body.text || '').toString().trim();\nconst titre = (body.title || body.meeting_title || 'Meeting sans titre').toString().trim();\nconst dateMeeting = (body.date || new Date().toISOString().split('T')[0]).toString();\nconst participants = Array.isArray(body.participants) ? body.participants : [];\n\nconst erreurs = [];\nif (!transcript) erreurs.push(\"Champ 'transcript' manquant ou vide\");\nif (transcript && transcript.length < 200) erreurs.push('Transcription trop courte (< 200 caracteres) — probablement un payload de test ou une erreur amont');\nif (!/^\\d{4}-\\d{2}-\\d{2}/.test(dateMeeting)) erreurs.push(\"Champ 'date' invalide (attendu : AAAA-MM-JJ)\");\n\nreturn [{\n  json: {\n    valide: erreurs.length === 0,\n    raison: erreurs.join(' ; '),\n    transcript,\n    titre,\n    dateMeeting,\n    participants\n  }\n}];"
+      }
+    },
+    {
+      "id": "if-valid",
+      "name": "Payload valide ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [440, 300],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-valide",
+              "leftValue": "={{ $json.valide }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "respond-400",
+      "name": "[Erreur] Répondre 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [660, 480],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, erreur: $json.raison }) }}",
+        "options": {
+          "responseCode": 400
+        }
+      }
+    },
+    {
+      "id": "build-prompt",
+      "name": "Construire prompt analyse",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 200],
+      "parameters": {
+        "jsCode": "// HTTP direct vers l'API LLM (pas de node LangChain : les longs prompts peuvent y etre tronques silencieusement).\nconst { transcript, titre, dateMeeting, participants } = $input.first().json;\n\nconst prompt = `Tu es l'analyste intelligence d'une equipe marketing. Analyse la transcription de reunion ci-dessous et retourne UNIQUEMENT un objet JSON valide, sans texte autour, avec cette structure exacte :\n{\n  \"classification\": \"interne\" | \"client\" | \"prospect\" | \"veille\",\n  \"entite\": \"nom de l'entreprise ou de l'equipe concernee (ou 'interne')\",\n  \"resume\": \"resume factuel en 5-8 lignes\",\n  \"points_cles\": [\"...\"],\n  \"decisions\": [\"...\"],\n  \"actions\": [{ \"quoi\": \"...\", \"qui\": \"...\", \"echeance\": \"AAAA-MM-JJ ou vide\" }],\n  \"signaux\": [\"signal business ou marketing detecte (opportunite, risque, besoin exprime, objection...)\"],\n  \"sujets_contenu\": [\"idee de contenu marketing exploitable issue de la reunion\"]\n}\n\nRegles :\n- Reste strictement factuel, n'invente RIEN qui ne soit pas dans la transcription.\n- Si une categorie est vide, retourne un tableau vide.\n- Redige en francais.\n\nTitre de la reunion : ${titre}\nDate : ${dateMeeting}\nParticipants declares : ${participants.join(', ') || 'non fournis'}\n\nTRANSCRIPTION :\n${transcript}`;\n\nreturn [{ json: { prompt, titre, dateMeeting } }];"
+      }
+    },
+    {
+      "id": "call-llm",
+      "name": "Appeler LLM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 200],
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [{ role: 'user', parts: [{ text: $json.prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.2 } }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 10000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{N8N_CREDENTIAL_ID_LLM}}",
+          "name": "API LLM (Gemini)"
+        }
+      }
+    },
+    {
+      "id": "parse-llm",
+      "name": "Parser réponse LLM",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 200],
+      "parameters": {
+        "jsCode": "// Programmation defensive : ne jamais faire confiance au typage des outputs IA.\nconst toArray = (v) => Array.isArray(v) ? v : (typeof v === 'string' && v ? [v] : []);\n\nconst response = $input.first().json;\nconst text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';\nif (!text) throw new Error('Reponse LLM vide — verifier le credential et le modele');\n\nlet analyse;\ntry {\n  analyse = JSON.parse(text);\n} catch (e) {\n  throw new Error('Reponse LLM non parsable en JSON : ' + text.slice(0, 300));\n}\n\nconst classificationsValides = ['interne', 'client', 'prospect', 'veille'];\nconst classification = classificationsValides.includes(analyse.classification) ? analyse.classification : 'interne';\n\nreturn [{\n  json: {\n    classification,\n    entite: (analyse.entite || 'interne').toString(),\n    resume: (analyse.resume || '').toString(),\n    pointsCles: toArray(analyse.points_cles),\n    decisions: toArray(analyse.decisions),\n    actions: Array.isArray(analyse.actions) ? analyse.actions : [],\n    signaux: toArray(analyse.signaux),\n    sujetsContenu: toArray(analyse.sujets_contenu),\n    titre: $('Construire prompt analyse').first().json.titre,\n    dateMeeting: $('Construire prompt analyse').first().json.dateMeeting\n  }\n}];"
+      }
+    },
+    {
+      "id": "format-note",
+      "name": "Formater note intel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 200],
+      "parameters": {
+        "jsCode": "const d = $input.first().json;\n\nconst slugify = (s) => s.toLowerCase()\n  .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n  .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')\n  .slice(0, 60) || 'meeting';\n\nconst nomFichier = `${d.dateMeeting}--meeting--${slugify(d.entite)}--${slugify(d.titre)}.md`;\n\nconst liste = (arr) => arr.length ? arr.map(x => `- ${x}`).join('\\n') : '_Aucun_';\nconst actions = d.actions.length\n  ? d.actions.map(a => `- [ ] ${a.quoi || a}${a.qui ? ' — **' + a.qui + '**' : ''}${a.echeance ? ' (échéance : ' + a.echeance + ')' : ''}`).join('\\n')\n  : '_Aucune_';\n\nconst contenu = `---\\ntype: meeting\\nsource: transcription-automatique\\ndate: ${d.dateMeeting}\\nclassification: ${d.classification}\\nentite: \"${d.entite}\"\\ntitre: \"${d.titre.replace(/\\\"/g, \"'\")}\"\\nstatut: a-trier\\n---\\n\\n# ${d.titre}\\n\\n## Résumé\\n\\n${d.resume}\\n\\n## Points clés\\n\\n${liste(d.pointsCles)}\\n\\n## Décisions\\n\\n${liste(d.decisions)}\\n\\n## Actions\\n\\n${actions}\\n\\n## Signaux détectés\\n\\n${liste(d.signaux)}\\n\\n## Idées de contenu\\n\\n${liste(d.sujetsContenu)}\\n`;\n\nreturn [{ json: { contenu, nomFichier, classification: d.classification, entite: d.entite, titre: d.titre } }];"
+      }
+    },
+    {
+      "id": "convert-file",
+      "name": "Convertir en fichier",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [1540, 200],
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "contenu",
+        "options": {
+          "fileName": "={{ $json.nomFichier }}"
+        }
+      }
+    },
+    {
+      "id": "write-inbox",
+      "name": "Déposer dans 00-intel inbox",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [1760, 200],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/data/intel-drop/{{ $('Formater note intel').item.json.nomFichier }}",
+        "dataPropertyName": "data",
+        "options": {}
+      }
+    },
+    {
+      "id": "notify-drop",
+      "name": "Notifier dépôt",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1980, 200],
+      "parameters": {
+        "fromEmail": "{{SENDER_EMAIL}}",
+        "toEmail": "{{NOTIFICATION_EMAIL}}",
+        "subject": "=[Intel] Nouvelle note meeting : {{ $('Formater note intel').item.json.titre }}",
+        "emailFormat": "html",
+        "html": "=<p>Une nouvelle note d'intelligence a été déposée dans <code>00-intel/inbox/</code>.</p><ul><li><b>Fichier</b> : {{ $('Formater note intel').item.json.nomFichier }}</li><li><b>Classification</b> : {{ $('Formater note intel').item.json.classification }}</li><li><b>Entité</b> : {{ $('Formater note intel').item.json.entite }}</li></ul><p>Pensez à la trier lors de votre prochaine session copilot (statut <code>a-trier</code>).</p>",
+        "options": {}
+      },
+      "credentials": {
+        "smtp": {
+          "id": "{{N8N_CREDENTIAL_ID_SMTP}}",
+          "name": "SMTP - notifications"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "respond-200",
+      "name": "Répondre 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2200, 200],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, fichier: $('Formater note intel').item.json.nomFichier }) }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Recevoir transcription": {
+      "main": [
+        [
+          {
+            "node": "Valider payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valider payload": {
+      "main": [
+        [
+          {
+            "node": "Payload valide ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload valide ?": {
+      "main": [
+        [
+          {
+            "node": "Construire prompt analyse",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Erreur] Répondre 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construire prompt analyse": {
+      "main": [
+        [
+          {
+            "node": "Appeler LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appeler LLM": {
+      "main": [
+        [
+          {
+            "node": "Parser réponse LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser réponse LLM": {
+      "main": [
+        [
+          {
+            "node": "Formater note intel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formater note intel": {
+      "main": [
+        [
+          {
+            "node": "Convertir en fichier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convertir en fichier": {
+      "main": [
+        [
+          {
+            "node": "Déposer dans 00-intel inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Déposer dans 00-intel inbox": {
+      "main": [
+        [
+          {
+            "node": "Notifier dépôt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notifier dépôt": {
+      "main": [
+        [
+          {
+            "node": "Répondre 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris",
+    "errorWorkflow": "{{ERROR_WORKFLOW_ID}}"
+  }
+}

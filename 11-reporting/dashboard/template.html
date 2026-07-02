@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>{{COMPANY_NAME}} — Reporting marketing</title>
+
+<!-- ============================================================
+     DASHBOARD DE PERFORMANCES — {{COMPANY_NAME}}
+     ------------------------------------------------------------
+     HTML statique autonome : aucun backend, aucune dépendance
+     hors Chart.js (CDN). Les données sont des snapshots mensuels
+     JSON chargés depuis ./data/ (liste des mois : ./data/index.json).
+
+     Schéma des données : voir data-schema.md (même dossier).
+     Déploiement : voir ../deploy/README.md.
+
+     DESIGN TOKENS — dérivés de 01-brand/style-guide.md.
+     Les placeholders {{...}} sont renseignés par /brand-discover.
+     Si vous voyez encore des {{...}}, lancez /start-copilot.
+     ============================================================ -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+:root {
+  /* ---------- Couleurs de marque ---------- */
+  --brand-primary: {{BRAND_COLOR_PRIMARY}};
+  --brand-accent:  {{BRAND_COLOR_ACCENT}};
+  --brand-dark:    {{BRAND_COLOR_DARK}};
+  --brand-light:   {{BRAND_COLOR_LIGHT}};
+  --brand-gradient: {{BRAND_GRADIENT}};
+
+  /* Variantes dérivées — ne pas éditer, elles suivent les couleurs de base */
+  --brand-primary-soft: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+  --brand-accent-soft:  color-mix(in srgb, var(--brand-accent) 12%, transparent);
+  --surface:      color-mix(in srgb, var(--brand-light), white 40%);
+  --card:         white;
+  --text:         var(--brand-dark);
+  --text-soft:    color-mix(in srgb, var(--brand-dark) 62%, transparent);
+  --rule:         color-mix(in srgb, var(--brand-dark) 12%, transparent);
+
+  /* Couleurs fonctionnelles (variations ↑/↓) — indépendantes de la marque */
+  --positive: #1a7f4e;
+  --negative: #b3362c;
+
+  /* ---------- Typographie & forme ---------- */
+  --font: {{BRAND_FONT_PRIMARY}}, system-ui, -apple-system, sans-serif;
+  --radius: {{BRAND_BORDER_RADIUS}};
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.05);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--surface);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 64px; }
+
+/* ---------- En-tête ---------- */
+header.site {
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  padding: 28px 0;
+  border-bottom: 4px solid transparent;
+  border-image: var(--brand-gradient) 1;
+}
+header.site .wrap {
+  padding-bottom: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.brand-block { display: flex; align-items: center; gap: 14px; }
+/* Décommentez et pointez vers le logo déployé avec le dashboard :
+<img src="assets/logo.svg" alt="{{COMPANY_NAME}}" class="logo">        */
+.logo { height: 36px; width: auto; }
+.brand-name { font-size: 1.15rem; font-weight: 700; letter-spacing: .01em; }
+.report-label {
+  font-size: .78rem; text-transform: uppercase; letter-spacing: .14em;
+  opacity: .7; display: block;
+}
+
+/* ---------- Navigation mois ---------- */
+nav.months { display: flex; align-items: center; gap: 10px; }
+nav.months button, nav.months select {
+  font-family: var(--font); font-size: .9rem;
+  background: rgba(255,255,255,.08); color: inherit;
+  border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius);
+  padding: 8px 14px; cursor: pointer;
+}
+nav.months button:hover:not(:disabled) { background: rgba(255,255,255,.18); }
+nav.months button:disabled { opacity: .35; cursor: default; }
+nav.months select { min-width: 160px; }
+nav.months select option { color: #111; }
+
+/* ---------- Sections ---------- */
+h2.section {
+  font-size: .82rem; text-transform: uppercase; letter-spacing: .16em;
+  color: var(--text-soft); margin: 44px 0 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+h2.section::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+
+/* ---------- Cartes KPI ---------- */
+.kpi-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.kpi-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px 22px;
+  border-top: 3px solid var(--brand-primary);
+}
+.kpi-card.accent { border-top-color: var(--brand-accent); }
+.kpi-card h3 {
+  font-size: .78rem; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--text-soft); font-weight: 600; margin-bottom: 10px;
+}
+.kpi-main { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.kpi-value { font-size: 2.1rem; font-weight: 700; line-height: 1.1; }
+.kpi-delta {
+  font-size: .82rem; font-weight: 600; padding: 2px 8px;
+  border-radius: 999px; white-space: nowrap;
+}
+.kpi-delta.up   { color: var(--positive); background: color-mix(in srgb, var(--positive) 12%, transparent); }
+.kpi-delta.down { color: var(--negative); background: color-mix(in srgb, var(--negative) 12%, transparent); }
+.kpi-delta.flat { color: var(--text-soft); background: var(--brand-primary-soft); }
+.kpi-sub { margin-top: 10px; font-size: .85rem; color: var(--text-soft); }
+.kpi-sub span { display: inline-block; margin-right: 14px; }
+.kpi-sub strong { color: var(--text); font-weight: 600; }
+
+/* ---------- Graphiques ---------- */
+.chart-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.chart-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px 22px;
+}
+.chart-card h3 { font-size: .95rem; font-weight: 600; margin-bottom: 14px; }
+.chart-card .canvas-box { position: relative; height: 260px; }
+
+/* ---------- Tableaux (top pages / top posts) ---------- */
+.table-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 8px 22px 14px; overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); }
+tr:last-child td { border-bottom: none; }
+th {
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--text-soft); font-weight: 600;
+}
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td a { color: var(--brand-primary); text-decoration: none; }
+td a:hover { text-decoration: underline; }
+.badge-canal {
+  display: inline-block; font-size: .74rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 999px;
+  background: var(--brand-accent-soft); color: var(--text);
+}
+
+/* ---------- Analyse du mois ---------- */
+.analysis {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 28px 32px;
+  border-left: 4px solid var(--brand-accent);
+}
+.analysis h3 { font-size: 1.05rem; margin: 18px 0 8px; }
+.analysis h3:first-child { margin-top: 0; }
+.analysis p { margin: 0 0 12px; }
+.analysis ul { margin: 0 0 12px 20px; }
+.analysis li { margin-bottom: 6px; }
+.reco { margin-top: 20px; }
+.reco h3 {
+  font-size: .82rem; text-transform: uppercase; letter-spacing: .14em;
+  color: var(--text-soft);
+}
+.reco ol { margin: 10px 0 0 20px; }
+.reco li { margin-bottom: 8px; }
+
+/* ---------- Pied de page & états ---------- */
+footer {
+  margin-top: 48px; font-size: .8rem; color: var(--text-soft);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.state { text-align: center; padding: 80px 20px; color: var(--text-soft); }
+[hidden] { display: none !important; }
+
+@media (max-width: 640px) {
+  .kpi-value { font-size: 1.7rem; }
+  .analysis { padding: 20px; }
+  header.site .wrap { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand-block">
+      <!-- <img src="assets/logo.svg" alt="" class="logo"> -->
+      <div>
+        <span class="report-label">Reporting marketing</span>
+        <span class="brand-name">{{COMPANY_NAME}}</span>
+      </div>
+    </div>
+    <nav class="months" aria-label="Navigation par mois">
+      <button id="prev-month" title="Mois précédent" aria-label="Mois précédent">‹</button>
+      <select id="month-select" aria-label="Choisir le mois"></select>
+      <button id="next-month" title="Mois suivant" aria-label="Mois suivant">›</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="loading" class="state">Chargement des données…</div>
+  <div id="error" class="state" hidden>
+    Impossible de charger les données du reporting.<br>
+    Vérifiez que <code>data/index.json</code> et les snapshots mensuels sont bien déployés.
+  </div>
+
+  <div id="report" hidden>
+
+    <!-- Vue d'ensemble : 4 cartes KPI -->
+    <h2 class="section">Vue d'ensemble — <span id="period-label"></span></h2>
+    <div class="kpi-grid">
+      <div class="kpi-card" id="card-trafic">
+        <h3>Trafic du site</h3>
+        <div class="kpi-main">
+          <span class="kpi-value" data-kpi="sessions">—</span>
+          <span class="kpi-delta" data-delta="sessions"></span>
+        </div>
+        <div class="kpi-sub">
+          <span><strong data-kpi="utilisateurs">—</strong> visiteurs</span>
+          <span><strong data-kpi="pages_vues">—</strong> pages vues</span>
+        </div>
+      </div>
+
+      <div class="kpi-card accent" id="card-conversions">
+        <h3>Conversions</h3>
+        <div class="kpi-main">
+          <span class="kpi-value" data-kpi="conversions">—</span>
+          <span class="kpi-delta" data-delta="conversions"></span>
+        </div>
+        <div class="kpi-sub">
+          <span>taux : <strong data-kpi="taux_conversion">—</strong></span>
+        </div>
+      </div>
+
+      <div class="kpi-card" id="card-emailing">
+        <h3>Emailing</h3>
+        <div class="kpi-main">
+          <span class="kpi-value" data-kpi="taux_ouverture">—</span>
+          <span class="kpi-delta" data-delta="taux_ouverture"></span>
+        </div>
+        <div class="kpi-sub">
+          <span><strong data-kpi="emails_envoyes">—</strong> emails</span>
+          <span>clics : <strong data-kpi="taux_clic">—</strong></span>
+        </div>
+      </div>
+
+      <div class="kpi-card accent" id="card-social">
+        <h3>Réseaux sociaux</h3>
+        <div class="kpi-main">
+          <span class="kpi-value" data-kpi="interactions">—</span>
+          <span class="kpi-delta" data-delta="interactions"></span>
+        </div>
+        <div class="kpi-sub">
+          <span><strong data-kpi="posts_publies">—</strong> posts</span>
+          <span><strong data-kpi="impressions">—</strong> impressions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Évolution : graphiques sur l'historique complet -->
+    <h2 class="section">Évolution</h2>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Trafic &amp; conversions</h3>
+        <div class="canvas-box"><canvas id="chart-trafic"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Engagement — emailing &amp; social</h3>
+        <div class="canvas-box"><canvas id="chart-engagement"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Top pages -->
+    <section id="section-top-pages">
+      <h2 class="section">Pages les plus visitées</h2>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr><th>Page</th><th class="num">Sessions</th><th class="num">Conversions</th></tr>
+          </thead>
+          <tbody id="top-pages-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Top posts -->
+    <section id="section-top-posts">
+      <h2 class="section">Publications les plus performantes</h2>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr><th>Canal</th><th>Publication</th><th class="num">Impressions</th><th class="num">Interactions</th></tr>
+          </thead>
+          <tbody id="top-posts-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Analyse du mois : markdown rendu + recommandations -->
+    <h2 class="section">Analyse du mois</h2>
+    <div class="analysis">
+      <div id="analysis-body"></div>
+      <div class="reco" id="reco-block" hidden>
+        <h3>Recommandations</h3>
+        <ol id="reco-list"></ol>
+      </div>
+    </div>
+
+    <footer>
+      <span>Snapshot généré le <span id="generated-at">—</span></span>
+      <span>{{COMPANY_NAME}} — reporting mensuel, données GA4 · Search Console · social · emailing</span>
+    </footer>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   Logique du dashboard — vanilla JS, aucun build.
+   1. Charge data/index.json  → liste des mois disponibles.
+   2. Charge tous les snapshots data/YYYY-MM.json (historique
+      nécessaire aux graphiques d'évolution).
+   3. Affiche le mois sélectionné (par défaut : le plus récent,
+      ou celui du hash d'URL #YYYY-MM).
+   ============================================================ */
+(function () {
+  "use strict";
+
+  const $ = (sel) => document.querySelector(sel);
+  const state = { months: [], snapshots: new Map(), current: null, charts: {} };
+
+  /* ---------- Formatage ---------- */
+  const fmtInt = (n) => (n == null ? "—" : new Intl.NumberFormat("fr-FR").format(Math.round(n)));
+  const fmtPct = (n) => (n == null ? "—" : new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(n) + " %");
+  const monthLabel = (ym) => {
+    const [y, m] = ym.split("-").map(Number);
+    const label = new Date(y, m - 1, 1).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
+  const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  /* ---------- Accès sûr aux champs imbriqués ---------- */
+  const get = (obj, path) => path.split(".").reduce((o, k) => (o == null ? null : o[k]), obj);
+
+  /* ---------- Chargement ---------- */
+  async function loadJSON(url) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(url + " → HTTP " + res.status);
+    return res.json();
+  }
+
+  async function init() {
+    try {
+      const index = await loadJSON("data/index.json");
+      state.months = [...index.mois].sort();
+      if (!state.months.length) throw new Error("index.json ne liste aucun mois");
+
+      const loaded = await Promise.all(
+        state.months.map((m) => loadJSON("data/" + m + ".json").catch(() => null))
+      );
+      state.months.forEach((m, i) => { if (loaded[i]) state.snapshots.set(m, loaded[i]); });
+      state.months = state.months.filter((m) => state.snapshots.has(m));
+
+      const fromHash = location.hash.replace("#", "");
+      state.current = state.snapshots.has(fromHash) ? fromHash : state.months[state.months.length - 1];
+
+      buildMonthNav();
+      render();
+      $("#loading").hidden = true;
+      $("#report").hidden = false;
+    } catch (err) {
+      console.error(err);
+      $("#loading").hidden = true;
+      $("#error").hidden = false;
+    }
+  }
+
+  /* ---------- Navigation mois ---------- */
+  function buildMonthNav() {
+    const select = $("#month-select");
+    select.innerHTML = "";
+    state.months.forEach((m) => {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = monthLabel(m);
+      select.appendChild(opt);
+    });
+    select.addEventListener("change", () => goTo(select.value));
+    $("#prev-month").addEventListener("click", () => shift(-1));
+    $("#next-month").addEventListener("click", () => shift(1));
+    window.addEventListener("hashchange", () => {
+      const m = location.hash.replace("#", "");
+      if (state.snapshots.has(m) && m !== state.current) goTo(m);
+    });
+  }
+
+  function shift(delta) {
+    const i = state.months.indexOf(state.current) + delta;
+    if (i >= 0 && i < state.months.length) goTo(state.months[i]);
+  }
+
+  function goTo(month) {
+    state.current = month;
+    history.replaceState(null, "", "#" + month);
+    render();
+  }
+
+  /* ---------- Rendu du mois courant ---------- */
+  function render() {
+    const snap = state.snapshots.get(state.current);
+    const idx = state.months.indexOf(state.current);
+    const prev = idx > 0 ? state.snapshots.get(state.months[idx - 1]) : null;
+
+    $("#month-select").value = state.current;
+    $("#prev-month").disabled = idx === 0;
+    $("#next-month").disabled = idx === state.months.length - 1;
+    $("#period-label").textContent = snap.libelle || monthLabel(state.current);
+    $("#generated-at").textContent = snap.genere_le || "—";
+
+    renderKPIs(snap, prev);
+    renderCharts();
+    renderTable("#top-pages-body", "#section-top-pages", snap.top_pages, (p) => `
+      <tr>
+        <td>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.titre || p.url)}</a>` : esc(p.titre || "")}</td>
+        <td class="num">${fmtInt(p.sessions)}</td>
+        <td class="num">${fmtInt(p.conversions)}</td>
+      </tr>`);
+    renderTable("#top-posts-body", "#section-top-posts", snap.top_posts, (p) => `
+      <tr>
+        <td><span class="badge-canal">${esc(p.canal || "")}</span></td>
+        <td>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.titre || p.url)}</a>` : esc(p.titre || "")}</td>
+        <td class="num">${fmtInt(p.impressions)}</td>
+        <td class="num">${fmtInt(p.interactions)}</td>
+      </tr>`);
+    renderAnalysis(snap);
+  }
+
+  /* ---------- Cartes KPI + variation vs mois précédent ---------- */
+  function renderKPIs(snap, prev) {
+    const map = {
+      sessions:        { path: "kpis.trafic.sessions",              fmt: fmtInt },
+      utilisateurs:    { path: "kpis.trafic.utilisateurs",          fmt: fmtInt },
+      pages_vues:      { path: "kpis.trafic.pages_vues",            fmt: fmtInt },
+      conversions:     { path: "kpis.conversions.total",            fmt: fmtInt },
+      taux_conversion: { path: "kpis.conversions.taux_pct",         fmt: fmtPct },
+      taux_ouverture:  { path: "kpis.emailing.taux_ouverture_pct",  fmt: fmtPct },
+      taux_clic:       { path: "kpis.emailing.taux_clic_pct",       fmt: fmtPct },
+      emails_envoyes:  { path: "kpis.emailing.emails_envoyes",      fmt: fmtInt },
+      interactions:    { path: "kpis.social.interactions",          fmt: fmtInt },
+      impressions:     { path: "kpis.social.impressions",           fmt: fmtInt },
+      posts_publies:   { path: "kpis.social.posts_publies",         fmt: fmtInt }
+    };
+
+    document.querySelectorAll("[data-kpi]").forEach((el) => {
+      const def = map[el.dataset.kpi];
+      el.textContent = def ? def.fmt(get(snap, def.path)) : "—";
+    });
+
+    document.querySelectorAll("[data-delta]").forEach((el) => {
+      const def = map[el.dataset.delta];
+      const now = def ? get(snap, def.path) : null;
+      const before = def && prev ? get(prev, def.path) : null;
+      if (now == null || before == null || before === 0) { el.textContent = ""; el.className = "kpi-delta"; return; }
+      const pct = ((now - before) / Math.abs(before)) * 100;
+      const dir = pct > 0.5 ? "up" : pct < -0.5 ? "down" : "flat";
+      el.className = "kpi-delta " + dir;
+      el.textContent = (pct > 0 ? "+" : "") + new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(pct) + " %";
+      el.title = "vs mois précédent";
+    });
+  }
+
+  /* ---------- Graphiques d'évolution (historique complet) ---------- */
+  function renderCharts() {
+    const labels = state.months.map(monthLabel);
+    const series = (path) => state.months.map((m) => get(state.snapshots.get(m), path));
+    const primary = cssVar("--brand-primary");
+    const accent = cssVar("--brand-accent");
+    const baseOpts = {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: { legend: { labels: { font: { family: cssVar("--font") } } } },
+      scales: { x: { grid: { display: false } } }
+    };
+
+    drawChart("chart-trafic", {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          { label: "Sessions", data: series("kpis.trafic.sessions"),
+            borderColor: primary, backgroundColor: primary, tension: .3, yAxisID: "y" },
+          { label: "Conversions", data: series("kpis.conversions.total"),
+            borderColor: accent, backgroundColor: accent, tension: .3, yAxisID: "y2" }
+        ]
+      },
+      options: { ...baseOpts, scales: { ...baseOpts.scales,
+        y:  { beginAtZero: true, position: "left" },
+        y2: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false } }
+      } }
+    });
+
+    drawChart("chart-engagement", {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          { label: "Taux d'ouverture email (%)", data: series("kpis.emailing.taux_ouverture_pct"),
+            borderColor: primary, backgroundColor: primary, tension: .3 },
+          { label: "Taux d'engagement social (%)", data: series("kpis.social.taux_engagement_pct"),
+            borderColor: accent, backgroundColor: accent, tension: .3 }
+        ]
+      },
+      options: { ...baseOpts, scales: { ...baseOpts.scales, y: { beginAtZero: true } } }
+    });
+  }
+
+  function drawChart(canvasId, config) {
+    if (state.charts[canvasId]) state.charts[canvasId].destroy();
+    state.charts[canvasId] = new Chart(document.getElementById(canvasId), config);
+  }
+
+  /* ---------- Tableaux ---------- */
+  function renderTable(bodySel, sectionSel, rows, template) {
+    const section = $(sectionSel);
+    if (!rows || !rows.length) { section.hidden = true; return; }
+    section.hidden = false;
+    $(bodySel).innerHTML = rows.map(template).join("");
+  }
+
+  /* ---------- Analyse du mois : mini-rendu markdown ---------- */
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  /* Rend le sous-ensemble de markdown utilisé par l'analyse :
+     titres ##/###, gras, italique, listes à puces, paragraphes. */
+  function renderMarkdown(md) {
+    const inline = (s) => esc(s)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>");
+    const blocks = String(md).split(/\n{2,}/);
+    return blocks.map((block) => {
+      const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (!lines.length) return "";
+      if (lines.every((l) => l.startsWith("- ")))
+        return "<ul>" + lines.map((l) => "<li>" + inline(l.slice(2)) + "</li>").join("") + "</ul>";
+      return lines.map((l) => {
+        if (l.startsWith("### ")) return "<h3>" + inline(l.slice(4)) + "</h3>";
+        if (l.startsWith("## "))  return "<h3>" + inline(l.slice(3)) + "</h3>";
+        return "<p>" + inline(l) + "</p>";
+      }).join("");
+    }).join("");
+  }
+
+  function renderAnalysis(snap) {
+    $("#analysis-body").innerHTML = snap.analyse_md
+      ? renderMarkdown(snap.analyse_md)
+      : "<p>Analyse non disponible pour ce mois.</p>";
+    const recos = snap.recommandations || [];
+    $("#reco-block").hidden = !recos.length;
+    $("#reco-list").innerHTML = recos.map((r) => "<li>" + esc(r) + "</li>").join("");
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{
+  "periode": "2026-06",
+  "libelle": "Juin 2026 (démo)",
+  "genere_le": "2026-07-01",
+  "sources": {
+    "ga4": "données fictives de démonstration",
+    "search_console": "données fictives de démonstration",
+    "social": "postiz (fictif)",
+    "emailing": "{{EMAIL_MARKETING_TOOL}} (fictif)"
+  },
+  "kpis": {
+    "trafic": { "sessions": 4820, "utilisateurs": 3910, "pages_vues": 11240, "duree_moyenne_s": 96 },
+    "conversions": {
+      "total": 87, "taux_pct": 1.8,
+      "par_objectif": [
+        { "nom": "Demande de démo", "total": 34 },
+        { "nom": "Inscription newsletter", "total": 53 }
+      ]
+    },
+    "emailing": { "campagnes": 2, "emails_envoyes": 3400, "taux_ouverture_pct": 42.5, "taux_clic_pct": 4.1, "desabonnements": 6, "nouveaux_abonnes": 118 },
+    "social": { "posts_publies": 14, "impressions": 68200, "interactions": 2140, "taux_engagement_pct": 3.1, "nouveaux_abonnes": 210 }
+  },
+  "seo": {
+    "clics": 1240, "impressions": 88600, "ctr_pct": 1.4, "position_moyenne": 14.2,
+    "top_requetes": [
+      { "requete": "exemple requête marque", "clics": 140, "impressions": 5200, "position": 4.1 }
+    ]
+  },
+  "top_pages": [
+    { "url": "https://exemple.tld/blog/article-phare", "titre": "Article phare (fictif)", "sessions": 640, "conversions": 12 },
+    { "url": "https://exemple.tld/offre", "titre": "Page offre (fictif)", "sessions": 480, "conversions": 18 },
+    { "url": "https://exemple.tld/blog/etude-de-cas", "titre": "Étude de cas (fictif)", "sessions": 350, "conversions": 6 }
+  ],
+  "top_posts": [
+    { "canal": "linkedin", "titre": "Post étude de cas client (fictif)", "date": "2026-06-12", "impressions": 12400, "interactions": 420, "url": "" },
+    { "canal": "instagram", "titre": "Reel coulisses (fictif)", "date": "2026-06-19", "impressions": 8600, "interactions": 260, "url": "" }
+  ],
+  "social_par_canal": [
+    { "canal": "linkedin", "posts": 8, "impressions": 52000, "interactions": 1800, "abonnes": 3400, "nouveaux_abonnes": 180 },
+    { "canal": "instagram", "posts": 6, "impressions": 16200, "interactions": 340, "abonnes": 1210, "nouveaux_abonnes": 30 }
+  ],
+  "analyse_md": "## Ce qu'il faut retenir\n\nDonnées **fictives** de démonstration. Le trafic progresse de **12 %** par rapport à mai, porté par l'article phare et la campagne emailing de mi-juin.\n\n### Ce qui a fonctionné\n\n- L'étude de cas publiée sur LinkedIn : meilleur post du mois\n- Le taux d'ouverture emailing repasse au-dessus de 40 %\n\n### Point de vigilance\n\n- La position moyenne SEO stagne autour de 14 : le socle technique est bon, c'est le maillage interne qui freine",
+  "recommandations": [
+    "Décliner l'étude de cas en 2 formats supplémentaires (carrousel + email).",
+    "Renforcer le maillage interne vers la page offre depuis les 3 top pages.",
+    "Tester un second envoi emailing mensuel sur le segment le plus engagé."
+  ]
+}

@@ -1,116 +1,115 @@
 ---
 name: social-content
-description: Write social media content — LinkedIn, Discord, WhatsApp, and other activated channels. Covers drafting, anti-repetition via Qdrant (if enabled) or file-based scan (fallback), and event promotion.
+description: Rédaction de contenu social media pour {{COMPANY_NAME}} — LinkedIn, Discord, WhatsApp et tout canal activé. Couvre la rédaction, l'anti-répétition par scan des fichiers produits, la promotion d'événements et la mise à jour du calendrier éditorial après production. Pour un carrousel PDF multipage, utiliser `carousel` ; pour un visuel isolé, `image-generation`.
 ---
 
-# social-content — social authoring {{COMPANY_NAME}}
+# social-content — rédaction social media {{COMPANY_NAME}}
 
-You are the social media manager for {{COMPANY_NAME}}. You create content for LinkedIn (primary), Discord (community), WhatsApp (reminders), and any other channels enabled.
+Tu es le social media manager de {{COMPANY_NAME}}. Tu crées du contenu pour LinkedIn (principal), Discord (communauté), WhatsApp (rappels) et tout autre canal activé.
 
-## Mandatory preflight
+## Étape 0 — Doctrine de marque (OBLIGATOIRE)
 
-1. Read `01-brand/voice.md` — tone, vocabulary, bans.
-2. Read 3-5 recent posts in `03-social-media/<channel>/examples/` to calibrate tone.
-3. Check the editorial calendar ({{EDITORIAL_CALENDAR_TOOL}}): no duplicate, right pillar, right channel.
-4. **Anti-repetition and inspiration check:**
+Avant d'écrire le moindre post :
 
-   **If Qdrant is enabled:**
-   ```
-   qdrant_search(
-     query="<topic in one sentence>",
-     top=5,
-     filter_source_key="linkedin"
-   )
-   ```
-   Score interpretation:
-   - **≥ 0.82** → change angle. Seek to complement, contradict, or deepen — not paraphrase.
-   - **0.72 - 0.82** → identify already-covered angles, pick a complementary one.
-   - **< 0.72** → new territory; document your sources carefully.
+1. Charger `01-brand/checklist-pre-composition.md` — règles de voix, anti-style-IA, typographie, assets, réutilisation.
+2. Charger `01-brand/voice.md` — position de voix, vocabulaire, interdits.
 
-   **If Qdrant is disabled:** scan the last 20 files in `<channel>/examples/` for topic overlap; scan `01-brand/messaging-framework.md` for established positions.
+**Ne jamais produire sans.** Si l'un des deux fichiers manque ou contient encore des `{{...}}`, arrêter et lancer `/start-copilot`. Les hooks LinkedIn sont la zone la plus exposée au style IA (parallélismes négatifs, appâts d'engagement) : filtre intégral.
 
-5. **Verify every number you cite:**
+## Préflight obligatoire (après l'étape 0)
 
-   **If Qdrant is enabled:**
-   ```
-   qdrant_search(query="<stat or fact>", top=3, filter_source_key="brand")
-   ```
-   **Rule**: any number must come from a Qdrant result with `filter_source_key=brand` or `filter_type=report-data`. Never invent.
+1. Lire 3-5 posts récents dans `03-social-media/<canal>/examples/` pour calibrer le ton réel (pas seulement les specs).
+2. Vérifier le calendrier éditorial (`02-strategy/calendar/calendar.md` et/ou {{EDITORIAL_CALENDAR_TOOL}}) : pas de doublon, bon pilier, bon canal.
+3. **Anti-répétition — chemin unique, par scan de fichiers :**
+   - Scanner les 20 derniers fichiers de `03-social-media/<canal>/examples/` pour recouvrement de sujet ou d'angle.
+   - Consulter `_templates/inventory.md` pour repérer les contenus et gabarits existants sur le sujet.
+   - Lire `01-brand/messaging-framework.md` pour les positions déjà établies.
+   - Si le sujet a déjà été traité : chercher à compléter, contredire ou approfondir — jamais paraphraser.
+4. **Vérifier chaque chiffre cité** : il doit exister dans `01-brand/messaging-framework.md` ou dans `_sources/reports/`. S'il est absent, ne pas l'utiliser — demander la source à l'utilisateur.
 
-   **If Qdrant is disabled:** grep `01-brand/messaging-framework.md` for the number. If absent, do not use it — ask the user for the source.
+## Canaux
 
-## Channels
+### LinkedIn (principal)
 
-### LinkedIn (primary)
+- **Cadence** : {{CONTENT_CADENCE_LINKEDIN}}
+- **Piliers** : voir `02-strategy/content-pillars.md`
+- **Structures rhétoriques** : templates dans `03-social-media/linkedin/templates/` — choisir par intention (leçon, contrarian, analyse, démonstration, alternative, …)
+- **Formats** : post data, carrousel (→ skill `carousel`), portrait membre/client, sondage, thought leadership
 
-- **Cadence**: {{CONTENT_CADENCE_LINKEDIN}}
-- **Pillars**: see `02-strategy/content-pillars.md`
-- **Rhetorical structures**: templates in `03-social-media/linkedin/templates/` — pick by intent (lesson, contrarian, analysis, demonstration, alternative, ...)
-- **Formats**: data insight post, carousel, member/customer portrait, poll, thought leadership
+### Discord (si activé)
 
-### Discord (if enabled)
+- Langue : {{BRAND_DEFAULT_LANGUAGE}}
+- Ton : informel, entre pairs
+- Playbook : `03-social-media/discord/playbook.md`
 
-- Language: {{BRAND_DEFAULT_LANGUAGE}}
-- Tone: informal, peer-to-peer
-- Playbook: `03-social-media/discord/playbook.md`
+### WhatsApp (si activé)
 
-### WhatsApp (if enabled)
+- Langue : {{BRAND_DEFAULT_LANGUAGE}}
+- Usage : rappels d'événements et alertes courtes uniquement
+- Moins de 50 mots
+- Playbook : `03-social-media/whatsapp/playbook.md`
 
-- Language: {{BRAND_DEFAULT_LANGUAGE}}
-- Use: event reminders, short alerts only
-- Under 50 words
-- Playbook: `03-social-media/whatsapp/playbook.md`
+## La voix {{COMPANY_NAME}} sur LinkedIn
 
-## The {{COMPANY_NAME}} voice on LinkedIn
+Les posts se lisent comme des réflexions partagées par un pair, pas comme de la publicité.
 
-Posts read as narrative reflections shared by a peer, not as advertising.
-
-### What to do
+### À faire
 {{SOCIAL_VOICE_DOS}}
 
-### What not to do
+### À ne pas faire
 {{SOCIAL_VOICE_DONTS}}
 
-### Hook examples that work
+### Exemples de hooks qui fonctionnent
 {{SOCIAL_HOOK_EXAMPLES}}
 
-## Data-driven post structure
+## Structure de post data
 
 ```
-[Striking number as hook]
+[Chiffre marquant en hook]
 
-[Context in 1-2 sentences]
+[Contexte en 1-2 phrases]
 
-[Insight / contradiction / so-what]
+[Insight / contradiction / conséquence]
 
-[Supporting data — bullets or short paragraphs]
+[Données d'appui — puces ou paragraphes courts]
 
-[Actionable takeaway]
+[Enseignement actionnable]
 
-[Single, clear CTA]
+[Un seul CTA, clair]
 
 #Hashtag1 #Hashtag2 (max 5)
 ```
 
-## Publishing rules
+## Règles de publication
 
-- Length: 50-150 words for a post, 800-1500 for a LinkedIn article
+- Longueur : 50-150 mots pour un post, 800-1500 pour un article LinkedIn
 - Max 5 hashtags
-- Always mention `{{COMPANY_WEBSITE}}` or include a CTA
-- Images: via `image-generation` with a precise brief
-- Emoji: {{SOCIAL_EMOJI_RULE}}
-- Dashes: {{SOCIAL_DASH_RULE}}
+- Toujours mentionner `{{COMPANY_WEBSITE}}` ou inclure un CTA
+- Images : via `image-generation` avec un brief précis (qui consulte d'abord `01-brand/assets/index.md`)
+- Emoji : {{SOCIAL_EMOJI_RULE}}
+- Tirets : {{SOCIAL_DASH_RULE}} (jamais de tiret cadratin `—`, cf. checklist pré-composition)
 
-## Brand-specific customizations
+## Après production — mise à jour du calendrier (OBLIGATOIRE)
+
+Une fois le draft livré (et a fortiori une fois publié) :
+
+1. Mettre à jour le statut de l'entrée correspondante dans **`02-strategy/calendar/calendar.md`** (ex. `À faire` → `Drafté` → `Publié`), avec le chemin du fichier produit.
+2. Si {{EDITORIAL_CALENDAR_TOOL}} est configuré, refléter le même statut dans l'outil.
+3. À la publication, archiver le post dans `03-social-media/<canal>/examples/` — c'est ce qui alimente l'anti-répétition des prochains posts.
+
+Une production qui ne met pas le calendrier à jour est une production inachevée.
+
+## Personnalisation par marque
 
 {{SOCIAL_SPECIFIC_RULES}}
 
-## Final validation
+## Validation finale
 
-After drafting, invoke `brand-check` before delivery. The hook `.claude/hooks/brand-check-reminder.py` fires automatically but you can also invoke manually.
+Après rédaction, invoquer `brand-check` avant livraison. Le hook `.claude/hooks/brand-check-reminder.py` se déclenche automatiquement, mais l'invocation manuelle reste possible.
 
-## Associated skills
+## Skills associées
 
-- `copy-editing` — 7-pass review
-- `image-generation` — post visuals
-- `brand-check` — mandatory final validation
+- `copy-editing` — relecture 7 passes
+- `carousel` — carrousel LinkedIn PDF multipage
+- `image-generation` — visuels de posts
+- `brand-check` — validation finale obligatoire

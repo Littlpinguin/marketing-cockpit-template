@@ -1,0 +1,155 @@
+{
+  "name": "Reporting - Envoyer - Rapport quotidien",
+  "active": false,
+  "nodes": [
+    {
+      "id": "sticky-doc",
+      "name": "Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-120, -240],
+      "parameters": {
+        "content": "## Rapport quotidien de metriques\n\nFlux : cron (jours ouvres 18h) -> collecte de metriques via API -> agregation -> rapport HTML -> email.\n\nAvant activation :\n1. Pointer 'Récupérer métriques' vers VOTRE source (API analytics, outil email, CRM, endpoint du module 11-reporting...). Le node est configure avec une URL placeholder a remplacer.\n2. Adapter 'Agréger indicateurs' au format reel de la reponse (exemples inclus)\n3. Creer les credentials (API metriques + SMTP) dans le vault n8n\n4. Assigner l'error workflow global\n\nAstuce : dupliquer le node HTTP pour agreger plusieurs sources (les brancher en parallele puis Merge).",
+        "height": 340,
+        "width": 460,
+        "color": 3
+      }
+    },
+    {
+      "id": "cron-daily",
+      "name": "Déclencheur quotidien 18h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 300],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * 1-5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fetch-metrics",
+      "name": "Récupérer métriques",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 300],
+      "parameters": {
+        "method": "GET",
+        "url": "https://REMPLACEZ-MOI.exemple/api/metriques-du-jour",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "{{N8N_CREDENTIAL_ID_METRIQUES}}",
+          "name": "API métriques"
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "name": "Agréger indicateurs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300],
+      "parameters": {
+        "jsCode": "// ADAPTEZ ce mapping au format reel de votre API de metriques.\n// Programmation defensive : la source peut etre en erreur (onError: continue) ou renvoyer un format inattendu.\nconst brut = $input.first().json || {};\nconst enErreur = Boolean(brut.error);\n\nconst num = (v) => (typeof v === 'number' && isFinite(v)) ? v : (parseFloat(v) || 0);\n\n// Exemple de mapping — remplacez par vos indicateurs reels :\nconst indicateurs = [\n  { nom: 'Visites du site', valeur: num(brut.visites), unite: '' },\n  { nom: 'Inscriptions newsletter', valeur: num(brut.inscriptions), unite: '' },\n  { nom: 'Taux d\\'ouverture email', valeur: num(brut.tauxOuverture), unite: '%' },\n  { nom: 'Leads generes', valeur: num(brut.leads), unite: '' }\n];\n\nreturn [{\n  json: {\n    date: new Date().toISOString().split('T')[0],\n    enErreur,\n    messageErreur: enErreur ? (brut.error?.message || 'Source de metriques injoignable') : '',\n    indicateurs\n  }\n}];"
+      }
+    },
+    {
+      "id": "build-html",
+      "name": "Générer rapport HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 300],
+      "parameters": {
+        "jsCode": "const d = $input.first().json;\n\nconst lignes = d.indicateurs.map(i =>\n  `<tr><td style=\"padding:8px;border-bottom:1px solid #eee;\">${i.nom}</td><td style=\"padding:8px;border-bottom:1px solid #eee;text-align:right;font-weight:bold;\">${i.valeur}${i.unite}</td></tr>`\n).join('');\n\nconst avertissement = d.enErreur\n  ? `<p style=\"color:#e74c3c;font-weight:bold;\">⚠ La source de métriques n'a pas répondu correctement : ${d.messageErreur}. Les valeurs ci-dessous peuvent être incomplètes.</p>`\n  : '';\n\nconst html = `<div style=\"font-family: Helvetica, Arial, sans-serif; font-size: 12pt; color: #333; line-height: 1.6; max-width: 600px;\">\n  <p style=\"font-size: 14pt; font-weight: bold;\">Rapport marketing quotidien — ${d.date}</p>\n  ${avertissement}\n  <table style=\"border-collapse: collapse; width: 100%; margin: 16px 0;\">\n    <tr style=\"background:#f0f0f0;\"><th style=\"padding:8px;text-align:left;\">Indicateur</th><th style=\"padding:8px;text-align:right;\">Valeur</th></tr>\n    ${lignes}\n  </table>\n  <p style=\"color:#888;font-size:10pt;\">Généré automatiquement par n8n — workflow « Reporting - Envoyer - Rapport quotidien ».</p>\n</div>`;\n\nreturn [{ json: { sujet: `Rapport marketing — ${d.date}`, corps: html } }];"
+      }
+    },
+    {
+      "id": "send-report",
+      "name": "Envoyer rapport",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [880, 300],
+      "parameters": {
+        "fromEmail": "{{SENDER_EMAIL}}",
+        "toEmail": "{{NOTIFICATION_EMAIL}}",
+        "subject": "={{ $json.sujet }}",
+        "emailFormat": "html",
+        "html": "={{ $json.corps }}",
+        "options": {}
+      },
+      "credentials": {
+        "smtp": {
+          "id": "{{N8N_CREDENTIAL_ID_SMTP}}",
+          "name": "SMTP - notifications"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Déclencheur quotidien 18h": {
+      "main": [
+        [
+          {
+            "node": "Récupérer métriques",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Récupérer métriques": {
+      "main": [
+        [
+          {
+            "node": "Agréger indicateurs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agréger indicateurs": {
+      "main": [
+        [
+          {
+            "node": "Générer rapport HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Générer rapport HTML": {
+      "main": [
+        [
+          {
+            "node": "Envoyer rapport",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris",
+    "errorWorkflow": "{{ERROR_WORKFLOW_ID}}"
+  }
+}

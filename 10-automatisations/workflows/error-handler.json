@@ -1,0 +1,86 @@
+{
+  "name": "Error Handler - Notifier - Erreurs workflows",
+  "active": false,
+  "nodes": [
+    {
+      "id": "sticky-doc",
+      "name": "Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-80, -160],
+      "parameters": {
+        "content": "## Error workflow global\n\nA importer et activer EN PREMIER.\n\n1. Remplacer {{NOTIFICATION_EMAIL}} et {{SENDER_EMAIL}}\n2. Creer un credential SMTP dans le vault n8n et le selectionner sur le node d'envoi\n3. Activer ce workflow (il doit rester actif en permanence)\n4. Dans CHAQUE autre workflow : Options > Settings > Error workflow > selectionner celui-ci\n\nVariante : remplacer le node Email par un node Slack/Discord/Telegram selon votre canal d'alerte.",
+        "height": 300,
+        "width": 380,
+        "color": 3
+      }
+    },
+    {
+      "id": "error-trigger",
+      "name": "Erreur détectée",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [0, 300],
+      "parameters": {}
+    },
+    {
+      "id": "format-notification",
+      "name": "Formater notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 300],
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst execution = item.json.execution || {};\nconst workflow = item.json.workflow || {};\n\nconst workflowName = workflow.name || 'Inconnu';\nconst errorMessage = execution.error?.message || 'Erreur inconnue';\nconst errorNode = execution.lastNodeExecuted || 'N/A';\nconst executionId = execution.id || '';\nconst startedAt = execution.startedAt ? new Date(execution.startedAt).toLocaleString('fr-FR') : 'N/A';\nconst mode = execution.mode || 'N/A';\nconst retryUrl = execution.url || '';\n\nconst html = `<div style=\"font-family: Helvetica, Arial, sans-serif; font-size: 12pt; color: #333; line-height: 1.6; max-width: 600px;\">\n  <p style=\"font-size: 14pt; font-weight: bold; color: #e74c3c;\">Erreur workflow</p>\n  <table style=\"border-collapse: collapse; width: 100%; margin: 16px 0;\">\n    <tr><td style=\"padding: 8px; font-weight: bold; border-bottom: 1px solid #eee; width: 140px;\">Workflow</td><td style=\"padding: 8px; border-bottom: 1px solid #eee;\">${workflowName}</td></tr>\n    <tr><td style=\"padding: 8px; font-weight: bold; border-bottom: 1px solid #eee;\">Node en erreur</td><td style=\"padding: 8px; border-bottom: 1px solid #eee; color: #e74c3c; font-weight: bold;\">${errorNode}</td></tr>\n    <tr><td style=\"padding: 8px; font-weight: bold; border-bottom: 1px solid #eee;\">Message</td><td style=\"padding: 8px; border-bottom: 1px solid #eee;\">${errorMessage}</td></tr>\n    <tr><td style=\"padding: 8px; font-weight: bold; border-bottom: 1px solid #eee;\">Date</td><td style=\"padding: 8px; border-bottom: 1px solid #eee;\">${startedAt}</td></tr>\n    <tr><td style=\"padding: 8px; font-weight: bold; border-bottom: 1px solid #eee;\">Mode</td><td style=\"padding: 8px; border-bottom: 1px solid #eee;\">${mode}</td></tr>\n    <tr><td style=\"padding: 8px; font-weight: bold;\">Execution ID</td><td style=\"padding: 8px;\">${executionId}</td></tr>\n  </table>\n  ${retryUrl ? '<p><a href=\"' + retryUrl + '\" style=\"color: #3498db;\">Voir l\\'exécution dans n8n</a></p>' : ''}\n</div>`;\n\nreturn [{\n  json: {\n    sujet: '[ERREUR] ' + workflowName + ' — ' + errorNode,\n    corps: html\n  }\n}];"
+      }
+    },
+    {
+      "id": "send-alert",
+      "name": "Envoyer alerte email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [440, 300],
+      "parameters": {
+        "fromEmail": "{{SENDER_EMAIL}}",
+        "toEmail": "{{NOTIFICATION_EMAIL}}",
+        "subject": "={{ $json.sujet }}",
+        "emailFormat": "html",
+        "html": "={{ $json.corps }}",
+        "options": {}
+      },
+      "credentials": {
+        "smtp": {
+          "id": "{{N8N_CREDENTIAL_ID_SMTP}}",
+          "name": "SMTP - alertes"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Erreur détectée": {
+      "main": [
+        [
+          {
+            "node": "Formater notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formater notification": {
+      "main": [
+        [
+          {
+            "node": "Envoyer alerte email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

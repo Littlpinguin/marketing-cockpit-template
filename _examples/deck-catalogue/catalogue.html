@@ -1,0 +1,804 @@
+<!--
+  ============================================================================
+  DECK-CATALOGUE · bibliothèque de layouts pour la skill `slides`
+  ============================================================================
+  Deck de démonstration 100 % fictif. Marque inventée : « Meridian Conseil »,
+  cabinet de conseil en stratégie climat. Toutes les données, personnes,
+  offres et tarifs sont imaginaires.
+
+  Chaque slide est à la fois un exemple exécuté ET sa propre légende :
+  le cartouche en bas à droite donne le nom du layout et quand l'utiliser.
+
+  Système : frame 1920×1080 scalé responsive, navigation clavier / molette /
+  tactile / drag-bar, vue d'ensemble (O), export PDF (P) avec rastérisation
+  des textes en dégradé. Aucun asset externe requis (fonts Google en option,
+  fallback système).
+
+  Règles d'écriture : aucun tiret cadratin, aucun point final sur les titres.
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deck-catalogue · Bibliothèque de layouts · Meridian Conseil (fictif)</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert:#2f6f5e; --vert-clair:#4da585; --sauge:#9ec3ae; --or:#c8a24b; --or-clair:#e3cd93;
+  --ink:#1c2420; --ink-soft:#5b655f; --white:#fcfbf8; --bg-tint:#f2efe7; --bg-dark:#182721; --bg-dark-2:#213730;
+  --rule:rgba(28,36,32,0.10); --rule-strong:rgba(28,36,32,0.18); --rule-dark:rgba(252,251,248,0.14);
+  --shadow-card:0 20px 60px -22px rgba(28,36,32,0.18);
+  --grad:linear-gradient(120deg,#4da585 0%,#c8a24b 100%);
+  --font-display:'Fraunces',Georgia,serif; --font-body:'Inter',system-ui,sans-serif;
+  --ease-soft:cubic-bezier(0.16,1,0.3,1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+*:focus-visible { outline:2px solid var(--vert-clair); outline-offset:4px; border-radius:4px; }
+html, body { font-family:var(--font-body); background:var(--bg-dark); color:var(--ink); height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-feature-settings:'tnum' on; }
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+
+.stage { position:fixed; inset:0; width:100vw; height:100vh; background:var(--bg-dark); overflow:hidden; }
+.stage-frame { width:1920px; height:1080px; position:absolute; top:50%; left:50%; transform-origin:center center; background:var(--white); box-shadow:0 40px 120px rgba(0,0,0,.45); overflow:hidden; }
+
+.plate { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:104px 132px 116px; background:var(--white); color:var(--ink); opacity:0; visibility:hidden; transition:opacity .6s var(--ease-soft), visibility .6s var(--ease-soft); overflow:hidden; }
+.plate.active { opacity:1; visibility:visible; }
+.plate.tint { background:var(--bg-tint); }
+.plate.dark { background:var(--bg-dark); color:var(--white); }
+.plate.dark .ink-soft, .plate.dark .sub, .plate.dark .lede { color:rgba(252,251,248,0.74); }
+
+.plate::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.03; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.plate > *:not(.aurora):not(.chrome) { position:relative; z-index:3; }
+
+.aurora { position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.aurora i { position:absolute; border-radius:50%; filter:blur(90px); }
+.aurora .a1 { width:620px; height:620px; background:var(--vert-clair); top:-180px; right:-120px; opacity:.22; }
+.aurora .a2 { width:520px; height:520px; background:var(--or); bottom:-200px; left:-120px; opacity:.14; }
+
+.chrome { position:absolute; inset:44px 64px; pointer-events:none; z-index:12; }
+.chrome-row { position:absolute; left:0; right:0; display:flex; justify-content:space-between; align-items:center; }
+.chrome-row.top { top:0; } .chrome-row.bottom { bottom:0; }
+.tag-meta, .tag-folio, .tag-signature { font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:rgba(28,36,32,0.5); }
+.tag-folio strong { color:var(--ink); font-weight:700; }
+.tag-signature { display:flex; align-items:center; gap:10px; text-transform:none; letter-spacing:.04em; font-weight:500; }
+.plate.dark .tag-meta, .plate.dark .tag-folio, .plate.dark .tag-signature { color:rgba(252,251,248,0.6); }
+.plate.dark .tag-folio strong { color:var(--white); }
+.logo-mark { width:26px; height:26px; display:block; color:var(--vert); }
+.plate.dark .logo-mark { color:var(--white); }
+.logo-word { font-family:var(--font-display); font-size:17px; font-weight:600; letter-spacing:.06em; color:var(--ink); }
+.plate.dark .logo-word { color:var(--white); }
+.logo-lockup { display:flex; align-items:center; gap:10px; }
+
+/* Cartouche légende : nom du layout + quand l'utiliser */
+.legend { position:absolute; right:64px; bottom:92px; z-index:11; display:flex; flex-direction:column; gap:5px; max-width:330px; padding:14px 18px; border:1px solid var(--rule-strong); border-left:3px solid var(--or); border-radius:10px; background:rgba(252,251,248,0.88); backdrop-filter:blur(4px); pointer-events:none; }
+.legend .lg-name { font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--vert); }
+.legend .lg-when { font-size:13px; line-height:1.45; color:var(--ink-soft); }
+.plate.dark .legend { background:rgba(24,39,33,0.82); border-color:var(--rule-dark); border-left-color:var(--or); }
+.plate.dark .legend .lg-name { color:var(--sauge); }
+.plate.dark .legend .lg-when { color:rgba(252,251,248,0.72); }
+
+.eyebrow { display:block; font-size:15px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--vert); margin-bottom:22px; }
+.plate.dark .eyebrow { color:var(--sauge); }
+.grad { background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; display:inline-block; padding:.06em .04em; margin:-.06em -.04em; overflow:visible; transform:translateZ(0); }
+h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0.01em; }
+.lede { font-size:27px; line-height:1.45; color:var(--ink-soft); max-width:1060px; }
+
+.reveal { opacity:0; transform:translateY(22px); transition:opacity 1s var(--ease-soft), transform 1s var(--ease-soft); }
+.plate.active .reveal { opacity:1; transform:translateY(0); }
+.plate.active .reveal:nth-child(1){transition-delay:.05s}.plate.active .reveal:nth-child(2){transition-delay:.16s}.plate.active .reveal:nth-child(3){transition-delay:.28s}.plate.active .reveal:nth-child(4){transition-delay:.40s}.plate.active .reveal:nth-child(5){transition-delay:.52s}.plate.active .reveal:nth-child(6){transition-delay:.64s}
+[data-stagger] > * { opacity:0; transform:translateY(16px); transition:opacity .8s var(--ease-soft), transform .8s var(--ease-soft); }
+.plate.active [data-stagger] > * { opacity:1; transform:translateY(0); }
+.plate.active [data-stagger] > *:nth-child(1){transition-delay:.40s}.plate.active [data-stagger] > *:nth-child(2){transition-delay:.50s}.plate.active [data-stagger] > *:nth-child(3){transition-delay:.60s}.plate.active [data-stagger] > *:nth-child(4){transition-delay:.70s}.plate.active [data-stagger] > *:nth-child(5){transition-delay:.80s}.plate.active [data-stagger] > *:nth-child(6){transition-delay:.90s}
+
+.head h1 { font-size:88px; line-height:1.02; max-width:1500px; }
+.head .lede { margin-top:28px; }
+.cover h1 { font-size:142px; line-height:.98; max-width:1460px; }
+.cover .lede { font-size:30px; margin-top:30px; color:rgba(252,251,248,0.82); }
+.cover .underline { width:160px; height:3px; background:var(--grad); border-radius:2px; margin:34px 0 4px; }
+.silence h2 { font-size:82px; line-height:1.08; max-width:1480px; }
+.silence-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:30px; }
+.silence-num { font-family:var(--font-display); font-size:300px; line-height:.9; font-weight:500; }
+.silence-tag { font-size:30px; font-weight:300; max-width:1040px; color:rgba(252,251,248,0.82); line-height:1.4; }
+
+/* Sommaire / agenda */
+.agenda-list { display:flex; flex-direction:column; margin-top:44px; max-width:1360px; }
+.ag-row { display:grid; grid-template-columns:120px 1fr 420px; align-items:baseline; gap:32px; padding:30px 8px; border-bottom:1px solid var(--rule); }
+.ag-row:first-child { border-top:1px solid var(--rule); }
+.ag-num { font-family:var(--font-display); font-size:44px; color:var(--or); }
+.ag-title { font-family:var(--font-display); font-size:38px; }
+.ag-note { font-size:17px; color:var(--ink-soft); text-align:right; }
+
+/* Intercalaire de chapitre */
+.section-div { max-width:1300px; }
+.section-div .kicker { display:inline-flex; align-items:center; gap:14px; font-size:15px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--sauge); margin-bottom:34px; }
+.section-div .kicker::before { content:''; width:56px; height:2px; background:var(--grad); }
+.section-div h2 { font-size:120px; line-height:1; }
+.section-div .lede { margin-top:30px; color:rgba(252,251,248,0.74); }
+
+.kpis { display:flex; gap:30px; margin-top:46px; }
+.kpi { flex:1; border-left:3px solid; border-image:var(--grad) 1; padding:6px 0 6px 28px; }
+.kpi .n { font-family:var(--font-display); font-size:88px; line-height:.9; }
+.kpi .l { font-size:18px; color:var(--ink-soft); margin-top:14px; max-width:300px; line-height:1.4; }
+.plate.dark .kpi .l { color:rgba(252,251,248,0.72); }
+
+.cards { display:grid; gap:28px; margin-top:46px; }
+.cards.c2 { grid-template-columns:repeat(2,1fr); } .cards.c3 { grid-template-columns:repeat(3,1fr); } .cards.c4 { grid-template-columns:repeat(4,1fr); }
+.card { background:#fff; border:1px solid var(--rule); border-radius:18px; padding:34px; box-shadow:var(--shadow-card); }
+.plate.dark .card { background:var(--bg-dark-2); border-color:var(--rule-dark); box-shadow:none; }
+.card .ix { font-family:var(--font-display); font-size:30px; color:var(--or); margin-bottom:14px; }
+.card h3 { font-family:var(--font-body); font-weight:700; font-size:22px; letter-spacing:0; margin-bottom:10px; line-height:1.2; }
+.card p { font-size:17px; line-height:1.5; color:var(--ink-soft); }
+.plate.dark .card p { color:rgba(252,251,248,0.72); }
+
+.chip { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border-radius:999px; background:rgba(77,165,133,0.14); color:var(--vert); font-size:16px; font-weight:600; }
+.plate.dark .chip { background:rgba(77,165,133,0.18); color:var(--sauge); }
+
+/* Dot-grid */
+.dotgrid { display:grid; grid-template-columns:repeat(20,1fr); gap:13px; }
+.dotgrid span { aspect-ratio:1; border-radius:50%; }
+.dg-num { font-family:var(--font-display); font-size:120px; line-height:1; }
+
+/* Citation */
+.bigquote { display:flex; flex-direction:column; justify-content:center; gap:44px; height:100%; max-width:1560px; }
+.bigquote-text { font-family:var(--font-display); font-size:104px; font-weight:300; line-height:1.12; letter-spacing:-0.02em; color:var(--white); }
+.bigquote-text em { font-style:italic; color:var(--or-clair); }
+.bigquote-attrib { font-size:16px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--sauge); }
+
+/* Tableau simple */
+.tbl { width:100%; border-collapse:collapse; margin-top:34px; }
+.tbl th, .tbl td { text-align:left; padding:19px 24px; vertical-align:top; border-bottom:1px solid var(--rule); font-size:19px; line-height:1.4; }
+.tbl th { font-weight:700; font-size:14px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+.tbl .rh { font-weight:600; color:var(--ink); width:280px; }
+.tbl td .a { color:var(--vert); font-weight:600; } .tbl td .b { color:#8a6d25; font-weight:600; }
+
+/* Tableau versus (2 colonnes comparées) + figure cliquable */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; margin-top:40px; }
+.vs { width:100%; border-collapse:collapse; }
+.vs th, .vs td { padding:14px 16px; border-bottom:1px solid var(--rule); font-size:18px; text-align:left; }
+.vs thead th { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); font-weight:700; }
+.vs thead th.q { color:var(--vert); }
+.vs .rh { color:var(--ink-soft); font-weight:500; }
+.vs td.q { font-weight:600; color:var(--ink); }
+.vs td.g { color:rgba(28,36,32,0.5); }
+
+/* Maquette navigateur 100 % CSS (remplace toute capture d'écran) */
+.mockup { border-radius:14px; overflow:hidden; border:1px solid var(--rule-strong); box-shadow:var(--shadow-card); background:#fff; position:relative; display:block; text-decoration:none; color:inherit; }
+.mockup-bar { display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--bg-tint); border-bottom:1px solid var(--rule); }
+.mockup-bar i { width:11px; height:11px; border-radius:50%; background:var(--rule-strong); }
+.mockup-url { flex:1; margin-left:8px; font-size:13px; color:var(--ink-soft); background:#fff; border:1px solid var(--rule); border-radius:8px; padding:5px 14px; }
+.mockup-body { display:grid; grid-template-columns:170px 1fr; min-height:330px; }
+.mockup-side { background:var(--bg-dark); padding:20px 16px; display:flex; flex-direction:column; gap:12px; }
+.mockup-side i { height:10px; border-radius:5px; background:rgba(252,251,248,0.22); display:block; }
+.mockup-side i:first-child { background:var(--grad); height:12px; }
+.mockup-main { padding:24px; display:flex; flex-direction:column; gap:18px; }
+.mockup-kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.mockup-kpis b { display:block; border:1px solid var(--rule); border-radius:10px; padding:14px; font-family:var(--font-display); font-size:26px; font-weight:500; color:var(--vert); }
+.mockup-kpis b small { display:block; font-family:var(--font-body); font-size:11px; font-weight:600; color:var(--ink-soft); margin-top:6px; letter-spacing:.04em; }
+.mockup-bars { display:flex; align-items:flex-end; gap:14px; height:120px; border-bottom:2px solid var(--rule-strong); padding:0 8px; }
+.mockup-bars i { flex:1; border-radius:6px 6px 0 0; background:var(--sauge); }
+.mockup-bars i.hi { background:var(--grad); }
+.mockup .go { position:absolute; right:14px; bottom:14px; background:var(--grad); color:#0e1f19; font-weight:700; font-size:14px; letter-spacing:.02em; padding:9px 16px; border-radius:999px; }
+
+/* Avant / après */
+.ba { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:46px; }
+.ba .pane { border-radius:22px; padding:40px; }
+.ba .pane .bt { font-size:14px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:24px; display:block; }
+.ba .before { background:var(--bg-tint); border:1px solid var(--rule); }
+.ba .before .bt { color:var(--ink-soft); }
+.ba .after { background:#fff; border:2px solid var(--vert-clair); box-shadow:var(--shadow-card); }
+.ba .after .bt { color:var(--vert); }
+.ba ul { list-style:none; display:flex; flex-direction:column; gap:18px; }
+.ba li { font-size:19px; line-height:1.45; padding-left:32px; position:relative; color:var(--ink-soft); }
+.ba .before li::before { content:''; position:absolute; left:0; top:9px; width:14px; height:2px; background:var(--rule-strong); }
+.ba .after li { color:var(--ink); }
+.ba .after li::before { content:''; position:absolute; left:0; top:6px; width:14px; height:14px; border-radius:50%; background:var(--grad); }
+
+/* Framework lettré */
+.step-row { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:50px; }
+.step-cell { position:relative; padding:36px 30px; border:1px solid var(--rule); border-radius:18px; background:#fff; box-shadow:var(--shadow-card); }
+.step-cell .ltr { font-family:var(--font-display); font-size:84px; line-height:.8; color:transparent; background:var(--grad); -webkit-background-clip:text; background-clip:text; margin-bottom:18px; }
+.step-cell h3 { font-family:var(--font-body); font-weight:700; font-size:22px; margin-bottom:10px; }
+.step-cell p { font-size:16px; line-height:1.45; color:var(--ink-soft); }
+.step-cell:not(:last-child)::after { content:'→'; position:absolute; right:-18px; top:50%; transform:translateY(-50%); color:var(--vert-clair); font-size:22px; z-index:4; }
+.step-src { margin-top:26px; font-size:16px; color:var(--ink-soft); }
+.step-src b { color:var(--ink); }
+
+/* Pipeline */
+.pipe { display:flex; align-items:stretch; gap:0; margin-top:50px; }
+.pstep { flex:1; padding:30px 32px; background:#fff; border:1px solid var(--rule); border-radius:18px; box-shadow:var(--shadow-card); position:relative; margin-right:48px; }
+.pstep:last-child { margin-right:0; }
+.pstep:not(:last-child)::after { content:''; position:absolute; right:-39px; top:50%; width:30px; height:2px; background:var(--grad); transform:translateY(-50%); }
+.pstep .k { font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--vert); display:block; margin-bottom:12px; }
+.pstep .t { font-weight:700; font-size:21px; margin-bottom:8px; }
+.pstep .d { font-size:16px; color:var(--ink-soft); line-height:1.45; }
+
+/* Quadrant */
+.quad-wrap { display:flex; gap:56px; align-items:center; margin-top:24px; }
+.quad { width:520px; height:440px; position:relative; border-left:2px solid var(--rule-strong); border-bottom:2px solid var(--rule-strong); flex-shrink:0; }
+.quad .prio { position:absolute; top:0; right:0; width:50%; height:50%; background:rgba(77,165,133,0.10); border-radius:0 0 0 14px; }
+.quad .axis-x { position:absolute; bottom:-34px; right:0; font-size:14px; color:var(--ink-soft); }
+.quad .axis-y { position:absolute; top:-26px; left:-2px; font-size:14px; color:var(--ink-soft); }
+.quad .dot { position:absolute; transform:translate(-50%,50%); display:flex; align-items:center; gap:10px; }
+.quad .dot span.d { width:18px; height:18px; border-radius:50%; background:var(--grad); box-shadow:0 0 0 6px rgba(77,165,133,0.14); flex-shrink:0; }
+.quad .dot span.t { font-size:15px; font-weight:600; white-space:nowrap; }
+.lede-list { display:flex; flex-direction:column; gap:14px; }
+.lede-list .li { display:flex; gap:16px; align-items:baseline; font-size:21px; line-height:1.4; }
+.lede-list .li .k { font-family:var(--font-display); color:var(--vert-clair); font-size:24px; flex-shrink:0; }
+
+/* Offres comparées (pricing) */
+.cmp { display:grid; grid-template-columns:repeat(2,1fr); gap:32px; margin-top:46px; }
+.cmp .col { border:1px solid var(--rule); border-radius:22px; padding:40px; background:#fff; box-shadow:var(--shadow-card); position:relative; }
+.cmp .col.reco { border:2px solid var(--vert-clair); }
+.cmp .col .badge { position:absolute; top:-15px; left:40px; background:var(--grad); color:#0e1f19; font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:7px 16px; border-radius:999px; }
+.cmp .col .nm { font-weight:700; font-size:23px; }
+.cmp .col .price { font-family:var(--font-display); font-size:70px; line-height:1; margin:14px 0 6px; }
+.cmp .col .price small { font-size:24px; color:var(--ink-soft); }
+.cmp .col .meta { font-size:16px; color:var(--ink-soft); }
+.cmp .col ul { list-style:none; margin-top:22px; display:flex; flex-direction:column; gap:12px; }
+.cmp .col li { font-size:18px; padding-left:30px; position:relative; color:var(--ink-soft); line-height:1.4; }
+.cmp .col li::before { content:''; position:absolute; left:0; top:9px; width:14px; height:14px; border-radius:50%; background:var(--grad); }
+
+/* Tableau de coûts */
+.cost { width:100%; border-collapse:collapse; margin-top:30px; font-variant-numeric:tabular-nums; }
+.cost th, .cost td { padding:14px 22px; border-bottom:1px solid var(--rule); font-size:19px; }
+.cost th { font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); text-align:right; }
+.cost th:first-child { text-align:left; }
+.cost td { text-align:right; color:var(--ink-soft); }
+.cost td:first-child { text-align:left; color:var(--ink); font-weight:500; }
+.cost tr.inA td:first-child { box-shadow:inset 4px 0 0 0 var(--vert-clair); padding-left:30px; }
+.cost tr.inA { background:rgba(77,165,133,0.08); }
+.cost .total td { border-top:2px solid var(--ink); border-bottom:none; font-weight:700; color:var(--ink); font-size:20px; padding-top:16px; }
+.cost .total.a td { border-top:1px dashed var(--rule-strong); color:var(--vert); }
+.cost .total td .e { font-family:var(--font-display); font-size:24px; }
+.cost-legend { display:flex; gap:24px; align-items:center; margin-top:18px; font-size:16px; color:var(--ink-soft); }
+.cost-legend .sw { display:inline-flex; align-items:center; gap:8px; }
+.cost-legend .sw i { width:16px; height:16px; border-radius:4px; background:rgba(77,165,133,0.4); box-shadow:inset 4px 0 0 0 var(--vert-clair); display:inline-block; }
+
+/* Timeline */
+.timeline { margin-top:60px; position:relative; }
+.tl-track { display:grid; grid-template-columns:repeat(6,1fr); position:relative; }
+.tl-track::before { content:''; position:absolute; top:13px; left:6%; right:6%; height:2px; background:var(--rule-strong); }
+.tl-col { display:flex; flex-direction:column; align-items:center; text-align:center; position:relative; padding:0 12px; }
+.tl-dot { width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid var(--rule-strong); position:relative; z-index:2; }
+.tl-col.on .tl-dot { background:var(--grad); border:none; }
+.tl-col.target .tl-dot { width:30px; height:30px; margin-top:-6px; box-shadow:0 0 0 7px rgba(200,162,75,0.2); }
+.tl-month { margin-top:18px; font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+.tl-col.target .tl-month { color:var(--vert); }
+.tl-label { margin-top:8px; font-size:17px; font-weight:600; line-height:1.25; }
+.tl-sub { margin-top:4px; font-size:14px; color:var(--ink-soft); }
+.tl-flag { margin-top:10px; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:transparent; background:var(--grad); -webkit-background-clip:text; background-clip:text; }
+
+/* Équipe */
+.team { display:grid; grid-template-columns:repeat(3,1fr); gap:34px 40px; margin-top:50px; }
+.tmember { display:flex; align-items:center; gap:22px; }
+.tphoto { width:112px; height:112px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:36px; color:var(--white); background:var(--bg-dark-2); border:2px solid rgba(252,251,248,0.18); }
+.tmember:nth-child(odd) .tphoto { background:linear-gradient(135deg,#2f6f5e,#4da585); }
+.tmember:nth-child(even) .tphoto { background:linear-gradient(135deg,#213730,#2f6f5e); }
+.tname { display:block; font-weight:700; font-size:22px; }
+.trole { display:block; font-size:16px; color:rgba(252,251,248,0.66); margin-top:4px; }
+
+.note-band { margin-top:34px; padding:20px 28px; border-radius:16px; background:rgba(77,165,133,0.12); font-size:19px; color:var(--vert); font-weight:500; display:flex; gap:14px; align-items:center; }
+.note-band b { color:var(--ink); }
+.plate.dark .note-band { background:rgba(77,165,133,0.16); color:var(--sauge); }
+.plate.dark .note-band b { color:#fff; }
+
+.url-pill { display:inline-flex; align-items:center; gap:16px; padding:18px 34px; border:1px solid var(--sauge); border-radius:999px; background:rgba(77,165,133,0.12); font-size:21px; font-weight:600; color:var(--sauge); text-decoration:none; }
+.url-pill::before { content:''; width:12px; height:12px; border-radius:50%; background:var(--grad); }
+
+@media print {
+  @page { size:1920px 1080px; margin:0; }
+  *,*::before,*::after { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  html, body { overflow:visible !important; height:auto !important; background:var(--bg-dark) !important; }
+  body.printing-pdf .nav-rail, body.printing-pdf .overview { display:none !important; }
+  body.printing-pdf .stage { position:static !important; width:auto !important; height:auto !important; background:transparent !important; overflow:visible !important; }
+  body.printing-pdf .stage-frame { position:static !important; transform:none !important; box-shadow:none !important; width:1920px !important; height:auto !important; overflow:visible !important; background:transparent !important; }
+  body.printing-pdf .plate { position:relative !important; inset:auto !important; opacity:1 !important; visibility:visible !important; width:1920px !important; height:1080px !important; page-break-before:always !important; break-before:page !important; break-after:avoid !important; overflow:hidden !important; display:flex !important; }
+  body.printing-pdf .plate:first-child { page-break-before:avoid !important; break-before:avoid !important; }
+  body.printing-pdf .reveal, body.printing-pdf [data-stagger] > * { opacity:1 !important; transform:none !important; transition:none !important; }
+}
+</style>
+</head>
+<body>
+
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="mrd-mark" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+    <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+    <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+  </symbol>
+</svg>
+
+<div class="stage">
+  <div class="stage-frame" id="stage-frame">
+
+  <!-- 01 COUVERTURE -->
+  <section class="plate dark active" data-meta="Layout 01 · Couverture">
+    <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
+    <div class="chrome">
+      <div class="chrome-row top"><span class="tag-meta">Proposition d'accompagnement · Stratégie climat</span><span class="tag-folio"></span></div>
+      <div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · démonstration, données 100 % fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div>
+    </div>
+    <div class="cover">
+      <span class="eyebrow reveal">Conseil en stratégie climat</span>
+      <h1 class="reveal">Réduire l'empreinte,<br>pas <span class="grad">l'ambition</span></h1>
+      <div class="underline reveal"></div>
+      <p class="lede reveal">Un accompagnement pas à pas pour transformer votre obligation réglementaire en avantage compétitif</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 01 · Couverture</span><span class="lg-when">Quand : ouvrir tout deck. Une promesse en une phrase, un mot en dégradé, fond sombre, zéro détail.</span></aside>
+  </section>
+
+  <!-- 02 SOMMAIRE -->
+  <section class="plate" data-meta="Layout 02 · Sommaire">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Sommaire</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Aujourd'hui, avec vous</span>
+      <h1 class="reveal" style="font-size:72px">Quatre temps, <span class="grad">puis vos questions</span></h1>
+    </div>
+    <div class="agenda-list" data-stagger>
+      <div class="ag-row"><span class="ag-num">01</span><span class="ag-title">Le constat</span><span class="ag-note">Où en êtes-vous vraiment</span></div>
+      <div class="ag-row"><span class="ag-num">02</span><span class="ag-title">La méthode</span><span class="ag-note">Notre cadre SEVE, éprouvé sur le terrain</span></div>
+      <div class="ag-row"><span class="ag-num">03</span><span class="ag-title">Le plan</span><span class="ag-note">Lots, budget, calendrier</span></div>
+      <div class="ag-row"><span class="ag-num">04</span><span class="ag-title">La décision</span><span class="ag-note">Prochaines étapes concrètes</span></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 02 · Sommaire</span><span class="lg-when">Quand : annoncer le déroulé en 3-5 temps maximum. Numéros en display, notes discrètes à droite.</span></aside>
+  </section>
+
+  <!-- 03 INTERCALAIRE DE CHAPITRE -->
+  <section class="plate dark" data-meta="Layout 03 · Intercalaire">
+    <div class="aurora"><i class="a2"></i></div>
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Chapitre · Le constat</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="section-div">
+      <span class="kicker reveal">Chapitre 01</span>
+      <h2 class="reveal">Le <span class="grad">constat</span></h2>
+      <p class="lede reveal">Trois angles morts qui reviennent chez la plupart des entreprises de taille intermédiaire que nous rencontrons</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 03 · Intercalaire de chapitre</span><span class="lg-when">Quand : marquer une rupture dans le récit. Un mot-chapitre géant, fond sombre, une phrase d'annonce.</span></aside>
+  </section>
+
+  <!-- 04 CARTES -->
+  <section class="plate" data-meta="Layout 04 · Cartes">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le constat</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Ce que nous observons</span>
+      <h1 class="reveal">Trois angles morts, <span class="grad">un même risque</span></h1>
+    </div>
+    <div class="cards c3" data-stagger>
+      <div class="card"><div class="ix">01</div><h3>Des données éparses</h3><p>Consommations, achats, déplacements : chaque service tient son fichier, personne ne consolide.</p></div>
+      <div class="card"><div class="ix">02</div><h3>Une réglementation qui accélère</h3><p>Reporting extra-financier, devoir de vigilance, appels d'offres : les exigences arrivent plus vite que les process.</p></div>
+      <div class="card"><div class="ix">03</div><h3>Des équipes seules</h3><p>Un référent motivé, sans mandat clair ni budget, porte le sujet à bout de bras.</p></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 04 · Cartes (2 à 4)</span><span class="lg-when">Quand : décomposer une idée en 2-4 facettes équivalentes. Jamais plus de 4, jamais 2 niveaux de puces.</span></aside>
+  </section>
+
+  <!-- 05 BANDEAU KPI -->
+  <section class="plate tint" data-meta="Layout 05 · Bandeau KPI">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Résultats observés</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Ce que produit la démarche</span>
+      <h1 class="reveal">Des résultats qui se <span class="grad">mesurent</span></h1>
+    </div>
+    <div class="kpis" data-stagger>
+      <div class="kpi"><div class="n">-24 %</div><div class="l">d'émissions en moyenne au bout de 24 mois d'accompagnement</div></div>
+      <div class="kpi"><div class="n">12</div><div class="l">sites industriels audités sur la dernière mission type</div></div>
+      <div class="kpi"><div class="n">×3</div><div class="l">de vitesse de consolidation du reporting annuel</div></div>
+      <div class="kpi"><div class="n">96 %</div><div class="l">des plans d'action encore actifs un an après la mission</div></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 05 · Bandeau KPI</span><span class="lg-when">Quand : aligner 3-4 chiffres de même rang. Le chiffre en display, la légende en une phrase courte.</span></aside>
+  </section>
+
+  <!-- 06 DOT-GRID -->
+  <section class="plate" data-meta="Layout 06 · Dot-grid">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le marché</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:10px">
+      <span class="eyebrow reveal">Une proportion, pas un camembert</span>
+      <h1 class="reveal" style="font-size:70px">La plupart avancent encore <span class="grad">sans trajectoire</span></h1>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; margin-top:30px">
+      <div class="reveal dotgrid" data-dots="100" data-us="68"></div>
+      <div class="reveal">
+        <div class="dg-num"><span class="grad">68 %</span></div>
+        <p style="font-size:19px; line-height:1.5; color:var(--ink-soft); max-width:560px; margin-top:10px">des entreprises de taille intermédiaire interrogées dans notre panel fictif n'ont pas de trajectoire carbone chiffrée. Chaque point représente une entreprise du panel.</p>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 06 · Dot-grid</span><span class="lg-when">Quand : rendre une proportion tangible (X sur 100). Bien plus parlant qu'un camembert ou une jauge.</span></aside>
+  </section>
+
+  <!-- 07 CHIFFRE-CHOC -->
+  <section class="plate dark" data-meta="Layout 07 · Chiffre-choc">
+    <div class="aurora"><i class="a1"></i></div>
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La preuve</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="silence-wrap">
+      <span class="eyebrow reveal" style="margin-bottom:0">Cas type, industrie, 900 salariés</span>
+      <div class="silence-num reveal"><span class="grad">-38 %</span></div>
+      <p class="silence-tag reveal">d'émissions de CO₂e en trois ans, sans baisse de production, chez un industriel fictif de notre panel</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 07 · Chiffre-choc</span><span class="lg-when">Quand : un seul chiffre mérite toute la slide. Rien d'autre : le chiffre, une phrase, le silence.</span></aside>
+  </section>
+
+  <!-- 08 SLIDE-SILENCE -->
+  <section class="plate dark" data-meta="Layout 08 · Slide-silence">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La question stratégique</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="silence">
+      <span class="eyebrow reveal">Le bon point de départ</span>
+      <h2 class="reveal">La vraie question n'est pas<br><span class="grad">« combien ça coûte »</span> mais <span class="grad">« ce que coûte d'attendre »</span></h2>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 08 · Slide-silence</span><span class="lg-when">Quand : faire respirer le deck toutes les 5-6 slides. Une affirmation ou une question, et c'est tout.</span></aside>
+  </section>
+
+  <!-- 09 CITATION -->
+  <section class="plate dark" data-meta="Layout 09 · Citation">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Notre conviction</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="bigquote">
+      <p class="bigquote-text reveal">Mesurer moins.<br><em>Transformer davantage.</em></p>
+      <span class="bigquote-attrib reveal">Claire Fontaine · associée fondatrice, Meridian Conseil (personne fictive)</span>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 09 · Citation</span><span class="lg-when">Quand : porter une conviction ou un témoignage. Texte XXL, un segment en italique accentué, attribution en petites capitales.</span></aside>
+  </section>
+
+  <!-- 10 PIPELINE -->
+  <section class="plate" data-meta="Layout 10 · Pipeline">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La démarche</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Trois lots, engagement pas à pas</span>
+      <h1 class="reveal">D'abord mesurer, ensuite <span class="grad">décider</span></h1>
+    </div>
+    <div class="pipe" data-stagger>
+      <div class="pstep"><span class="k">Phase 0</span><div class="t">Cadrage et lancement</div><div class="d">Langage commun, accès aux données, gouvernance de la mission, jalons partagés.</div></div>
+      <div class="pstep"><span class="k">Lot 1</span><div class="t">Bilan carbone complet</div><div class="d">Trois périmètres d'émissions, collecte outillée, restitution par site et par poste.</div></div>
+      <div class="pstep"><span class="k">Lot 2</span><div class="t">Trajectoire de réduction</div><div class="d">Objectifs chiffrés, plan d'action priorisé, arbitrages investissement contre gain.</div></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 10 · Pipeline</span><span class="lg-when">Quand : montrer une séquence de 3-4 étapes ou lots. Les connecteurs disent l'ordre, les cartes disent le contenu.</span></aside>
+  </section>
+
+  <!-- 11 FRAMEWORK LETTRÉ -->
+  <section class="plate tint" data-meta="Layout 11 · Framework lettré">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Notre différenciant · Cadre SEVE</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Une méthode, quatre lettres</span>
+      <h1 class="reveal" style="font-size:76px">SEVE, notre cadre de <span class="grad">transition mesurée</span></h1>
+    </div>
+    <div class="step-row" data-stagger>
+      <div class="step-cell"><div class="ltr">S</div><h3>Sonder</h3><p>Mesurer les flux réels : énergie, achats, mobilité, immobilisations.</p></div>
+      <div class="step-cell"><div class="ltr">E</div><h3>Évaluer</h3><p>Prioriser chaque poste par impact, coût et faisabilité.</p></div>
+      <div class="step-cell"><div class="ltr">V</div><h3>Viser</h3><p>Fixer une trajectoire chiffrée, datée, validée en comité de direction.</p></div>
+      <div class="step-cell"><div class="ltr">E</div><h3>Engager</h3><p>Embarquer équipes et fournisseurs, mesurer, itérer chaque trimestre.</p></div>
+    </div>
+    <p class="step-src reveal">Cadre méthodologique fictif présenté à titre d'exemple de layout, <b>aucune source réelle</b></p>
+    <aside class="legend"><span class="lg-name">Layout 11 · Framework lettré</span><span class="lg-when">Quand : présenter une méthode propriétaire en acronyme. La lettre géante en dégradé porte la mémorisation.</span></aside>
+  </section>
+
+  <!-- 12 QUADRANT -->
+  <section class="plate" data-meta="Layout 12 · Quadrant">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Priorisation</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:6px">
+      <span class="eyebrow reveal">Impact contre faisabilité</span>
+      <h1 class="reveal" style="font-size:66px">Quatre chantiers, <span class="grad">un ordre évident</span></h1>
+    </div>
+    <div class="quad-wrap reveal">
+      <div class="quad">
+        <div class="prio"></div>
+        <span class="axis-x">Faisabilité</span><span class="axis-y">Impact</span>
+        <div class="dot" style="left:76%; bottom:78%"><span class="d"></span><span class="t">Sobriété énergétique des sites</span></div>
+        <div class="dot" style="left:56%; bottom:56%"><span class="d"></span><span class="t">Électrification de la flotte</span></div>
+        <div class="dot" style="left:30%; bottom:66%"><span class="d"></span><span class="t">Achats responsables</span></div>
+        <div class="dot" style="left:26%; bottom:26%"><span class="d"></span><span class="t">Captation carbone</span></div>
+      </div>
+      <div style="max-width:540px">
+        <div class="lede-list">
+          <div class="li"><span class="k">·</span> Le quadrant supérieur droit concentre les gains rapides : on commence là</div>
+          <div class="li"><span class="k">·</span> Les chantiers à fort impact mais faible faisabilité passent en étude</div>
+          <div class="li"><span class="k">·</span> Le reste attend la deuxième vague, sans culpabilité</div>
+        </div>
+        <p style="margin-top:28px;font-size:18px;color:var(--ink-soft)"><b style="color:var(--ink)">Livrable</b> : matrice de priorisation validée avec votre comité.</p>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 12 · Quadrant</span><span class="lg-when">Quand : arbitrer 4-6 options sur deux axes. La zone prioritaire est teintée, les points sont nommés.</span></aside>
+  </section>
+
+  <!-- 13 TABLEAU COMPARATIF A/B -->
+  <section class="plate" data-meta="Layout 13 · Tableau A/B">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Clarification</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Deux familles de projets souvent confondues</span>
+      <h1 class="reveal" style="font-size:70px">Les distinguer, <span class="grad">c'est déjà décider</span></h1>
+    </div>
+    <table class="tbl reveal">
+      <thead><tr><th></th><th>A · Réduction directe</th><th>B · Contribution carbone</th></tr></thead>
+      <tbody>
+        <tr><td class="rh">La question</td><td>« Comment émettre moins, dès cette année ? »</td><td>« Comment traiter ce qui ne peut pas être réduit ? »</td></tr>
+        <tr><td class="rh">Exemple type</td><td>Rénovation énergétique des 12 sites, sobriété des usages</td><td>Financement d'un programme forestier certifié</td></tr>
+        <tr><td class="rh">Notre réponse</td><td><span class="a">Lot 2</span>, plan d'action par site</td><td><span class="b">Étude dédiée</span>, en option après le Lot 2</td></tr>
+      </tbody>
+    </table>
+    <aside class="legend"><span class="lg-name">Layout 13 · Tableau comparatif A/B</span><span class="lg-when">Quand : lever une confusion entre deux notions. Lignes = critères, colonnes = les deux familles.</span></aside>
+  </section>
+
+  <!-- 14 FIGURE CLIQUABLE + VERSUS -->
+  <section class="plate dark" data-meta="Layout 14 · Figure cliquable">
+    <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le produit · portail de pilotage</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <h1 class="reveal" style="font-size:58px">Un portail qui remplace <span class="grad">le tableur maison</span></h1>
+    </div>
+    <div class="two-col" style="margin-top:30px">
+      <a class="mockup reveal" href="#" onclick="return false" aria-label="Maquette du portail de pilotage, exemple fictif">
+        <div class="mockup-bar"><i></i><i></i><i></i><span class="mockup-url">portail.meridian-conseil.example</span></div>
+        <div class="mockup-body">
+          <div class="mockup-side"><i style="width:70%"></i><i style="width:55%"></i><i style="width:62%"></i><i style="width:48%"></i><i style="width:58%"></i></div>
+          <div class="mockup-main">
+            <div class="mockup-kpis"><b>1 842<small>tCO₂e · année en cours</small></b><b>-11 %<small>vs année précédente</small></b><b>12/12<small>sites connectés</small></b></div>
+            <div class="mockup-bars"><i style="height:52%"></i><i style="height:64%"></i><i style="height:58%"></i><i style="height:71%"></i><i style="height:47%"></i><i class="hi" style="height:88%"></i><i style="height:60%"></i><i style="height:42%"></i></div>
+          </div>
+        </div>
+        <span class="go">voir la démo ↗</span>
+      </a>
+      <div class="reveal">
+        <table class="vs" style="--rule:var(--rule-dark)">
+          <thead><tr><th class="rh"></th><th class="q" style="color:var(--sauge)">Portail Meridian</th><th style="color:rgba(252,251,248,.55)">Tableur maison</th></tr></thead>
+          <tbody style="color:#fff">
+            <tr><td class="rh" style="color:rgba(252,251,248,.6);border-color:var(--rule-dark)">Collecte</td><td class="q" style="color:#fff;border-color:var(--rule-dark)">Automatisée, connectée aux compteurs</td><td class="g" style="color:rgba(252,251,248,.5);border-color:var(--rule-dark)">Manuelle, une fois l'an</td></tr>
+            <tr><td class="rh" style="color:rgba(252,251,248,.6);border-color:var(--rule-dark)">Fiabilité</td><td class="q" style="color:#fff;border-color:var(--rule-dark)">Données tracées, auditables</td><td class="g" style="color:rgba(252,251,248,.5);border-color:var(--rule-dark)">Formules fragiles</td></tr>
+            <tr><td class="rh" style="color:rgba(252,251,248,.6);border-color:var(--rule-dark)">Restitution</td><td class="q" style="color:#fff;border-color:var(--rule-dark)">Tableau de bord par site</td><td class="g" style="color:rgba(252,251,248,.5);border-color:var(--rule-dark)">Un onglet par personne</td></tr>
+            <tr><td class="rh" style="color:rgba(252,251,248,.6);border-color:var(--rule-dark)">Mise à jour</td><td class="q" style="color:#fff;border-color:var(--rule-dark)">Continue, alertes mensuelles</td><td class="g" style="color:rgba(252,251,248,.5);border-color:var(--rule-dark)">Au mieux annuelle</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 14 · Figure cliquable + versus</span><span class="lg-when">Quand : montrer un produit. Maquette 100 % CSS (jamais de vraie capture ici) + tableau nous contre l'existant.</span></aside>
+  </section>
+
+  <!-- 15 AVANT / APRÈS -->
+  <section class="plate" data-meta="Layout 15 · Avant / après">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La transformation</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Le quotidien du reporting</span>
+      <h1 class="reveal">Ce qui change, <span class="grad">concrètement</span></h1>
+    </div>
+    <div class="ba" data-stagger>
+      <div class="pane before">
+        <span class="bt">Aujourd'hui</span>
+        <ul>
+          <li>Trois semaines pour consolider le reporting annuel</li>
+          <li>Des chiffres contestés en comité de direction</li>
+          <li>Aucune vision par site avant la fin d'année</li>
+        </ul>
+      </div>
+      <div class="pane after">
+        <span class="bt">Avec l'accompagnement</span>
+        <ul>
+          <li>Consolidation en deux heures, à la demande</li>
+          <li>Une source unique, validée et tracée</li>
+          <li>Alertes par site chaque mois, arbitrages en continu</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 15 · Avant / après</span><span class="lg-when">Quand : vendre une transformation. Panneau terne à gauche, panneau accentué à droite, items en miroir.</span></aside>
+  </section>
+
+  <!-- 16 OFFRES COMPARÉES -->
+  <section class="plate" data-meta="Layout 16 · Offres comparées">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Investissement</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Deux scénarios, un même cap</span>
+      <h1 class="reveal">Démarrer juste, <span class="grad">puis accélérer</span></h1>
+    </div>
+    <div class="cmp" data-stagger>
+      <div class="col">
+        <div class="nm">Scénario A · Essentiel</div>
+        <div class="price">~17 K€ <small>HT</small></div>
+        <div class="meta">~19 j · Phase 0 + Lot 1 + trajectoire</div>
+        <ul><li>Produire vite le bilan attendu par vos parties prenantes</li><li>Dé-risquer avant tout engagement d'investissement</li><li>Un bon de commande par lot, sans engagement de suite</li></ul>
+      </div>
+      <div class="col reco">
+        <span class="badge">Recommandé</span>
+        <div class="nm">Scénario B · Complet</div>
+        <div class="price">~34 K€ <small>HT</small></div>
+        <div class="meta">~37 j · A + plan d'action sites + portail de pilotage</div>
+        <ul><li>Jusqu'au pilotage mensuel en autonomie</li><li>Le portail déployé sur vos 12 sites</li><li>Restitution finale devant votre comité</li></ul>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 16 · Offres comparées</span><span class="lg-when">Quand : proposer 2-3 scénarios tarifés. Le recommandé porte un badge et une bordure accentuée.</span></aside>
+  </section>
+
+  <!-- 17 TABLEAU DE COÛTS -->
+  <section class="plate" data-meta="Layout 17 · Tableau de coûts">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Détail du chiffrage · forfait par lot</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Transparence totale</span>
+      <h1 class="reveal" style="font-size:60px">Le détail, <span class="grad">lot par lot</span></h1>
+    </div>
+    <table class="cost reveal">
+      <thead><tr><th>Phase / Lot</th><th>Consultant climat<br>800 €/j</th><th>Expert data<br>1 100 €/j</th><th>Total HT</th></tr></thead>
+      <tbody>
+        <tr class="inA"><td>Phase 0 · Cadrage</td><td>2 j</td><td>1 j</td><td>2 700 €</td></tr>
+        <tr class="inA"><td>Lot 1 · Bilan carbone trois périmètres</td><td>8 j</td><td>2 j</td><td>8 600 €</td></tr>
+        <tr class="inA"><td>Lot 2A · Trajectoire de réduction</td><td>4 j</td><td>2 j</td><td>5 400 €</td></tr>
+        <tr><td>Lot 2B · Plan d'action par site</td><td>6 j</td><td>3 j</td><td>8 100 €</td></tr>
+        <tr><td>Lot 3 · Portail de pilotage</td><td>3 j</td><td>6 j</td><td>9 000 €</td></tr>
+        <tr class="total a"><td>Sous-total Scénario A, périmètre surligné</td><td>14 j</td><td>5 j</td><td><span class="e">16 700 € HT</span></td></tr>
+        <tr class="total"><td>Total Scénario B, complet</td><td>23 j</td><td>14 j</td><td><span class="e">33 800 € HT</span></td></tr>
+      </tbody>
+    </table>
+    <div class="cost-legend reveal"><span class="sw"><i></i> Périmètre du Scénario A, ~17 K€ HT (chiffres fictifs de démonstration)</span></div>
+    <aside class="legend"><span class="lg-name">Layout 17 · Tableau de coûts</span><span class="lg-when">Quand : détailler un chiffrage. Chiffres tabulaires, périmètre du scénario retenu surligné, totaux en gras.</span></aside>
+  </section>
+
+  <!-- 18 TIMELINE -->
+  <section class="plate tint" data-meta="Layout 18 · Timeline">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Calendrier de livraison</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">À co-construire ensemble</span>
+      <h1 class="reveal" style="font-size:62px">Une date cible <span class="grad">par livrable</span></h1>
+    </div>
+    <div class="timeline reveal">
+      <div class="tl-track">
+        <div class="tl-col on"><span class="tl-dot"></span><span class="tl-month">Septembre</span><span class="tl-label">Phase 0</span><span class="tl-sub">Cadrage, kick-off</span></div>
+        <div class="tl-col on target"><span class="tl-dot"></span><span class="tl-month">Novembre</span><span class="tl-label">Lot 1</span><span class="tl-sub">Bilan carbone complet</span><span class="tl-flag">Cible</span></div>
+        <div class="tl-col on"><span class="tl-dot"></span><span class="tl-month">Décembre</span><span class="tl-label">Lot 2A</span><span class="tl-sub">Trajectoire chiffrée</span></div>
+        <div class="tl-col on"><span class="tl-dot"></span><span class="tl-month">Janvier</span><span class="tl-label">Lot 2B</span><span class="tl-sub">Plan d'action sites</span></div>
+        <div class="tl-col on"><span class="tl-dot"></span><span class="tl-month">Février</span><span class="tl-label">Lot 3</span><span class="tl-sub">Portail de pilotage</span></div>
+        <div class="tl-col on"><span class="tl-dot"></span><span class="tl-month">Mars</span><span class="tl-label">Restitution</span><span class="tl-sub">Comité de direction</span></div>
+      </div>
+    </div>
+    <div class="note-band reveal" style="margin-top:56px">Prochaine étape, <b>fixer ensemble une date cible pour chaque livrable</b>, votre meilleur levier de tenue du planning.</div>
+    <aside class="legend"><span class="lg-name">Layout 18 · Timeline</span><span class="lg-when">Quand : poser un calendrier de 4-6 jalons. Le jalon critique est grossi et marqué « Cible ».</span></aside>
+  </section>
+
+  <!-- 19 ÉQUIPE -->
+  <section class="plate dark" data-meta="Layout 19 · Équipe">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">L'équipe</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Qui intervient chez vous</span>
+      <h1 class="reveal" style="font-size:72px">Une équipe resserrée, <span class="grad">déjà rodée</span></h1>
+    </div>
+    <div class="team" data-stagger>
+      <div class="tmember"><div class="tphoto">CF</div><div><span class="tname">Claire Fontaine</span><span class="trole">Associée fondatrice</span></div></div>
+      <div class="tmember"><div class="tphoto">MD</div><div><span class="tname">Marc Delorme</span><span class="trole">Directeur conseil</span></div></div>
+      <div class="tmember"><div class="tphoto">AB</div><div><span class="tname">Aïcha Benali</span><span class="trole">Consultante carbone senior</span></div></div>
+      <div class="tmember"><div class="tphoto">JW</div><div><span class="tname">Julien Weber</span><span class="trole">Data et mesure</span></div></div>
+      <div class="tmember"><div class="tphoto">LM</div><div><span class="tname">Léa Moreau</span><span class="trole">Cheffe de projet</span></div></div>
+      <div class="tmember"><div class="tphoto">SG</div><div><span class="tname">Simon Garnier</span><span class="trole">Analyste cycle de vie</span></div></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 19 · Équipe / portraits</span><span class="lg-when">Quand : présenter 4-6 intervenants. Ici avatars-initiales CSS ; en mission réelle, photos rondes homogènes.</span></aside>
+  </section>
+
+  <!-- 20 CTA FINALE -->
+  <section class="plate dark" data-meta="Layout 20 · CTA finale">
+    <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Conclusion</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif · aucune adresse réelle</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="cover">
+      <span class="eyebrow reveal">Avançons ensemble</span>
+      <h1 class="reveal" style="font-size:100px">Décidons du <span class="grad">premier pas</span></h1>
+      <p class="lede reveal" style="color:rgba(252,251,248,0.82)">Prochaines étapes, valider le périmètre, fixer les dates cibles, et caler l'atelier de cadrage avec votre comité</p>
+      <div class="reveal" style="margin-top:18px"><a class="url-pill" href="#" onclick="return false">meridian-conseil.example</a></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 20 · CTA finale</span><span class="lg-when">Quand : clore le deck sur une décision. Miroir de la couverture, verbe d'action, un seul lien ou contact.</span></aside>
+  </section>
+
+  </div>
+</div>
+
+<div class="nav-rail" role="navigation" aria-label="Navigation slides">
+  <button class="nav-arrow" id="prev" aria-label="Précédent">‹</button>
+  <span class="nav-counter"><strong id="cur">01</strong> / <span id="tot">20</span></span>
+  <div class="nav-progress" id="prog-bar" role="slider" aria-label="Position" tabindex="0"><div class="nav-progress-fill" id="prog"></div><div class="nav-progress-handle" id="prog-handle"></div></div>
+  <button class="nav-arrow" id="next" aria-label="Suivant">›</button>
+  <button class="nav-arrow" id="overview-toggle" aria-label="Vue d'ensemble (O)" title="Vue d'ensemble (O)" style="font-size:14px;">⊞</button>
+  <button class="nav-arrow nav-arrow-pdf" id="pdf-export" aria-label="Export PDF (P)" title="Export PDF (P)">PDF</button>
+</div>
+
+<div class="overview" id="overview" role="dialog" aria-label="Vue d'ensemble"></div>
+
+<style>
+.nav-rail { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:50; display:flex; align-items:center; gap:14px; padding:10px 18px; background:rgba(24,39,33,0.92); backdrop-filter:blur(10px); border:1px solid rgba(252,251,248,0.12); border-radius:999px; box-shadow:0 12px 32px rgba(0,0,0,.4); }
+.nav-arrow { width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:transparent; border:0; color:rgba(252,251,248,0.7); cursor:pointer; font-size:18px; transition:all .2s ease; }
+.nav-arrow:hover { background:rgba(252,251,248,0.1); color:#fff; }
+.nav-arrow.nav-arrow-pdf { width:auto; padding:0 14px; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; font-family:var(--font-body); }
+.nav-arrow.nav-arrow-pdf.exporting { opacity:.5; pointer-events:none; }
+.nav-counter { font-family:var(--font-body); font-size:12px; font-weight:600; letter-spacing:.1em; color:rgba(252,251,248,0.7); min-width:64px; text-align:center; }
+.nav-counter strong { color:#fff; }
+.nav-progress { position:relative; width:300px; height:6px; background:rgba(252,251,248,0.1); border-radius:3px; cursor:pointer; }
+.nav-progress-fill { position:absolute; left:0; top:0; bottom:0; background:var(--grad); border-radius:3px; width:5%; transition:width .3s ease; }
+.nav-progress-handle { position:absolute; top:50%; transform:translate(-50%,-50%); width:14px; height:14px; background:#fff; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,.3); left:5%; transition:left .3s ease; }
+.overview { position:fixed; inset:0; z-index:100; background:rgba(24,39,33,0.96); backdrop-filter:blur(20px); display:none; opacity:0; transition:opacity .3s ease; padding:56px 72px; overflow-y:auto; }
+.overview.open { display:block; opacity:1; }
+.overview-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; max-width:1680px; margin:0 auto; }
+.overview-thumb { background:var(--white); border:0; border-radius:10px; padding:16px; cursor:pointer; text-align:left; display:flex; flex-direction:column; gap:8px; aspect-ratio:16/10; transition:transform .25s, box-shadow .25s; color:var(--ink); }
+.overview-thumb:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,.4); }
+.overview-thumb.dark { background:var(--bg-dark-2); color:#fff; } .overview-thumb.tint { background:var(--bg-tint); }
+.overview-thumb.active { outline:2px solid var(--vert-clair); outline-offset:3px; }
+.thumb-num { font-family:var(--font-body); font-size:10px; font-weight:600; letter-spacing:.08em; color:var(--ink-soft); }
+.overview-thumb.dark .thumb-num { color:rgba(252,251,248,0.5); }
+.thumb-meta { font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--vert-clair); }
+.thumb-title { font-family:var(--font-display); font-size:15px; line-height:1.2; margin-top:auto; }
+</style>
+
+<script>
+(() => {
+  // Dot-grid : génération des points (data-dots = total, data-us = points accentués)
+  document.querySelectorAll('[data-dots]').forEach(g => {
+    const n=+g.dataset.dots, us=+g.dataset.us;
+    for(let i=0;i<n;i++){ const s=document.createElement('span'); s.style.background=(i<us)?'linear-gradient(120deg,#4da585,#c8a24b)':'rgba(28,36,32,0.16)'; g.appendChild(s); }
+  });
+
+  const frame=document.getElementById('stage-frame'), nav=document.querySelector('.nav-rail');
+  function fit(){ const reserve=(nav?nav.offsetHeight+24:64)+16; const scale=Math.min(window.innerWidth/1920,(window.innerHeight-reserve)/1080,1.5); frame.style.transform=`translate(-50%, calc(-50% + ${-reserve/2}px)) scale(${scale})`; }
+  fit(); addEventListener('resize', fit);
+
+  const plates=[...document.querySelectorAll('.plate')], total=plates.length;
+  document.getElementById('tot').textContent=total;
+  plates.forEach((p,i)=>{ const f=p.querySelector('.tag-folio'); if(f) f.innerHTML='<strong>'+String(i+1).padStart(2,'0')+'</strong> / '+total; });
+  let cur=0;
+  const counter=document.getElementById('cur'), progFill=document.getElementById('prog'), progHandle=document.getElementById('prog-handle');
+  function go(i){ i=Math.max(0,Math.min(total-1,i)); if(i===cur)return; plates[cur].classList.remove('active'); cur=i; plates[cur].classList.add('active'); const pct=(cur/Math.max(1,total-1))*100; progFill.style.width=pct+'%'; progHandle.style.left=pct+'%'; counter.textContent=String(cur+1).padStart(2,'0'); document.querySelectorAll('.overview-thumb').forEach((t,k)=>t.classList.toggle('active',k===cur)); }
+  document.getElementById('next').onclick=()=>go(cur+1);
+  document.getElementById('prev').onclick=()=>go(cur-1);
+
+  const overview=document.getElementById('overview');
+  const grid=document.createElement('div'); grid.className='overview-grid'; overview.appendChild(grid);
+  plates.forEach((p,i)=>{
+    const meta=p.dataset.meta||''; const bg=p.classList.contains('dark')?'dark':(p.classList.contains('tint')?'tint':'');
+    const hEl=p.querySelector('h1,h2'); const title=hEl?hEl.textContent.trim():'';
+    const b=document.createElement('button'); b.className='overview-thumb'+(bg?` ${bg}`:'');
+    b.innerHTML=`<span class="thumb-num">${String(i+1).padStart(2,'0')} / ${total}</span><span class="thumb-meta">${meta}</span><span class="thumb-title">${title}</span>`;
+    b.onclick=()=>{go(i); closeOverview();}; grid.appendChild(b);
+  });
+  function openOverview(){ overview.classList.add('open'); document.querySelectorAll('.overview-thumb').forEach((t,k)=>t.classList.toggle('active',k===cur)); }
+  function closeOverview(){ overview.classList.remove('open'); }
+  function toggleOverview(){ overview.classList.contains('open')?closeOverview():openOverview(); }
+  document.getElementById('overview-toggle').onclick=toggleOverview;
+  overview.addEventListener('click',(e)=>{ if(e.target===overview)closeOverview(); });
+
+  // Export PDF : rastérisation canvas des textes en dégradé (bug Chromium background-clip:text en print)
+  function rasterGradientText(el){
+    if(el.dataset.rasterized==='true')return;
+    const cs=getComputedStyle(el), text=el.textContent; if(!text.trim())return;
+    const fs=parseFloat(cs.fontSize), fw=cs.fontWeight, ff=cs.fontFamily, lh=parseFloat(cs.lineHeight)||fs*1.05, dpr=2;
+    const cv=document.createElement('canvas'), ctx=cv.getContext('2d');
+    ctx.font=`${cs.fontStyle} ${fw} ${fs}px ${ff}`;
+    const m=ctx.measureText(text), padX=fs*0.15, padY=fs*0.15;
+    const w=Math.max(m.width, el.getBoundingClientRect().width)+padX*2, h=lh+padY*2;
+    cv.width=Math.ceil(w*dpr); cv.height=Math.ceil(h*dpr); ctx.scale(dpr,dpr);
+    ctx.font=`${cs.fontStyle} ${fw} ${fs}px ${ff}`;
+    const g=ctx.createLinearGradient(0,0,w,0); g.addColorStop(0,'#4da585'); g.addColorStop(1,'#c8a24b');
+    ctx.fillStyle=g; ctx.textBaseline='top'; ctx.fillText(text,padX,padY);
+    el.dataset.originalHTML=el.innerHTML; el.dataset.rasterized='true';
+    el.style.background='none'; el.style.webkitTextFillColor='transparent'; el.style.color='transparent';
+    el.innerHTML=`<img src="${cv.toDataURL('image/png')}" style="height:${h}px;width:auto;display:inline-block;vertical-align:baseline;" alt="${text.replace(/"/g,'&quot;')}">`;
+  }
+  function restoreRaster(el){ if(el.dataset.rasterized!=='true')return; el.innerHTML=el.dataset.originalHTML; delete el.dataset.rasterized; delete el.dataset.originalHTML; el.style.background=''; el.style.webkitTextFillColor=''; el.style.color=''; }
+  function exportPDF(){ const btn=document.getElementById('pdf-export'); btn.classList.add('exporting'); if(overview.classList.contains('open'))closeOverview(); document.body.classList.add('printing-pdf'); document.querySelectorAll('.grad, .step-cell .ltr, .tl-flag').forEach(rasterGradientText); requestAnimationFrame(()=>requestAnimationFrame(()=>window.print())); }
+  document.getElementById('pdf-export').addEventListener('click',exportPDF);
+  addEventListener('afterprint',()=>{ document.body.classList.remove('printing-pdf'); document.getElementById('pdf-export').classList.remove('exporting'); document.querySelectorAll('[data-rasterized="true"]').forEach(restoreRaster); });
+
+  let buf='',bufTimer;
+  addEventListener('keydown',(e)=>{
+    if(overview.classList.contains('open')){ if(['Escape','o','O'].includes(e.key)){closeOverview();e.preventDefault();} return; }
+    if(['ArrowRight',' ','PageDown'].includes(e.key)){go(cur+1);e.preventDefault();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){go(cur-1);e.preventDefault();}
+    else if(e.key==='Home'){go(0);e.preventDefault();}
+    else if(e.key==='End'){go(total-1);e.preventDefault();}
+    else if(e.key==='o'||e.key==='O'){toggleOverview();e.preventDefault();}
+    else if(e.key==='p'||e.key==='P'){exportPDF();e.preventDefault();}
+    else if(/^[0-9]$/.test(e.key)){buf+=e.key;clearTimeout(bufTimer);bufTimer=setTimeout(()=>buf='',1500);}
+    else if(e.key==='Enter'&&buf){const n=parseInt(buf,10); if(n>=1&&n<=total)go(n-1); buf='';}
+  });
+  let wheelLock=false;
+  addEventListener('wheel',(e)=>{ if(overview.classList.contains('open'))return; if(wheelLock)return; if(Math.abs(e.deltaY)<8&&Math.abs(e.deltaX)<8)return; wheelLock=true; setTimeout(()=>wheelLock=false,700); ((e.deltaY||e.deltaX)>0)?go(cur+1):go(cur-1); },{passive:true});
+  let tx0=0,ty0=0;
+  addEventListener('touchstart',(e)=>{tx0=e.touches[0].clientX;ty0=e.touches[0].clientY;},{passive:true});
+  addEventListener('touchend',(e)=>{const dx=e.changedTouches[0].clientX-tx0,dy=e.changedTouches[0].clientY-ty0; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)){dx<0?go(cur+1):go(cur-1);}});
+  const bar=document.getElementById('prog-bar'); let dragging=false;
+  function onDrag(x){const r=bar.getBoundingClientRect(); go(Math.round(Math.max(0,Math.min(1,(x-r.left)/r.width))*(total-1)));}
+  bar.addEventListener('mousedown',(e)=>{dragging=true;onDrag(e.clientX);});
+  addEventListener('mousemove',(e)=>{if(dragging)onDrag(e.clientX);});
+  addEventListener('mouseup',()=>dragging=false);
+  go(0);
+})();
+</script>
+</body>
+</html>

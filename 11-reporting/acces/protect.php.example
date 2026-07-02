@@ -1,0 +1,126 @@
+<?php
+/**
+ * protect.php — garde d'accès de l'espace client {{COMPANY_NAME}}
+ * ----------------------------------------------------------------
+ * Usage : copier ce fichier en `protect.php` à la racine de
+ * `espace-client/` sur le serveur, puis l'inclure en PREMIÈRE ligne
+ * de chaque point d'entrée PHP :
+ *
+ *     <?php require __DIR__ . '/../protect.php'; // puis readfile(...) etc.
+ *
+ * Le code d'accès ne vit JAMAIS ici ni dans le repo : il est lu depuis
+ * `config.php` (créé à la main sur le serveur, voir acces/README.md)
+ * ou depuis la variable d'environnement CLIENT_ACCESS_CODE.
+ *
+ * ⚠️ Protection LÉGÈRE : un code partagé + un cookie signé. Adapté à du
+ * reporting marketing, pas à des données sensibles (voir README.md).
+ */
+
+declare(strict_types=1);
+
+const COOKIE_NAME     = 'espace_client';
+const COOKIE_LIFETIME = 60 * 60 * 24 * 30; // 30 jours
+
+/* ---------- 1. Charger la configuration (jamais commitée) ---------- */
+$configFile = __DIR__ . '/config.php';
+$config     = is_file($configFile) ? require $configFile : [];
+
+$accessCode = getenv('CLIENT_ACCESS_CODE') ?: ($config['access_code'] ?? null);
+$cookieSalt = getenv('CLIENT_COOKIE_SALT') ?: ($config['cookie_salt'] ?? null);
+
+if (!$accessCode || !$cookieSalt) {
+    http_response_code(500);
+    exit('Espace client non configuré : creez config.php sur le serveur (voir acces/README.md).');
+}
+
+/* ---------- 2. Valeur attendue du cookie : hash signé du code ---------- */
+$expectedToken = hash('sha256', $cookieSalt . '|' . $accessCode);
+
+/* ---------- 3. Cookie valide → accès accordé, on rend la main ---------- */
+if (hash_equals($expectedToken, (string)($_COOKIE[COOKIE_NAME] ?? ''))) {
+    return;
+}
+
+/* ---------- 4. Soumission du formulaire ---------- */
+$error = false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $submitted = (string)($_POST['code'] ?? '');
+    // Petit frein anti force brute (mutualisé : pas de rate-limit infra).
+    usleep(500_000);
+    if (hash_equals($accessCode, $submitted)) {
+        setcookie(COOKIE_NAME, $expectedToken, [
+            'expires'  => time() + COOKIE_LIFETIME,
+            'path'     => '/',        // restreindre à '/espace-client/' si souhaité
+            'secure'   => true,       // HTTPS obligatoire
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+        // Redirection vers la page demandée (évite le repost du formulaire).
+        header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+        exit;
+    }
+    $error = true;
+}
+
+/* ---------- 5. Pas d'accès → page de saisie du code, puis arrêt ---------- */
+http_response_code(401);
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>{{COMPANY_NAME}} — Espace client</title>
+<style>
+  /* Tokens dérivés de 01-brand/style-guide.md — mêmes valeurs que le dashboard */
+  :root {
+    --brand-primary: {{BRAND_COLOR_PRIMARY}};
+    --brand-dark:    {{BRAND_COLOR_DARK}};
+    --brand-light:   {{BRAND_COLOR_LIGHT}};
+    --brand-gradient: {{BRAND_GRADIENT}};
+    --font: {{BRAND_FONT_PRIMARY}}, system-ui, sans-serif;
+    --radius: {{BRAND_BORDER_RADIUS}};
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: var(--font); background: var(--brand-dark); color: var(--brand-light);
+    min-height: 100vh; display: grid; place-items: center; padding: 24px;
+  }
+  .gate {
+    width: 100%; max-width: 380px; background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.14); border-radius: var(--radius);
+    padding: 36px 32px; text-align: center;
+  }
+  .gate::before {
+    content: ""; display: block; height: 4px; margin: -36px -32px 28px;
+    background: var(--brand-gradient);
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  h1 { font-size: 1.2rem; margin-bottom: 6px; }
+  p  { font-size: .88rem; opacity: .7; margin-bottom: 24px; }
+  input[type="password"] {
+    width: 100%; padding: 12px 14px; font-size: 1rem; font-family: inherit;
+    border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius);
+    background: rgba(255,255,255,.08); color: inherit; text-align: center;
+  }
+  button {
+    width: 100%; margin-top: 14px; padding: 12px; font-size: 1rem;
+    font-family: inherit; font-weight: 600; cursor: pointer;
+    border: none; border-radius: var(--radius);
+    background: var(--brand-primary); color: var(--brand-light);
+  }
+  .error { color: #ff9d8f; font-size: .85rem; margin-top: 14px; }
+</style>
+</head>
+<body>
+  <form class="gate" method="post" autocomplete="off">
+    <h1>{{COMPANY_NAME}}</h1>
+    <p>Espace client — saisissez votre code d'accès</p>
+    <input type="password" name="code" placeholder="Code d'accès" required autofocus>
+    <button type="submit">Accéder</button>
+    <?php if ($error): ?><div class="error">Code incorrect. Réessayez.</div><?php endif; ?>
+  </form>
+</body>
+</html>
+<?php exit;

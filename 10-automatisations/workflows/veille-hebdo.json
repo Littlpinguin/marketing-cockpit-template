@@ -1,0 +1,336 @@
+{
+  "name": "Content - Veille - Hebdo",
+  "active": false,
+  "nodes": [
+    {
+      "id": "sticky-doc",
+      "name": "Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-120, -260],
+      "parameters": {
+        "content": "## Veille hebdomadaire automatisee\n\nFlux : cron lundi 8h -> recherche d'actualites (API de recherche type Perplexity) -> synthese + scoring LLM -> propositions de sujets (score >= 7/10) -> note de veille deposee dans le dossier d'echange + email recap.\n\nAvant activation :\n1. Personnaliser les themes de veille dans 'Construire requete veille'\n2. Creer les credentials (recherche + LLM + SMTP) dans le vault n8n\n3. Verifier le chemin d'ecriture et la synchronisation vers 00-intel/inbox/ (voir workflows/README.md)\n4. Assigner l'error workflow global\n\nLa fenetre de 8 jours evite les repetitions d'une semaine sur l'autre.",
+        "height": 340,
+        "width": 460,
+        "color": 3
+      }
+    },
+    {
+      "id": "cron-weekly",
+      "name": "Déclencheur hebdo lundi 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 300],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "build-query",
+      "name": "Construire requête veille",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 300],
+      "parameters": {
+        "jsCode": "// PERSONNALISEZ ces constantes pour votre marque (elles pilotent toute la veille).\nconst THEMES = [\n  'Theme de veille 1 (ex. : votre secteur d\\'activite)',\n  'Theme de veille 2 (ex. : les outils de vos personas)',\n  'Theme de veille 3 (ex. : reglementation de votre marche)'\n];\nconst AUDIENCE = 'Description courte de votre audience cible (ex. : dirigeants de PME industrielles en France)';\nconst FENETRE_HEURES = 192; // 8 jours\n\nconst requete = `Realise une veille sur les ${FENETRE_HEURES} dernieres heures concernant : ${THEMES.join(' ; ')}.\\nAudience visee : ${AUDIENCE}.\\n\\nInclue : articles de medias et blogs specialises, discussions significatives sur les reseaux, annonces d'outils ou d'etudes pertinentes.\\n\\nPour chaque element, fournis :\\n- Titre\\n- Description de 2-3 lignes\\n- Lien source\\n- Indicateur de traction (engagement, tendance)\\n\\nLimite-toi aux contenus publies dans la fenetre demandee. Retourne 8-15 elements pertinents, en francais.`;\n\nreturn [{ json: { requete, themes: THEMES, audience: AUDIENCE } }];"
+      }
+    },
+    {
+      "id": "search-news",
+      "name": "Rechercher actualités",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'sonar-pro', messages: [{ role: 'system', content: 'Tu es un analyste veille. Realise une veille approfondie, factuelle et sourcee.' }, { role: 'user', content: $json.requete }], search_recency_filter: 'week' }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "{{N8N_CREDENTIAL_ID_RECHERCHE}}",
+          "name": "API recherche (Perplexity)"
+        }
+      }
+    },
+    {
+      "id": "prepare-scoring",
+      "name": "Préparer données scoring",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 300],
+      "parameters": {
+        "jsCode": "const resultat = $input.first().json;\nconst contenuVeille = resultat.choices?.[0]?.message?.content || '';\nconst citations = Array.isArray(resultat.citations) ? resultat.citations : [];\n\nif (!contenuVeille) throw new Error('Recherche veille vide — verifier le credential et le quota de l\\'API de recherche');\n\nconst themes = $('Construire requête veille').first().json.themes;\nconst audience = $('Construire requête veille').first().json.audience;\n\nconst prompt = `Tu es le responsable editorial d'une marque. Voici les resultats d'une veille hebdomadaire.\\n\\nAudience cible : ${audience}\\nThemes suivis : ${themes.join(' ; ')}\\n\\nPour chaque sujet exploitable en contenu marketing, retourne un objet JSON. Reponds UNIQUEMENT avec un tableau JSON valide :\\n[{\\n  \\\"sujet\\\": \\\"titre du sujet de contenu propose\\\",\\n  \\\"angle\\\": \\\"angle editorial en 1-2 phrases\\\",\\n  \\\"plateforme\\\": \\\"LinkedIn | Blog | Newsletter\\\",\\n  \\\"score\\\": note de 1 a 10 (pertinence pour l'audience),\\n  \\\"priorite\\\": \\\"Chaud | Tendance | Fond\\\",\\n  \\\"sources\\\": \\\"URLs des sources\\\"\\n}]\\n\\nSois exigeant sur le score : 7+ = reellement exploitable cette semaine.\\n\\nRESULTATS DE VEILLE :\\n${contenuVeille}\\n\\nCITATIONS :\\n${citations.join('\\\\n')}`;\n\nreturn [{ json: { prompt } }];"
+      }
+    },
+    {
+      "id": "score-llm",
+      "name": "Scorer et proposer (LLM)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [{ role: 'user', parts: [{ text: $json.prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.4 } }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 10000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "{{N8N_CREDENTIAL_ID_LLM}}",
+          "name": "API LLM (Gemini)"
+        }
+      }
+    },
+    {
+      "id": "parse-propositions",
+      "name": "Parser propositions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 200],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst text = response.candidates?.[0]?.content?.parts?.[0]?.text || '[]';\n\nlet propositions;\ntry {\n  propositions = JSON.parse(text);\n  if (!Array.isArray(propositions)) propositions = [propositions];\n} catch (e) {\n  return []; // la branche 'aucune proposition' prend le relais\n}\n\nconst retenues = propositions.filter(p => (p.score || 0) >= 7);\n\nreturn retenues.map(p => ({\n  json: {\n    date: new Date().toISOString().split('T')[0],\n    sujet: (p.sujet || '').toString(),\n    angle: (p.angle || '').toString(),\n    plateforme: (p.plateforme || 'LinkedIn').toString(),\n    score: String(p.score || 0),\n    priorite: (p.priorite || 'Tendance').toString(),\n    sources: (p.sources || '').toString(),\n    statut: 'PROPOSITION'\n  }\n}));"
+      }
+    },
+    {
+      "id": "check-none",
+      "name": "Vérifier aucune proposition",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 460],
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst text = response.candidates?.[0]?.content?.parts?.[0]?.text || '[]';\n\nlet propositions;\ntry {\n  propositions = JSON.parse(text);\n  if (!Array.isArray(propositions)) propositions = [propositions];\n} catch (e) {\n  return [{ json: { aucuneProposition: true, message: 'Impossible de parser la reponse LLM' } }];\n}\n\nconst retenues = propositions.filter(p => (p.score || 0) >= 7);\nif (retenues.length === 0) {\n  return [{ json: { aucuneProposition: true } }];\n}\nreturn [];"
+      }
+    },
+    {
+      "id": "format-note-veille",
+      "name": "Formater note veille",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 200],
+      "parameters": {
+        "jsCode": "const items = $input.all().map(i => i.json);\nconst date = new Date().toISOString().split('T')[0];\nconst nomFichier = `${date}--veille--hebdo.md`;\n\nconst corps = items.map(p => `## ${p.sujet}\\n\\n- **Angle** : ${p.angle}\\n- **Plateforme** : ${p.plateforme}\\n- **Score** : ${p.score}/10 — ${p.priorite}\\n- **Sources** : ${p.sources}\\n`).join('\\n');\n\nconst contenu = `---\\ntype: veille\\nsource: veille-hebdo-automatique\\ndate: ${date}\\nclassification: veille\\nstatut: a-trier\\n---\\n\\n# Veille hebdo — ${date}\\n\\n${items.length} proposition(s) de sujet (score >= 7/10).\\n\\n${corps}`;\n\nreturn [{ json: { contenu, nomFichier, nb: items.length, propositions: items } }];"
+      }
+    },
+    {
+      "id": "convert-file",
+      "name": "Convertir en fichier",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [1540, 200],
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "contenu",
+        "options": {
+          "fileName": "={{ $json.nomFichier }}"
+        }
+      }
+    },
+    {
+      "id": "write-note",
+      "name": "Déposer note veille",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [1760, 200],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/data/intel-drop/{{ $('Formater note veille').item.json.nomFichier }}",
+        "dataPropertyName": "data",
+        "options": {}
+      }
+    },
+    {
+      "id": "email-recap",
+      "name": "Email récap veille",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1980, 200],
+      "parameters": {
+        "fromEmail": "{{SENDER_EMAIL}}",
+        "toEmail": "{{NOTIFICATION_EMAIL}}",
+        "subject": "=Veille hebdo — {{ $now.toFormat('dd/MM/yyyy') }} — {{ $('Formater note veille').item.json.nb }} proposition(s)",
+        "emailFormat": "html",
+        "html": "=<h2>Veille hebdo</h2><p>{{ $('Formater note veille').item.json.nb }} proposition(s) de sujet ajoutée(s) (score ≥ 7/10). Note complète déposée dans <code>00-intel/inbox/</code>.</p><table border='1' cellpadding='8' cellspacing='0' style='border-collapse:collapse;'><tr style='background:#f0f0f0;'><th>Sujet</th><th>Plateforme</th><th>Score</th><th>Priorité</th></tr>{{ $('Formater note veille').item.json.propositions.map(p => '<tr><td><b>' + p.sujet + '</b></td><td>' + p.plateforme + '</td><td>' + p.score + '/10</td><td>' + p.priorite + '</td></tr>').join('') }}</table>",
+        "options": {}
+      },
+      "executeOnce": true,
+      "credentials": {
+        "smtp": {
+          "id": "{{N8N_CREDENTIAL_ID_SMTP}}",
+          "name": "SMTP - notifications"
+        }
+      }
+    },
+    {
+      "id": "email-none",
+      "name": "Email aucune proposition",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1320, 460],
+      "parameters": {
+        "fromEmail": "{{SENDER_EMAIL}}",
+        "toEmail": "{{NOTIFICATION_EMAIL}}",
+        "subject": "=Veille hebdo — {{ $now.toFormat('dd/MM/yyyy') }} — Aucune proposition",
+        "emailFormat": "html",
+        "html": "<p>La veille de cette semaine n'a pas retourné de sujets suffisamment pertinents (score &lt; 7).</p><p>Aucune note déposée. Les résultats bruts sont disponibles dans les logs d'exécution du workflow.</p>",
+        "options": {}
+      },
+      "executeOnce": true,
+      "credentials": {
+        "smtp": {
+          "id": "{{N8N_CREDENTIAL_ID_SMTP}}",
+          "name": "SMTP - notifications"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Déclencheur hebdo lundi 8h": {
+      "main": [
+        [
+          {
+            "node": "Construire requête veille",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construire requête veille": {
+      "main": [
+        [
+          {
+            "node": "Rechercher actualités",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rechercher actualités": {
+      "main": [
+        [
+          {
+            "node": "Préparer données scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer données scoring": {
+      "main": [
+        [
+          {
+            "node": "Scorer et proposer (LLM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scorer et proposer (LLM)": {
+      "main": [
+        [
+          {
+            "node": "Parser propositions",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Vérifier aucune proposition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser propositions": {
+      "main": [
+        [
+          {
+            "node": "Formater note veille",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formater note veille": {
+      "main": [
+        [
+          {
+            "node": "Convertir en fichier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convertir en fichier": {
+      "main": [
+        [
+          {
+            "node": "Déposer note veille",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Déposer note veille": {
+      "main": [
+        [
+          {
+            "node": "Email récap veille",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier aucune proposition": {
+      "main": [
+        [
+          {
+            "node": "Email aucune proposition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris",
+    "errorWorkflow": "{{ERROR_WORKFLOW_ID}}"
+  }
+}

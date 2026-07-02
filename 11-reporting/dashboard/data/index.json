@@ -1,0 +1,5 @@
+{
+  "client": "{{COMPANY_NAME}}",
+  "_note": "Données FICTIVES de démonstration — remplacées par les snapshots réels au déploiement (voir data-schema.md).",
+  "mois": ["2026-05", "2026-06"]
+}

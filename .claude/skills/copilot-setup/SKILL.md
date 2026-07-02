@@ -1,111 +1,133 @@
 ---
 name: copilot-setup
-description: "Shared logic for wizard slash commands (/start-copilot, /brand-discover, /tools-setup, /seed-corpus, /connect-qdrant, /validate-setup, /health-check). Centralizes preflight checks, tool registry mutation, placeholder linting, security rules, and .setup-completed schema."
+description: "Logique partagée des commandes du wizard (/start-copilot, /brand-discover, /tools-setup, /modules, /validate-setup, /health-check). Centralise les vérifications préalables, la mutation du registre d'outils, le lint des placeholders, les règles de sécurité, le gate de confidentialité et le schéma de .setup-completed."
 ---
 
-# copilot-setup — shared wizard skill
+# copilot-setup — skill partagée du wizard
 
-Every wizard slash command loads this skill first and follows the rules here before doing anything specific. This keeps the wizard coherent across commands and avoids duplicating logic.
+Chaque commande du wizard charge cette skill en premier et applique ses règles avant toute logique spécifique. C'est ce qui garde le wizard cohérent entre commandes et évite la duplication.
 
-## Invariants (never violate these)
+## Invariants (à ne jamais violer)
 
-1. **One step per message.** Never batch multiple decisions in a single message. Each step: explain, ask, wait for confirmation, then proceed.
-2. **No silent defaults.** If a value is missing, ask for it. Never assume.
-3. **No writes before validation.** For any generated artifact (brand doctrine, role CLAUDE.md, setup metadata), present the draft, get explicit approval, then write.
-4. **No secrets in messages or commits.** Secrets go to `.env` only. Never echo a secret back to the user — ask them to verify `.env` on their side.
-5. **Destructive operations require confirmation.** File deletion, `.setup-archive/` moves, git force operations, launchctl (system agents) all require an explicit "yes" from the user.
-6. **English only in repo artifacts.** All files produced by the wizard (CLAUDE.md, skill bodies, docs, scripts) are in English. Content produced later by the copilot itself follows the brand language chosen at setup.
+1. **Une étape par message.** Jamais plusieurs décisions groupées. Chaque étape : expliquer, demander, attendre la confirmation, puis avancer.
+2. **Aucun défaut silencieux.** Une valeur manque ? On la demande. On ne suppose jamais.
+3. **Aucune écriture avant validation.** Tout artefact généré (doctrine de marque, CLAUDE.md de rôle, métadonnées de setup) : présenter le brouillon, obtenir l'accord explicite, puis écrire.
+4. **Aucun secret dans les messages ou les commits.** Les secrets vont dans `.env` uniquement. Ne jamais renvoyer un secret à l'utilisateur — lui demander de vérifier `.env` de son côté.
+5. **Toute opération destructive exige confirmation.** Suppression de fichiers, déplacements vers `.setup-archive/`, opérations git forcées, `launchctl` : « oui » explicite requis.
+6. **Langue du repo : français** (le `README.md` reste en anglais, vitrine publique). Le contenu produit ensuite par le copilot suit la langue de marque choisie au setup.
+7. **Gate de confidentialité obligatoire** avant tout connecteur touchant des données clients (CRM, emailing, GA4/GSC, transcriptions `00-intel/`, scraping de personnes). Le texte canonique du gate vit dans `.claude/commands/tools-setup.md` — l'afficher, recueillir le plan Claude utilisé, et appliquer les règles associées. `/modules` le ré-applique pour `veille`, `acquisition` et `reporting`.
 
-## Preflight checks (run at every wizard entry)
+## Vérifications préalables (à chaque entrée dans le wizard)
 
-Call these in order, silently. If any fail, surface the failure with a remediation suggestion.
+À exécuter dans l'ordre, silencieusement. En cas d'échec, remonter le problème avec une suggestion de remédiation.
 
-1. **Model check.** Confirm the current session is on Sonnet 4.6 or better. If the user is on Haiku, warn that wizard-phase quality (brand discovery, sample generation) benefits from Sonnet or Opus, and offer to continue anyway. If on Opus, proceed — it's overkill for this but does no harm.
-2. **Git state.** `git status --porcelain`. If the working tree is dirty, ask whether to stash, commit, or proceed anyway.
-3. **Python deps.** `python3 -c "import yaml, dotenv, requests"`. If missing, suggest `pip install pyyaml python-dotenv requests`. (qdrant-client, google-genai, mcp only needed if `/connect-qdrant` will run.)
-4. **`.env` exists.** If not, `cp .env.example .env` and tell the user. Never read secrets from `.env` in a message — only check presence.
-5. **`.setup-completed` state.** Exists? The wizard is for first-time setup. Offer to re-run specific commands (`/tools-setup`, `/brand-discover`) individually if the user wants to reconfigure.
+1. **Modèle.** Session sur Sonnet 4.6 ou mieux. Sur Haiku, avertir que la phase wizard (découverte de marque, génération d'échantillons) gagne à tourner sur Sonnet ou Opus, et proposer de continuer quand même.
+2. **État git.** `git status --porcelain`. Arbre sale : demander stash, commit, ou continuer.
+3. **Dépendances Python.** `python3 -c "import yaml, dotenv, requests"`. Manquantes : suggérer `pip install pyyaml python-dotenv requests`.
+4. **`.env` existe.** Sinon `cp .env.example .env` et prévenir. Ne jamais lire les valeurs — présence uniquement.
+5. **État de `.setup-completed`.** Existe déjà ? Le wizard sert au premier setup — proposer de relancer des commandes individuelles (`/tools-setup`, `/brand-discover`, `/modules`) pour reconfigurer.
 
-## Reference files — load these when needed
+## Fichiers de référence — charger au besoin
 
-| File | When to load |
+| Fichier | Quand |
 |---|---|
-| `docs/placeholders.json` | Any time you fill or validate templates |
-| `docs/tools.json` | `/tools-setup`, to know which connectors are ready vs. stubs |
-| `docs/setup-completed.schema.json` | `/validate-setup`, to produce a conforming `.setup-completed` |
-| `SECURITY.md` | Preflight display, before any step that touches secrets or external APIs |
-| `_examples/` | `/seed-corpus`, as fallback corpus when the user has nothing to ingest |
+| `docs/placeholders.json` | Remplissage ou validation de templates |
+| `docs/tools.json` | `/tools-setup`, pour savoir quels connecteurs sont prêts vs stubs |
+| `docs/setup-completed.schema.json` | `/validate-setup`, pour produire un `.setup-completed` conforme |
+| `SECURITY.md` | Affichage préalable, avant toute étape touchant secrets ou API externes |
+| `_examples/` | Corpus de démarrage si l'utilisateur n'a rien à ingérer |
 
-## Placeholder discipline
+## Discipline des placeholders
 
-The template uses `{{UPPERCASE_UNDERSCORE}}` placeholders (Mustache-style). The canonical list is `docs/placeholders.json`.
+Le template utilise des placeholders `{{MAJUSCULES_UNDERSCORE}}` (style Mustache). La liste canonique est `docs/placeholders.json`.
 
-Before any command completes:
-- Run `python3 scripts/lint-placeholders.py --paths 01-brand 02-strategy 03-social-media 04-email 05-web-content 06-graphic-design 07-events 09-blog-seo .claude/skills`.
-- If the exit code is non-zero, the command cannot proceed. Surface the list of remaining placeholders and the files they live in.
-- `/validate-setup` is the only command that hard-blocks on residual placeholders — other commands can warn and continue if the user accepts.
+Avant la fin de toute commande :
+- Lancer `python3 scripts/lint-placeholders.py --paths 00-intel 01-brand 02-strategy 03-social-media 04-email 05-web-content 06-graphic-design 07-events 08-video 09-seo 10-automatisations 11-reporting 12-acquisition .claude/skills`.
+- Code de sortie non nul : la commande ne peut pas conclure. Afficher la liste des placeholders restants et leurs fichiers.
+- Seul `/validate-setup` bloque durement sur des placeholders résiduels — les autres commandes avertissent et peuvent continuer si l'utilisateur accepte.
 
-## Tool registry mutation
+## Mutation du registre d'outils
 
-When `/tools-setup` records a tool choice:
-1. Read `docs/tools.json`.
-2. Update `.setup-completed` in-memory (the real write happens in `/validate-setup`).
-3. For the picked tool, check `connector_status`:
-   - `ready` → no action, the connector file already exists.
-   - `stub` → prompt the user: "This tool has no built-in connector yet. The wizard will generate a TODO stub at `_integrations/qdrant/sources/<tool>.py`. You or your developer will need to implement it before the first sync."
-   - `unsupported` → refuse and list supported alternatives.
-4. Regenerate any role `CLAUDE.md` that references this tool category: read `_templates/role-claudemd/<role>.md`, substitute tool placeholders, write to `<role>/CLAUDE.md`. Always back up the previous version to `.setup-archive/role-claudemd-<ISO8601>/` before overwriting.
+Quand `/tools-setup` enregistre un choix d'outil :
+1. Lire `docs/tools.json`.
+2. Mettre à jour `.setup-completed` en mémoire (l'écriture réelle se fait dans `/validate-setup`).
+3. Selon `connector_status` :
+   - `ready` → rien à faire, le connecteur existe.
+   - `stub` → prévenir : « Pas de connecteur intégré pour cet outil. Le wizard génère un stub TODO à `_integrations/connectors/<outil>.py` — à implémenter avant le premier push. »
+   - `unsupported` → refuser et lister les alternatives supportées.
+4. Régénérer tout `CLAUDE.md` de rôle référençant cette catégorie d'outil : lire `_templates/role-claudemd/<role>.md`, substituer, écrire dans `<role>/CLAUDE.md`. Toujours sauvegarder la version précédente dans `.setup-archive/role-claudemd-<ISO8601>/`.
 
-## Security rules echo
+## Anti-répétition — sans base vectorielle
 
-At the start of every wizard command, echo one sentence about the security expectations relevant to that command, and point to `SECURITY.md`. Example:
+L'anti-répétition du copilot repose sur le **scan de fichiers + inventaires**, pas sur une base externe :
+- lecture du calendrier éditorial (`02-strategy/calendar/calendar.md`) pour les sujets déjà planifiés ou publiés ;
+- scan des archives par canal (`03-social-media/*/examples/`, `04-email/newsletter/editions/`, `09-seo/articles/`) ;
+- fichiers d'inventaire tenus par les skills de production (voir la skill `social-content`).
 
-- `/start-copilot`: "This wizard will ask you to paste URLs and tool names. It will never ask you to paste an API key in chat — keys go into `.env` only. Full rules: `SECURITY.md`."
-- `/tools-setup`: "For each tool you pick, I'll ask you to confirm the `.env` variable name and whether the key is set. I will not read the key value itself."
-- `/connect-qdrant`: "Qdrant setup reads `QDRANT_URL` and `QDRANT_API_KEY` from `.env`. I will test the connection but never print the key back to you."
+Les commandes du wizard ne configurent aucune mémoire sémantique externe.
 
-## `.setup-completed` writing
+## Rappel sécurité
 
-Only `/validate-setup` writes this file. Shape (matches `docs/setup-completed.schema.json`):
+Au début de chaque commande du wizard, afficher une phrase sur les attentes de sécurité pertinentes et pointer `SECURITY.md`. Exemples :
+
+- `/start-copilot` : « Ce wizard vous demandera des URLs et des noms d'outils. Il ne vous demandera jamais de coller une clé API dans le chat — les clés vont dans `.env` uniquement. Règles complètes : `SECURITY.md`. »
+- `/tools-setup` : « Pour chaque outil, je demande le nom des variables `.env` et confirmation qu'elles sont renseignées. Je ne lis pas les valeurs. »
+- `/modules` : « L'activation d'un module vérifie ses prérequis par des tests non destructifs. Aucun secret n'est lu ni affiché. »
+
+## Écriture de `.setup-completed`
+
+Seul `/validate-setup` écrit ce fichier (exception : `/modules` peut mettre à jour la clé `modules` après le setup initial). Forme (conforme à `docs/setup-completed.schema.json`) :
 
 ```json
 {
-  "version": "0.2.0",
+  "version": "2.0.0",
   "completed_at": "ISO 8601",
   "company": "string",
   "company_website": "URL",
   "language": "en | fr | es | de | pt",
   "bilingual": false,
   "tools": {
-    "editorial_calendar": { "name": "notion|airtable|trello|clickup|google-sheets|custom|none", "enabled": true },
+    "editorial_calendar": { "name": "calendar-file|notion|airtable|custom|none", "enabled": true },
     "email_marketing":    { "name": "mailerlite|mailchimp|resend|brevo|convertkit|custom|none", "enabled": true },
     "knowledge_base":     { "name": "outline|notion|confluence|gitbook|custom|none", "enabled": false },
     "events_platform":    { "name": "livestorm|zoom|riverside|google-meet|custom|none", "enabled": false },
-    "crm":                { "name": "hubspot|pipedrive|odoo|notion|airtable|custom|none", "enabled": false }
+    "crm":                { "name": "hubspot|pipedrive|odoo|notion|airtable|custom|none", "enabled": false },
+    "web_analytics":      { "name": "ga4-gsc|plausible|fathom|custom|none", "enabled": false },
+    "social_publishing":  { "name": "postiz|custom|none", "enabled": false },
+    "scraping":           { "name": "apify|custom|none", "enabled": false },
+    "client_space_ftp":   { "name": "ftp|none", "enabled": false }
+  },
+  "modules": {
+    "video":               { "enabled": false, "checked_at": "ISO 8601" },
+    "automatisations":     { "enabled": false, "checked_at": "ISO 8601" },
+    "reporting":           { "enabled": false, "checked_at": "ISO 8601" },
+    "acquisition":         { "enabled": false, "checked_at": "ISO 8601" },
+    "veille":              { "enabled": false, "checked_at": "ISO 8601" },
+    "publication-sociale": { "enabled": false, "checked_at": "ISO 8601" },
+    "espace-client":       { "enabled": false, "checked_at": "ISO 8601" }
   },
   "features": {
-    "qdrant":           { "enabled": false, "rationale": "string" },
-    "image_generation": { "enabled": true,  "model": "gemini-3-pro-image-preview" },
-    "weekly_cron":      { "enabled": false }
+    "image_generation": { "enabled": true, "model": "gemini-3-pro-image-preview" }
   },
   "wizard_log": [
-    { "command": "/start-copilot",   "at": "ISO 8601" },
-    { "command": "/brand-discover",  "at": "ISO 8601" },
-    { "command": "/tools-setup",     "at": "ISO 8601" },
-    { "command": "/validate-setup",  "at": "ISO 8601" }
+    { "command": "/start-copilot",  "at": "ISO 8601" },
+    { "command": "/brand-discover", "at": "ISO 8601" },
+    { "command": "/tools-setup",    "at": "ISO 8601", "privacy_gate": { "acknowledged": true, "claude_plan": "team" } },
+    { "command": "/modules",        "at": "ISO 8601" },
+    { "command": "/validate-setup", "at": "ISO 8601" }
   ]
 }
 ```
 
-## Reentry policy
+## Politique de réentrée
 
-Each slash command must be idempotent. Running `/tools-setup` a second time must read current state, show what's already configured, and ask what to change — not start from scratch.
+Chaque commande est idempotente. Relancer `/tools-setup` ou `/modules` doit lire l'état courant, montrer ce qui est déjà configuré, et demander quoi changer — pas repartir de zéro.
 
-## What this skill does NOT do
+## Ce que cette skill ne fait PAS
 
-- It doesn't produce marketing content (that's `social-content`, `email`, `copywriting`, etc.).
-- It doesn't run brand-check (that's `brand-check`).
-- It doesn't call external APIs directly — connectors in `_integrations/` do that.
-- It doesn't store secrets. Only reads presence.
+- Elle ne produit pas de contenu marketing (→ `social-content`, `email`, `copywriting`, etc.).
+- Elle n'exécute pas brand-check (→ `brand-check`).
+- Elle n'appelle pas d'API externe directement — les connecteurs de `_integrations/` s'en chargent.
+- Elle ne stocke aucun secret. Présence uniquement.
 
-Wizard commands stay focused on orchestration and consent. Production skills stay focused on production.
+Les commandes du wizard restent centrées sur l'orchestration et le consentement. Les skills de production restent centrées sur la production.

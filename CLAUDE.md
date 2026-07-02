@@ -29,39 +29,62 @@ See `SECURITY.md` for the full rules. The short list:
 
 This repo is organized by **role**. Each numbered folder represents one marketing function and contains a `CLAUDE.md` that defines the role's scope, inputs, workflow, and validation gates.
 
+**Core** (always active):
+
 | Folder | Role | When to use |
 |---|---|---|
+| `00-intel/` | — (confidential memory) | Meeting transcripts, internal/client/prospect intel — n8n-fed, never versioned |
 | `01-brand/` | — (reference) | Single source of truth: identity, design system, voice, personas |
-| `02-strategy/` | Head of communications | Editorial planning, pillars, KPIs, cross-channel calendar |
+| `02-strategy/` | Head of communications | Editorial planning, pillars, KPIs; **central calendar in `02-strategy/calendar/calendar.md`** |
 | `03-social-media/` | Social media manager | LinkedIn, Discord, WhatsApp, other activated channels |
 | `04-email/` | Email marketing manager | Newsletters, promos, sales outreach, lead nurturing |
 | `05-web-content/` | Web content lead | Landing pages, static HTML artifacts |
 | `06-graphic-design/` | Art director | Visuals, carousels, infographics, AI imagery, **HTML presentations**, mail signatures |
 | `07-events/` | Event marketing lead | Webinars, live sessions, gatherings, announcement plans |
-| `09-blog-seo/` | Blog & SEO manager | Long-form articles, keyword research, on-page optimization |
-| `_sources/` | — (raw material) | Meeting transcripts, reports, market research — indexed in Qdrant if enabled |
-| `_integrations/` | — (infrastructure) | Qdrant pipeline, MCP server, cron, connector code |
-| `_examples/` | — (starter corpus) | Fictional but realistic content for Qdrant seeding on day one |
+| `09-seo/` | Blog & SEO manager | Long-form articles, keyword research, on-page optimization |
+| `_sources/` | — (raw material) | Reports, market research — canonical source for published numbers |
+| `_integrations/` | — (infrastructure) | Connector code, MCP config, cron |
+| `_examples/` | — (starter corpus) | Fictional but realistic content to calibrate tone on day one |
+
+**Optional modules** (inactive by default — enable via `/modules`, state in `.setup-completed.modules`; do not load their `CLAUDE.md` or propose their workflows while inactive):
+
+| Folder | Module | Prerequisites |
+|---|---|---|
+| `08-video/` | `video` | macOS + Palmier Pro |
+| `10-automatisations/` | `automatisations` | n8n instance |
+| `11-reporting/` | `reporting` | ≥ 1 data source (GA4/GSC, Postiz, email tool) |
+| `12-acquisition/` | `acquisition` | n8n instance (+ Apify for scraping) |
+| — | `veille`, `publication-sociale`, `espace-client` | See `/modules` (feeds `00-intel/`, Postiz, FTP client space) |
+
+### `00-intel/` subfolders (confidential — gitignored, see `00-intel/CLAUDE.md`)
+
+| Subfolder | Content | Who feeds it |
+|---|---|---|
+| `inbox/` | Unprocessed drops (meeting transcripts, notes) | n8n workflow (module `automatisations`) or manual drop |
+| `interne/` | Team meetings, internal decisions | Classified from `inbox/` |
+| `clients/<name>/` | Everything about an existing client | Classified from `inbox/` |
+| `prospects/<name>/` | Sales meetings, expressed needs | Classified from `inbox/` |
 
 ### `_sources/` subfolders
 
 | Subfolder | Content | Who feeds it |
 |---|---|---|
-| `transcriptions/` | Meeting minutes with `internal/` and `clients/<name>/` subfolders | Dropped manually after each meeting |
 | `reports/` | Raw data, benchmarks, quantitative studies — the canonical source for any number you publish | Manual after each study |
-| `research/` | Market watch: external articles, notes, competitor analysis | Manual drop, or automated feed if configured during `/tools-setup` |
+| `research/` | Market watch: external articles, notes, competitor analysis | Manual drop, or automated feed (module `veille`) |
 
 ---
 
 ## Universal rules (apply to every role)
 
 1. **Read the role's `CLAUDE.md` first** before producing any content in that folder.
-2. **Defer to `01-brand/`** for voice, vocabulary, colors, typography. If Qdrant is enabled, prefer `qdrant_search(filter_source_key="brand")` over full-file reads.
+2. **Defer to `01-brand/`** for voice, vocabulary, colors, typography.
 3. **Follow the brand language configured at setup.** Monolingual or bilingual is a per-project decision, recorded in `.setup-completed`.
 4. **No claim without a source.** Every factual statement must map to a number in `01-brand/messaging-framework.md` or a cited external reference.
 5. **Never use banned vocabulary** listed in `01-brand/voice.md`.
-6. **Check the editorial calendar** before proposing content, if one is configured.
-7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `09-`, and for any HTML deck produced under `06-graphic-design/presentations/`. The PostToolUse hook fires a reminder; do not bypass it.
+6. **Check the central editorial calendar** (`02-strategy/calendar/calendar.md`) before proposing content, and update entry statuses (`idée → brouillon → à-valider → validé → publié`) as work progresses.
+7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `08-`, `09-`, and for any HTML deck produced under `06-graphic-design/presentations/`. The PostToolUse hook fires a reminder; do not bypass it.
+8. **Anti-repetition is file-based**: scan the calendar, per-channel archives (`examples/`, `editions/`, `articles/`) and the inventory files maintained by production skills before drafting. No external vector database is involved.
+9. **Respect module state.** If a module is disabled in `.setup-completed.modules`, do not load its folder's `CLAUDE.md` or propose its workflows — point the user to `/modules`.
 
 ---
 
@@ -71,21 +94,31 @@ Runtime configuration lives in `.setup-completed` (JSON). The wizard writes it a
 
 ```json
 {
-  "version": "0.2.0",
+  "version": "2.0.0",
   "company": "...",
-  "language": "en",
+  "language": "fr",
   "bilingual": false,
   "tools": {
-    "editorial_calendar": { "name": "notion", "enabled": true },
+    "editorial_calendar": { "name": "calendar-file", "enabled": true },
     "email_marketing":    { "name": "mailerlite", "enabled": true },
     "knowledge_base":     { "name": "outline", "enabled": false },
     "events_platform":    { "name": "none", "enabled": false },
-    "crm":                { "name": "none", "enabled": false }
+    "crm":                { "name": "none", "enabled": false },
+    "web_analytics":      { "name": "ga4-gsc", "enabled": true },
+    "social_publishing":  { "name": "postiz", "enabled": false },
+    "client_space_ftp":   { "name": "ftp", "enabled": false }
+  },
+  "modules": {
+    "video":               { "enabled": false },
+    "automatisations":     { "enabled": true },
+    "reporting":           { "enabled": false },
+    "acquisition":         { "enabled": false },
+    "veille":              { "enabled": true },
+    "publication-sociale": { "enabled": false },
+    "espace-client":       { "enabled": false }
   },
   "features": {
-    "qdrant":           { "enabled": false, "rationale": "< 50 pieces/month, file-based memory is sufficient" },
-    "image_generation": { "enabled": true,  "model": "gemini-3-pro-image-preview" },
-    "weekly_cron":      { "enabled": false }
+    "image_generation": { "enabled": true, "model": "gemini-3-pro-image-preview" }
   }
 }
 ```

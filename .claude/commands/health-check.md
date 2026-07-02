@@ -1,110 +1,128 @@
 ---
 name: health-check
-description: Ongoing. Verify env vars are set, MCP servers reachable, placeholder lint passes, brand-check hook wired, cron loaded (if applicable). Run monthly or when things feel off.
+description: Diagnostic continu. Vérifie .setup-completed, les placeholders, les credentials .env, les serveurs MCP réellement connectés, les modules actifs et leurs prérequis, la présence des CLAUDE.md, l'inbox 00-intel non traitée et le câblage des hooks. À lancer chaque mois ou dès qu'un truc cloche.
 ---
 
-# /health-check — verify runtime health
+# /health-check — vérifier la santé du système
 
-Load the `copilot-setup` skill first.
+Charger d'abord la skill `copilot-setup`.
 
-## Intent
+## Intention
 
-Things drift. API keys expire. MCP servers stop. Hooks get disabled. Cron jobs fail silently. This command runs a battery of non-destructive checks and reports what's healthy and what needs attention.
+Tout dérive : les clés API expirent, les serveurs MCP se déconnectent, les hooks se débranchent, les prérequis d'un module disparaissent. Cette commande exécute une batterie de vérifications **non destructives** et rapporte ce qui va et ce qui demande attention.
 
-Safe to run any time. No writes, no external API calls beyond reachability tests.
+Exécutable à tout moment. Aucune écriture, aucun appel API au-delà de tests de reachability.
 
-## Checks
+## Vérifications
 
-### 1. `.setup-completed` exists and is valid
+### 1. `.setup-completed` existe et est valide
 
-- Read `.setup-completed`.
-- Validate against `docs/setup-completed.schema.json`.
-- If missing: warn that setup is incomplete and suggest `/start-copilot`.
-- If malformed: show the validation error.
+- Lire `.setup-completed`, valider contre `docs/setup-completed.schema.json`.
+- Absent : setup incomplet → suggérer `/start-copilot`.
+- Malformé : afficher l'erreur de validation.
 
-### 2. Placeholder linter
+### 2. Linter de placeholders
 
 ```
 python3 scripts/lint-placeholders.py
 ```
 
-Report exit code.
+Rapporter le code de sortie et les placeholders restants.
 
-### 3. `.env` completeness
+### 3. Credentials `.env` présents et valides
 
-For every tool enabled in `.setup-completed.tools.*`, verify the required env keys are present in `.env` (presence only — do not print values).
+- Pour chaque outil activé dans `.setup-completed.tools.*` et chaque module actif dans `.setup-completed.modules.*`, vérifier que les variables requises sont **présentes et non vides** dans `.env` (présence uniquement — ne jamais afficher les valeurs).
+- **Validité** (tests légers, lecture seule, un appel max par outil) :
+  - API HTTP (Postiz, MailerLite, Notion…) : un GET de type "who am I / ping" → 200 attendu ; 401/403 = clé invalide ou expirée.
+  - FTP espace client : listing du répertoire distant, jamais d'écriture.
+  - GA4 / Search Console : présence du fichier pointé par `GOOGLE_APPLICATION_CREDENTIALS`.
+- Signaler : `[set]` / `[unset]` / `[invalide (HTTP 401)]`.
 
-Flag missing keys.
+### 4. Serveurs MCP réellement connectés
 
-### 4. MCP server reachability
+- `claude mcp list` — comparer avec `.mcp.json` et les MCP attendus par les outils configurés (ex. `magnific` si installé).
+- Pour chaque serveur : distinguer **déclaré** (présent dans la config) de **connecté** (le serveur démarre / répond). Un serveur déclaré mais en échec de connexion est un 🟠.
 
-Read `.mcp.json`. For each configured server, test that the command starts without error (run it in `--help` or equivalent probe mode, not full startup). Report which are healthy.
+### 5. Modules actifs et leurs prérequis
 
-### 5. Qdrant reachability (if enabled)
+Pour chaque module `enabled: true` dans `.setup-completed.modules` :
 
-If `.setup-completed.features.qdrant.enabled == true`:
-- `curl -s -H "api-key: $QDRANT_API_KEY" $QDRANT_URL/collections -o /dev/null -w "%{http_code}"` — should be 200.
-- `python3 _integrations/qdrant/sync.py --stats` — should report collection size and last sync date.
+| Module | Vérification |
+|---|---|
+| `video` | macOS (`uname -s` == `Darwin`) + Palmier Pro toujours installé |
+| `automatisations` | `N8N_BASE_URL` set + instance joignable (GET healthz) |
+| `reporting` | Au moins une source de données valide (check 3) |
+| `acquisition` | n8n joignable ; `APIFY_TOKEN` set si scraping configuré |
+| `veille` | `00-intel/` présent avec ses sous-dossiers |
+| `publication-sociale` | `POSTIZ_API_KEY` set + API joignable |
+| `espace-client` | `FTP_*` sets + listing FTP OK |
 
-### 6. Brand-check hook wiring
+Un module actif dont un prérequis a disparu = 🟠 avec suggestion (`/modules` pour re-vérifier ou désactiver).
 
-- Verify `.claude/settings.json` has the PostToolUse hook registered.
-- Verify `.claude/hooks/brand-check-reminder.py` exists and is executable.
-- Run the hook with a synthetic payload to confirm it fires correctly:
+### 6. Présence des `CLAUDE.md`
+
+- Vérifier qu'un `CLAUDE.md` existe : à la racine, dans chaque dossier du cœur (`01-brand` → `07-events`, `09-seo`, `02-strategy/calendar`, `00-intel`) et dans chaque dossier de module **actif** (`08-video`, `10-automatisations`, `11-reporting`, `12-acquisition`).
+- Un `CLAUDE.md` manquant = 🔴 (le rôle opérera sans doctrine).
+
+### 7. `00-intel/inbox/` non traité
+
+- Lister les fichiers de `00-intel/inbox/` (hors `.gitkeep`).
+- S'il y en a : 🟠 avec le compte et les 5 plus anciens — suggérer une session de classification (voir `00-intel/CLAUDE.md`).
+
+### 8. Câblage des hooks
+
+- `.claude/settings.json` : hook PostToolUse (brand-check) et hook SessionStart enregistrés.
+- `.claude/hooks/brand-check-reminder.py` et `.claude/hooks/session-start.py` existent.
+- Test synthétique :
   ```
   echo '{"tool_input":{"file_path":"03-social-media/linkedin/drafts/test.md"}}' | python3 .claude/hooks/brand-check-reminder.py
+  python3 .claude/hooks/session-start.py < /dev/null
   ```
 
-### 7. Cron state (macOS only, if Qdrant enabled)
+### 9. Fraîcheur du calendrier et du tableau d'état
 
-- `launchctl list | grep qdrant` — should show the loaded agent.
-- Tail the last 20 lines of `_integrations/qdrant/logs/cron-weekly.stderr.log` — look for recent errors.
-- Check the last modified timestamp of `_integrations/qdrant/registry.json` — should be within the last 8 days.
+- `02-strategy/calendar/calendar.md` : existe ; signaler s'il ne contient aucune entrée datée dans les 14 prochains jours (calendrier à l'abandon ?).
+- Tableau tool-status du `README.md` vs `.setup-completed.tools.*` : si divergence, suggérer `/tools-setup`.
 
-### 8. Tool-status board freshness
+### 10. Hygiène git
 
-- Compare the tool-status table in `README.md` against `.setup-completed.tools.*`.
-- If mismatch, suggest running `/tools-setup` to re-render the board.
+- `git status --porcelain` — signaler les modifications non commitées sur les fichiers opérationnels.
+- `grep -r "API_KEY\|TOKEN\|SECRET\|PASSWORD" --include="*.md" --include="*.py" .` (en excluant `.env*`, `.setup-archive/`, `docs/`, `00-intel/`) — signaler toute chaîne ressemblant à un secret en dur.
+- Vérifier que `00-intel/` est bien couvert par `.gitignore` et qu'aucun fichier de contenu de `00-intel/` n'est tracké.
 
-### 9. Git hygiene
-
-- `git status --porcelain` — flag uncommitted changes to operational files (suggest commit or stash).
-- `grep -r "API_KEY\|TOKEN\|SECRET" --include="*.md" --include="*.py" .` (excluding `.env*`, `.setup-archive/`, `docs/`) — flag any hardcoded secret-looking strings.
-
-## Report format
+## Format du rapport
 
 ```
 ## Health Check — <ISO 8601>
 
-| Check | Status | Detail |
+| Vérification | Statut | Détail |
 |---|---|---|
-| .setup-completed | ✅ | Valid, version 0.2.0 |
-| Placeholders | ✅ | No unresolved {{*}} |
-| .env completeness | 🟠 | Missing: MAILCHIMP_SERVER_PREFIX |
-| MCP reachability | ✅ | qdrant MCP responds |
-| Qdrant cluster | ✅ | 200 OK, 1,247 points indexed |
-| Brand-check hook | ✅ | PostToolUse registered, hook executable |
-| Weekly cron | 🟠 | Loaded but last log shows error: "403 on collection fetch" |
-| Tool-status board | ✅ | Matches .setup-completed |
-| Git hygiene | ✅ | Clean |
+| .setup-completed | ✅ | Valide, version 2.0.0 |
+| Placeholders | ✅ | Aucun {{*}} résiduel |
+| Credentials .env | 🟠 | POSTIZ_API_KEY [unset] |
+| Serveurs MCP | ✅ | 2 déclarés, 2 connectés |
+| Modules actifs | 🟠 | espace-client : listing FTP en échec (hôte injoignable) |
+| CLAUDE.md | ✅ | 12/12 présents |
+| 00-intel/inbox | 🟠 | 3 fichiers non classés (le plus ancien : 12 jours) |
+| Hooks | ✅ | PostToolUse + SessionStart câblés |
+| Calendrier | ✅ | 5 entrées dans les 14 prochains jours |
+| Hygiène git | ✅ | Propre, 00-intel ignoré |
 
-### Action items
-1. Add MAILCHIMP_SERVER_PREFIX to .env (see .env.example)
-2. Investigate last cron error — likely an expired Qdrant key, re-check in Qdrant Cloud
-
-### All green?
-No — 2 warnings, 0 blocks. System is operational but needs attention before next month's newsletter.
+### Actions
+1. Renseigner POSTIZ_API_KEY dans .env (voir .env.example)
+2. Vérifier l'hôte FTP — l'espace client est inaccessible
+3. Classer les 3 fichiers de 00-intel/inbox/
 ```
 
-## Output disposition
+## Disposition de sortie
 
-- All green: end with "✅ All systems operational."
-- Warnings only: list action items, allow continued work.
-- Blocks: surface each block, explain the impact, and propose remediation.
+- Tout vert : « ✅ Tous les systèmes sont opérationnels. »
+- Avertissements seuls : lister les actions, le travail peut continuer.
+- Blocages : expliquer l'impact de chacun et proposer la remédiation.
 
-## Failure modes to avoid
+## Modes d'échec à éviter
 
-- **Don't attempt remediation automatically.** This command is diagnostic.
-- **Don't print secrets.** Presence checks only; use `[set] / [unset]` in the report.
-- **Don't run long sync jobs.** Reachability tests only.
-- **Don't modify files.** Zero writes.
+- **Aucune remédiation automatique.** Cette commande est diagnostique.
+- **Aucun secret affiché.** `[set]` / `[unset]` / `[invalide]` uniquement.
+- **Aucun job long.** Tests de reachability seulement, jamais de synchro ni de push.
+- **Aucune écriture de fichier.**

@@ -12,6 +12,13 @@ _integrations/qdrant/logs/
 _integrations/qdrant/**/__pycache__/
 _integrations/qdrant/**/*.pyc
 
+# 00-intel — business intelligence memory (confidential, NEVER versioned)
+# Only the CLAUDE.md and folder structure (.gitkeep) are part of the template.
+00-intel/**
+!00-intel/*/
+!00-intel/CLAUDE.md
+!00-intel/**/.gitkeep
+
 # Bootstrap user inputs (private brand documents dropped during interview)
 _bootstrap/inputs/*
 !_bootstrap/inputs/README.md
@@ -42,10 +49,10 @@ _bootstrap/inputs/*
 !07-events/templates/
 !07-events/CLAUDE.md
 
-09-blog-seo/articles/*.md
-09-blog-seo/content-briefs/*.md
-09-blog-seo/keyword-research/*.md
-09-blog-seo/seo-audit/*.md
+09-seo/articles/*.md
+09-seo/content-briefs/*.md
+09-seo/keyword-research/*.md
+09-seo/seo-audit/*.md
 
 _sources/transcriptions/**/*.md
 _sources/reports/**/*

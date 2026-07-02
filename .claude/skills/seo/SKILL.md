@@ -1,107 +1,129 @@
 ---
 name: seo
-description: Blog and SEO for {{COMPANY_NAME}} — keyword research, article drafting, on-page optimization, thematic cluster strategy, AEO (Answer Engine Optimization) for LLM citations. Works on the 09-blog-seo/ folder.
+description: Production SEO pour {{COMPANY_NAME}} — briefs de contenu, articles longs, clusters thématiques, optimisation on-page et AEO (citations LLM), dans 09-seo/. L'analyse (audits techniques, SERP, mots-clés, backlinks) est déléguée aux agents du plugin claude-seo. Couplage Google Search Console / GA4 configuré via /tools-setup.
 ---
 
-# seo — blog & SEO {{COMPANY_NAME}}
+# seo — production blog & SEO {{COMPANY_NAME}}
 
-You manage the long-form content strategy, keyword research, and optimization for search engines (classic Google) and answer engines (LLMs: ChatGPT, Claude, Perplexity, Gemini).
+Tu pilotes la stratégie de contenu long-format et sa production, optimisée pour les moteurs de recherche (Google) et les moteurs de réponse (ChatGPT, Claude, Perplexity, Gemini).
 
-## Mandatory preflight
+## Étape 0 — Doctrine de marque (OBLIGATOIRE)
 
-1. Read `01-brand/voice.md` — tone and writing principles.
-2. Read `09-blog-seo/CLAUDE.md` — full workflow, clusters, frontmatter.
-3. Read `01-brand/messaging-framework.md` — numbers and claims to use.
-4. **Retrieve prior material:**
+Avant de rédiger un brief ou un article :
 
-   **If Qdrant is enabled:**
-   ```
-   qdrant_search(query="<article topic>", top=10)
-   ```
-   Use hits as raw material:
-   - **brand-doc** → doctrine to quote verbatim
-   - **newsletter / linkedin-post / promo** → tested angles, validated phrasings, reused numbers
-   - **transcript** → internal decisions, citable quotes
-   - **report-data** → official figures to reuse
+1. Charger `01-brand/checklist-pre-composition.md` — règles de voix, anti-style-IA, typographie, assets, réutilisation.
+2. Charger `01-brand/voice.md` — position de voix, vocabulaire, interdits.
 
-   **Critical SEO rule**: every factual statement in the article must be backed by a Qdrant hit or a cited external source. Never invent facts — search engines and LLMs penalize unsourced content.
+**Ne jamais produire sans.** Si l'un des deux fichiers manque ou contient encore des `{{...}}`, arrêter et lancer `/start-copilot`. Les articles SEO sont le format le plus exposé au style IA (règle de trois, méta-commentaire, emphase gonflée) : le filtre anti-style-IA conditionne aussi la citabilité par les LLM.
 
-   **If Qdrant is disabled:** scan `./articles/` for topic overlap, scan `01-brand/messaging-framework.md` for established positions and numbers, and require explicit external citations for any other fact.
+## Division du travail — analyse vs production
 
-## Thematic clusters
+**Cette skill produit. Elle n'audite pas.** L'analyse s'appuie sur le plugin **claude-seo** (AgriciDaniel) et ses agents spécialisés :
+
+| Besoin d'analyse | Déléguer à |
+|---|---|
+| Audit complet du site, technique (crawl, indexation, CWV) | `claude-seo:seo-audit` / agent `seo-technical` |
+| Qualité de contenu, E-E-A-T, contenu mince | agent `seo-content` |
+| Clustering sémantique, architecture hub-and-spoke | agent `seo-cluster` |
+| Schema markup, données structurées | agent `seo-schema` |
+| GEO / AI Overviews / citabilité LLM | agent `seo-geo` |
+| Données CrUX, GSC, GA4 | agent `seo-google` |
+| Backlinks, pages concurrentes, dérive SEO | agents `seo-backlinks`, `seo-competitor-pages`, `seo-drift` |
+
+Workflow type : lancer l'analyse via le plugin → récupérer les conclusions (mots-clés, intentions, gaps, structure recommandée) → **produire** ici (briefs, articles, clusters) dans `09-seo/`.
+
+## Données de performance — GSC / GA4
+
+Le couplage **Google Search Console + GA4** se configure via `/tools-setup`. Une fois actif :
+
+- Prioriser les sujets d'après les requêtes réelles (impressions sans clic = opportunité de brief).
+- Alimenter le cycle de refresh (article > 6 mois avec positions en baisse → mise à jour prioritaire).
+- Vérifier l'indexation des articles publiés.
+
+Si le couplage n'est pas configuré, le signaler à l'utilisateur et travailler à partir des clusters et des personas.
+
+## Préflight production (après l'étape 0)
+
+1. Lire `09-seo/CLAUDE.md` — workflow complet, clusters, frontmatter.
+2. Lire `01-brand/messaging-framework.md` — chiffres et affirmations utilisables.
+3. **Anti-répétition** : scanner `09-seo/articles/` pour recouvrement de sujet, consulter `_templates/inventory.md`, et vérifier les positions déjà établies dans `01-brand/messaging-framework.md`.
+4. **Règle critique** : chaque affirmation factuelle de l'article est adossée à un chiffre de la doctrine ou à une source externe citée. Les moteurs (classiques et LLM) pénalisent le contenu non sourcé.
+
+## Clusters thématiques
 
 {{SEO_CLUSTERS}}
 
-## 7-step workflow
+## Workflow de production en 7 étapes
 
-### 1. Keyword research
+### 1. Recherche de mots-clés (via plugin)
 
-- Identify the target cluster.
-- Gather keywords with volume and difficulty (via third-party tool or manual analysis).
-- List persona questions.
-- Analyze top 5 ranking articles.
-- File in `09-blog-seo/keyword-research/<cluster>/YYYY-MM-<topic>.md`.
+- Identifier le cluster cible.
+- Déléguer la collecte (volumes, difficulté, SERP top 5, questions des personas) aux agents claude-seo.
+- Consigner dans `09-seo/keyword-research/<cluster>/YYYY-MM-<sujet>.md`.
 
-### 2. Content brief
+### 2. Brief de contenu
 
-File at `09-blog-seo/content-briefs/brief-<slug>.md` with:
-- Primary keyword + secondaries (3-5)
-- Search intent (informational / commercial / transactional)
-- Proposed structure (H1, H2s, H3s)
-- Sources to integrate (Qdrant hits, external data)
-- Primary CTA
-- Target persona
-- Target length (1500-2500 words typical)
+Fichier `09-seo/content-briefs/brief-<slug>.md` avec :
+- Mot-clé principal + secondaires (3-5)
+- Intention de recherche (informationnelle / commerciale / transactionnelle)
+- Structure proposée (H1, H2, H3)
+- Sources à intégrer (doctrine, données externes, conclusions d'agents claude-seo)
+- CTA principal
+- Persona cible
+- Longueur cible (1500-2500 mots typique)
 
-### 3. Draft
+### 3. Rédaction
 
-- Follow the brief and voice doctrine.
-- Integrate data and citations from step 1.
-- File at `09-blog-seo/articles/YYYY-MM-DD-<slug>.md`.
-- Full frontmatter (see template below).
+- Suivre le brief et la doctrine de voix (étape 0).
+- Intégrer données et citations de l'étape 1.
+- Fichier `09-seo/articles/YYYY-MM-DD-<slug>.md`, frontmatter complet (modèle ci-dessous).
 
 ### 4. On-page SEO
 
-- Title tag: < 60 chars, keyword at the start
-- Meta description: < 155 chars, implicit CTA
-- URL slug: short, lowercase, keyword
-- Single H1; H2s with keyword variations
-- Internal linking: minimum 3 links to other `{{COMPANY_WEBSITE}}` pages
-- Images: descriptive alt text, filenames with keyword
-- Schema markup: Article, FAQ (if relevant), Organization
+- Title tag : < 60 caractères, mot-clé en tête
+- Meta description : < 155 caractères, CTA implicite
+- Slug : court, minuscules, mot-clé
+- H1 unique ; H2 avec variantes du mot-clé
+- Maillage interne : minimum 3 liens vers d'autres pages `{{COMPANY_WEBSITE}}`
+- Images : alt descriptif, noms de fichiers avec mot-clé
+- Schema markup : Article, FAQ (si pertinent), Organization — validation via l'agent `seo-schema`
 
 ### 5. AEO (Answer Engine Optimization)
 
-Recent adaptation: content is increasingly cited by ChatGPT, Perplexity, Claude, Gemini. To be cited:
-- Put factual answers at the start of paragraphs
-- Use clear semantic tags (H2 = question, paragraph = answer)
-- Cite sources with links
-- Include precise, sourced numbers
-- Avoid fuzzy phrasing that LLMs cannot reformat cleanly
+Pour être cité par ChatGPT, Perplexity, Claude, Gemini :
+- Réponse factuelle en début de paragraphe
+- Balisage sémantique clair (H2 = question, paragraphe = réponse)
+- Sources citées avec liens
+- Chiffres précis et sourcés
+- Aucune formulation floue qu'un LLM ne peut pas reformater proprement
+- Audit de citabilité : agent `seo-geo` du plugin
 
-### 6. Brand check (mandatory)
+### 6. Brand-check (obligatoire)
 
-### 7. Publish
+Invoquer `brand-check` avant toute publication.
 
-- Push to {{BLOG_CMS}} — dry-run first: `python3 scripts/dry-run-push.py --target {{BLOG_CMS}} --file <article>`.
-- Add images and meta tags in the CMS.
-- Configure categories and tags.
-- Submit to Google Search Console.
+### 7. Publication
 
-## Article frontmatter
+- Push vers {{BLOG_CMS}} — dry-run d'abord : `python3 scripts/dry-run-push.py --target {{BLOG_CMS}} --file <article>`.
+- Ajouter images et meta tags dans le CMS.
+- Configurer catégories et tags.
+- Soumettre à Google Search Console (via le couplage `/tools-setup` si actif).
+- Mettre à jour le statut dans le calendrier éditorial.
+
+## Frontmatter d'article
 
 ```yaml
 ---
-title: "Article Title"
-slug: article-slug
+title: "Titre de l'article"
+slug: slug-article
 date: YYYY-MM-DD
 author: {{COMPANY_NAME}}
-category: [pillar]
+category: [pilier]
 tags: [tag1, tag2, tag3]
-keyword_primary: "main keyword"
+keyword_primary: "mot-clé principal"
 keywords_secondary: ["kw2", "kw3", "kw4"]
 meta_title: "..."
-meta_description: "155 chars max"
+meta_description: "155 caractères max"
 status: draft | review | published
 language: en | fr
 word_count: XXXX
@@ -109,36 +131,30 @@ cluster: "..."
 ---
 ```
 
-## SEO rules
+## Règles SEO
 
-### Content
-- Data first: ≥ 3 sourced numbers per article
-- No keyword stuffing — natural density
-- Internal links: ≥ 3 per article
-- External links: 1-2 authoritative sources
-- Refresh cadence: revisit every 6 months
+### Contenu
+- Data d'abord : ≥ 3 chiffres sourcés par article
+- Pas de keyword stuffing — densité naturelle
+- Maillage interne : ≥ 3 liens par article
+- Liens externes : 1-2 sources d'autorité
+- Refresh : revisiter tous les 6 mois (prioriser via GSC si couplé)
 
-### Technical
-- Page load < 3s
-- Mobile-first
-- JSON-LD structured data
-- Canonical URLs
-- Sitemap XML kept current
+### Jamais
+- Contenu IA générique sans valeur spécifique {{COMPANY_NAME}} (cf. filtre anti-style-IA de l'étape 0)
+- Articles sous 800 mots
+- Duplication inter-langues (adaptation culturelle, pas traduction mécanique)
+- Link-building artificiel
 
-### Never
-- Generic AI content with no {{COMPANY_NAME}}-specific value
-- Articles under 800 words
-- Cross-language duplication (cultural adaptation, not mechanical translation)
-- Artificial link-building
-
-## Brand-specific customizations
+## Personnalisation par marque
 
 {{SEO_SPECIFIC_RULES}}
 
-## Associated skills
+## Skills associées
 
-- `copywriting` — narrative drafting
-- `copy-editing` — SEO-aware 7-pass review
-- `content-strategy` — global planning
-- `image-generation` — article visuals
-- `brand-check` — mandatory final validation
+- `claude-seo:*` (plugin) — audits et analyses (technique, contenu, clusters, schema, GEO, GSC/GA4)
+- `copywriting` — rédaction narrative
+- `copy-editing` — relecture 7 passes orientée SEO
+- `content-strategy` — planification globale
+- `image-generation` — visuels d'article
+- `brand-check` — validation finale obligatoire
