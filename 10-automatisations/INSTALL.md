@@ -88,8 +88,8 @@ Points importants :
 
 ## 4. Error workflow global (à faire avant tout le reste)
 
-1. Dans n8n : *Workflows → Import from file* → `workflows/error-handler.json`.
-2. Remplacez les placeholders (voir `workflows/README.md`), créez le credential SMTP dans le vault, activez le workflow.
+1. Dans n8n : *Workflows → Import from file* → `workflows/examples/error-handler.json`.
+2. Remplacez les placeholders (voir `workflows/examples/README.md`), créez le credential SMTP dans le vault, activez le workflow.
 3. Notez son ID (visible dans l'URL : `/workflow/<ID>`).
 4. Dans **chaque** workflow que vous créerez ensuite : *Options → Settings → Error workflow* → sélectionnez ce workflow. Dans les JSON du template, c'est le placeholder `{{ERROR_WORKFLOW_ID}}`.
 
@@ -109,7 +109,7 @@ N8N_API_KEY="{{VOTRE_CLE_API_N8N}}"
 
 Le serveur [n8n-mcp](https://github.com/czlonkowski/n8n-mcp) donne à Claude Code un accès outillé à votre instance : documentation des nodes, validation de configuration, CRUD des workflows, lecture des exécutions.
 
-Ajoutez (ou complétez) `.mcp.json` à la racine du repo :
+Ajoutez (ou complétez) `.mcp.json` à la racine du repo — bloc de référence et explications détaillées dans `mcp-setup.md` :
 
 ```json
 {
@@ -122,7 +122,8 @@ Ajoutez (ou complétez) `.mcp.json` à la racine du repo :
         "LOG_LEVEL": "error",
         "DISABLE_CONSOLE_OUTPUT": "true",
         "N8N_API_URL": "${N8N_API_URL}",
-        "N8N_API_KEY": "${N8N_API_KEY}"
+        "N8N_API_KEY": "${N8N_API_KEY}",
+        "WEBHOOK_SECURITY_MODE": "moderate"
       }
     }
   }

@@ -54,6 +54,12 @@ _sources/research/**/*
 !_sources/**/.gitkeep
 !_sources/README.md
 
+# 10-automatisations — local-only content
+# Template libraries cloned for consultation (5 100+ workflows, see 10-automatisations/bibliotheques.md)
+10-automatisations/libraries/
+# Raw workflow backups from scripts/backup-workflows.sh (may contain emails/document IDs)
+10-automatisations/backups/
+
 # Python
 __pycache__/
 *.py[cod]

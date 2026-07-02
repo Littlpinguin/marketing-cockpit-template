@@ -177,6 +177,8 @@ See `docs/setup-completed.schema.json` for the full schema.
 |---|---|---|
 | `copilot-setup` | Shared wizard logic | Loaded by every `/start-copilot`, `/brand-discover`, `/tools-setup`, `/modules`, `/validate-setup`, `/health-check` |
 | `sync-template` / `backport-to-template` | Template ↔ fork Git flow | Update from upstream / contribute back sanitized |
+| `n8n-builder` | End-to-end n8n workflow creation | 5-phase method: libraries → plan → build (MCP) → QA → REX |
+| `n8n-audit` | Review an existing n8n workflow | Against module conventions (architecture, errors, naming, vault) |
 | `inventory` | Deliverables index | Maintains `_templates/inventory.md` (anti-repetition) |
 
 ### Quality gates & review
@@ -269,6 +271,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 | `seo-technical` | Technical SEO: crawlability, indexation, canonicals, CWV, JS rendering | Skill `seo-audit` |
 | `seo-content` | Content quality: E-E-A-T, depth, thin content, AI citability | Skills `seo-audit` / `seo` |
 | `seo-google` | Google data: CrUX, Search Console, GA4 (only if GA4/GSC coupling is active) | Skills `seo-audit` / `seo` |
+| `n8n-debugger` | Diagnoses failed n8n executions (read-only) against known error patterns | `n8n-builder`, module `automatisations` |
 | `veille-analyst` | Deep web research on ONE watch level, sourced and dated signals | Skill `veille-strategy` (one per level, in parallel) |
 
 ---
