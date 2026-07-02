@@ -5,7 +5,6 @@
 43 production skills · 9 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CHANGELOG.md)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
 [![Skills](https://img.shields.io/badge/skills-43-blue.svg)](#whats-inside)
 [![Agents](https://img.shields.io/badge/agents-9-blue.svg)](#whats-inside)
@@ -18,18 +17,69 @@ Clone it once per company, run the wizard, and get a role-based copilot that beh
 
 Everything below ships in the template and opens in a browser with zero build step. The demo brand ("Meridian Conseil") is 100% fictional; the wizard reskins everything with *your* tokens.
 
-![52 slide layouts — grouped overview](docs/launch/screenshots/deck-catalogue-overview.png)
-*The slide catalogue: 52 layouts across 7 families (opening, editorial, dataviz, diagrams, tables, proof, closing). The `slides` skill picks layouts by message type, then reskins them with your brand tokens.*
+![Cover layout — full-screen slide from the Meridian demo catalogue](docs/launch/screenshots/deck-slide-cover.jpg)
+
+| Waterfall data-viz layout | Quote + portrait layout |
+|---|---|
+| ![Waterfall chart slide layout](docs/launch/screenshots/deck-slide-waterfall.jpg) | ![Client quote slide layout with textured background](docs/launch/screenshots/deck-slide-quote.jpg) |
+
+*Three of the 52 slide layouts, captured in full-screen presentation mode from the self-documenting catalogue (each slide carries its own usage note). 7 families: opening, editorial, dataviz, diagrams, tables, proof, closing. The `slides` skill picks layouts by message type, then reskins them with your brand tokens.*
 
 | Landing pages (10 templates) | Interactive lead magnets (10 templates) |
 |---|---|
-| ![B2B demo landing page](docs/launch/screenshots/landing-demo-b2b.png) | ![ROI calculator lead magnet](docs/launch/screenshots/lead-magnet-roi.png) |
-| ![Webinar landing page — dark premium](docs/launch/screenshots/landing-webinar.png) | ![Waitlist landing page — night premium](docs/launch/screenshots/landing-waitlist.png) |
+| ![B2B demo landing page](docs/launch/screenshots/landing-demo-b2b.jpg) | ![ROI calculator lead magnet](docs/launch/screenshots/lead-magnet-roi.jpg) |
+| ![Webinar landing page — dark premium](docs/launch/screenshots/landing-webinar.jpg) | ![Waitlist landing page — night premium](docs/launch/screenshots/landing-waitlist.jpg) |
 
 ![Client reporting dashboard](docs/launch/screenshots/dashboard.png)
 *The reporting module: a static, brand-styled dashboard deployed on the client's own site (plain FTP, access code, monthly JSON snapshots, written analysis). No SaaS subscription.*
 
 *`/start-copilot`: fetches your website, analyzes your content, drafts your brand doctrine for validation, wires your tools. 30–60 minutes.*
+
+---
+
+## Real results, real clients
+
+Everything above uses the fictional demo brand. Everything below is real: this template is not a demo — it is the daily production tool of a working marketing practice, running several live brands. Click any link and check for yourself.
+
+### Three live sites run with this copilot
+
+| [n2.help](https://n2.help) | [qiplim.com](https://qiplim.com) |
+|---|---|
+| ![n2.help homepage](docs/launch/screenshots/site-n2.png) | ![qiplim.com homepage](docs/launch/screenshots/site-qiplim.png) |
+| *N2 Help & Solutions — B2B IT-services client: social content, carousels, newsletters and interactive resources produced with this system.* | *Qiplim — the maintainer's own SaaS: launch content, landing copy and brand visuals shipped with this system.* |
+
+| [jessem.fr](https://jessem.fr) | [n2.help/resources](https://n2.help/resources) |
+|---|---|
+| ![jessem.fr homepage](docs/launch/screenshots/site-jessem.png) | ![N2 resources hub](docs/launch/screenshots/site-n2-resources.png) |
+| *jessem.fr — the marketing practice this template comes from; the site is written, launched and run with it.* | *N2's resources hub — reports, case studies and articles fed by this copilot.* |
+
+### Live lead magnets built with this system
+
+Three interactive lead magnets you can open and use right now — each built by the `lead-magnet` skill with its full capture circuit (page → form → nurturing).
+
+| [jessem.fr/diagnostic](https://jessem.fr/diagnostic/) | [jessem.fr/diagnostic-collab](https://jessem.fr/diagnostic-collab/) | [ServiceNow Expertise Report 2026](https://n2.help/tools/servicenow-expertise-report-2026) |
+|---|---|---|
+| ![AI-potential diagnostic on jessem.fr](docs/launch/screenshots/site-jessem-diagnostic.png) | ![Content & AI maturity diagnostic — La Collab](docs/launch/screenshots/site-diagnostic-collab.png) | ![ServiceNow Expertise Report 2026 — interactive industry report](docs/launch/screenshots/site-n2-report-tool.png) |
+| *Interactive marketing diagnostic — the author's own lead magnet.* | *Interactive Content & AI maturity diagnostic ("La Collab").* | *Interactive industry report — 136 respondents across 20 countries.* |
+
+### Real deliverables, shipped
+
+| | | |
+|---|---|---|
+| ![AI Act carousel — cover page](docs/launch/screenshots/carousel-ai-act-1.png) | ![AI Act carousel — who is concerned](docs/launch/screenshots/carousel-ai-act-2.png) | ![AI Act carousel — the fine](docs/launch/screenshots/carousel-ai-act-3.png) |
+
+*Three pages from a real LinkedIn carousel on the EU AI Act (10 pages, 1080×1350 PDF), produced by the `carousel` skill and published in June 2026.*
+
+| | |
+|---|---|
+| ![Qiplim LinkedIn post visual — new site launch](docs/launch/screenshots/visual-qiplim-1.png) | ![Qiplim LinkedIn post visual — VivaTech giveaway](docs/launch/screenshots/visual-qiplim-2.png) |
+
+*Brand visuals generated by the system (Gemini image pipeline + brand doctrine): LinkedIn post visuals for Qiplim.*
+
+### And it ranks
+
+![Google Search Console insights for jessem.fr](docs/launch/screenshots/seo-results-jessem.png)
+*478 clicks (+99%) and 12.6k impressions in the first 3 months of a freelance marketing site launched with this system — Google Search Console.*
 
 ---
 
@@ -188,14 +238,14 @@ Each register documents what was kept, what was cut and why, plus a re-sync proc
 - **SEO extensions** — re-vendor `seo-local` / `seo-maps` / `seo-ecommerce` for local and e-commerce use cases (deliberately excluded from core).
 - **A/B testing** — an `ab-test-setup` path once a lightweight experimentation harness is chosen.
 - **More connectors** — additional email/CRM/analytics targets in `/tools-setup`.
-- **Community templates** — more slide families and landing page archetypes via PRs.
+- **More templates** — additional slide families and landing page archetypes.
 
 ## Professional installation
 
 This template is the working tool of an externalized marketing & communications practice. If you'd rather have it installed, calibrated on your brand and your team trained on it, Jessy Martin offers a done-for-you setup: [jessem.fr](https://jessem.fr).
 
-## License & contributions
+## License & usage
 
-MIT — see [`LICENSE`](LICENSE). Improvements to the mechanics (skills, wizard, modules) are welcome via PR; brand-specific content stays in your fork. Maintainers contribute back with the built-in `backport-to-template` skill (automatic sanitization checklist).
+MIT — see [`LICENSE`](LICENSE). This is a **template**: hit "Use this template" on GitHub to create your own copy, then adapt it to your brand — your copy is yours, brand content and all. Found a bug or something misleading? [Open an issue](../../issues).
 
 If this template saves you a hire's worth of grunt work — or just an afternoon — **a ⭐ helps other marketers find it.**
