@@ -1,6 +1,6 @@
 # Marketing Copilot — root orchestrator
 
-> **Model recommendation.** This copilot is designed for **Claude Sonnet 4.6**. The brand doctrine and per-role CLAUDE.md files are personalized enough that Sonnet 4.6 handles strategic reasoning, brand-check, and copy-editing with quality. Opus is overkill for most sessions; Haiku is a reasonable fallback for short, routine tasks (single-post drafting, short replies).
+> **Model recommendation.** This copilot is designed for **Claude Sonnet 5** (`claude-sonnet-5`). The brand doctrine and per-role CLAUDE.md files carry enough context that Sonnet 5 handles strategic reasoning, brand-check, and copy-editing at quality — the injected doctrine does the heavy lifting. For the heaviest sessions (quarterly strategy, complex deck design), a higher tier (Opus 4.8+) can help but is not required. Haiku remains a reasonable fallback for short routine tasks.
 
 ## Setup detection — read this first, every session
 
