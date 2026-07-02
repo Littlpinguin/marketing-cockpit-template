@@ -23,48 +23,67 @@
   evolution must be ported to every artefact (this starter, the deck-catalogue,
   decks in flight) and scripts/qa.py mechanically checks the engine markers.
 
-  {{...}} placeholders are neutral: brand values come from tokens.css (filled
-  by /brand-discover), content comes from the `slides` skill at deck time.
+  The :root ships NEUTRAL WORKING VALUES (sober graphite palette) so the raw
+  starter opens and passes QA as-is; the BRAND_* mapping lives in the comment
+  next to each variable and the wizard replaces the VALUES. Content
+  placeholders ({{DECK_TITLE}}…) are plain text — the slides skill fills them.
 
   Writing rules: no em dash in visible copy, no full stop on headings.
   ============================================================================
 -->
 <!DOCTYPE html>
-<html lang="{{DECK_LANG}}">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{DECK_TITLE}} · {{COMPANY_NAME}}</title>
-<!-- Fonts: load the families declared in tokens.css ({{BRAND_FONT_PRIMARY}} /
-     {{BRAND_FONT_SECONDARY}}). Prefer local woff2 from 01-brand/assets/fonts/
-     for deliverables; Google Fonts is acceptable for internal decks. -->
+<!-- Fonts: load the families declared in tokens.css (BRAND_FONT_PRIMARY /
+     BRAND_FONT_SECONDARY). Prefer local woff2 from 01-brand/assets/fonts/
+     for deliverables; Google Fonts is acceptable for internal decks.
+     The neutral defaults below need no font link (system stack). -->
 <!-- <link href="https://fonts.googleapis.com/css2?family=YOUR+FONT:wght@200..900&display=swap" rel="stylesheet"> -->
 
 <style>
 /* ============================================================
-   BRAND TOKENS — mirror of tokens.css (filled by /brand-discover)
-   At deck time: paste the filled 06-graphic-design/presentations/
-   tokens.css content over this :root block.
+   BRAND TOKENS — mirror of tokens.css (source: 01-brand/style-guide.md)
+   ------------------------------------------------------------
+   Default values are NEUTRAL (graphite) so this file renders and
+   passes scripts/qa.py untouched. The wizard /brand-discover (or
+   pasting the filled tokens.css over this block at deck time)
+   REPLACES each VALUE below with the brand's, guided by this map:
+
+     --brand-primary        ← BRAND_COLOR_PRIMARY
+     --brand-secondary      ← BRAND_COLOR_ACCENT
+     --brand-neutral-light  ← BRAND_COLOR_LIGHT
+     --brand-neutral-dark   ← BRAND_COLOR_DARK
+     --brand-gradient       ← BRAND_GRADIENT
+     --font-display         ← BRAND_FONT_PRIMARY
+     --font-mono            ← BRAND_FONT_SECONDARY
+
+   NEVER put a literal {{...}} placeholder in a CSS value: an invalid
+   custom property silently disables every rule that consumes it and
+   corrupts the layout. The _deep/_soft variants derive via color-mix()
+   — nothing to adjust after swapping the base colours.
    ============================================================ */
 :root {
-  --brand-primary: {{BRAND_COLOR_PRIMARY}};
+  --brand-primary: #5D6B7E;       /* ← BRAND_COLOR_PRIMARY (neutral slate) */
   --brand-primary-deep: color-mix(in srgb, var(--brand-primary), black 12%);
   --brand-primary-soft: color-mix(in srgb, var(--brand-primary) 12%, transparent);
-  --brand-secondary: {{BRAND_COLOR_ACCENT}};
+  --brand-secondary: #A89F8D;     /* ← BRAND_COLOR_ACCENT (neutral greige) */
   --brand-secondary-deep: color-mix(in srgb, var(--brand-secondary), black 12%);
   --brand-secondary-soft: color-mix(in srgb, var(--brand-secondary) 12%, transparent);
-  --brand-neutral-light: {{BRAND_COLOR_LIGHT}};
+  --brand-neutral-light: #F6F5F2; /* ← BRAND_COLOR_LIGHT (paper) */
   --brand-neutral-light-soft: color-mix(in srgb, var(--brand-neutral-light), white 35%);
   --brand-neutral-light-deep: color-mix(in srgb, var(--brand-neutral-light), black 6%);
-  --brand-neutral-dark: {{BRAND_COLOR_DARK}};
+  --brand-neutral-dark: #23262B;  /* ← BRAND_COLOR_DARK (charcoal) */
   --brand-neutral-dark-soft: color-mix(in srgb, var(--brand-neutral-dark), white 14%);
   --brand-neutral-dark-deep: color-mix(in srgb, var(--brand-neutral-dark), black 18%);
   --rule: rgba(0, 0, 0, 0.10);
   --rule-light: rgba(255, 255, 255, 0.18);
-  --brand-gradient: {{BRAND_GRADIENT}};
+  --brand-gradient: linear-gradient(90deg, #5D6B7E 0%, #A89F8D 100%); /* ← BRAND_GRADIENT */
   --brand-gradient-vertical: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  --font-display: {{BRAND_FONT_PRIMARY}}, system-ui, sans-serif;
-  --font-mono: {{BRAND_FONT_SECONDARY}}, ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  --font-display: system-ui, -apple-system, 'Segoe UI', sans-serif; /* ← BRAND_FONT_PRIMARY (prepend the brand family) */
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace; /* ← BRAND_FONT_SECONDARY (prepend the brand family) */
   --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   --ease-med:  0.6s cubic-bezier(0.16, 1, 0.3, 1);
   --ease-fast: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -594,7 +613,7 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
           <span class="gradient-text">{{COVER_HEADLINE_ACCENT}}</span>
         </h1>
         <p class="lede reveal">
-          {{COVER_LEDE — one promise, under two lines, in the brand's voice}}
+          {{COVER_LEDE : one promise, under two lines, in the brand's voice}}
         </p>
       </div>
     </section>
@@ -618,7 +637,7 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
         <span class="eyebrow reveal" style="margin-bottom:22px;">{{SLIDE2_EYEBROW}}</span>
         <h1 class="display reveal" style="font-size:80px;">{{SLIDE2_HEADING_START}} <span class="gradient-text">{{SLIDE2_HEADING_ACCENT}}</span></h1>
         <div class="cards c3" data-stagger>
-          <div class="card"><div class="ix">01</div><h3>{{CARD1_TITLE}}</h3><p>{{CARD1_BODY — one claim, backed by a number or a named source}}</p></div>
+          <div class="card"><div class="ix">01</div><h3>{{CARD1_TITLE}}</h3><p>{{CARD1_BODY : one claim, backed by a number or a named source}}</p></div>
           <div class="card"><div class="ix">02</div><h3>{{CARD2_TITLE}}</h3><p>{{CARD2_BODY}}</p></div>
           <div class="card"><div class="ix">03</div><h3>{{CARD3_TITLE}}</h3><p>{{CARD3_BODY}}</p></div>
         </div>
@@ -644,7 +663,7 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
         <span class="eyebrow reveal" style="margin-bottom:22px;">{{SLIDE3_EYEBROW}}</span>
         <h1 class="display reveal" style="font-size:80px;">{{SLIDE3_HEADING_START}} <span class="gradient-text">{{SLIDE3_HEADING_ACCENT}}</span></h1>
         <div class="kpis" data-stagger>
-          <div class="kpi"><div class="n"><span class="gradient-text">{{KPI1_VALUE}}</span></div><div class="l">{{KPI1_LABEL — sourced from 01-brand/messaging-framework.md or _sources/reports/}}</div></div>
+          <div class="kpi"><div class="n"><span class="gradient-text">{{KPI1_VALUE}}</span></div><div class="l">{{KPI1_LABEL : sourced from 01-brand/messaging-framework.md or _sources/reports/}}</div></div>
           <div class="kpi"><div class="n"><span class="gradient-text">{{KPI2_VALUE}}</span></div><div class="l">{{KPI2_LABEL}}</div></div>
           <div class="kpi"><div class="n"><span class="gradient-text">{{KPI3_VALUE}}</span></div><div class="l">{{KPI3_LABEL}}</div></div>
         </div>
@@ -672,7 +691,7 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
         <h1 class="display reveal" style="font-size:110px;">
           {{CTA_HEADLINE_START}} <span class="gradient-text">{{CTA_HEADLINE_ACCENT}}</span>
         </h1>
-        <p class="lede reveal" style="text-align:center;">{{CTA_LEDE — the single decision or next step you are asking for}}</p>
+        <p class="lede reveal" style="text-align:center;">{{CTA_LEDE : the single decision or next step you are asking for}}</p>
         <a class="url-pill reveal" href="{{CTA_URL}}">{{CTA_URL_LABEL}}</a>
       </div>
     </section>
