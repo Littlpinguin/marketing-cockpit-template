@@ -2,7 +2,7 @@
 
 **Your marketing department, running inside Claude Code — and it knows your brand by heart.**
 
-43 production skills · 9 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Pando Studio](https://pando-studio.com) on real client accounts, then open-sourced.
+43 production skills · 9 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CHANGELOG.md)
@@ -192,7 +192,7 @@ Each register documents what was kept, what was cut and why, plus a re-sync proc
 
 ## Professional installation
 
-This template is the working tool of an externalized marketing & communications practice. If you'd rather have it installed, calibrated on your brand and your team trained on it, Pando Studio offers a done-for-you setup: [pando-studio.com](https://pando-studio.com).
+This template is the working tool of an externalized marketing & communications practice. If you'd rather have it installed, calibrated on your brand and your team trained on it, Jessy Martin offers a done-for-you setup: [jessem.fr](https://jessem.fr).
 
 ## License & contributions
 
