@@ -140,6 +140,12 @@ See `docs/setup-completed.schema.json` for the full schema.
 | `event-marketing` | Event comm plans | D-60 to D+7 announcement waves |
 | `image-generation` | Brand-compliant visuals via Gemini | Prompt auto-prefixed with brand style |
 | `slides` | Editorial-grade HTML presentations | 1920×1080 frame, Playwright QA, clean PDF export |
+| `carousel` | LinkedIn carousels (PDF 1080×1350) | Strict type/spacing scales, export pipeline |
+| `veille-strategy` | Multi-level market watch | Feeds the editorial calendar with sourced ideas |
+| `inventory` | Deliverables index | Maintains `_templates/inventory.md` (anti-repetition) |
+| `scraping` | Apify-based scraping | Benchmarks, social audits, watch data |
+| `performance-report` | Monthly performance snapshot | Feeds the `11-reporting` dashboard |
+| `sync-template` / `backport-to-template` | Template ↔ fork Git flow | Update from upstream / contribute back sanitized |
 
 **Rule**: always prefer this project's skills over generic skills from external plugins. They are tailored to this repo.
 
@@ -152,8 +158,7 @@ See `docs/setup-completed.schema.json` for the full schema.
 | `/start-copilot` | Entry point of the wizard. Run once after cloning. Orchestrates the full setup. |
 | `/brand-discover` | Analyze website + social + blog to propose a draft brand doctrine for human validation. |
 | `/tools-setup` | Pick and configure tools per category. Regenerates role `CLAUDE.md` files based on choices. |
-| `/seed-corpus` | Optional: ingest recent content into Qdrant (if enabled) for anti-repetition and retrieval. |
-| `/connect-qdrant` | Optional: enable semantic memory. Callable at any time, not only during setup. |
+| `/modules` | Enable/disable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client). |
 | `/validate-setup` | Placeholder lint + sample generation + voice check. Writes `.setup-completed` on success. |
 | `/health-check` | Ongoing: verify env vars, MCP servers, hook wiring, cron state. Run monthly. |
 
@@ -163,7 +168,7 @@ See `docs/setup-completed.schema.json` for the full schema.
 
 ### Monthly newsletter
 1. Marketing lead supplies topics for the month.
-2. `email` skill queries Qdrant (if enabled) or reads `04-email/newsletter/editions/` to avoid repeats.
+2. `email` skill reads `04-email/newsletter/editions/` and `_templates/inventory.md` to avoid repeats.
 3. Draft lands in `04-email/newsletter/drafts/`.
 4. Brand-check fires automatically via PostToolUse hook.
 5. Human validates.
@@ -173,7 +178,7 @@ See `docs/setup-completed.schema.json` for the full schema.
 
 ### Social post
 1. Read the editorial calendar (if configured) to pick topic and pillar.
-2. `social-content` skill queries Qdrant / scans `examples/` for anti-repetition.
+2. `social-content` skill scans `examples/` and `_templates/inventory.md` for anti-repetition.
 3. Draft in the appropriate channel folder.
 4. Brand-check fires automatically.
 5. Archive to `examples/` on publish.
@@ -193,23 +198,6 @@ See `docs/setup-completed.schema.json` for the full schema.
 4. `python scripts/qa.py decks/<slug>.html` until "All slides clean".
 5. Brand-check fires automatically.
 6. Optional: `./scripts/export-pdf.sh decks/<slug>.html` for a PDF leave-behind, or push to a static host (see `presentations/docs/hosting.md`).
-
-### Fresh content ingestion into Qdrant (if enabled)
-- Manual: `python3 _integrations/qdrant/sync.py --source <name>`
-- Automated: weekly launchd job (Sunday 22:00) running `sync.py --all` + drift audit.
-
----
-
-## When Qdrant is disabled
-
-The system operates without Qdrant. Each skill's `CLAUDE.md` documents its file-based fallback:
-- `brand-check` reads `01-brand/voice.md` directly; anti-repetition check is skipped with an explicit note in the report.
-- `social-content` reads the last 5 files in `<channel>/examples/` to calibrate tone.
-- `email` reads the last 3 editions in `newsletter/editions/`.
-
-Enable Qdrant later via `/connect-qdrant` — takes 5 minutes if you have a Qdrant Cloud URL + Google AI key.
-
----
 
 ## Visual identity quick reference
 
