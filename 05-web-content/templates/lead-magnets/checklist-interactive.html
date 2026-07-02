@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LEAD MAGNET — CHECKLIST INTERACTIVE
+       Checklist 20 points en 4 phases avec barre de progression collante et
+       sauvegarde localStorage. La capture délivre la version PDF + modes
+       d’emploi (valeur ajoutée au-delà de la page). La progression part avec
+       le lead. Personnaliser : phases, points, clé de stockage.
+       Ambiance de démo : « atelier clair » — papier blanc cassé, 4 phases en
+       sections hairline numérotées 01-04 en serif italique laiton, cases
+       vertes 18 px, points cochés barrés en douceur, progression sticky
+       vert→laiton avec compteur serif.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill lead-magnet les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Checklist interactive — les 20 points d’un premier bilan carbone réussi | Meridian Conseil</title>
+  <meta name="description" content="Une checklist en 4 phases qui sauvegarde votre avancement, avec la version PDF et le mode d’emploi de chaque point par email.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Checklist interactive — les 20 points d’un premier bilan carbone réussi | Meridian Conseil">
+  <meta property="og:description" content="Une checklist en 4 phases qui sauvegarde votre avancement, avec la version PDF et le mode d’emploi de chaque point par email.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système. En production, décommenter :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill lead-magnet) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--color-light); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; }
+    h1 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .rgpd a { color: inherit; }
+    /* En-tête d'atelier — globe méridien coupé par le bord gauche */
+    .tool-topbar { text-align: center; padding: var(--space-l) var(--space-s) var(--space-s); position: relative; overflow: hidden; }
+    .tool-topbar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(560px 300px at 50% -120px, rgba(77, 165, 133, 0.13), transparent 70%); pointer-events: none; }
+    .tool-topbar__watermark { position: absolute; bottom: -230px; left: -170px; width: 430px; height: 430px; color: var(--color-primary); opacity: 0.05; pointer-events: none; }
+    .tool-topbar h1 { max-width: 720px; margin-left: auto; margin-right: auto; position: relative; }
+    .tool__intro { max-width: 580px; margin: 0 auto var(--space-s); text-align: center; color: var(--ink-soft); position: relative; }
+    .tool { max-width: 720px; margin: 0 auto; padding: 0 var(--space-s) var(--space-l); }
+    @keyframes mrd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    /* Progression sticky — barre fine vert→laiton, compteur serif italique */
+    .progress-sticky { position: sticky; top: 0; z-index: 95; background: rgba(252, 251, 248, 0.93); backdrop-filter: blur(6px); padding: 12px 0 14px; border-bottom: 1px solid var(--rule); margin-bottom: var(--space-m); }
+    .progress-label { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-s); margin-bottom: 8px; }
+    .progress-label__txt { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem; font-weight: 600; color: var(--color-accent-ink); }
+    .progress-count { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.35rem; line-height: 1; color: var(--color-accent-ink); }
+    .progress-count__den { font-size: 0.95rem; color: var(--ink-soft); }
+    .bar { height: 4px; border-radius: 999px; background: rgba(28, 36, 32, 0.1); overflow: hidden; }
+    .bar__fill { height: 100%; background: var(--gradient); border-radius: 999px; transition: width 0.6s var(--ease); }
+    /* Checklist — 4 phases hairline numérotées, cases vertes, points barrés en douceur */
+    #checklist { animation: mrd-rise .8s var(--ease) backwards; }
+    .phase { border-top: 1px solid var(--rule); padding: var(--space-m) 0 var(--space-s); margin: 0; }
+    .phase:first-of-type { border-top: 0; padding-top: 0; }
+    .phase__title { display: flex; align-items: baseline; gap: 14px; font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.01em; margin-bottom: var(--space-s); }
+    .phase__num { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.55rem; color: var(--color-accent-ink); flex: none; line-height: 1; }
+    .phase__week { font-family: var(--font-primary); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-soft); margin-left: auto; white-space: nowrap; }
+    .check-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 10px; border-radius: calc(var(--radius) - 6px); cursor: pointer; font-size: 1rem; font-weight: 400; text-transform: none; letter-spacing: 0; transition: background-color .3s var(--ease); }
+    .check-item:hover { background: var(--bg-tint); }
+    .check-item input { width: 18px; height: 18px; flex: none; padding: 0; margin-top: 4px; accent-color: var(--color-primary); }
+    .check-item input:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; box-shadow: none; }
+    .check-item span { text-decoration: line-through; text-decoration-color: transparent; text-decoration-thickness: 1px; transition: color .45s var(--ease), text-decoration-color .45s var(--ease); }
+    .check-item input:checked ~ span { color: var(--ink-soft); text-decoration-color: rgba(91, 101, 95, 0.65); }
+    /* Gate : l'aperçu est visible, le détail est débloqué par l'email */
+    .gate__locked { display: block; }
+    .gate__full { display: none; }
+    .gate--done .gate__locked { display: none; }
+    .gate--done .gate__full { display: block; animation: mrd-rise .8s var(--ease) backwards; }
+    .gate__locked { background: var(--bg-tint); border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); margin-top: var(--space-m); }
+    .gate__form { display: grid; gap: var(--space-s); max-width: 420px; margin: 0 auto; }
+    .gate__pitch { text-align: center; max-width: 480px; margin: 0 auto var(--space-s); }
+    .gate__pitch h3 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+    .gate__pitch p { color: var(--ink-soft); }
+    .gate__full { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin-top: var(--space-m); }
+    .gate__full h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+    .gate__full p:last-child { margin-bottom: 0; }
+    .gate__mail-note { display: flex; align-items: center; gap: 10px; color: var(--color-primary); font-weight: 600; }
+    .gate__mail-note svg { flex: none; }
+    .gate__note { color: var(--ink-soft); font-size: 0.92rem; }
+    .tool-footer { text-align: center; font-size: 0.85rem; color: var(--ink-soft); padding: var(--space-m) var(--space-s); border-top: 1px solid var(--rule); }
+    .tool-footer a { color: inherit; }
+    @media (max-width: 900px) { .tool-topbar__watermark { left: -230px; } }
+    @media (max-width: 600px) {
+      .gate__locked, .gate__full { padding: var(--space-s); }
+      .phase__title { flex-wrap: wrap; gap: 10px; }
+      .phase__week { margin-left: 0; width: 100%; }
+      .check-item { padding: 10px 6px; }
+    }
+    @media (max-width: 400px) { .btn { padding: 12px 18px; font-size: 0.95rem; } }
+  </style>
+</head>
+<body data-page-slug="lm-checklist-interactive">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="tool-topbar">
+    <svg class="tool-topbar__watermark" aria-hidden="true"><use href="#mrd-globe"/></svg>
+    <p class="eyebrow">Checklist interactive — votre avancement est sauvegardé</p>
+    <h1>Les 20 points d'un premier bilan carbone <em>réussi</em></h1>
+    <p class="tool__intro">Cochez au fil de votre projet : la progression se sauvegarde dans votre navigateur. Recevez la version PDF + le mode d'emploi de chaque point par email.</p>
+  </header>
+
+  <main class="tool">
+    <div class="progress-sticky">
+      <div class="progress-label"><span class="progress-label__txt">Votre avancement</span><span class="progress-count"><span id="done-count">0</span><span class="progress-count__den">/20</span></span></div>
+      <div class="bar"><div class="bar__fill" id="progress" style="width:0%"></div></div>
+    </div>
+
+    <div id="checklist">
+      <!-- ITEMS PLACEHOLDER — adapter les phases et les 20 points au sujet.
+           data-phase sert aux stats de la restitution. -->
+      <section class="phase">
+        <h3 class="phase__title"><span class="phase__num" aria-hidden="true">01</span>Cadrer<span class="phase__week">Semaine 1</span></h3>
+        <label class="check-item"><input type="checkbox" data-phase="1"><span>Définir l'exercice de référence (année civile ou fiscale)</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="1"><span>Lister les sites et activités inclus dans le périmètre</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="1"><span>Nommer un référent projet et un sponsor direction</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="1"><span>Choisir le niveau d'ambition : scopes 1-2 ou 1-2-3</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="1"><span>Fixer la date de restitution à la direction</span></label>
+      </section>
+      <section class="phase">
+        <h3 class="phase__title"><span class="phase__num" aria-hidden="true">02</span>Collecter<span class="phase__week">Semaines 2-4</span></h3>
+        <label class="check-item"><input type="checkbox" data-phase="2"><span>Rassembler 12 mois de factures d'énergie</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="2"><span>Exporter le grand livre ou la balance fournisseurs</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="2"><span>Récupérer les données de déplacements (notes de frais, flotte)</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="2"><span>Estimer le fret entrant et sortant (tonnes-kilomètres ou €)</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="2"><span>Documenter chaque source : origine, période, trous connus</span></label>
+      </section>
+      <section class="phase">
+        <h3 class="phase__title"><span class="phase__num" aria-hidden="true">03</span>Calculer<span class="phase__week">Semaines 5-6</span></h3>
+        <label class="check-item"><input type="checkbox" data-phase="3"><span>Choisir la base de facteurs d'émission et la citer</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="3"><span>Convertir les achats en émissions (ratios monétaires assumés)</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="3"><span>Faire relire les 5 plus gros postes par une seconde personne</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="3"><span>Noter les incertitudes plutôt que les masquer</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="3"><span>Comparer l'ordre de grandeur aux ratios sectoriels publics</span></label>
+      </section>
+      <section class="phase">
+        <h3 class="phase__title"><span class="phase__num" aria-hidden="true">04</span>Restituer<span class="phase__week">Semaines 7-8</span></h3>
+        <label class="check-item"><input type="checkbox" data-phase="4"><span>Hiérarchiser : 3 postes = 80 % des émissions, le dire ainsi</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="4"><span>Proposer 3 actions chiffrées, pas un catalogue</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="4"><span>Préparer la page « méthode » pour les questions d'acheteurs</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="4"><span>Présenter à la direction avec décisions à prendre en séance</span></label>
+        <label class="check-item"><input type="checkbox" data-phase="4"><span>Planifier la mise à jour : qui, quand, avec quelles données</span></label>
+      </section>
+    </div>
+
+      <div class="gate" id="gate">
+        <div class="gate__locked">
+          <div class="gate__pitch">
+            <h3>Recevez la checklist en PDF + le mode d'emploi de chaque point</h3>
+            <p>La version imprimable, plus une page d'explication par point : pourquoi il compte, comment le valider, les pièges.</p>
+          </div>
+          <form id="gate-form" class="gate__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+            <input type="hidden" name="lead_magnet" value="checklist-bilan-carbone">
+            <input type="hidden" name="progression" id="lead-progress" value="0">
+            <label for="gate-email">Votre email professionnel</label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr">
+            <button type="submit" class="btn btn--primary">Recevoir la checklist complète</button>
+            <p class="rgpd">Vous recevez le document + 3 emails de conseils, désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+          </form>
+        </div>
+        <div class="gate__full">
+          <h3>C'est parti</h3>
+          <p class="gate__mail-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>La checklist PDF et les modes d'emploi viennent de partir par email.</p>
+          <p class="gate__note">Votre progression reste sauvegardée sur cette page — revenez cocher au fil du projet.</p>
+        </div>
+      </div>
+  </main>
+
+  <footer class="tool-footer">
+    <p>Un outil offert par {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive). <a href="{{URL_SITE}}">Découvrir nos accompagnements</a></p>
+    <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+  </footer>
+  <script>
+    // ── Capture email (skill lead-magnet) ──────────────────────────────
+    // Principe : donner d'abord (aperçu du résultat), capturer ensuite.
+    // Le POST part vers {{FORM_ENDPOINT}} (formulaire → n8n → outil emailing).
+    // Les champs cachés (lead_magnet, profil/score) segmentent le nurturing.
+    function bindGate(formId, onUnlock) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = new FormData(form);
+        var endpoint = form.getAttribute('action');
+        var done = function () {
+          var gate = form.closest('.gate');
+          if (gate) gate.classList.add('gate--done');
+          if (onUnlock) onUnlock(data);
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', { lead_source: data.get('lead_magnet') || 'outil-web' });
+          }
+        };
+        if (endpoint && endpoint.indexOf('{ {'.replace(' ', '')) === -1) {
+          fetch(endpoint, { method: 'POST', body: data }).then(done).catch(done);
+        } else {
+          console.warn('FORM_ENDPOINT non configuré : déblocage local (mode démo).');
+          done();
+        }
+      });
+    }
+
+    // Progression + persistance locale (localStorage) — clé à personnaliser si
+    // plusieurs checklists cohabitent sur le même domaine.
+    var STORAGE_KEY = 'checklist-bilan-carbone';
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('#checklist input[type="checkbox"]'));
+
+    function refresh() {
+      var done = boxes.filter(function (b) { return b.checked; }).length;
+      document.getElementById('done-count').textContent = String(done);
+      document.getElementById('progress').style.width = Math.round(done / boxes.length * 100) + '%';
+      document.getElementById('lead-progress').value = String(done);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(boxes.map(function (b) { return b.checked; })));
+      } catch (e) { /* navigation privée : pas de persistance, pas d'erreur */ }
+    }
+
+    try {
+      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      boxes.forEach(function (b, i) { b.checked = Boolean(saved[i]); });
+    } catch (e) { /* état corrompu : on repart de zéro */ }
+
+    boxes.forEach(function (b) { b.addEventListener('change', refresh); });
+    refresh();
+    bindGate('gate-form', null);
+  </script>
+</body>
+</html>

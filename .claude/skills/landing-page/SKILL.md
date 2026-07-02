@@ -15,6 +15,7 @@ Avant toute production :
 2. Charger `01-brand/voice.md` — position de voix, vocabulaire, interdits.
 3. Charger `01-brand/style-guide.md` — tokens (couleurs, police, radius, gradient) : ils seront injectés à l'étape design.
 4. Lire `05-web-content/CLAUDE.md` — structure du dossier, conventions techniques, règle de réutilisation.
+5. Charger `01-brand/design-anti-generique.md` — doctrine design anti-générique : marqueurs du look IA interdits par défaut, workflow deux passes (plan de tokens → auto-critique), checklist de pré-livraison mesurable.
 
 **Ne jamais produire sans.** Si un de ces fichiers manque ou contient encore des `{{...}}`, arrêter et lancer `/start-copilot`.
 

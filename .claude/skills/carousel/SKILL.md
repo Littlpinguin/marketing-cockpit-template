@@ -15,6 +15,7 @@ Avant le moindre plan de slides :
 2. Charger `01-brand/voice.md` + `01-brand/style-guide.md` — voix, vocabulaire, tokens visuels.
 3. Consulter **`01-brand/assets/index.md`** et **lister les assets pertinents** AVANT d'improviser un visuel. Un asset existant se réutilise, il ne se régénère pas. Ne jamais se fier au nom brut d'un fichier : se fier à sa fiche dans l'index.
 4. Consulter `_templates/inventory.md` + les carrousels passés de `06-graphic-design/outputs/` : repartir du plus récent validé, pas de zéro.
+5. Charger `01-brand/design-anti-generique.md` — doctrine design anti-générique : marqueurs du look IA interdits par défaut (emojis-icônes, excès d'animation, faible densité), checklist de pré-livraison.
 
 **Ne jamais produire sans.** La copy des slides (hook, titres, légendes, finale) passe le filtre anti-style-IA intégral : aucun parallélisme négatif (« pas X, mais Y »), aucun mot IA mort, pas de tiret cadratin, pas de hype. Court, spécifique, une vraie position.
 

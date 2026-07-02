@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LEAD MAGNET — QUIZ DE POSITIONNEMENT
+       Quiz une-question-par-écran avec barre de progression : 6 questions,
+       4 profils qualitatifs (chaque réponse vote pour un profil). Le profil
+       part avec le lead → une séquence de nurturing par profil. Personnaliser :
+       questions, profils, descriptions, pistes (tout est en constantes JS).
+       Ambiance de démo : « crème chaleureux » — fond crème, une question par
+       écran, numéro « 3 / 6 » en serif italique laiton, choix en cartes
+       blanches à pastilles A/B/C, profil restitué en carte filigranée.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill lead-magnet les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Quiz — quel type de stratège climat êtes-vous ? | Meridian Conseil</title>
+  <meta name="description" content="6 questions, 90 secondes : découvrez votre profil de stratège climat et recevez le plan d’action qui lui correspond.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Quiz — quel type de stratège climat êtes-vous ? | Meridian Conseil">
+  <meta property="og:description" content="6 questions, 90 secondes : découvrez votre profil de stratège climat et recevez le plan d’action qui lui correspond.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système. En production, décommenter :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill lead-magnet) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--bg-tint); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; }
+    h1 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .rgpd a { color: inherit; }
+    /* En-tête chaleureux sur crème */
+    .tool-topbar { text-align: center; padding: var(--space-l) var(--space-s) var(--space-s); position: relative; }
+    .tool-topbar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(560px 300px at 50% -120px, rgba(200, 162, 75, 0.12), transparent 70%); pointer-events: none; }
+    .tool-topbar h1 { max-width: 680px; margin-left: auto; margin-right: auto; position: relative; }
+    .tool__intro { max-width: 540px; margin: 0 auto var(--space-s); text-align: center; color: var(--ink-soft); position: relative; }
+    .tool { max-width: 680px; margin: 0 auto; padding: 0 var(--space-s) var(--space-l); }
+    .tool__card { animation: mrd-rise .8s var(--ease) backwards; }
+    @keyframes mrd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    /* Une question par écran — compteur serif italique + barre fine vert→laiton */
+    .quiz__meta { display: flex; align-items: center; gap: var(--space-s); margin-bottom: var(--space-m); }
+    .quiz__count { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.55rem; color: var(--color-accent-ink); white-space: nowrap; line-height: 1; }
+    .bar { flex: 1; height: 3px; border-radius: 999px; background: rgba(28, 36, 32, 0.1); overflow: hidden; }
+    .bar__fill { height: 100%; background: var(--gradient); border-radius: 999px; transition: width 0.6s var(--ease); }
+    #quiz-step h3 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.35rem, 3.6vw, 1.8rem); line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; margin-bottom: var(--space-m); }
+    .choices { display: grid; gap: 10px; }
+    .choice { display: flex; gap: 14px; align-items: flex-start; width: 100%; background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: 15px 18px; cursor: pointer; font-family: var(--font-primary); font-weight: 400; font-size: 1rem; line-height: 1.5; color: var(--color-dark); transition: border-color .3s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .choice:hover { border-color: var(--color-sage); transform: translateY(-2px); box-shadow: var(--shadow-card); }
+    .choice:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+    .choice__key { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 1px solid var(--rule-strong); border-radius: 50%; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.02em; color: var(--color-accent-ink); }
+    .choice:hover .choice__key { border-color: var(--color-accent); }
+    /* Restitution — carte blanche filigranée, grand nom de profil en serif */
+    .result { text-align: center; background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: 48px var(--space-m); margin-bottom: var(--space-m); position: relative; overflow: hidden; }
+    .result__watermark { position: absolute; top: -160px; left: 50%; transform: translateX(-50%); width: 480px; height: 480px; color: var(--color-primary); opacity: 0.05; pointer-events: none; }
+    .result > *:not(.result__watermark) { position: relative; }
+    .result__label { text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin: 0 0 var(--space-xs); }
+    .result__big { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; font-size: clamp(2.1rem, 6vw, 3.1rem); line-height: 1.1; color: var(--color-primary); margin: 0 0 var(--space-s); }
+    #profile-desc { color: var(--ink-soft); max-width: 460px; margin: 0 auto; }
+    /* Gate : l'aperçu est visible, le détail est débloqué par l'email */
+    .gate__locked { display: block; }
+    .gate__full { display: none; }
+    .gate--done .gate__locked { display: none; }
+    .gate--done .gate__full { display: block; animation: mrd-rise .8s var(--ease) backwards; }
+    .gate__locked { background: #fff; border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__form { display: grid; gap: var(--space-s); max-width: 420px; margin: 0 auto; }
+    .gate__pitch { text-align: center; max-width: 460px; margin: 0 auto var(--space-s); }
+    .gate__pitch h3 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+    .gate__pitch p { color: var(--ink-soft); }
+    .gate__full { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__full h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+    .reco { border-left: 3px solid var(--color-accent); padding: var(--space-xs) var(--space-s); background: var(--bg-tint); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: var(--space-xs); }
+    .gate__mail-note { display: flex; align-items: center; gap: 10px; margin-top: var(--space-s); color: var(--color-primary); font-weight: 600; }
+    .gate__mail-note svg { flex: none; }
+    .tool-footer { text-align: center; font-size: 0.85rem; color: var(--ink-soft); padding: var(--space-m) var(--space-s); border-top: 1px solid var(--rule); }
+    .tool-footer a { color: inherit; }
+    @media (max-width: 900px) { .result__watermark { width: 420px; height: 420px; } }
+    @media (max-width: 600px) {
+      .gate__locked, .gate__full { padding: var(--space-s); }
+      .result { padding: var(--space-m) var(--space-s); }
+      .quiz__count { font-size: 1.3rem; }
+    }
+    @media (max-width: 400px) {
+      .btn { padding: 12px 18px; font-size: 0.95rem; }
+      .choice { padding: 13px 14px; gap: 10px; }
+    }
+  </style>
+</head>
+<body data-page-slug="lm-quiz-positionnement">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="tool-topbar">
+    <p class="eyebrow">Quiz — 6 questions, 90 secondes</p>
+    <h1>Quel type de <em>stratège climat</em> êtes-vous ?</h1>
+    <p class="tool__intro">Six situations concrètes, quatre profils possibles. Découvrez le vôtre — et recevez le plan d'action qui lui correspond.</p>
+  </header>
+
+  <main class="tool">
+    <div class="tool__card" id="quiz-card">
+      <div class="quiz__meta">
+        <span class="quiz__count" id="quiz-count">1 / 6</span>
+        <div class="bar" aria-hidden="true"><div class="bar__fill" id="quiz-progress" style="width:0%"></div></div>
+      </div>
+      <div id="quiz-step"></div>
+    </div>
+
+    <div id="result-zone" hidden>
+      <div class="result" aria-live="polite">
+        <svg class="result__watermark" aria-hidden="true"><use href="#mrd-globe"/></svg>
+        <p class="result__label">Votre profil</p>
+        <p class="result__big" id="profile-name">—</p>
+        <p id="profile-desc">—</p>
+      </div>
+
+      <div class="gate" id="gate">
+        <div class="gate__locked">
+          <div class="gate__pitch">
+            <h3>Recevez le plan d'action de votre profil</h3>
+            <p>4 pages : vos forces, votre angle mort typique, et les 5 prochaines actions adaptées à votre profil.</p>
+          </div>
+          <form id="gate-form" class="gate__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+            <input type="hidden" name="lead_magnet" value="quiz-positionnement">
+            <input type="hidden" name="profil" id="lead-profile" value="">
+            <label for="gate-email">Votre email professionnel</label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr">
+            <button type="submit" class="btn btn--primary">Recevoir mon plan d'action</button>
+            <p class="rgpd">Vous recevez le plan de votre profil + 3 emails adaptés à votre situation. <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+          </form>
+        </div>
+        <div class="gate__full">
+          <h3>Les premières pistes de votre profil</h3>
+          <div id="recos"></div>
+          <p class="gate__mail-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>Le plan d'action complet de votre profil vient de partir par email.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="tool-footer">
+    <p>Un outil offert par {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive). <a href="{{URL_SITE}}">Découvrir nos accompagnements</a></p>
+    <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+  </footer>
+  <script>
+    // ── Capture email (skill lead-magnet) ──────────────────────────────
+    // Principe : donner d'abord (aperçu du résultat), capturer ensuite.
+    // Le POST part vers {{FORM_ENDPOINT}} (formulaire → n8n → outil emailing).
+    // Les champs cachés (lead_magnet, profil/score) segmentent le nurturing.
+    function bindGate(formId, onUnlock) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = new FormData(form);
+        var endpoint = form.getAttribute('action');
+        var done = function () {
+          var gate = form.closest('.gate');
+          if (gate) gate.classList.add('gate--done');
+          if (onUnlock) onUnlock(data);
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', { lead_source: data.get('lead_magnet') || 'outil-web' });
+          }
+        };
+        if (endpoint && endpoint.indexOf('{ {'.replace(' ', '')) === -1) {
+          fetch(endpoint, { method: 'POST', body: data }).then(done).catch(done);
+        } else {
+          console.warn('FORM_ENDPOINT non configuré : déblocage local (mode démo).');
+          done();
+        }
+      });
+    }
+
+    // ── DONNÉES PLACEHOLDER — 6 questions, chaque réponse vote pour un profil ──
+    // Profils : pionnier / pragmatique / conforme / observateur. Adapter tout.
+    var PROFILES = {
+      pionnier:    { name: 'Le Pionnier',     desc: 'Le climat est pour vous un terrain d\'avance concurrentielle. Votre risque : courir plus vite que vos preuves.',
+        recos: ['Consolidez vos données avant de communiquer davantage', 'Faites vérifier vos chiffres par un tiers', 'Transformez votre avance en références commerciales documentées'] },
+      pragmatique: { name: 'Le Pragmatique',  desc: 'Vous avancez quand le ROI est clair. Votre force : rien n\'est fait pour la galerie. Votre angle mort : les signaux faibles réglementaires.',
+        recos: ['Chiffrez le coût de l\'inaction sur vos 3 plus gros clients', 'Mettez sous veille les exigences de vos donneurs d\'ordre', 'Commencez par les actions à retour direct (énergie, fret)'] },
+      conforme:    { name: 'Le Conforme',     desc: 'Vous traitez le sujet par le prisme réglementaire — solide, mais la conformité seule ne crée pas de valeur commerciale.',
+        recos: ['Recyclez votre reporting en argumentaire d\'appels d\'offres', 'Passez d\'un bilan annuel à un pilotage trimestriel', 'Identifiez 2 actions visibles par vos clients'] },
+      observateur: { name: 'L\'Observateur',  desc: 'Vous attendez que le sujet devienne incontournable. Risque : le jour où il l\'est, les délais ne seront plus négociables.',
+        recos: ['Listez ce que vos 5 plus gros clients exigent déjà ou exigeront', 'Faites un premier état des lieux léger (une journée suffit)', 'Fixez un seuil de déclenchement explicite plutôt qu\'un « on verra »'] }
+    };
+    var QUESTIONS = [
+      { text: 'Un client majeur vous demande votre bilan carbone demain. Votre réaction ?',
+        answers: [ ['Je l\'envoie — il est prêt', 'pionnier'], ['Je négocie un délai et je m\'organise', 'pragmatique'], ['Je vérifie ce que la réglementation m\'impose vraiment', 'conforme'], ['J\'espère que la demande ne se reproduira pas', 'observateur'] ] },
+      { text: 'Votre budget « climat » cette année ?',
+        answers: [ ['Une ligne dédiée, votée', 'pionnier'], ['Au cas par cas, si le retour est démontré', 'pragmatique'], ['Le minimum pour être en règle', 'conforme'], ['Aucun', 'observateur'] ] },
+      { text: 'Qui porte le sujet en interne ?',
+        answers: [ ['Une équipe ou un responsable dédié', 'pionnier'], ['Moi, entre deux autres priorités', 'pragmatique'], ['Le juridique / la qualité', 'conforme'], ['Personne pour l\'instant', 'observateur'] ] },
+      { text: 'Dans vos offres commerciales, le climat apparaît…',
+        answers: [ ['En argument central', 'pionnier'], ['Quand le client le demande', 'pragmatique'], ['Dans les annexes de conformité', 'conforme'], ['Nulle part', 'observateur'] ] },
+      { text: 'Votre connaissance de vos postes d\'émissions ?',
+        answers: [ ['Mesurée et suivie', 'pionnier'], ['Estimée sur les gros postes', 'pragmatique'], ['Celle du dernier bilan réglementaire', 'conforme'], ['Intuitive', 'observateur'] ] },
+      { text: 'À horizon 3 ans, le sujet climat pour votre marché sera…',
+        answers: [ ['Décisif — et on y sera les premiers', 'pionnier'], ['Important si les clients paient pour', 'pragmatique'], ['Encadré — on suivra les règles', 'conforme'], ['Difficile à dire', 'observateur'] ] }
+    ];
+
+    var current = 0;
+    var votes = { pionnier: 0, pragmatique: 0, conforme: 0, observateur: 0 };
+
+    function renderStep() {
+      var q = QUESTIONS[current];
+      document.getElementById('quiz-progress').style.width = Math.round(current / QUESTIONS.length * 100) + '%';
+      var wrap = document.getElementById('quiz-step');
+      wrap.innerHTML = '';
+      var h = document.createElement('h3');
+      h.textContent = (current + 1) + '/' + QUESTIONS.length + ' — ' + q.text;
+      wrap.appendChild(h);
+      var box = document.createElement('div'); box.className = 'choices';
+      q.answers.forEach(function (a) {
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'choice'; btn.style.textAlign = 'left';
+        btn.textContent = a[0];
+        btn.addEventListener('click', function () {
+          votes[a[1]]++;
+          current++;
+          if (current < QUESTIONS.length) { renderStep(); } else { showResult(); }
+        });
+        box.appendChild(btn);
+      });
+      wrap.appendChild(box);
+    }
+
+    function showResult() {
+      document.getElementById('quiz-progress').style.width = '100%';
+      var top = 'observateur';
+      Object.keys(votes).forEach(function (k) { if (votes[k] > votes[top]) top = k; });
+      var p = PROFILES[top];
+      document.getElementById('profile-name').textContent = p.name;
+      document.getElementById('profile-desc').textContent = p.desc;
+      var recos = document.getElementById('recos');
+      recos.innerHTML = '';
+      p.recos.forEach(function (r, i) {
+        var d = document.createElement('div'); d.className = 'reco';
+        d.innerHTML = '<strong>' + (i + 1) + '.</strong> ' + r;
+        recos.appendChild(d);
+      });
+      document.getElementById('lead-profile').value = top; // segmentation : 1 profil = 1 séquence
+      document.getElementById('quiz-card').hidden = true;
+      document.getElementById('result-zone').hidden = false;
+    }
+
+    renderStep();
+    bindGate('gate-form', null);
+  </script>
+  <script>
+    // ── Décor AJOUTÉ (la logique du quiz ci-dessus n'est pas modifiée) ──
+    // Déplace le « n/6 » généré par renderStep vers le compteur serif italique
+    // et pose les pastilles A/B/C sur les choix. Purement présentationnel.
+    (function () {
+      var step = document.getElementById('quiz-step');
+      var count = document.getElementById('quiz-count');
+      if (!step) return;
+      function decorate() {
+        var h = step.querySelector('h3');
+        if (h) {
+          var m = h.textContent.match(/^(\d+)\s*\/\s*(\d+)\s*—\s*([\s\S]*)$/);
+          if (m) {
+            if (count) count.textContent = m[1] + ' / ' + m[2];
+            h.textContent = m[3];
+          }
+        }
+        var btns = step.querySelectorAll('button.choice');
+        Array.prototype.forEach.call(btns, function (b, i) {
+          if (b.querySelector('.choice__key')) return;
+          var k = document.createElement('span');
+          k.className = 'choice__key';
+          k.setAttribute('aria-hidden', 'true');
+          k.textContent = String.fromCharCode(65 + i);
+          b.insertBefore(k, b.firstChild);
+        });
+      }
+      decorate();
+      step.addEventListener('click', function () { window.setTimeout(decorate, 0); });
+    })();
+  </script>
+</body>
+</html>

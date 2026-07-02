@@ -11,6 +11,7 @@ Load the `copilot-setup` skill first. Do not skip it.
 
 Transform this empty template into a production-ready marketing copilot for one specific company, with:
 - A validated brand doctrine (voice, design system, personas)
+- A populated strategy layer: business & marketing objectives, activated channels & cadence, real personas with objections, customer journey (`02-strategy/`)
 - Connectors wired for the tools the company actually uses
 - Skills personalized with brand-specific rules
 - Optional modules enabled per need, plus brand-compliant image generation
@@ -21,7 +22,7 @@ Transform this empty template into a production-ready marketing copilot for one 
 The wizard orchestrates the sub-commands below. You may run them one by one if you prefer granular control; this entry point chains them with confirmation between each.
 
 1. **Preflight and welcome** (inline, no sub-command)
-2. **`/brand-discover`** — public signals → draft doctrine → human validation → write `01-brand/`
+2. **`/brand-discover`** — public signals → draft doctrine → human validation → **strategy interview** (objectives 12 mois + trimestre SMART, canaux + cadence, personas réels, définitions conversion/lead, parcours client) → write `01-brand/` + pre-fill `02-strategy/`
 3. **`/tools-setup`** — pick tools per category → generate role CLAUDE.md → update `.env.example`
 4. **`/modules`** — optional, enable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client)
 5. **`/validate-setup`** — placeholder lint + sample generation + voice check → write `.setup-completed`
@@ -70,7 +71,7 @@ After the user has shared material (or confirmed they have none beyond the websi
 
 > I'll now run the following in sequence. After each, I'll pause so you can review before continuing:
 >
-> 1. `/brand-discover` — analyze your signals, propose a design system, voice, and draft personas. (10-20 min)
+> 1. `/brand-discover` — analyze your signals, propose a design system, voice, and draft personas, then run the strategy interview: your business and marketing objectives, activated channels and sustainable cadence, real personas (triggers, objections heard in meetings, vocabulary, anti-personas), definitions of a conversion and a qualified lead, and the customer journey questions. (20-35 min)
 > 2. `/tools-setup` — ask which tools you use (email platform, CRM, editorial calendar, etc.) and wire them. (5-10 min)
 > 3. `/modules` — enable any optional modules you need (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client). (2-5 min, optional)
 > 4. `/validate-setup` — a final lint, a sample post for you to sanity-check the voice, then I write `.setup-completed`.
@@ -85,7 +86,7 @@ After each sub-command completes, output a one-screen recap:
 
 > **`/brand-discover` complete.**
 >
-> Files written: `01-brand/voice.md`, `01-brand/style-guide.md`, `01-brand/personas.md`, `01-brand/messaging-framework.md`.
+> Files written: `01-brand/voice.md`, `01-brand/style-guide.md`, `01-brand/personas.md`, `01-brand/messaging-framework.md` — and the strategy layer: `02-strategy/objectifs.md`, `02-strategy/parcours-client.md`, `02-strategy/kpi-framework.md`, `02-strategy/channel-strategy.md`.
 > Anything you'd like to revisit before moving on? (yes / no)
 
 If yes, return to the sub-command or loop back. If no, announce the next.

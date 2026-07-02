@@ -14,6 +14,7 @@ Avant le moindre plan de slides :
 1. Charger `01-brand/checklist-pre-composition.md` — règles de voix, anti-style-IA, typographie slides (pas de point final sur les titres, plancher de tailles), assets, réutilisation.
 2. Charger `01-brand/voice.md` + `01-brand/style-guide.md` — voix, vocabulaire, tokens visuels.
 3. Consulter `01-brand/assets/index.md` avant d'envisager le moindre visuel : un asset existant se réutilise, il ne se régénère pas.
+4. Charger `01-brand/design-anti-generique.md` — doctrine design anti-générique : marqueurs du look IA interdits par défaut, contrastes typographiques, checklist de pré-livraison (la marque prime là où elle a un avis).
 
 **Ne jamais produire sans.** Si un de ces fichiers manque ou contient encore des `{{...}}`, arrêter et lancer `/start-copilot`.
 
@@ -127,7 +128,7 @@ Plancher : **aucun texte de contenu sous ~18-20px** sur le cadre 1920×1080 (éq
 
 | Symptôme | Cause | Fix |
 |---|---|---|
-| Glyphes `%` `O` `9` `g` clippés sur très gros display | `line-height < 0.94` + letter-spacing très négatif | `line-height: 0.94–1.15`, `letter-spacing: -0.025em` max, `padding: 0.08em 0.06em; margin: -0.08em -0.06em; overflow: visible` |
+| Descendantes `g` `j` `p` `q` (et `%` `O` `9`) coupées sur display | `background-clip: text` ne peint que dans la boîte de l'inline-block, dont la hauteur = line-height ; en display serré les descendantes sortent de la boîte | `line-height ≥ 1.1` sur les titres texte, `letter-spacing: -0.025em` max, et sur le span en gradient : `padding: 0.22em 0.08em; margin: -0.22em -0.08em; overflow: visible` |
 | Texte en gradient rendu différemment après `transform: scale()` | `-webkit-background-clip: text` + rendu sub-pixel | `display: inline-block; transform: translateZ(0); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision` |
 | Halos colorés autour du texte en gradient en PDF/print | `background-clip: text` + `display: inline-block` clippent mal en print | En `@media print`, remplacer le gradient par un aplat `var(--brand-primary-deep)` — ou rastériser (voir export PDF) |
 | Chiffre + unité qui passent sur 2 lignes | `display: block` ou colonne de grille trop étroite | `display: inline-flex; align-items: baseline; white-space: nowrap`, élargir la colonne |
@@ -190,6 +191,23 @@ Détail complet : `06-graphic-design/presentations/docs/pdf-export.md`.
 - Les chiffres en héros : display énorme, gradient ou aplat ; texte secondaire petit. Retenue partout.
 - Gradient réservé aux titres d'impact (hero, big numbers de slides respiration) — jamais sur les titres standards, sauf si la charte l'exige.
 - Interdits : bento grids, glassmorphism gratuit, photos stock, copy pseudo-percutante, et tout ce qui figure dans `{{BRAND_BANNED_VISUALS}}`.
+
+## Vie graphique de la marque
+
+Un deck vivant porte le motif de la marque — jamais de la décoration générique.
+
+1. **Recenser les patterns/motifs reconnaissables de la marque** dans `01-brand/assets/index.md` et `01-brand/style-guide.md` (trames, lignes signature, emblèmes, textures) avant la direction artistique.
+2. **S'ils existent, les décliner** plutôt qu'en inventer :
+   - **backgrounds à faible opacité** (filigrane ~.05 sur fonds clairs, ~.07 sur fonds sombres) sur les slides de rythme : cover, intercalaires, silences ;
+   - **éléments d'angle discrets** sur les slides éditoriales (motif en coin, tracé encre sur fond clair, jamais dans la zone du cartouche ni sous le contenu) ;
+   - **filets / ornements typographiques** dérivés du logo-mark (citations, respirations).
+3. **Varier les fonds entre familles de slides** (clair, teinté, sombre, texturé) au lieu d'un fond unique : même motif partout, seuls la couleur du tracé et le dosage changent — la variété reste cohérente.
+4. **Si la marque n'a aucun motif** : en générer un avec la skill `image-generation` (ou le brandkit) à partir des éléments d'identité existants, et le faire **valider par l'humain** avant tout usage. Jamais décoratif gratuit — toujours issu de la marque.
+5. Le motif reste sous tout (`z-index` en dessous du contenu, du chrome et du cartouche), à opacité faible, et la QA Playwright se re-passe après chaque ajout.
+
+Référence exécutée : `_examples/deck-catalogue/catalogue.html` — hooks `--brand-pattern` / `--brand-pattern-light` / `--corner-motif` dans le `:root`, classes `.motif` / `.texture` / `.corner` / `.filet-orn` (doc complète dans son README, section « Vie graphique de la marque »).
+
+**Rappel descendantes de titres** : `line-height ≥ 1.1` sur tous les niveaux de titres texte, jamais de clip. Sur un titre en `background-clip: text` (texte en dégradé), la zone peinte s'arrête à la boîte de l'inline-block : compensation `padding: 0.22em 0.08em; margin: -0.22em -0.08em; overflow: visible` obligatoire, sinon le bas des g / j / p / q disparaît (voir le tableau des pièges).
 
 ## Modes de livraison
 

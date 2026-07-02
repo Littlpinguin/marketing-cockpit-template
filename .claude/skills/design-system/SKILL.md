@@ -12,7 +12,7 @@ Vous produisez des systèmes de design complets : tokens sémantiques, style UI,
 **Charger `01-brand/style-guide.md` — la marque PRIME sur tout style générique de cette skill.**
 
 1. Lire `01-brand/style-guide.md` : couleurs, police, radius, gradient, style d'illustration, interdits visuels.
-2. Lire `01-brand/checklist-pre-composition.md` si présent (règles anti-style-IA).
+2. Lire `01-brand/checklist-pre-composition.md` si présent (règles anti-style-IA) et `01-brand/design-anti-generique.md` (doctrine design anti-générique — elle gouverne les dimensions libres, jamais celles verrouillées par la marque).
 3. Classer chaque dimension du système en deux catégories :
    - **Verrouillée par la marque** — le style-guide fournit une valeur (ex. couleur primaire, police). On l'utilise telle quelle. Interdiction de la remplacer par une valeur des références de cette skill.
    - **Libre** — le style-guide est muet (ex. couleur `muted`, échelle d'espacement, style des états d'interaction). C'est le seul espace où les références de cette skill s'appliquent.

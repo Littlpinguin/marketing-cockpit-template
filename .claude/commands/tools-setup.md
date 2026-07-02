@@ -140,7 +140,12 @@ Présenter le diff avant écriture :
 
 Pour chaque dossier de rôle du cœur, lire le template `_templates/role-claudemd/<role>.md` et substituer :
 - `{{EDITORIAL_CALENDAR_TOOL}}`, `{{EMAIL_MARKETING_TOOL}}`, `{{EVENTS_PLATFORM_TOOL}}`, etc. → l'outil choisi, ou suppression de la ligne si `none`
+- `{{COMPANY_NAME}}`, `{{COMPANY_MAIN_CONTACT}}` → valeurs validées par `/brand-discover`
+- `{{CONTENT_CADENCE_LINKEDIN}}`, `{{CONTENT_CADENCE_NEWSLETTER}}`, `{{CONTENT_CADENCE_BLOG}}` (template `02-strategy.md`) → cadences décidées à l'entretien stratégie de `/brand-discover` (lisibles dans `02-strategy/channel-strategy.md`) ; si l'entretien n'a pas eu lieu, laisser le placeholder et le signaler
 - Blocs conditionnels — conserver ou retirer selon les choix enregistrés
+- ⚠️ **Ne pas substituer les placeholders d'exécution** qui décrivent des motifs de nommage utilisés à runtime (ex. `plan-{{MOIS_ANNEE}}.md` dans `02-strategy.md`) — ils doivent rester tels quels dans le `CLAUDE.md` régénéré
+
+La régénération ne touche que les `CLAUDE.md` de rôle — jamais les fichiers de contenu déjà remplis par le wizard (`02-strategy/objectifs.md`, `parcours-client.md`, `kpi-framework.md`, `channel-strategy.md`, fichiers `01-brand/`).
 
 Écrire dans `<role>/CLAUDE.md`, avec sauvegarde préalable dans `.setup-archive/role-claudemd-<ISO8601>/`.
 

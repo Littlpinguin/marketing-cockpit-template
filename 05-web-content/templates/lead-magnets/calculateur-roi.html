@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LEAD MAGNET — CALCULATEUR DE ROI
+       Outil interactif : 3 curseurs → coût annuel + gain potentiel. Aperçu
+       visible, détail + recommandations débloqués par l’email. Personnaliser :
+       les 3 entrées, les constantes de calcul (commentées), les 4 leviers.
+       Ambiance de démo : « outil clair » — papier blanc cassé, curseurs verts,
+       carte de résultat sombre aux méridiens, chiffres en display serif.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill lead-magnet les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Calculateur — le coût réel de votre reporting carbone | Meridian Conseil</title>
+  <meta name="description" content="Estimez en 2 minutes ce que votre processus carbone manuel vous coûte par an, et ce qu’un outillage adapté vous ferait gagner.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Calculateur — le coût réel de votre reporting carbone | Meridian Conseil">
+  <meta property="og:description" content="Estimez en 2 minutes ce que votre processus carbone manuel vous coûte par an, et ce qu’un outillage adapté vous ferait gagner.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système. En production, décommenter :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill lead-magnet) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--color-light); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; }
+    h1 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .rgpd a { color: inherit; }
+    /* En-tête de l'outil — filigrane de méridiens */
+    .tool-topbar { text-align: center; padding: var(--space-l) var(--space-s) var(--space-s); position: relative; overflow: hidden; }
+    .tool-topbar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(560px 300px at 50% -120px, rgba(77, 165, 133, 0.14), transparent 70%); pointer-events: none; }
+    .tool-topbar h1 { max-width: 720px; margin-left: auto; margin-right: auto; position: relative; }
+    .tool-topbar__watermark { position: absolute; top: -190px; left: 50%; transform: translateX(-50%); width: 520px; height: 520px; color: var(--color-primary); opacity: 0.05; pointer-events: none; }
+    .tool__intro { max-width: 560px; margin: 0 auto var(--space-s); text-align: center; color: var(--ink-soft); position: relative; }
+    /* Cartes de l'outil — entrée en scène douce */
+    .tool { max-width: 780px; margin: 0 auto; padding: 0 var(--space-s) var(--space-l); }
+    .tool__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin-bottom: var(--space-m); animation: mrd-rise .8s var(--ease) backwards; }
+    .tool__card:nth-child(2) { animation-delay: .1s; }
+    @keyframes mrd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    .field { margin-bottom: var(--space-m); }
+    .field:last-child { margin-bottom: 0; }
+    .field label { display: block; margin-bottom: 10px; line-height: 1.5; }
+    .field__hint { font-size: 0.8rem; color: var(--ink-soft); display: block; margin-top: 4px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .range-value { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--color-primary); letter-spacing: 0; }
+    /* Curseurs — piste hairline, poignée verte cerclée de laiton */
+    input[type="range"] { -webkit-appearance: none; appearance: none; padding: 0; height: 30px; background: transparent; border: 0; cursor: pointer; }
+    input[type="range"]:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 4px; border-radius: 999px; box-shadow: none; }
+    input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--color-primary-soft), var(--color-accent)); opacity: 0.9; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--color-primary); border: 3px solid var(--color-light); box-shadow: 0 0 0 1px var(--color-accent), 0 4px 10px -2px rgba(28, 36, 32, 0.4); transition: transform .25s var(--ease); }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+    input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--color-primary-soft), var(--color-accent)); }
+    input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); border: 3px solid var(--color-light); box-shadow: 0 0 0 1px var(--color-accent), 0 4px 10px -2px rgba(28, 36, 32, 0.4); }
+    .choices { display: grid; gap: var(--space-xs); }
+    .choice { display: flex; gap: 10px; align-items: flex-start; background: var(--color-light); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 14px; cursor: pointer; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 1rem; transition: border-color .3s var(--ease), background-color .3s var(--ease); }
+    .choice:hover { border-color: var(--color-sage); }
+    .choice:has(input:checked) { border-color: var(--color-primary); background: #fff; }
+    .choice input { width: auto; margin-top: 4px; accent-color: var(--color-primary); }
+    /* Résultat — carte sombre signature, chiffre en display */
+    .result { text-align: center; background: var(--bg-dark); color: var(--color-light); border-color: var(--bg-dark); position: relative; overflow: hidden; }
+    .result::before { content: ""; position: absolute; width: 380px; height: 380px; border-radius: 50%; background: var(--color-primary-soft); filter: blur(110px); opacity: 0.22; top: -160px; right: -120px; pointer-events: none; }
+    .result__topo { position: absolute; inset: auto 0 -6px 0; height: 110px; color: var(--color-accent-bright); opacity: 0.12; pointer-events: none; }
+    .result > *:not(.result__topo) { position: relative; }
+    .result__label { text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-sage); }
+    .result__big { font-family: var(--font-display); font-size: clamp(2.8rem, 8vw, 4.6rem); font-weight: 500; color: var(--color-accent-bright); line-height: 1.08; margin: var(--space-s) 0; }
+    .result p { color: rgba(252, 251, 248, 0.82); }
+    .result strong { color: var(--color-accent-bright); font-weight: 650; }
+    .bar { height: 10px; border-radius: 999px; background: rgba(252, 251, 248, 0.14); overflow: hidden; max-width: 420px; margin: 0 auto; }
+    .bar__fill { height: 100%; background: var(--gradient); border-radius: 999px; transition: width 0.6s var(--ease); }
+    /* Gate : l'aperçu est visible, le détail est débloqué par l'email */
+    .gate__locked { display: block; }
+    .gate__full { display: none; }
+    .gate--done .gate__locked { display: none; }
+    .gate--done .gate__full { display: block; animation: mrd-rise .8s var(--ease) backwards; }
+    .gate__locked { background: var(--bg-tint); border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__form { display: grid; gap: var(--space-s); max-width: 420px; margin: 0 auto; }
+    .gate__pitch { text-align: center; max-width: 460px; margin: 0 auto var(--space-s); }
+    .gate__pitch h3 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+    .gate__pitch p { color: var(--ink-soft); }
+    .gate__full { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__full h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+    .detail-row { display: flex; justify-content: space-between; gap: var(--space-s); padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    .detail-row strong { white-space: nowrap; font-feature-settings: 'tnum' on; }
+    .detail-row:last-of-type strong { color: var(--color-primary); }
+    .reco { border-left: 3px solid var(--color-accent); padding: var(--space-xs) var(--space-s); background: var(--bg-tint); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: var(--space-xs); }
+    .gate__mail-note { display: flex; align-items: center; gap: 10px; margin-top: var(--space-s); color: var(--color-primary); font-weight: 600; }
+    .gate__mail-note svg { flex: none; }
+    .tool-footer { text-align: center; font-size: 0.85rem; color: var(--ink-soft); padding: var(--space-m) var(--space-s); border-top: 1px solid var(--rule); }
+    .tool-footer a { color: inherit; }
+    @media (max-width: 600px) { .tool__card, .gate__locked, .gate__full { padding: var(--space-s); } }
+    @media (max-width: 400px) { .btn { padding: 12px 18px; font-size: 0.95rem; } }
+  </style>
+</head>
+<body data-page-slug="lm-calculateur-roi">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="tool-topbar">
+    <svg class="tool-topbar__watermark" aria-hidden="true"><use href="#mrd-globe"/></svg>
+    <p class="eyebrow">Calculateur gratuit — 2 minutes</p>
+    <h1>Que vous coûte votre reporting carbone <em>fait à la main</em> ?</h1>
+    <p class="tool__intro">Trois curseurs, un chiffre : le coût annuel de votre processus actuel — et ce qu'un outillage adapté pourrait vous faire gagner.</p>
+  </header>
+
+  <main class="tool">
+    <!-- Entrées -->
+    <div class="tool__card">
+      <div class="field">
+        <label for="in-days">Jours-personne passés par an sur la collecte et le reporting : <span class="range-value" id="out-days">30</span> j</label>
+        <input type="range" id="in-days" min="5" max="120" step="5" value="30">
+      </div>
+      <div class="field">
+        <label for="in-cost">Coût journalier chargé moyen des personnes impliquées : <span class="range-value" id="out-cost">450</span> €</label>
+        <input type="range" id="in-cost" min="200" max="1200" step="50" value="450">
+      </div>
+      <div class="field">
+        <label for="in-extern">Budget annuel de prestations externes (cabinet, vérification…) : <span class="range-value" id="out-extern">8 000</span> €</label>
+        <input type="range" id="in-extern" min="0" max="60000" step="1000" value="8000">
+      </div>
+    </div>
+
+    <!-- Aperçu (toujours visible : donner avant de capturer) -->
+    <div class="tool__card result" aria-live="polite">
+      <svg class="result__topo" preserveAspectRatio="none" aria-hidden="true"><use href="#mrd-topo"/></svg>
+      <p class="result__label">Coût annuel estimé de votre processus actuel</p>
+      <p class="result__big" id="res-total">21 500 €</p>
+      <p>dont <strong id="res-gain">12 900 €</strong> potentiellement récupérables la première année.</p>
+      <div class="bar" aria-hidden="true"><div class="bar__fill" id="res-bar" style="width:60%"></div></div>
+    </div>
+
+      <div class="gate" id="gate">
+        <div class="gate__locked">
+          <div class="gate__pitch">
+            <h3>Recevez le détail du calcul et votre plan d'économies</h3>
+            <p>Le rapport détaille les 3 postes de coût, les hypothèses utilisées et les 4 leviers d'économie classés par effort.</p>
+          </div>
+          <form id="gate-form" class="gate__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+            <input type="hidden" name="lead_magnet" value="calculateur-roi">
+            <input type="hidden" name="roi_total" id="lead-total" value="">
+            <input type="hidden" name="roi_gain" id="lead-gain" value="">
+            <label for="gate-email">Votre email professionnel</label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr">
+            <button type="submit" class="btn btn--primary">Recevoir mon rapport détaillé</button>
+            <p class="rgpd">Vous recevez le rapport + 3 emails de conseils, désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+          </form>
+        </div>
+        <div class="gate__full">
+          <h3>Le détail de votre estimation</h3>
+          <div class="detail-row"><span>Temps interne (collecte, consolidation, mise en forme)</span><strong id="d-internal">—</strong></div>
+          <div class="detail-row"><span>Prestations externes</span><strong id="d-extern">—</strong></div>
+          <div class="detail-row"><span>Coût de non-qualité estimé (reprises, données manquantes)</span><strong id="d-quality">—</strong></div>
+          <div class="detail-row"><span><strong>Total annuel</strong></span><strong id="d-total">—</strong></div>
+          <h3 style="margin-top: var(--space-m);">Vos 4 leviers, du plus simple au plus structurant</h3>
+          <div class="reco"><strong>1. Centraliser les sources</strong> — un référentiel unique des factures et exports élimine ~30 % du temps de collecte.</div>
+          <div class="reco"><strong>2. Automatiser l'import</strong> — connecteurs comptables : la moitié des données remontent seules.</div>
+          <div class="reco"><strong>3. Standardiser les exports</strong> — un référentiel qui alimente BEGES, CSRD et questionnaires clients.</div>
+          <div class="reco"><strong>4. Former un référent interne</strong> — la mise à jour annuelle cesse d'être un chantier.</div>
+          <p class="gate__mail-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>Le rapport complet avec vos chiffres vient de partir par email.</p>
+        </div>
+      </div>
+  </main>
+
+  <footer class="tool-footer">
+    <p>Un outil offert par {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive). <a href="{{URL_SITE}}">Découvrir nos accompagnements</a></p>
+    <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+  </footer>
+  <script>
+    // ── Capture email (skill lead-magnet) ──────────────────────────────
+    // Principe : donner d'abord (aperçu du résultat), capturer ensuite.
+    // Le POST part vers {{FORM_ENDPOINT}} (formulaire → n8n → outil emailing).
+    // Les champs cachés (lead_magnet, profil/score) segmentent le nurturing.
+    function bindGate(formId, onUnlock) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = new FormData(form);
+        var endpoint = form.getAttribute('action');
+        var done = function () {
+          var gate = form.closest('.gate');
+          if (gate) gate.classList.add('gate--done');
+          if (onUnlock) onUnlock(data);
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', { lead_source: data.get('lead_magnet') || 'outil-web' });
+          }
+        };
+        if (endpoint && endpoint.indexOf('{ {'.replace(' ', '')) === -1) {
+          fetch(endpoint, { method: 'POST', body: data }).then(done).catch(done);
+        } else {
+          console.warn('FORM_ENDPOINT non configuré : déblocage local (mode démo).');
+          done();
+        }
+      });
+    }
+
+    // ── FORMULES PLACEHOLDER — à personnaliser avec vos propres hypothèses ──
+    // Hypothèses fictives d'exemple :
+    //   coût interne   = jours × coût journalier
+    //   non-qualité    = 15 % du coût interne (reprises, erreurs, relances)
+    //   gain potentiel = 60 % du temps interne + 40 % de l'externe (année 1)
+    var QUALITY_RATE = 0.15;
+    var INTERNAL_SAVING = 0.60;
+    var EXTERNAL_SAVING = 0.40;
+
+    function euros(n) { return Math.round(n).toLocaleString('fr-FR') + ' €'; }
+
+    function compute() {
+      var days = Number(document.getElementById('in-days').value);
+      var cost = Number(document.getElementById('in-cost').value);
+      var extern = Number(document.getElementById('in-extern').value);
+      document.getElementById('out-days').textContent = days.toLocaleString('fr-FR');
+      document.getElementById('out-cost').textContent = cost.toLocaleString('fr-FR');
+      document.getElementById('out-extern').textContent = extern.toLocaleString('fr-FR');
+
+      var internal = days * cost;
+      var quality = internal * QUALITY_RATE;
+      var total = internal + quality + extern;
+      var gain = internal * INTERNAL_SAVING + extern * EXTERNAL_SAVING;
+
+      document.getElementById('res-total').textContent = euros(total);
+      document.getElementById('res-gain').textContent = euros(gain);
+      document.getElementById('res-bar').style.width = Math.min(100, Math.round(gain / total * 100)) + '%';
+
+      document.getElementById('d-internal').textContent = euros(internal);
+      document.getElementById('d-extern').textContent = euros(extern);
+      document.getElementById('d-quality').textContent = euros(quality);
+      document.getElementById('d-total').textContent = euros(total);
+
+      // Les valeurs partent avec le lead → segmentation du nurturing
+      document.getElementById('lead-total').value = Math.round(total);
+      document.getElementById('lead-gain').value = Math.round(gain);
+    }
+
+    ['in-days', 'in-cost', 'in-extern'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', compute);
+    });
+    compute();
+    bindGate('gate-form', null);
+  </script>
+</body>
+</html>

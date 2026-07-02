@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LEAD MAGNET — COMPARATEUR DE SCÉNARIOS
+       Outil interactif : 2 curseurs de contexte → 3 scénarios comparés (coût
+       3 ans, délai, risque) avec verdict. Le scénario recommandé part avec le
+       lead (segmentation). Personnaliser : scénarios, formules (commentées),
+       libellés de verdict.
+       Ambiance de démo : « arbitrage clair » — papier blanc cassé, trois
+       colonnes de scénarios hiérarchisées (grise, crème, liseré vert),
+       métriques en lignes hairline, verdict en bandeau sombre au laiton.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill lead-magnet les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Comparateur — statu quo, internalisation ou accompagnement ? | Meridian Conseil</title>
+  <meta name="description" content="Comparez en 1 minute le coût sur 3 ans, le délai et le risque des trois stratégies carbone possibles pour votre entreprise.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Comparateur — statu quo, internalisation ou accompagnement ? | Meridian Conseil">
+  <meta property="og:description" content="Comparez en 1 minute le coût sur 3 ans, le délai et le risque des trois stratégies carbone possibles pour votre entreprise.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système. En production, décommenter :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill lead-magnet) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--color-light); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; }
+    h1 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .rgpd a { color: inherit; }
+    /* En-tête de l'outil — filigrane de méridiens */
+    .tool-topbar { text-align: center; padding: var(--space-l) var(--space-s) var(--space-s); position: relative; overflow: hidden; }
+    .tool-topbar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(560px 300px at 50% -120px, rgba(77, 165, 133, 0.13), transparent 70%); pointer-events: none; }
+    .tool-topbar h1 { max-width: 760px; margin-left: auto; margin-right: auto; position: relative; }
+    .tool-topbar__watermark { position: absolute; top: -210px; left: 50%; transform: translateX(-62%); width: 540px; height: 540px; color: var(--color-primary); opacity: 0.05; pointer-events: none; }
+    .tool__intro { max-width: 580px; margin: 0 auto var(--space-s); text-align: center; color: var(--ink-soft); position: relative; }
+    /* Cartes de l'outil — entrée en scène douce */
+    .tool { max-width: 960px; margin: 0 auto; padding: 0 var(--space-s) var(--space-l); }
+    .tool__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin-bottom: var(--space-m); animation: mrd-rise .8s var(--ease) backwards; }
+    @keyframes mrd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    .field { margin-bottom: var(--space-m); }
+    .field:last-child { margin-bottom: 0; }
+    .field label { display: block; margin-bottom: 10px; line-height: 1.5; }
+    .field__hint { font-size: 0.8rem; color: var(--ink-soft); display: block; margin-top: 4px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .range-value { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--color-primary); letter-spacing: 0; }
+    /* Curseurs — piste hairline, poignée verte cerclée de laiton */
+    input[type="range"] { -webkit-appearance: none; appearance: none; padding: 0; height: 30px; background: transparent; border: 0; cursor: pointer; }
+    input[type="range"]:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 4px; border-radius: 999px; box-shadow: none; }
+    input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--color-primary-soft), var(--color-accent)); opacity: 0.9; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--color-primary); border: 3px solid var(--color-light); box-shadow: 0 0 0 1px var(--color-accent), 0 4px 10px -2px rgba(28, 36, 32, 0.4); transition: transform .25s var(--ease); }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+    input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--color-primary-soft), var(--color-accent)); }
+    input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); border: 3px solid var(--color-light); box-shadow: 0 0 0 1px var(--color-accent), 0 4px 10px -2px rgba(28, 36, 32, 0.4); }
+    /* Les 3 scénarios — colonnes hiérarchisées : grise / crème / liseré vert */
+    .compare { animation: mrd-rise .8s var(--ease) .1s backwards; margin-bottom: var(--space-m); }
+    .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-s); align-items: stretch; }
+    .scenario { position: relative; display: flex; flex-direction: column; text-align: left; background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: 26px 22px 18px; transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .45s var(--ease); }
+    .scenario:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    #sc-intern { background: var(--bg-tint); }
+    #sc-accomp { border-color: rgba(47, 111, 94, 0.5); box-shadow: 0 16px 36px -26px rgba(47, 111, 94, 0.55); }
+    .scenario--best { border-color: var(--color-primary); box-shadow: 0 20px 44px -24px rgba(47, 111, 94, 0.55); }
+    .scenario__flag { position: absolute; top: -12px; left: 20px; display: none; background: var(--color-primary); color: var(--color-light); font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; padding: 4px 12px; border-radius: 999px; white-space: nowrap; }
+    .scenario--best .scenario__flag { display: inline-block; }
+    .scenario__idx { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 0.95rem; color: var(--color-accent-ink); margin: 0 0 2px; }
+    .scenario h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.12rem; margin-bottom: var(--space-s); min-height: 2.3em; }
+    .scenario__cost-label { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.68rem; font-weight: 600; color: var(--ink-soft); margin: 0 0 2px; }
+    .scenario .num { font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 2.1rem); font-weight: 500; color: var(--color-dark); display: block; line-height: 1.1; margin-bottom: var(--space-s); }
+    #sc-accomp .num { color: var(--color-primary); }
+    .scenario ul { list-style: none; padding: 0; margin: auto 0 0; font-size: 0.88rem; }
+    .scenario li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px solid var(--rule); }
+    .scenario li span { color: var(--ink-soft); }
+    .scenario li strong { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
+    /* Verdict — bandeau sombre, texte laiton clair, marque méridien */
+    .verdict { display: flex; align-items: center; gap: 16px; background: var(--bg-dark); border-radius: var(--radius); padding: 20px 26px; margin-top: var(--space-s); position: relative; overflow: hidden; }
+    .verdict::before { content: ""; position: absolute; width: 240px; height: 240px; border-radius: 50%; background: var(--color-primary-soft); filter: blur(90px); opacity: 0.25; top: -110px; right: -60px; pointer-events: none; }
+    .verdict > * { position: relative; }
+    .verdict__mark { color: var(--color-accent-bright); flex: none; opacity: 0.9; }
+    .verdict strong { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; line-height: 1.5; color: var(--color-accent-bright); }
+    /* Gate : l'aperçu est visible, le détail est débloqué par l'email */
+    .gate__locked { display: block; }
+    .gate__full { display: none; }
+    .gate--done .gate__locked { display: none; }
+    .gate--done .gate__full { display: block; animation: mrd-rise .8s var(--ease) backwards; }
+    .gate__locked { background: var(--bg-tint); border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__form { display: grid; gap: var(--space-s); max-width: 420px; margin: 0 auto; }
+    .gate__pitch { text-align: center; max-width: 460px; margin: 0 auto var(--space-s); }
+    .gate__pitch h3 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+    .gate__pitch p { color: var(--ink-soft); }
+    .gate__full { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__full h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+    .reco { border-left: 3px solid var(--color-accent); padding: var(--space-xs) var(--space-s); background: var(--bg-tint); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: var(--space-xs); }
+    .gate__mail-note { display: flex; align-items: center; gap: 10px; margin-top: var(--space-s); color: var(--color-primary); font-weight: 600; }
+    .gate__mail-note svg { flex: none; }
+    .tool-footer { text-align: center; font-size: 0.85rem; color: var(--ink-soft); padding: var(--space-m) var(--space-s); border-top: 1px solid var(--rule); }
+    .tool-footer a { color: inherit; }
+    @media (max-width: 900px) {
+      .scenarios { grid-template-columns: 1fr; }
+      .scenario h3 { min-height: 0; }
+      .scenario ul { margin-top: 0; }
+    }
+    @media (max-width: 600px) {
+      .tool__card, .gate__locked, .gate__full { padding: var(--space-s); }
+      .scenario { padding: 22px var(--space-s) 14px; }
+      .verdict { padding: var(--space-s); gap: 12px; }
+    }
+    @media (max-width: 400px) { .btn { padding: 12px 18px; font-size: 0.95rem; } }
+  </style>
+</head>
+<body data-page-slug="lm-comparateur-scenarios">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="tool-topbar">
+    <svg class="tool-topbar__watermark" aria-hidden="true"><use href="#mrd-globe"/></svg>
+    <p class="eyebrow">Comparateur — 2 curseurs, 3 scénarios</p>
+    <h1>Statu quo, internalisation ou accompagnement : <em>que choisir ?</em></h1>
+    <p class="tool__intro">Réglez votre situation, comparez le coût total et le délai des trois stratégies possibles sur 3 ans.</p>
+  </header>
+
+  <main class="tool">
+    <div class="tool__card">
+      <div class="field">
+        <label for="in-size">Effectif de l'entreprise : <span class="range-value" id="out-size">120</span> personnes</label>
+        <input type="range" id="in-size" min="20" max="1000" step="20" value="120">
+      </div>
+      <div class="field">
+        <label for="in-pressure">Pression client / réglementaire (1 = faible, 5 = mise en demeure) : <span class="range-value" id="out-pressure">3</span>/5</label>
+        <input type="range" id="in-pressure" min="1" max="5" step="1" value="3">
+      </div>
+    </div>
+
+    <!-- Aperçu : les 3 scénarios comparés (coût total 3 ans + délai) -->
+    <div class="compare" aria-live="polite">
+      <div class="scenarios">
+        <div class="scenario" id="sc-statu">
+          <span class="scenario__flag">Recommandé pour vous</span>
+          <p class="scenario__idx">01</p>
+          <h3>Statu quo outillé</h3>
+          <p class="scenario__cost-label">Coût total sur 3 ans</p>
+          <span class="num" id="c-statu">—</span>
+          <ul><li><span>Premier livrable</span><strong id="t-statu">—</strong></li><li><span>Risque commercial</span><strong id="r-statu">—</strong></li></ul>
+        </div>
+        <div class="scenario" id="sc-intern">
+          <span class="scenario__flag">Recommandé pour vous</span>
+          <p class="scenario__idx">02</p>
+          <h3>Internalisation</h3>
+          <p class="scenario__cost-label">Coût total sur 3 ans</p>
+          <span class="num" id="c-intern">—</span>
+          <ul><li><span>Premier livrable</span><strong id="t-intern">—</strong></li><li><span>Risque commercial</span><strong id="r-intern">—</strong></li></ul>
+        </div>
+        <div class="scenario" id="sc-accomp">
+          <span class="scenario__flag">Recommandé pour vous</span>
+          <p class="scenario__idx">03</p>
+          <h3>Accompagnement + transfert</h3>
+          <p class="scenario__cost-label">Coût total sur 3 ans</p>
+          <span class="num" id="c-accomp">—</span>
+          <ul><li><span>Premier livrable</span><strong id="t-accomp">—</strong></li><li><span>Risque commercial</span><strong id="r-accomp">—</strong></li></ul>
+        </div>
+      </div>
+      <div class="verdict">
+        <svg class="verdict__mark" width="30" height="30" aria-hidden="true"><use href="#mrd-mark"/></svg>
+        <strong id="verdict">—</strong>
+      </div>
+    </div>
+
+      <div class="gate" id="gate">
+        <div class="gate__locked">
+          <div class="gate__pitch">
+            <h3>Recevez la comparaison détaillée de vos 3 scénarios</h3>
+            <p>Le rapport détaille les hypothèses, le coût année par année et les conditions de réussite de chaque stratégie pour votre situation.</p>
+          </div>
+          <form id="gate-form" class="gate__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+            <input type="hidden" name="lead_magnet" value="comparateur-scenarios">
+            <input type="hidden" name="scenario_reco" id="lead-scenario" value="">
+            <label for="gate-email">Votre email professionnel</label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr">
+            <button type="submit" class="btn btn--primary">Recevoir ma synthèse comparative</button>
+            <p class="rgpd">Vous recevez le rapport + 3 emails de conseils, désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+          </form>
+        </div>
+        <div class="gate__full">
+          <h3>Comment lire ces scénarios</h3>
+          <div class="reco"><strong>Statu quo outillé</strong> — vous continuez en interne avec un outillage minimal. Viable si la pression reste faible ; coûteux en temps caché.</div>
+          <div class="reco"><strong>Internalisation</strong> — recrutement ou formation lourde d'un profil dédié. Rentable au-delà d'une certaine taille et d'une pression durable.</div>
+          <div class="reco"><strong>Accompagnement + transfert</strong> — un accompagnement cadré qui forme votre équipe. Le plus rapide vers un livrable défendable.</div>
+          <p class="gate__mail-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>La synthèse détaillée pour votre situation vient de partir par email.</p>
+        </div>
+      </div>
+  </main>
+
+  <footer class="tool-footer">
+    <p>Un outil offert par {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive). <a href="{{URL_SITE}}">Découvrir nos accompagnements</a></p>
+    <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+  </footer>
+  <script>
+    // ── Capture email (skill lead-magnet) ──────────────────────────────
+    // Principe : donner d'abord (aperçu du résultat), capturer ensuite.
+    // Le POST part vers {{FORM_ENDPOINT}} (formulaire → n8n → outil emailing).
+    // Les champs cachés (lead_magnet, profil/score) segmentent le nurturing.
+    function bindGate(formId, onUnlock) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = new FormData(form);
+        var endpoint = form.getAttribute('action');
+        var done = function () {
+          var gate = form.closest('.gate');
+          if (gate) gate.classList.add('gate--done');
+          if (onUnlock) onUnlock(data);
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', { lead_source: data.get('lead_magnet') || 'outil-web' });
+          }
+        };
+        if (endpoint && endpoint.indexOf('{ {'.replace(' ', '')) === -1) {
+          fetch(endpoint, { method: 'POST', body: data }).then(done).catch(done);
+        } else {
+          console.warn('FORM_ENDPOINT non configuré : déblocage local (mode démo).');
+          done();
+        }
+      });
+    }
+
+    // ── MODÈLE PLACEHOLDER — coûts 3 ans et délais par scénario ──
+    // Toutes les formules sont fictives : les remplacer par votre modèle réel.
+    function euros(n) { return Math.round(n / 100) * 100 >= 1000 ? Math.round(n / 1000) + ' k€' : Math.round(n) + ' €'; }
+    var RISKS = ['très faible', 'faible', 'modéré', 'élevé', 'critique'];
+
+    function compute() {
+      var size = Number(document.getElementById('in-size').value);
+      var pressure = Number(document.getElementById('in-pressure').value);
+      document.getElementById('out-size').textContent = String(size);
+      document.getElementById('out-pressure').textContent = String(pressure);
+
+      // Statu quo : temps interne croissant avec taille et pression (3 ans)
+      var statu = (8000 + size * 90) * 3 * (1 + pressure * 0.1);
+      // Internalisation : coût fixe élevé (salaire chargé partiel) + montée en charge
+      var intern = 45000 * 3 * Math.min(1, size / 400 + 0.35);
+      // Accompagnement : forfait an 1 + outillage, puis coûts réduits (transfert)
+      var accomp = 18000 + 6000 * 2;
+
+      document.getElementById('c-statu').textContent = euros(statu);
+      document.getElementById('c-intern').textContent = euros(intern);
+      document.getElementById('c-accomp').textContent = euros(accomp);
+      document.getElementById('t-statu').textContent = '9-12 mois';
+      document.getElementById('t-intern').textContent = '6-9 mois';
+      document.getElementById('t-accomp').textContent = '8 sem.';
+      document.getElementById('r-statu').textContent = RISKS[Math.min(4, pressure)];
+      document.getElementById('r-intern').textContent = RISKS[Math.max(0, pressure - 2)];
+      document.getElementById('r-accomp').textContent = RISKS[Math.max(0, pressure - 3)];
+
+      // Verdict simple : le moins cher sous contrainte de pression
+      var best = 'accomp';
+      if (pressure <= 2 && statu < accomp) best = 'statu';
+      if (size >= 600 && intern < accomp * 3) best = 'intern';
+      ['statu', 'intern', 'accomp'].forEach(function (k) {
+        document.getElementById('sc-' + k).classList.toggle('scenario--best', k === best);
+      });
+      var labels = { statu: 'le statu quo outillé reste défendable — à réévaluer à chaque signal client.',
+                     intern: 'votre taille justifie d\'internaliser la compétence.',
+                     accomp: 'l\'accompagnement avec transfert est le meilleur ratio coût / délai / risque.' };
+      document.getElementById('verdict').textContent = 'Pour votre situation : ' + labels[best];
+      document.getElementById('lead-scenario').value = best;
+    }
+
+    ['in-size', 'in-pressure'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', compute);
+    });
+    compute();
+    bindGate('gate-form', null);
+  </script>
+</body>
+</html>

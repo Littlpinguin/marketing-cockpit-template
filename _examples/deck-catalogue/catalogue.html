@@ -9,10 +9,20 @@
   Chaque slide est à la fois un exemple exécuté ET sa propre légende :
   le cartouche en bas à droite donne le nom du layout et quand l'utiliser.
 
+  52 layouts en 7 familles (ouverture, éditorial, data-viz, schémas,
+  tableaux, preuve, conclusion) : voir README.md pour le tableau complet.
+
   Système : frame 1920×1080 scalé responsive, navigation clavier / molette /
-  tactile / drag-bar, vue d'ensemble (O), export PDF (P) avec rastérisation
-  des textes en dégradé. Aucun asset externe requis (fonts Google en option,
-  fallback système).
+  tactile / drag-bar, vue d'ensemble groupée par familles (O), mode plein
+  écran immersif (F, nav masquée + réapparition en bas d'écran), export
+  PDF (P) avec rastérisation des textes en dégradé. Aucun asset externe
+  requis (fonts Google en option, fallback système).
+
+  Vie graphique de la marque : pattern « méridiens » décliné en filigranes
+  (.motif fonds sombres, .texture fonds clairs), motif d'angle (.corner,
+  slides éditoriales) et filets typographiques (.filet-orn). Hooks CSS à
+  redéfinir par marque dans le :root : --brand-pattern, --brand-pattern-light,
+  --corner-motif (+ opacités). Voir README.md, section « Vie graphique ».
 
   Règles d'écriture : aucun tiret cadratin, aucun point final sur les titres.
   ============================================================================
@@ -36,6 +46,15 @@
   --grad:linear-gradient(120deg,#4da585 0%,#c8a24b 100%);
   --font-display:'Fraunces',Georgia,serif; --font-body:'Inter',system-ui,sans-serif;
   --ease-soft:cubic-bezier(0.16,1,0.3,1);
+  /* ---- Vie graphique de la marque : hooks pattern (à redéfinir par marque) ----
+     Démo Meridian : lignes de méridiens/topographie + arcs d'angle, SVG inline en data-uri.
+     --brand-pattern       filigrane pour fonds clairs/teintés (tracé encre)
+     --brand-pattern-light filigrane pour fonds sombres (tracé blanc cassé)
+     --corner-motif        motif d'angle des slides éditoriales (arcs concentriques) */
+  --brand-pattern:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 540'%3E%3Cg fill='none' stroke='%231c2420' stroke-width='1.3'%3E%3Cpath d='M0 40 C160 10 320 72 480 46 C640 20 800 66 960 34'/%3E%3Cpath d='M0 106 C170 72 330 132 490 104 C650 76 810 128 960 92'/%3E%3Cpath d='M0 172 C180 134 340 198 500 168 C660 138 820 192 960 154'/%3E%3Cpath d='M0 240 C190 198 350 264 510 230 C670 196 830 258 960 216'/%3E%3Cpath d='M0 310 C200 264 360 332 520 294 C680 256 840 326 960 280'/%3E%3Cpath d='M0 380 C190 338 350 400 510 368 C670 336 830 394 960 348'/%3E%3Cpath d='M0 446 C180 408 340 464 500 436 C660 408 820 458 960 420'/%3E%3Cpath d='M0 506 C170 474 330 524 490 500 C650 476 810 520 960 488'/%3E%3C/g%3E%3Cg fill='%231c2420'%3E%3Ccircle cx='480' cy='46' r='3'/%3E%3Ccircle cx='510' cy='230' r='3'/%3E%3Ccircle cx='500' cy='436' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  --brand-pattern-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 540'%3E%3Cg fill='none' stroke='%23fcfbf8' stroke-width='1.3'%3E%3Cpath d='M0 40 C160 10 320 72 480 46 C640 20 800 66 960 34'/%3E%3Cpath d='M0 106 C170 72 330 132 490 104 C650 76 810 128 960 92'/%3E%3Cpath d='M0 172 C180 134 340 198 500 168 C660 138 820 192 960 154'/%3E%3Cpath d='M0 240 C190 198 350 264 510 230 C670 196 830 258 960 216'/%3E%3Cpath d='M0 310 C200 264 360 332 520 294 C680 256 840 326 960 280'/%3E%3Cpath d='M0 380 C190 338 350 400 510 368 C670 336 830 394 960 348'/%3E%3Cpath d='M0 446 C180 408 340 464 500 436 C660 408 820 458 960 420'/%3E%3Cpath d='M0 506 C170 474 330 524 490 500 C650 476 810 520 960 488'/%3E%3C/g%3E%3Cg fill='%23fcfbf8'%3E%3Ccircle cx='480' cy='46' r='3'/%3E%3Ccircle cx='510' cy='230' r='3'/%3E%3Ccircle cx='500' cy='436' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  --corner-motif:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%231c2420' stroke-width='1.4'%3E%3Ccircle cx='240' cy='0' r='52'/%3E%3Ccircle cx='240' cy='0' r='96'/%3E%3Ccircle cx='240' cy='0' r='140'/%3E%3Ccircle cx='240' cy='0' r='184'/%3E%3Ccircle cx='240' cy='0' r='228'/%3E%3C/g%3E%3Ccircle cx='141' cy='99' r='3.5' fill='%23c8a24b'/%3E%3C/svg%3E");
+  --pattern-opacity:.05; --pattern-opacity-dark:.07; --corner-opacity:.09;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 *:focus-visible { outline:2px solid var(--vert-clair); outline-offset:4px; border-radius:4px; }
@@ -52,12 +71,29 @@ html, body { font-family:var(--font-body); background:var(--bg-dark); color:var(
 .plate.dark .ink-soft, .plate.dark .sub, .plate.dark .lede { color:rgba(252,251,248,0.74); }
 
 .plate::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.03; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-.plate > *:not(.aurora):not(.chrome):not(.legend) { position:relative; z-index:3; }
+.plate > *:not(.aurora):not(.chrome):not(.legend):not(.fb-scene):not(.fb-veil):not(.fb-copy):not(.sv-grid) { position:relative; z-index:3; }
 
 .aurora { position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
 .aurora i { position:absolute; border-radius:50%; filter:blur(90px); }
 .aurora .a1 { width:620px; height:620px; background:var(--vert-clair); top:-180px; right:-120px; opacity:.22; }
 .aurora .a2 { width:520px; height:520px; background:var(--or); bottom:-200px; left:-120px; opacity:.14; }
+
+/* ============ Vie graphique de la marque : filigranes, angles, filets ============
+   Déclinaison du pattern de marque (hooks --brand-pattern / --corner-motif du :root).
+   .motif     filigrane pleine slide sur fonds sombres (cover, intercalaires, silences)
+   .texture   filigrane pleine slide sur fonds clairs/teintés (opacité plus faible)
+   .corner    arcs de méridiens dans l'angle haut-droit des slides éditoriales
+   .filet-orn filet typographique portant la marque (citations, respirations)
+   Une slide ne cumule jamais .motif / .texture / .corner (un seul ::before disponible),
+   et le filigrane reste sous l'aurora, le grain, le contenu, le chrome et le cartouche. */
+.plate.motif::before, .plate.texture::before, .plate.corner::before { content:''; position:absolute; z-index:0; pointer-events:none; }
+.plate.motif::before { inset:0; background:var(--brand-pattern-light) center / cover no-repeat; opacity:var(--pattern-opacity-dark); }
+.plate.texture::before { inset:0; background:var(--brand-pattern) center / cover no-repeat; opacity:var(--pattern-opacity); }
+.plate.corner::before { top:0; right:0; width:250px; height:250px; background:var(--corner-motif) top right / contain no-repeat; opacity:var(--corner-opacity); }
+.filet-orn { display:flex; align-items:center; gap:16px; color:var(--or-text); }
+.filet-orn::before, .filet-orn::after { content:''; width:72px; height:1px; background:currentColor; opacity:.55; }
+.filet-orn svg { width:22px; height:22px; display:block; }
+.plate.dark .filet-orn { color:var(--or-clair); }
 
 .chrome { position:absolute; inset:44px 64px; pointer-events:none; z-index:12; }
 .chrome-row { position:absolute; left:0; right:0; display:flex; justify-content:space-between; align-items:center; }
@@ -83,7 +119,12 @@ html, body { font-family:var(--font-body); background:var(--bg-dark); color:var(
 
 .eyebrow { display:block; font-size:18px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--vert); margin-bottom:22px; }
 .plate.dark .eyebrow { color:var(--sauge); }
-.grad { background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; display:inline-block; padding:.06em .04em; margin:-.06em -.04em; overflow:visible; transform:translateZ(0); }
+/* Texte en dégradé : background-clip:text ne peint que dans la boîte de l'inline-block,
+   dont la hauteur = line-height héritée. Compensation padding/margin ≥ .22em obligatoire,
+   sinon les descendantes (g, j, p, q) sortent de la boîte et perdent le dégradé (= coupées). */
+.grad { background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; display:inline-block; padding:.22em .08em; margin:-.22em -.08em; overflow:visible; transform:translateZ(0); }
+/* Titres texte : line-height ≥ 1.1 partout, jamais de display serré sous 1.1 sur du texte
+   à descendantes (règle miroir de la skill slides). */
 h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0.01em; }
 .lede { font-size:27px; line-height:1.45; color:var(--ink-soft); max-width:1060px; }
 
@@ -94,14 +135,14 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 .plate.active [data-stagger] > * { opacity:1; transform:translateY(0); }
 .plate.active [data-stagger] > *:nth-child(1){transition-delay:.40s}.plate.active [data-stagger] > *:nth-child(2){transition-delay:.50s}.plate.active [data-stagger] > *:nth-child(3){transition-delay:.60s}.plate.active [data-stagger] > *:nth-child(4){transition-delay:.70s}.plate.active [data-stagger] > *:nth-child(5){transition-delay:.80s}.plate.active [data-stagger] > *:nth-child(6){transition-delay:.90s}
 
-.head h1 { font-size:88px; line-height:1.02; max-width:1500px; }
+.head h1 { font-size:88px; line-height:1.1; max-width:1500px; }
 .head .lede { margin-top:28px; }
-.cover h1 { font-size:142px; line-height:.98; max-width:1460px; }
+.cover h1 { font-size:142px; line-height:1.1; max-width:1460px; }
 .cover .lede { font-size:30px; margin-top:30px; color:rgba(252,251,248,0.82); }
 .cover .underline { width:160px; height:3px; background:var(--grad); border-radius:2px; margin:34px 0 4px; }
-.silence h2 { font-size:82px; line-height:1.08; max-width:1480px; }
+.silence h2 { font-size:82px; line-height:1.1; max-width:1480px; }
 .silence-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:30px; }
-.silence-num { font-family:var(--font-display); font-size:300px; line-height:.9; font-weight:500; }
+.silence-num { font-family:var(--font-display); font-size:300px; line-height:.9; font-weight:500; } /* numéral pur (pas de descendantes) : serré toléré, le clip est couvert par la compensation .grad */
 .silence-tag { font-size:30px; font-weight:300; max-width:1040px; color:rgba(252,251,248,0.82); line-height:1.4; }
 
 /* Sommaire / agenda */
@@ -116,7 +157,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 .section-div { max-width:1300px; }
 .section-div .kicker { display:inline-flex; align-items:center; gap:14px; font-size:18px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--sauge); margin-bottom:34px; }
 .section-div .kicker::before { content:''; width:56px; height:2px; background:var(--grad); }
-.section-div h2 { font-size:120px; line-height:1; }
+.section-div h2 { font-size:120px; line-height:1.1; }
 .section-div .lede { margin-top:30px; color:rgba(252,251,248,0.74); }
 
 .kpis { display:flex; gap:30px; margin-top:46px; }
@@ -140,7 +181,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 /* Dot-grid */
 .dotgrid { display:grid; grid-template-columns:repeat(20,1fr); gap:13px; }
 .dotgrid span { aspect-ratio:1; border-radius:50%; }
-.dg-num { font-family:var(--font-display); font-size:120px; line-height:1; }
+.dg-num { font-family:var(--font-display); font-size:120px; line-height:1.1; }
 
 /* Citation */
 .bigquote { display:flex; flex-direction:column; justify-content:center; gap:44px; height:100%; max-width:1560px; }
@@ -233,7 +274,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 .cmp { display:grid; grid-template-columns:repeat(2,1fr); gap:32px; margin-top:46px; }
 .cmp .col { border:1px solid var(--rule); border-radius:22px; padding:40px; background:#fff; box-shadow:var(--shadow-card); position:relative; }
 .cmp .col.reco { border:2px solid var(--vert-clair); }
-.cmp .col .badge { position:absolute; top:-19px; left:40px; background:var(--grad); color:#0e1f19; font-size:18px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:7px 18px; border-radius:999px; }
+.cmp .col .badge, .cmp3 .col .badge { position:absolute; top:-19px; left:40px; background:var(--grad); color:#0e1f19; font-size:18px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:7px 18px; border-radius:999px; }
 .cmp .col .nm { font-weight:700; font-size:23px; }
 .cmp .col .price { font-family:var(--font-display); font-size:70px; line-height:1; margin:14px 0 6px; }
 .cmp .col .price small { font-size:24px; color:var(--ink-soft); }
@@ -299,7 +340,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 .fb-veil { position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(24,39,33,0.05) 0%, rgba(24,39,33,0.42) 55%, rgba(24,39,33,0.88) 100%); }
 .fb-copy { position:absolute; left:132px; right:560px; bottom:170px; z-index:3; color:var(--white); }
 .fb-copy .fb-kicker { display:block; font-size:18px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--sauge); margin-bottom:24px; }
-.fb-copy h2 { font-size:96px; line-height:1.04; max-width:1150px; }
+.fb-copy h2 { font-size:96px; line-height:1.1; max-width:1150px; }
 .fb-copy p { margin-top:26px; font-size:26px; line-height:1.45; color:rgba(252,251,248,0.88); max-width:980px; }
 
 /* Split 50/50 visuel / texte (alternance gauche-droite) */
@@ -310,10 +351,10 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 .sv-vis.terrain::after { content:''; position:absolute; inset:-40%; background:repeating-radial-gradient(ellipse at 40% 45%, transparent 0 54px, rgba(252,251,248,0.13) 54px 56px); }
 .sv-vis.dune { background:radial-gradient(900px 600px at 70% 80%, rgba(200,162,75,0.45), transparent 62%), linear-gradient(200deg,#e3cd93 0%,#c8a24b 45%,#8a6d25 100%); }
 .sv-vis.dune::after { content:''; position:absolute; inset:-40%; background:repeating-linear-gradient(170deg, transparent 0 44px, rgba(24,39,33,0.10) 44px 46px); }
-.sv-vis .sv-cap { position:absolute; left:44px; bottom:40px; font-size:18px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:rgba(252,251,248,0.85); }
+.sv-vis .sv-cap { position:absolute; left:44px; bottom:40px; font-size:18px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:rgba(252,251,248,0.95); background:rgba(24,39,33,0.78); padding:8px 14px; border-radius:8px; }
 .sv-txt { padding:120px 110px 150px; display:flex; flex-direction:column; justify-content:center; background:var(--white); }
 .plate.dark .sv-txt { background:var(--bg-dark); }
-.sv-txt h2 { font-size:62px; line-height:1.08; margin-bottom:28px; }
+.sv-txt h2 { font-size:62px; line-height:1.1; margin-bottom:28px; }
 .sv-txt p.lede { font-size:23px; }
 .sv-points { margin-top:34px; display:flex; flex-direction:column; gap:20px; }
 .sv-points .pt { display:flex; gap:18px; align-items:baseline; font-size:20px; line-height:1.45; color:var(--ink-soft); }
@@ -359,7 +400,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 
 /* Citation + portrait */
 .qp { display:grid; grid-template-columns:360px 1fr; gap:80px; align-items:center; margin-top:20px; }
-.qp .face { width:280px; height:280px; border-radius:50%; background:linear-gradient(135deg,#2f6f5e,#4da585); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:84px; color:var(--white); }
+.qp .face { width:280px; height:280px; border-radius:50%; background-color:#2f6f5e; background-image:linear-gradient(135deg,#213730,#2f6f5e); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:84px; color:var(--white); }
 .qp .who { margin-top:26px; }
 .qp .who .nm { font-weight:700; font-size:23px; display:block; }
 .qp .who .rl { font-size:18px; color:var(--ink-soft); display:block; margin-top:4px; }
@@ -369,7 +410,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 
 /* Définition */
 .defi { max-width:1280px; }
-.defi .term { font-family:var(--font-display); font-size:130px; line-height:1; }
+.defi .term { font-family:var(--font-display); font-size:130px; line-height:1.1; }
 .defi .pron { font-size:22px; color:var(--ink-soft); margin-top:16px; font-style:italic; }
 .defi .entry { margin-top:44px; border-top:1px solid var(--rule-strong); padding-top:36px; display:flex; flex-direction:column; gap:24px; }
 .defi .sense { display:flex; gap:24px; font-size:24px; line-height:1.5; }
@@ -404,8 +445,8 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 /* Waterfall */
 .wf { display:flex; align-items:stretch; gap:34px; height:430px; margin-top:52px; border-bottom:2px solid var(--rule-strong); max-width:1480px; }
 .wf .wc { flex:1; display:flex; flex-direction:column; justify-content:flex-end; position:relative; }
-.wf .wc .blk { border-radius:10px; position:relative; }
-.wf .wc .blk .v { position:absolute; top:-40px; left:0; right:0; text-align:center; font-family:var(--font-display); font-size:26px; color:var(--ink); }
+.wf .wc .blk { border-radius:10px; }
+.wf .wc .v { text-align:center; font-family:var(--font-display); font-size:26px; color:var(--ink); margin-bottom:10px; }
 .wf .wc .sp { flex-shrink:0; }
 .wf .wc.base .blk { background:var(--bg-dark-2); }
 .wf .wc.down .blk { background:var(--vert-clair); }
@@ -506,7 +547,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 .zz .zstep .zn { font-family:var(--font-display); font-size:54px; line-height:1; color:transparent; background:var(--grad); -webkit-background-clip:text; background-clip:text; }
 .zz .zstep .zt { font-weight:700; font-size:21px; margin:12px 0 8px; }
 .zz .zstep .zd { font-size:18px; color:var(--ink-soft); line-height:1.45; }
-.zz .zstep .za { position:absolute; color:var(--vert-clair); font-size:26px; font-style:normal; }
+.zz .zstep .za { position:absolute; color:var(--vert); font-size:26px; font-style:normal; }
 .zz .zstep .za.r { right:-46px; top:50%; transform:translateY(-50%); }
 .zz .zstep .za.d { bottom:-46px; left:50%; transform:translateX(-50%); }
 .zz .zstep .za.l { left:-46px; top:50%; transform:translateY(-50%); }
@@ -618,7 +659,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   <div class="stage-frame" id="stage-frame">
 
   <!-- 01 COUVERTURE -->
-  <section class="plate dark active" data-meta="Layout 01 · Couverture">
+  <section class="plate dark motif active" data-meta="Layout 01 · Couverture" data-family="ouverture">
     <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
     <div class="chrome">
       <div class="chrome-row top"><span class="tag-meta">Proposition d'accompagnement · Stratégie climat</span><span class="tag-folio"></span></div>
@@ -634,7 +675,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 02 SOMMAIRE -->
-  <section class="plate" data-meta="Layout 02 · Sommaire">
+  <section class="plate" data-meta="Layout 02 · Sommaire" data-family="ouverture">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Sommaire</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head" style="margin-bottom:0">
       <span class="eyebrow reveal">Aujourd'hui, avec vous</span>
@@ -650,7 +691,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 03 INTERCALAIRE DE CHAPITRE -->
-  <section class="plate dark" data-meta="Layout 03 · Intercalaire">
+  <section class="plate dark motif" data-meta="Layout 03 · Intercalaire" data-family="ouverture">
     <div class="aurora"><i class="a2"></i></div>
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Chapitre · Le constat</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="section-div">
@@ -662,7 +703,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 04 CARTES -->
-  <section class="plate" data-meta="Layout 04 · Cartes">
+  <section class="plate corner" data-meta="Layout 04 · Cartes" data-family="editorial">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le constat</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Ce que nous observons</span>
@@ -677,7 +718,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 05 BANDEAU KPI -->
-  <section class="plate tint" data-meta="Layout 05 · Bandeau KPI">
+  <section class="plate tint" data-meta="Layout 05 · Bandeau KPI" data-family="dataviz">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Résultats observés</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Ce que produit la démarche</span>
@@ -693,7 +734,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 06 DOT-GRID -->
-  <section class="plate" data-meta="Layout 06 · Dot-grid">
+  <section class="plate" data-meta="Layout 06 · Dot-grid" data-family="dataviz">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le marché</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head" style="margin-bottom:10px">
       <span class="eyebrow reveal">Une proportion, pas un camembert</span>
@@ -710,7 +751,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 07 CHIFFRE-CHOC -->
-  <section class="plate dark" data-meta="Layout 07 · Chiffre-choc">
+  <section class="plate dark motif" data-meta="Layout 07 · Chiffre-choc" data-family="ouverture">
     <div class="aurora"><i class="a1"></i></div>
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La preuve</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="silence-wrap">
@@ -722,27 +763,29 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 08 SLIDE-SILENCE -->
-  <section class="plate dark" data-meta="Layout 08 · Slide-silence">
+  <section class="plate dark motif" data-meta="Layout 08 · Slide-silence" data-family="ouverture">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La question stratégique</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="silence">
       <span class="eyebrow reveal">Le bon point de départ</span>
       <h2 class="reveal">La vraie question n'est pas<br><span class="grad">« combien ça coûte »</span> mais <span class="grad">« ce que coûte d'attendre »</span></h2>
+      <div class="filet-orn reveal" style="margin-top:44px" aria-hidden="true"><svg><use href="#mrd-mark"/></svg></div>
     </div>
     <aside class="legend"><span class="lg-name">Layout 08 · Slide-silence</span><span class="lg-when">Quand : faire respirer le deck toutes les 5-6 slides. Une affirmation ou une question, et c'est tout.</span></aside>
   </section>
 
   <!-- 09 CITATION -->
-  <section class="plate dark" data-meta="Layout 09 · Citation">
+  <section class="plate dark" data-meta="Layout 09 · Citation" data-family="ouverture">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Notre conviction</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="bigquote">
       <p class="bigquote-text reveal">Mesurer moins.<br><em>Transformer davantage.</em></p>
+      <div class="filet-orn reveal" aria-hidden="true"><svg><use href="#mrd-mark"/></svg></div>
       <span class="bigquote-attrib reveal">Claire Fontaine · associée fondatrice, Meridian Conseil (personne fictive)</span>
     </div>
     <aside class="legend"><span class="lg-name">Layout 09 · Citation</span><span class="lg-when">Quand : porter une conviction ou un témoignage. Texte XXL, un segment en italique accentué, attribution en petites capitales.</span></aside>
   </section>
 
   <!-- 10 PIPELINE -->
-  <section class="plate" data-meta="Layout 10 · Pipeline">
+  <section class="plate" data-meta="Layout 10 · Pipeline" data-family="schema">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La démarche</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Trois lots, engagement pas à pas</span>
@@ -757,7 +800,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 11 FRAMEWORK LETTRÉ -->
-  <section class="plate tint" data-meta="Layout 11 · Framework lettré">
+  <section class="plate tint texture" data-meta="Layout 11 · Framework lettré" data-family="schema">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Notre différenciant · Cadre SEVE</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Une méthode, quatre lettres</span>
@@ -774,7 +817,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 12 QUADRANT -->
-  <section class="plate" data-meta="Layout 12 · Quadrant">
+  <section class="plate" data-meta="Layout 12 · Quadrant" data-family="schema">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Priorisation</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head" style="margin-bottom:6px">
       <span class="eyebrow reveal">Impact contre faisabilité</span>
@@ -802,7 +845,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 13 TABLEAU COMPARATIF A/B -->
-  <section class="plate" data-meta="Layout 13 · Tableau A/B">
+  <section class="plate" data-meta="Layout 13 · Tableau A/B" data-family="tableau">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Clarification</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Deux familles de projets souvent confondues</span>
@@ -820,7 +863,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 14 FIGURE CLIQUABLE + VERSUS -->
-  <section class="plate dark" data-meta="Layout 14 · Figure cliquable">
+  <section class="plate dark" data-meta="Layout 14 · Figure cliquable" data-family="tableau">
     <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le produit · portail de pilotage</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head" style="margin-bottom:0">
@@ -854,7 +897,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 15 AVANT / APRÈS -->
-  <section class="plate" data-meta="Layout 15 · Avant / après">
+  <section class="plate corner" data-meta="Layout 15 · Avant / après" data-family="editorial">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La transformation</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Le quotidien du reporting</span>
@@ -882,7 +925,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 16 OFFRES COMPARÉES -->
-  <section class="plate" data-meta="Layout 16 · Offres comparées">
+  <section class="plate" data-meta="Layout 16 · Offres comparées" data-family="tableau">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Investissement</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Deux scénarios, un même cap</span>
@@ -907,7 +950,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 17 TABLEAU DE COÛTS -->
-  <section class="plate" data-meta="Layout 17 · Tableau de coûts">
+  <section class="plate" data-meta="Layout 17 · Tableau de coûts" data-family="tableau">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Détail du chiffrage · forfait par lot</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head" style="margin-bottom:0">
       <span class="eyebrow reveal">Transparence totale</span>
@@ -930,7 +973,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 18 TIMELINE -->
-  <section class="plate tint" data-meta="Layout 18 · Timeline">
+  <section class="plate tint" data-meta="Layout 18 · Timeline" data-family="schema">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Calendrier de livraison</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head" style="margin-bottom:0">
       <span class="eyebrow reveal">À co-construire ensemble</span>
@@ -951,7 +994,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 19 ÉQUIPE -->
-  <section class="plate dark" data-meta="Layout 19 · Équipe">
+  <section class="plate dark" data-meta="Layout 19 · Équipe" data-family="preuve">
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">L'équipe</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="head">
       <span class="eyebrow reveal">Qui intervient chez vous</span>
@@ -969,7 +1012,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   </section>
 
   <!-- 20 CTA FINALE -->
-  <section class="plate dark" data-meta="Layout 20 · CTA finale">
+  <section class="plate dark motif" data-meta="Layout 20 · CTA finale" data-family="conclusion">
     <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
     <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Conclusion</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif · aucune adresse réelle</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
     <div class="cover">
@@ -981,6 +1024,682 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
     <aside class="legend"><span class="lg-name">Layout 20 · CTA finale</span><span class="lg-when">Quand : clore le deck sur une décision. Miroir de la couverture, verbe d'action, un seul lien ou contact.</span></aside>
   </section>
 
+  <!-- 21 PLEIN FOND + VOILE (bord à bord, sans chrome) -->
+  <section class="plate dark fullbleed" data-meta="Layout 21 · Plein fond + voile" data-family="ouverture">
+    <div class="fb-scene forest"></div>
+    <div class="fb-veil"></div>
+    <div class="fb-copy">
+      <span class="fb-kicker reveal">Sur le terrain</span>
+      <h2 class="reveal">Là où la trajectoire<br>devient <span class="grad">réelle</span></h2>
+      <p class="reveal">Douze sites industriels fictifs, un même cap : mesurer, décider, transformer, sans arrêter la production</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 21 · Plein fond + voile</span><span class="lg-when">Quand : poser une ambiance ou incarner le terrain. Visuel bord à bord simulé en CSS, voile sombre, texte en bas à gauche. Combiner avec le mode plein écran (touche F).</span></aside>
+  </section>
+
+  <!-- 22 SPLIT 50/50 · VISUEL À GAUCHE -->
+  <section class="plate splitv" data-meta="Layout 22 · Split visuel gauche" data-family="editorial">
+    <div class="sv-grid">
+      <div class="sv-vis terrain"><span class="sv-cap">Site pilote · illustration CSS</span></div>
+      <div class="sv-txt">
+        <span class="eyebrow reveal">Ce que nous faisons sur site</span>
+        <h2 class="reveal">L'audit qui se vit <span class="grad">sur place</span></h2>
+        <p class="lede reveal">Deux jours par site, avec les équipes de production, jamais depuis un tableur</p>
+        <div class="sv-points" data-stagger>
+          <div class="pt"><span class="n">·</span><span><b>Relevés réels</b> : compteurs, achats, flux logistiques</span></div>
+          <div class="pt"><span class="n">·</span><span><b>Entretiens terrain</b> : opérateurs, maintenance, direction de site</span></div>
+          <div class="pt"><span class="n">·</span><span><b>Restitution à chaud</b> : trois leviers identifiés avant de partir</span></div>
+        </div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 22 · Split 50/50, visuel à gauche</span><span class="lg-when">Quand : raconter en alternant image et texte. Le visuel occupe une pleine moitié, bord à bord. Alterner avec le layout 23 pour créer un rythme éditorial.</span></aside>
+  </section>
+
+  <!-- 23 SPLIT 50/50 · VISUEL À DROITE (alterné) -->
+  <section class="plate splitv" data-meta="Layout 23 · Split visuel droite" data-family="editorial">
+    <div class="sv-grid">
+      <div class="sv-txt">
+        <span class="eyebrow reveal">Ce que vous gardez ensuite</span>
+        <h2 class="reveal">Des équipes <span class="grad">autonomes</span></h2>
+        <p class="lede reveal">La méthode reste chez vous : outils, rituels et référents formés</p>
+        <div class="sv-points" data-stagger>
+          <div class="pt"><span class="n">1</span><span><b>Un référent formé</b> par site, avec un parcours de 3 ateliers</span></div>
+          <div class="pt"><span class="n">2</span><span><b>Des rituels installés</b> : revue mensuelle, arbitrage trimestriel</span></div>
+          <div class="pt"><span class="n">3</span><span><b>Le portail en autonomie</b> au bout de six mois</span></div>
+        </div>
+      </div>
+      <div class="sv-vis dune"><span class="sv-cap">Transmission · illustration CSS</span></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 23 · Split 50/50, visuel à droite</span><span class="lg-when">Quand : enchaîner après un layout 22 pour alterner gauche-droite. Même structure, miroir, points numérotés au lieu de puces.</span></aside>
+  </section>
+
+  <!-- 24 PROBLÈME VERS SOLUTION -->
+  <section class="plate corner" data-meta="Layout 24 · Problème vers solution" data-family="editorial">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le déclic</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Une bascule, pas un miracle</span>
+      <h1 class="reveal" style="font-size:70px">Du symptôme à la <span class="grad">décision</span></h1>
+    </div>
+    <div class="ps reveal">
+      <div class="pane prob">
+        <span class="pt-label">Le problème</span>
+        <h3>Un reporting subi</h3>
+        <p>Chaque année, trois semaines de collecte manuelle pour produire un chiffre que personne ne conteste ni n'utilise. Le sujet reste un coût, jamais un levier.</p>
+      </div>
+      <div class="ps-arrow"><i>→</i></div>
+      <div class="pane sol">
+        <span class="pt-label">La solution</span>
+        <h3>Un pilotage choisi</h3>
+        <p>Une consolidation continue, des chiffres tracés, et un comité qui arbitre chaque trimestre sur des données fraîches. Le même effort, déplacé au bon endroit.</p>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 24 · Problème vers solution</span><span class="lg-when">Quand : formuler la bascule que vous proposez. Deux panneaux, une flèche : le contraste fait l'argument.</span></aside>
+  </section>
+
+  <!-- 25 POUR / CONTRE -->
+  <section class="plate tint corner" data-meta="Layout 25 · Pour / contre" data-family="editorial">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">L'arbitrage</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Internaliser ou accompagner</span>
+      <h1 class="reveal" style="font-size:68px">Les deux options, <span class="grad">sans angle mort</span></h1>
+    </div>
+    <div class="pc" data-stagger>
+      <div class="pane pour">
+        <span class="hd">Pour l'accompagnement</span>
+        <ul>
+          <li>Premier bilan livré en douze semaines, pas en douze mois</li>
+          <li>Méthode éprouvée, erreurs classiques évitées</li>
+          <li>Montée en compétence des équipes incluse</li>
+        </ul>
+      </div>
+      <div class="pane contre">
+        <span class="hd">Ce que ça implique</span>
+        <ul>
+          <li>Un budget dédié dès cette année</li>
+          <li>Du temps d'équipe mobilisé pendant la collecte</li>
+          <li>Un référent interne à nommer avant le kick-off</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note-band reveal">Notre position, <b>l'accompagnement se justifie si le premier bilan doit sortir avant un an</b>, sinon internalisez.</div>
+    <aside class="legend"><span class="lg-name">Layout 25 · Pour / contre</span><span class="lg-when">Quand : montrer que vous avez pesé l'alternative. Deux colonnes honnêtes, puis votre position en bandeau.</span></aside>
+  </section>
+
+  <!-- 26 FAQ / OBJECTIONS -->
+  <section class="plate corner" data-meta="Layout 26 · FAQ / objections" data-family="editorial">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Vos questions</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Les quatre questions qui reviennent</span>
+      <h1 class="reveal" style="font-size:68px">Autant y répondre <span class="grad">tout de suite</span></h1>
+    </div>
+    <div class="faq" data-stagger>
+      <div class="qa"><div class="q">Combien de temps d'équipe faut-il prévoir ?</div><div class="a">Environ deux jours par site pour la collecte initiale, puis une heure par mois pour le suivi en rythme de croisière.</div></div>
+      <div class="qa"><div class="q">Nos données sont-elles suffisantes ?</div><div class="a">Toujours, pour démarrer. La Phase 0 identifie les trous et les proxys acceptables, documentés dans le rapport.</div></div>
+      <div class="qa"><div class="q">Que se passe-t-il après la mission ?</div><div class="a">Vos référents formés reprennent la main, avec le portail et les rituels installés. Nous restons en appui optionnel.</div></div>
+      <div class="qa"><div class="q">Et si les résultats déçoivent ?</div><div class="a">Chaque lot se termine par un point de décision : vous pouvez arrêter, ajuster ou continuer, sans engagement de suite.</div></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 26 · FAQ / objections</span><span class="lg-when">Quand : désamorcer les objections avant qu'elles ne soient posées. 4 questions maximum, réponses en 2 phrases.</span></aside>
+  </section>
+
+  <!-- 27 CHECKLIST DE DÉCISION -->
+  <section class="plate corner" data-meta="Layout 27 · Checklist" data-family="editorial">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Êtes-vous prêts</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Auto-diagnostic en cinq points</span>
+      <h1 class="reveal" style="font-size:68px">Ce qu'il faut avoir <span class="grad">avant de signer</span></h1>
+    </div>
+    <div class="check" data-stagger>
+      <div class="ck on"><span class="box"></span><span><b>Un sponsor au comité de direction</b><small>Sans mandat clair, la collecte s'enlise au deuxième site</small></span></div>
+      <div class="ck on"><span class="box"></span><span><b>Un référent interne identifié</b><small>Deux jours par mois pendant la mission</small></span></div>
+      <div class="ck on"><span class="box"></span><span><b>L'accès aux factures d'énergie</b><small>Le socle minimal de la Phase 0</small></span></div>
+      <div class="ck"><span class="box"></span><span><b>Un historique d'achats consolidé</b><small>Utile mais non bloquant : des proxys existent</small></span></div>
+      <div class="ck"><span class="box"></span><span><b>Une trajectoire déjà chiffrée</b><small>C'est justement l'objet de la mission</small></span></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 27 · Checklist de décision</span><span class="lg-when">Quand : aider l'audience à s'auto-évaluer. Cases cochées = acquis, non cochées = à préparer, jamais culpabilisant.</span></aside>
+  </section>
+
+  <!-- 28 CITATION + PORTRAIT -->
+  <section class="plate tint texture" data-meta="Layout 28 · Citation + portrait" data-family="preuve">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Parole de client</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:10px">
+      <h1 class="reveal" style="font-size:24px; font-family:var(--font-body); font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--vert)">Ils l'ont vécu</h1>
+    </div>
+    <div class="qp reveal">
+      <div>
+        <div class="face">HR</div>
+        <div class="who"><span class="nm">Hélène Rivière</span><span class="rl">Directrice industrielle · groupe fictif, 900 salariés</span></div>
+      </div>
+      <div>
+        <blockquote>« On pensait acheter un bilan carbone. On a récupéré <em>une manière de décider</em> qui nous sert bien au-delà du climat »</blockquote>
+        <p class="src">Verbatim fictif de démonstration, mission type 2025</p>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 28 · Citation + portrait</span><span class="lg-when">Quand : faire porter la preuve par un tiers. Portrait (ou avatar), citation en display avec un segment accentué, source datée.</span></aside>
+  </section>
+
+  <!-- 29 DÉFINITION -->
+  <section class="plate corner" data-meta="Layout 29 · Définition" data-family="editorial">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Vocabulaire commun</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="defi">
+      <span class="eyebrow reveal">Le mot qui change la discussion</span>
+      <h2 class="term reveal">Trajectoire</h2>
+      <p class="pron reveal">nom féminin · à distinguer de « bilan », qui photographie sans engager</p>
+      <div class="entry" data-stagger>
+        <div class="sense"><span class="sn">1.</span><span><b>Suite d'objectifs chiffrés et datés</b>, validée en comité de direction, reliant la situation mesurée à l'ambition affichée</span></div>
+        <div class="sense"><span class="sn">2.</span><span><b>Par extension</b> : l'outil de pilotage qui rend chaque écart visible, discutable et arbitrable en cours d'année</span></div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 29 · Définition</span><span class="lg-when">Quand : imposer un mot précis au centre du débat. Style entrée de dictionnaire : terme géant, deux sens maximum.</span></aside>
+  </section>
+
+  <!-- 30 BARRES VERTICALES -->
+  <section class="plate" data-meta="Layout 30 · Barres verticales" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · répartition par poste</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Comparer des catégories</span>
+      <h1 class="reveal" style="font-size:62px">Un poste écrase <span class="grad">tous les autres</span></h1>
+    </div>
+    <div class="reveal">
+      <div class="bars-v">
+        <div class="bv hi"><span class="v">1 240</span><i style="height:82%"></i></div>
+        <div class="bv"><span class="v">610</span><i style="height:40%"></i></div>
+        <div class="bv"><span class="v">420</span><i style="height:28%"></i></div>
+        <div class="bv"><span class="v">280</span><i style="height:19%"></i></div>
+        <div class="bv"><span class="v">160</span><i style="height:11%"></i></div>
+      </div>
+      <div class="bars-x"><span>Achats et matières</span><span>Énergie des sites</span><span>Fret et logistique</span><span>Déplacements</span><span>Immobilisations</span></div>
+      <p class="chart-note">tCO₂e par poste, panel fictif de démonstration. La barre accentuée porte le message : tout se joue sur les achats</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 30 · Barres verticales</span><span class="lg-when">Quand : comparer 4-6 catégories à un instant donné. Une seule barre accentuée : celle dont on parle.</span></aside>
+  </section>
+
+  <!-- 31 BARRES HORIZONTALES (CLASSEMENT) -->
+  <section class="plate tint" data-meta="Layout 31 · Classement" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · priorité par levier</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Classer pour prioriser</span>
+      <h1 class="reveal" style="font-size:62px">Cinq leviers, classés par <span class="grad">gain potentiel</span></h1>
+    </div>
+    <div class="bars-h" data-stagger>
+      <div class="bh hi"><span class="l">Sobriété énergétique</span><span class="track"><i style="width:92%"></i></span><span class="v">-420 t</span></div>
+      <div class="bh"><span class="l">Achats responsables</span><span class="track"><i style="width:71%"></i></span><span class="v">-325 t</span></div>
+      <div class="bh"><span class="l">Électrification flotte</span><span class="track"><i style="width:48%"></i></span><span class="v">-220 t</span></div>
+      <div class="bh"><span class="l">Fret optimisé</span><span class="track"><i style="width:31%"></i></span><span class="v">-140 t</span></div>
+      <div class="bh"><span class="l">Télétravail encadré</span><span class="track"><i style="width:13%"></i></span><span class="v">-60 t</span></div>
+    </div>
+    <p class="chart-note reveal">Gain annuel estimé par levier, tCO₂e, chiffres fictifs. Barres triées : le classement EST le message</p>
+    <aside class="legend"><span class="lg-name">Layout 31 · Barres horizontales</span><span class="lg-when">Quand : classer des éléments aux libellés longs. Toujours trié, jamais plus de 7 barres.</span></aside>
+  </section>
+
+  <!-- 32 COURBE / AIRE (ÉVOLUTION) -->
+  <section class="plate" data-meta="Layout 32 · Courbe d'évolution" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · trajectoire</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Montrer une évolution</span>
+      <h1 class="reveal" style="font-size:62px">La pente compte plus <span class="grad">que le point</span></h1>
+    </div>
+    <div class="svg-chart reveal">
+      <svg width="1300" height="440" viewBox="0 0 1300 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Courbe d'évolution des émissions, données fictives">
+        <line x1="80" y1="60" x2="1260" y2="60" stroke="rgba(28,36,32,0.08)"/><line x1="80" y1="170" x2="1260" y2="170" stroke="rgba(28,36,32,0.08)"/><line x1="80" y1="280" x2="1260" y2="280" stroke="rgba(28,36,32,0.08)"/>
+        <line x1="80" y1="390" x2="1260" y2="390" stroke="rgba(28,36,32,0.25)" stroke-width="2"/>
+        <text x="60" y="66" text-anchor="end" font-size="18" fill="#5b655f">2,4</text>
+        <text x="60" y="176" text-anchor="end" font-size="18" fill="#5b655f">1,6</text>
+        <text x="60" y="286" text-anchor="end" font-size="18" fill="#5b655f">0,8</text>
+        <defs><linearGradient id="area-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4da585" stop-opacity=".30"/><stop offset="100%" stop-color="#4da585" stop-opacity="0"/></linearGradient></defs>
+        <path d="M80,95 L316,110 L552,150 L788,205 L1024,262 L1260,305 L1260,390 L80,390 Z" fill="url(#area-g)"/>
+        <path d="M80,95 L316,110 L552,150 L788,205 L1024,262 L1260,305" fill="none" stroke="#2f6f5e" stroke-width="4" stroke-linecap="round"/>
+        <path d="M552,150 L788,230 L1024,300 L1260,352" fill="none" stroke="#c8a24b" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+        <g fill="#2f6f5e"><circle cx="80" cy="95" r="7"/><circle cx="316" cy="110" r="7"/><circle cx="552" cy="150" r="7"/><circle cx="788" cy="205" r="7"/><circle cx="1024" cy="262" r="7"/><circle cx="1260" cy="305" r="7"/></g>
+        <text x="80" y="425" text-anchor="middle" font-size="18" fill="#5b655f">2023</text><text x="316" y="425" text-anchor="middle" font-size="18" fill="#5b655f">2024</text><text x="552" y="425" text-anchor="middle" font-size="18" fill="#5b655f">2025</text><text x="788" y="425" text-anchor="middle" font-size="18" fill="#5b655f">2026</text><text x="1024" y="425" text-anchor="middle" font-size="18" fill="#5b655f">2027</text><text x="1260" y="425" text-anchor="middle" font-size="18" fill="#5b655f">2028</text>
+      </svg>
+      <div class="chart-legend"><span class="sw"><i style="background:#2f6f5e"></i> Émissions mesurées puis projetées, MtCO₂e fictives</span><span class="sw"><i style="background:#c8a24b"></i> Trajectoire cible validée</span></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 32 · Courbe / aire</span><span class="lg-when">Quand : montrer une évolution dans le temps. SVG inline, aire dégradée sous la courbe, cible en pointillés.</span></aside>
+  </section>
+
+  <!-- 33 SLOPE CHART -->
+  <section class="plate" data-meta="Layout 33 · Slope chart" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · avant / après</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Deux dates, trois lignes</span>
+      <h1 class="reveal" style="font-size:62px">Qui monte, qui descend, <span class="grad">en un regard</span></h1>
+    </div>
+    <div class="svg-chart reveal" style="display:flex; justify-content:center">
+      <svg width="1000" height="470" viewBox="0 0 1000 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slope chart, données fictives">
+        <line x1="270" y1="60" x2="270" y2="410" stroke="rgba(28,36,32,0.18)" stroke-width="2"/>
+        <line x1="730" y1="60" x2="730" y2="410" stroke="rgba(28,36,32,0.18)" stroke-width="2"/>
+        <text x="270" y="36" text-anchor="middle" font-size="19" font-weight="700" fill="#5b655f">2023</text>
+        <text x="730" y="36" text-anchor="middle" font-size="19" font-weight="700" fill="#5b655f">2026</text>
+        <line x1="270" y1="120" x2="730" y2="255" stroke="#2f6f5e" stroke-width="4" stroke-linecap="round"/>
+        <line x1="270" y1="215" x2="730" y2="150" stroke="#c8a24b" stroke-width="4" stroke-linecap="round"/>
+        <line x1="270" y1="330" x2="730" y2="360" stroke="#9ec3ae" stroke-width="4" stroke-linecap="round"/>
+        <g fill="#2f6f5e"><circle cx="270" cy="120" r="8"/><circle cx="730" cy="255" r="8"/></g>
+        <g fill="#c8a24b"><circle cx="270" cy="215" r="8"/><circle cx="730" cy="150" r="8"/></g>
+        <g fill="#9ec3ae"><circle cx="270" cy="330" r="8"/><circle cx="730" cy="360" r="8"/></g>
+        <text x="246" y="126" text-anchor="end" font-size="19" fill="#1c2420">Énergie · 42 %</text>
+        <text x="246" y="221" text-anchor="end" font-size="19" fill="#1c2420">Achats · 31 %</text>
+        <text x="246" y="336" text-anchor="end" font-size="19" fill="#1c2420">Fret · 27 %</text>
+        <text x="754" y="261" font-size="19" fill="#1c2420">28 % · Énergie</text>
+        <text x="754" y="156" font-size="19" fill="#1c2420">48 % · Achats</text>
+        <text x="754" y="366" font-size="19" fill="#1c2420">24 % · Fret</text>
+      </svg>
+    </div>
+    <p class="chart-note reveal" style="text-align:center; margin:0 auto">Part de chaque poste dans le total, chiffres fictifs : les achats deviennent le premier sujet</p>
+    <aside class="legend"><span class="lg-name">Layout 33 · Slope chart</span><span class="lg-when">Quand : comparer deux dates pour 3-5 séries. La pente de chaque ligne raconte l'histoire, pas les valeurs.</span></aside>
+  </section>
+
+  <!-- 34 DONUT / RÉPARTITION -->
+  <section class="plate tint" data-meta="Layout 34 · Donut" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · composition</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Une composition simple</span>
+      <h1 class="reveal" style="font-size:62px">Où part le budget de <span class="grad">transition</span></h1>
+    </div>
+    <div style="display:flex; gap:100px; align-items:center; margin-top:36px" class="reveal">
+      <svg width="440" height="440" viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Donut de répartition, données fictives">
+        <g transform="rotate(-90 220 220)">
+          <circle cx="220" cy="220" r="150" fill="none" stroke="#2f6f5e" stroke-width="58" stroke-dasharray="424 519" />
+          <circle cx="220" cy="220" r="150" fill="none" stroke="#4da585" stroke-width="58" stroke-dasharray="283 660" stroke-dashoffset="-424"/>
+          <circle cx="220" cy="220" r="150" fill="none" stroke="#9ec3ae" stroke-width="58" stroke-dasharray="141 802" stroke-dashoffset="-707"/>
+          <circle cx="220" cy="220" r="150" fill="none" stroke="#c8a24b" stroke-width="58" stroke-dasharray="94 849" stroke-dashoffset="-848"/>
+        </g>
+        <text x="220" y="208" text-anchor="middle" font-size="52" font-family="Fraunces, Georgia, serif" fill="#1c2420">2,4 M€</text>
+        <text x="220" y="248" text-anchor="middle" font-size="19" fill="#5b655f">sur trois ans, fictif</text>
+      </svg>
+      <div class="chart-legend" style="flex-direction:column; align-items:flex-start; gap:22px; font-size:21px">
+        <span class="sw"><i style="background:#2f6f5e; width:22px; height:22px"></i> Efficacité énergétique · <b style="color:var(--ink)">45 %</b></span>
+        <span class="sw"><i style="background:#4da585; width:22px; height:22px"></i> Achats et filières · <b style="color:var(--ink)">30 %</b></span>
+        <span class="sw"><i style="background:#9ec3ae; width:22px; height:22px"></i> Mobilité · <b style="color:var(--ink)">15 %</b></span>
+        <span class="sw"><i style="background:#c8a24b; width:22px; height:22px"></i> Mesure et pilotage · <b style="color:var(--ink)">10 %</b></span>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 34 · Donut</span><span class="lg-when">Quand : une composition à 3-4 parts maximum, avec le total au centre. Au-delà de 4 parts, préférer les barres (layout 30).</span></aside>
+  </section>
+
+  <!-- 35 WATERFALL -->
+  <section class="plate" data-meta="Layout 35 · Waterfall" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · décomposition</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">D'où vient l'écart</span>
+      <h1 class="reveal" style="font-size:60px">De 2 700 à 1 900 tonnes, <span class="grad">pas à pas</span></h1>
+    </div>
+    <div class="reveal">
+      <div class="wf">
+        <div class="wc base"><span class="v">2 700</span><div class="blk" style="height:86%"></div></div>
+        <div class="wc down"><span class="v">-420</span><div class="blk" style="height:13%"></div><div class="sp" style="height:73%"></div></div>
+        <div class="wc down"><span class="v">-325</span><div class="blk" style="height:10%"></div><div class="sp" style="height:63%"></div></div>
+        <div class="wc down"><span class="v">-220</span><div class="blk" style="height:7%"></div><div class="sp" style="height:56%"></div></div>
+        <div class="wc up"><span class="v">+165</span><div class="blk" style="height:5%"></div><div class="sp" style="height:56%"></div></div>
+        <div class="wc total"><span class="v">1 900</span><div class="blk" style="height:61%"></div></div>
+      </div>
+      <div class="bars-x" style="max-width:1480px; gap:34px"><span>Référence 2025</span><span>Sobriété énergie</span><span>Achats</span><span>Flotte</span><span>Croissance activité</span><span>Projection 2028</span></div>
+      <p class="chart-note">tCO₂e, chiffres fictifs. Chaque marche est un levier décidé, la marche dorée assume l'effet volume</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 35 · Waterfall</span><span class="lg-when">Quand : décomposer un écart entre deux totaux. Les baisses en vert, les hausses assumées en doré.</span></aside>
+  </section>
+
+  <!-- 36 HEATMAP -->
+  <section class="plate" data-meta="Layout 36 · Heatmap" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · intensité</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Repérer les zones chaudes</span>
+      <h1 class="reveal" style="font-size:62px">Quatre familles de sites, six postes, <span class="grad">trois urgences</span></h1>
+    </div>
+    <div class="hm reveal">
+      <span class="hh"></span><span class="hh col">Énergie</span><span class="hh col">Achats</span><span class="hh col">Fret</span><span class="hh col">Mobilité</span><span class="hh col">Déchets</span><span class="hh col">Immo</span>
+      <span class="hh">Sites fonderie</span>
+      <span class="cell" style="background:rgba(47,111,94,0.50)">94</span><span class="cell" style="background:rgba(47,111,94,0.34)">61</span><span class="cell" style="background:rgba(47,111,94,0.16)">32</span><span class="cell" style="background:rgba(47,111,94,0.08)">14</span><span class="cell" style="background:rgba(47,111,94,0.12)">22</span><span class="cell" style="background:rgba(47,111,94,0.08)">12</span>
+      <span class="hh">Sites assemblage</span>
+      <span class="cell" style="background:rgba(47,111,94,0.24)">44</span><span class="cell" style="background:rgba(47,111,94,0.46)">86</span><span class="cell" style="background:rgba(47,111,94,0.26)">48</span><span class="cell" style="background:rgba(47,111,94,0.10)">18</span><span class="cell" style="background:rgba(47,111,94,0.08)">11</span><span class="cell" style="background:rgba(47,111,94,0.08)">9</span>
+      <span class="hh">Plateformes logistiques</span>
+      <span class="cell" style="background:rgba(47,111,94,0.12)">21</span><span class="cell" style="background:rgba(47,111,94,0.14)">26</span><span class="cell" style="background:rgba(47,111,94,0.48)">90</span><span class="cell" style="background:rgba(47,111,94,0.10)">16</span><span class="cell" style="background:rgba(47,111,94,0.14)">24</span><span class="cell" style="background:rgba(47,111,94,0.06)">7</span>
+      <span class="hh">Tertiaire et sièges</span>
+      <span class="cell" style="background:rgba(47,111,94,0.12)">20</span><span class="cell" style="background:rgba(47,111,94,0.10)">17</span><span class="cell" style="background:rgba(47,111,94,0.06)">8</span><span class="cell" style="background:rgba(47,111,94,0.28)">52</span><span class="cell" style="background:rgba(47,111,94,0.08)">10</span><span class="cell" style="background:rgba(47,111,94,0.16)">30</span>
+    </div>
+    <p class="chart-note reveal">Intensité relative par famille de sites et par poste, base 100 fictive. Trois cases dominent : c'est le plan d'action</p>
+    <aside class="legend"><span class="lg-name">Layout 36 · Heatmap</span><span class="lg-when">Quand : croiser deux dimensions et faire ressortir les concentrations. Une seule teinte, l'intensité fait le travail.</span></aside>
+  </section>
+
+  <!-- 37 JAUGES / BULLET -->
+  <section class="plate" data-meta="Layout 37 · Jauges objectif" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · progression</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Où en est-on de l'objectif</span>
+      <h1 class="reveal" style="font-size:62px">Trois engagements, trois <span class="grad">niveaux d'avance</span></h1>
+    </div>
+    <div class="bullets" data-stagger>
+      <div class="bul"><span class="l">Réduction des émissions<small>objectif -30 % fin 2027</small></span><span class="track"><span class="fill" style="width:64%"></span><span class="tick" style="left:80%"></span></span><span class="v">-19 %</span></div>
+      <div class="bul"><span class="l">Sites audités<small>objectif 12 sites</small></span><span class="track"><span class="fill" style="width:83%"></span><span class="tick" style="left:92%"></span></span><span class="v">10 / 12</span></div>
+      <div class="bul"><span class="l">Fournisseurs engagés<small>objectif 60 % des volumes</small></span><span class="track"><span class="fill" style="width:38%"></span><span class="tick" style="left:74%"></span></span><span class="v">31 %</span></div>
+    </div>
+    <p class="chart-note reveal" style="margin-top:48px">Avancement au T2, chiffres fictifs. Le trait noir marque l'objectif : l'écart se lit sans commentaire</p>
+    <aside class="legend"><span class="lg-name">Layout 37 · Jauges / bullet</span><span class="lg-when">Quand : montrer la progression vers des objectifs chiffrés. La barre dit le réalisé, le trait dit la cible.</span></aside>
+  </section>
+
+  <!-- 38 ENTONNOIR -->
+  <section class="plate tint" data-meta="Layout 38 · Entonnoir" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · conversion</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Du potentiel au réalisé</span>
+      <h1 class="reveal" style="font-size:62px">Chaque étape perd, l'important est <span class="grad">de savoir où</span></h1>
+    </div>
+    <div class="funnel" data-stagger>
+      <div class="fu f1"><span class="fl">Leviers identifiés à l'audit</span><span class="fv">64</span></div>
+      <span class="fu-rate">72 % retenus à l'étude</span>
+      <div class="fu f2"><span class="fl">Leviers étudiés</span><span class="fv">46</span></div>
+      <span class="fu-rate">54 % validés en comité</span>
+      <div class="fu f3"><span class="fl">Leviers arbitrés</span><span class="fv">25</span></div>
+      <span class="fu-rate">76 % lancés dans l'année</span>
+      <div class="fu f4"><span class="fl">En œuvre</span><span class="fv">19</span></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 38 · Entonnoir</span><span class="lg-when">Quand : montrer une déperdition par étape. Les taux entre les niveaux valent plus que les volumes.</span></aside>
+  </section>
+
+  <!-- 39 GRILLE DE CHIFFRES -->
+  <section class="plate" data-meta="Layout 39 · Grille de chiffres" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les données · panorama</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">La mission en six chiffres</span>
+      <h1 class="reveal" style="font-size:66px">Le panorama, <span class="grad">sans narration</span></h1>
+    </div>
+    <div class="figs" data-stagger>
+      <div class="fig"><div class="n">12</div><div class="l">sites couverts, de la fonderie au tertiaire</div></div>
+      <div class="fig"><div class="n">2 700 <span style="font-size:32px">t</span></div><div class="l">de CO₂e mesurées la première année</div></div>
+      <div class="fig"><div class="n">64</div><div class="l">leviers identifiés et chiffrés à l'audit</div></div>
+      <div class="fig"><div class="n">-24 %</div><div class="l">de trajectoire validée au comité de direction</div></div>
+      <div class="fig"><div class="n">8</div><div class="l">référents internes formés et outillés</div></div>
+      <div class="fig"><div class="n">37 <span style="font-size:32px">j</span></div><div class="l">d'accompagnement au total, chiffres fictifs</div></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 39 · Grille de chiffres</span><span class="lg-when">Quand : donner un panorama factuel dense. 6 chiffres en grille filaire, chacun avec sa légende d'une ligne.</span></aside>
+  </section>
+
+  <!-- 40 CYCLE -->
+  <section class="plate" data-meta="Layout 40 · Cycle" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La méthode · rythme annuel</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Une boucle, pas une ligne</span>
+      <h1 class="reveal" style="font-size:60px">Le pilotage tourne <span class="grad">en quatre temps</span></h1>
+    </div>
+    <div class="cycle-wrap reveal">
+      <div class="cycle">
+        <div class="ring"></div>
+        <div class="heart">Chaque<br>trimestre</div>
+        <div class="cnode" style="left:200px; top:0"><span class="ck">1 · Mesurer</span><span class="cl">Données fraîches par site</span></div>
+        <div class="cnode" style="left:400px; top:210px"><span class="ck">2 · Analyser</span><span class="cl">Écarts vs trajectoire</span></div>
+        <div class="cnode" style="left:200px; top:430px"><span class="ck">3 · Arbitrer</span><span class="cl">Comité, décisions tracées</span></div>
+        <div class="cnode" style="left:0; top:210px"><span class="ck">4 · Ajuster</span><span class="cl">Plans d'action mis à jour</span></div>
+      </div>
+      <div style="max-width:520px">
+        <p class="lede" style="font-size:23px">Le cycle remplace le rapport annuel : quatre rituels courts, toujours les mêmes, jusqu'à ce que la boucle tourne sans nous</p>
+        <p style="margin-top:24px; font-size:18px; color:var(--ink-soft)"><b style="color:var(--ink)">Transfert</b> : au deuxième tour, vos référents animent, nous observons.</p>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 40 · Cycle</span><span class="lg-when">Quand : décrire un processus récurrent. 4 temps en boucle autour d'un centre, le texte à droite dit la finalité.</span></aside>
+  </section>
+
+  <!-- 41 PYRAMIDE -->
+  <section class="plate tint texture" data-meta="Layout 41 · Pyramide" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La méthode · fondations</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Chaque niveau porte le suivant</span>
+      <h1 class="reveal" style="font-size:62px">Pas d'ambition sans <span class="grad">fondations</span></h1>
+    </div>
+    <div class="pyr-wrap reveal">
+      <div class="pyr">
+        <div class="lvl l1">Ambition publique</div>
+        <div class="lvl l2">Trajectoire arbitrée</div>
+        <div class="lvl l3">Données fiables par site</div>
+      </div>
+      <div class="lede-list" style="max-width:520px">
+        <div class="li"><span class="k">·</span> On communique seulement ce que la trajectoire soutient</div>
+        <div class="li"><span class="k">·</span> On arbitre seulement ce que les données prouvent</div>
+        <div class="li"><span class="k">·</span> La base se construit en premier : c'est le Lot 1</div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 41 · Pyramide</span><span class="lg-when">Quand : hiérarchiser des prérequis. 3 niveaux maximum, lecture de bas en haut, la base est le message.</span></aside>
+  </section>
+
+  <!-- 42 ORBITES / ÉCOSYSTÈME -->
+  <section class="plate" data-meta="Layout 42 · Écosystème" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Les acteurs autour de vous</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Qui gravite autour de la mission</span>
+      <h1 class="reveal" style="font-size:58px">Un centre, deux <span class="grad">cercles d'acteurs</span></h1>
+    </div>
+    <div class="orbit-wrap reveal">
+      <div class="orbit">
+        <div class="oring o2"></div>
+        <div class="oring o1"></div>
+        <div class="osun">Votre comité climat</div>
+        <div class="osat" style="left:50%; top:18.3%">Référents sites</div>
+        <div class="osat" style="left:76.4%; top:50%">Direction achats</div>
+        <div class="osat" style="left:50%; top:81.7%">Finance</div>
+        <div class="osat" style="left:23.6%; top:50%">Meridian</div>
+        <div class="osat far" style="left:20.6%; top:14.7%">Fournisseurs clés</div>
+        <div class="osat far" style="left:79.4%; top:14.7%">Auditeurs</div>
+        <div class="osat far" style="left:79.4%; top:85.3%">Banques et assureurs</div>
+        <div class="osat far" style="left:20.6%; top:85.3%">Collectivités</div>
+      </div>
+      <div style="max-width:440px">
+        <p class="lede" style="font-size:22px">Premier cercle : décide chaque trimestre. Second cercle : informé, sollicité au bon moment, jamais surpris</p>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 42 · Orbites / écosystème</span><span class="lg-when">Quand : cartographier des acteurs par proximité au centre de décision. Deux cercles suffisent toujours.</span></aside>
+  </section>
+
+  <!-- 43 CHRONOLOGIE VERTICALE -->
+  <section class="plate" data-meta="Layout 43 · Chronologie verticale" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">L'historique</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">D'où l'on vient</span>
+      <h1 class="reveal" style="font-size:58px">Quatre années qui mènent <span class="grad">à cette décision</span></h1>
+    </div>
+    <div class="vtl reveal">
+      <div class="vrow left"><div class="vcard"><span class="vy">2023</span><span class="vt">Premier bilan réglementaire</span><span class="vd">Fait en interne, trois semaines de collecte</span></div><span class="vdot"></span><span></span></div>
+      <div class="vrow right"><span></span><span class="vdot"></span><div class="vcard"><span class="vy">2024</span><span class="vt">Appels d'offres perdus</span><span class="vd">Deux clients exigent une trajectoire chiffrée</span></div></div>
+      <div class="vrow left"><div class="vcard"><span class="vy">2025</span><span class="vt">Comité climat créé</span><span class="vd">Mandat donné, budget à arbitrer</span></div><span class="vdot"></span><span></span></div>
+      <div class="vrow right"><span></span><span class="vdot"></span><div class="vcard"><span class="vy">2026</span><span class="vt">La décision d'aujourd'hui</span><span class="vd">Lancer la mesure outillée sur 12 sites</span></div></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 43 · Chronologie verticale</span><span class="lg-when">Quand : dérouler un historique en 4-5 jalons. Cartes alternées autour d'un axe : le présent arrive en bas.</span></aside>
+  </section>
+
+  <!-- 44 ORGANIGRAMME -->
+  <section class="plate tint" data-meta="Layout 44 · Organigramme" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La gouvernance de mission</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Qui décide, qui produit</span>
+      <h1 class="reveal" style="font-size:60px">Une gouvernance <span class="grad">à trois étages</span></h1>
+    </div>
+    <div class="org reveal">
+      <div class="onode root"><span class="on">Comité de pilotage</span><span class="or">votre DG + associée Meridian · trimestriel</span></div>
+      <div class="trunk"></div>
+      <div class="branch-bar"></div>
+      <div class="branches">
+        <div class="branch"><div class="drop"></div><div class="onode"><span class="on">Équipe mesure</span><span class="or">data + référents sites · hebdo</span></div></div>
+        <div class="branch"><div class="drop"></div><div class="onode"><span class="on">Équipe trajectoire</span><span class="or">conseil + finance · bimensuel</span></div></div>
+        <div class="branch"><div class="drop"></div><div class="onode"><span class="on">Équipe déploiement</span><span class="or">chefs de projet sites · mensuel</span></div></div>
+      </div>
+      <p class="sub">Chaque étage a son rythme et son livrable : rien ne remonte au comité qui ne soit déjà chiffré</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 44 · Organigramme</span><span class="lg-when">Quand : montrer une gouvernance ou une structure. 2 niveaux et 3 branches maximum sur une slide.</span></aside>
+  </section>
+
+  <!-- 45 PROCESS ZIGZAG -->
+  <section class="plate" data-meta="Layout 45 · Zigzag" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">La méthode · cinq étapes</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head">
+      <span class="eyebrow reveal">Plus d'étapes que le pipeline, même clarté</span>
+      <h1 class="reveal" style="font-size:62px">Cinq étapes qui se lisent <span class="grad">en serpentin</span></h1>
+    </div>
+    <div class="zz" data-stagger>
+      <div class="zstep"><div class="zn">01</div><div class="zt">Cadrer</div><div class="zd">Périmètre, accès, jalons partagés</div><i class="za r">→</i></div>
+      <div class="zstep"><div class="zn">02</div><div class="zt">Mesurer</div><div class="zd">Collecte outillée sur les 12 sites</div><i class="za r">→</i></div>
+      <div class="zstep"><div class="zn">03</div><div class="zt">Prioriser</div><div class="zd">64 leviers chiffrés, matrice validée</div><i class="za d">↓</i></div>
+      <div class="zstep" style="grid-column:3; grid-row:2"><div class="zn">04</div><div class="zt">Arbitrer</div><div class="zd">Trajectoire votée au comité</div><i class="za l">←</i></div>
+      <div class="zstep" style="grid-column:2; grid-row:2"><div class="zn">05</div><div class="zt">Déployer</div><div class="zd">Plans d'action par site, suivi trimestriel</div><i class="za l">←</i></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 45 · Process zigzag</span><span class="lg-when">Quand : une séquence de 5-6 étapes trop longue pour une seule ligne. Le serpentin garde l'ordre lisible.</span></aside>
+  </section>
+
+  <!-- 46 ROADMAP TRIMESTRES -->
+  <section class="plate" data-meta="Layout 46 · Roadmap" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le plan · douze mois</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Trois chantiers en parallèle</span>
+      <h1 class="reveal" style="font-size:62px">Qui fait quoi, <span class="grad">quel trimestre</span></h1>
+    </div>
+    <div class="rm reveal">
+      <div class="rm-head"><span></span><span>T1</span><span>T2</span><span>T3</span><span>T4</span></div>
+      <div class="lane"><span class="ll">Mesure</span><div class="bar b3" style="grid-column:2 / span 2">Bilan 12 sites</div><div class="bar b1" style="grid-column:4 / span 2">Suivi continu</div></div>
+      <div class="lane"><span class="ll">Trajectoire</span><div class="bar b1" style="grid-column:2 / span 1">Cadrage</div><div class="bar b2" style="grid-column:3 / span 2">Arbitrages et vote</div></div>
+      <div class="lane"><span class="ll">Déploiement</span><div class="bar b2" style="grid-column:4 / span 1">Sites pilotes</div><div class="bar b3" style="grid-column:5 / span 1">Généralisation</div></div>
+    </div>
+    <p class="chart-note reveal" style="margin-top:34px">Le dégradé marque les jalons décisifs, calendrier fictif de démonstration</p>
+    <aside class="legend"><span class="lg-name">Layout 46 · Roadmap trimestres</span><span class="lg-when">Quand : synchroniser plusieurs chantiers dans le temps. 3 couloirs, 4 trimestres, une barre par phase.</span></aside>
+  </section>
+
+  <!-- 47 KANBAN -->
+  <section class="plate tint" data-meta="Layout 47 · Kanban" data-family="schema">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">L'avancement · point mensuel</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">L'état réel, sans vernis</span>
+      <h1 class="reveal" style="font-size:62px">Fait, en cours, <span class="grad">à lancer</span></h1>
+    </div>
+    <div class="kb" data-stagger>
+      <div class="kcol">
+        <div class="khead"><span class="kdot" style="background:var(--vert)"></span>Fait<span class="kn">4</span></div>
+        <div class="kcard"><div class="kt">Phase 0 · cadrage</div><div class="km">Livré, gouvernance en place</div></div>
+        <div class="kcard"><div class="kt">Collecte énergie 12 sites</div><div class="km">Compteurs connectés</div></div>
+        <div class="kcard"><div class="kt">Panel fournisseurs</div><div class="km">Questionnaire retourné à 84 %</div></div>
+      </div>
+      <div class="kcol">
+        <div class="khead"><span class="kdot" style="background:var(--or)"></span>En cours<span class="kn">2</span></div>
+        <div class="kcard"><div class="kt">Bilan trois périmètres</div><div class="km">Restitution prévue au T3</div></div>
+        <div class="kcard"><div class="kt">Formation des référents</div><div class="km">Atelier 2 sur 3 réalisé</div></div>
+      </div>
+      <div class="kcol">
+        <div class="khead"><span class="kdot" style="background:var(--rule-strong)"></span>À lancer<span class="kn">2</span></div>
+        <div class="kcard"><div class="kt">Trajectoire chiffrée</div><div class="km">Après restitution du bilan</div></div>
+        <div class="kcard"><div class="kt">Portail de pilotage</div><div class="km">Lot 3, sur décision du comité</div></div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 47 · Kanban</span><span class="lg-when">Quand : un point d'avancement honnête en comité. 3 colonnes, cartes sobres, compteurs en tête.</span></aside>
+  </section>
+
+  <!-- 48 TROIS OFFRES COMPARÉES -->
+  <section class="plate" data-meta="Layout 48 · Trois offres" data-family="tableau">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Investissement · trois niveaux</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Du strict nécessaire au pilotage complet</span>
+      <h1 class="reveal" style="font-size:62px">Trois niveaux, une <span class="grad">même méthode</span></h1>
+    </div>
+    <div class="cmp3" data-stagger>
+      <div class="col">
+        <div class="nm">Mesure</div>
+        <div class="price">~9 K€ <small>HT</small></div>
+        <div class="meta">Phase 0 + bilan un périmètre</div>
+        <ul><li class="y">Bilan réglementaire livré</li><li class="y">Restitution au comité</li><li class="n">Trajectoire chiffrée</li><li class="n">Portail de pilotage</li></ul>
+      </div>
+      <div class="col reco">
+        <span class="badge">Recommandé</span>
+        <div class="nm">Trajectoire</div>
+        <div class="price">~17 K€ <small>HT</small></div>
+        <div class="meta">Mesure + trajectoire arbitrée</div>
+        <ul><li class="y">Bilan trois périmètres</li><li class="y">64 leviers chiffrés</li><li class="y">Trajectoire votée</li><li class="n">Portail de pilotage</li></ul>
+      </div>
+      <div class="col">
+        <div class="nm">Pilotage</div>
+        <div class="price">~34 K€ <small>HT</small></div>
+        <div class="meta">Trajectoire + portail + transfert</div>
+        <ul><li class="y">Tout le niveau Trajectoire</li><li class="y">Portail déployé 12 sites</li><li class="y">Référents formés</li><li class="y">Rituels installés</li></ul>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 48 · Trois offres comparées</span><span class="lg-when">Quand : proposer 3 niveaux d'engagement. Traits ✓ ou absents en miroir : le manque se voit d'un regard.</span></aside>
+  </section>
+
+  <!-- 49 MATRICE DE RESPONSABILITÉS -->
+  <section class="plate" data-meta="Layout 49 · Matrice RACI" data-family="tableau">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Qui fait quoi · par lot</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Zéro ambiguïté sur les rôles</span>
+      <h1 class="reveal" style="font-size:60px">Les responsabilités, <span class="grad">noir sur blanc</span></h1>
+    </div>
+    <table class="raci reveal">
+      <thead><tr><th>Activité</th><th>Votre comité</th><th>Référents sites</th><th>Meridian</th><th>Finance</th></tr></thead>
+      <tbody>
+        <tr><td>Collecte des données</td><td><span class="rc I">I</span></td><td><span class="rc R">R</span></td><td><span class="rc A">A</span></td><td><span class="rc C">C</span></td></tr>
+        <tr><td>Bilan trois périmètres</td><td><span class="rc I">I</span></td><td><span class="rc C">C</span></td><td><span class="rc R">R</span></td><td><span class="rc I">I</span></td></tr>
+        <tr><td>Trajectoire et arbitrages</td><td><span class="rc A">A</span></td><td><span class="rc C">C</span></td><td><span class="rc R">R</span></td><td><span class="rc C">C</span></td></tr>
+        <tr><td>Plans d'action sites</td><td><span class="rc I">I</span></td><td><span class="rc R">R</span></td><td><span class="rc C">C</span></td><td><span class="rc I">I</span></td></tr>
+      </tbody>
+    </table>
+    <div class="raci-key reveal"><span><b style="color:var(--vert)">R</b> réalise</span><span><b style="color:#8a6d25">A</b> assume la décision</span><span><b style="color:var(--ink)">C</b> consulté</span><span><b>I</b> informé</span></div>
+    <aside class="legend"><span class="lg-name">Layout 49 · Matrice de responsabilités</span><span class="lg-when">Quand : verrouiller qui décide et qui produit. Pastilles lettrées, 4-5 lignes, légende sous le tableau.</span></aside>
+  </section>
+
+  <!-- 50 MOSAÏQUE DE LOGOS -->
+  <section class="plate" data-meta="Layout 50 · Références" data-family="preuve">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Ils nous font confiance</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · marques 100 % fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Huit références, tous secteurs</span>
+      <h1 class="reveal" style="font-size:62px">Des industriels qui <span class="grad">re-signent</span></h1>
+    </div>
+    <div class="logos" data-stagger>
+      <div class="lg"><span class="glyph"></span><span class="wm">Nordvent</span></div>
+      <div class="lg"><span class="wm serif">Alpaline</span></div>
+      <div class="lg"><span class="wm caps">Brumaire</span></div>
+      <div class="lg"><span class="glyph round"></span><span class="wm">Cap Ferro</span></div>
+      <div class="lg"><span class="wm serif">Ligne Claire</span></div>
+      <div class="lg"><span class="glyph round"></span><span class="wm caps">Ostrea</span></div>
+      <div class="lg"><span class="wm">Vellum &amp; Cie</span></div>
+      <div class="lg"><span class="glyph"></span><span class="wm serif">Kairos</span></div>
+    </div>
+    <p class="chart-note reveal">Marques inventées pour la démonstration. En mission réelle : logos clients monochromes, jamais plus de 8</p>
+    <aside class="legend"><span class="lg-name">Layout 50 · Mosaïque de logos</span><span class="lg-when">Quand : prouver par les références. Grille filaire, logos en une seule teinte pour éviter la foire aux couleurs.</span></aside>
+  </section>
+
+  <!-- 51 CARTE DE COUVERTURE -->
+  <section class="plate tint texture" data-meta="Layout 51 · Couverture géographique" data-family="preuve">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Où nous intervenons</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · carte stylisée, données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Présence terrain</span>
+      <h1 class="reveal" style="font-size:60px">Cinq ancrages, <span class="grad">un maillage</span></h1>
+    </div>
+    <div class="geo-wrap reveal">
+      <div class="geo">
+        <svg width="640" height="600" viewBox="0 0 640 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Carte stylisée fictive">
+          <path d="M300,40 C420,20 540,90 560,200 C580,310 520,380 540,460 C550,530 470,570 380,560 C290,550 240,580 170,540 C90,495 70,400 95,320 C120,240 90,170 150,110 C205,58 240,50 300,40 Z" fill="rgba(158,195,174,0.35)" stroke="rgba(47,111,94,0.5)" stroke-width="2.5"/>
+        </svg>
+        <div class="pin" style="left:47%; top:22%"><i></i><span>Hub Nord</span></div>
+        <div class="pin" style="left:72%; top:44%"><i></i><span>Hub Est</span></div>
+        <div class="pin" style="left:30%; top:52%"><i></i><span>Hub Ouest</span></div>
+        <div class="pin" style="left:57%; top:70%"><i></i><span>Hub Rhône</span></div>
+        <div class="pin" style="left:38%; top:86%"><i></i><span>Hub Sud</span></div>
+      </div>
+      <div class="geo-stats" data-stagger>
+        <div class="gs"><span class="n">5</span><span class="l">ancrages régionaux, un consultant senior par zone</span></div>
+        <div class="gs"><span class="n">&lt; 2 h</span><span class="l">de route entre chaque site client et son référent</span></div>
+        <div class="gs"><span class="n">40+</span><span class="l">sites industriels fictifs suivis en simultané</span></div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 51 · Carte de couverture</span><span class="lg-when">Quand : montrer un maillage territorial. Carte volontairement stylisée (forme SVG abstraite), pins nommés, stats à droite.</span></aside>
+  </section>
+
+  <!-- 52 RÉCAPITULATIF -->
+  <section class="plate dark" data-meta="Layout 52 · À retenir" data-family="conclusion">
+    <div class="aurora"><i class="a1"></i></div>
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Avant de conclure</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Si vous ne gardez que trois choses</span>
+      <h1 class="reveal" style="font-size:64px">À retenir <span class="grad">de cette heure</span></h1>
+    </div>
+    <div class="takeaways" data-stagger>
+      <div class="tk"><span class="tn">01</span><span class="tt">La mesure d'abord, l'ambition ensuite<small>Aucune trajectoire crédible sans données fiables par site : c'est le Lot 1</small></span></div>
+      <div class="tk"><span class="tn">02</span><span class="tt">Un engagement lot par lot<small>Chaque étape se termine par une décision : continuer, ajuster ou arrêter</small></span></div>
+      <div class="tk"><span class="tn">03</span><span class="tt">L'autonomie comme livrable<small>Référents formés, rituels installés, portail transmis : nous partons, ça continue</small></span></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 52 · Récapitulatif</span><span class="lg-when">Quand : juste avant la CTA finale. Trois messages numérotés, une ligne de détail chacun, rien de nouveau.</span></aside>
+  </section>
+
   </div>
 </div>
 
@@ -990,6 +1709,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   <div class="nav-progress" id="prog-bar" role="slider" aria-label="Position" tabindex="0"><div class="nav-progress-fill" id="prog"></div><div class="nav-progress-handle" id="prog-handle"></div></div>
   <button class="nav-arrow" id="next" aria-label="Suivant">›</button>
   <button class="nav-arrow" id="overview-toggle" aria-label="Vue d'ensemble (O)" title="Vue d'ensemble (O)" style="font-size:14px;">⊞</button>
+  <button class="nav-arrow" id="fullscreen-toggle" aria-label="Plein écran (F)" title="Plein écran (F)" style="font-size:14px;">⛶</button>
   <button class="nav-arrow nav-arrow-pdf" id="pdf-export" aria-label="Export PDF (P)" title="Export PDF (P)">PDF</button>
 </div>
 
@@ -1008,7 +1728,9 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
 .nav-progress-handle { position:absolute; top:50%; transform:translate(-50%,-50%); width:14px; height:14px; background:#fff; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,.3); left:5%; transition:left .3s ease; }
 .overview { position:fixed; inset:0; z-index:100; background:rgba(24,39,33,0.96); backdrop-filter:blur(20px); display:none; opacity:0; transition:opacity .3s ease; padding:56px 72px; overflow-y:auto; }
 .overview.open { display:block; opacity:1; }
-.overview-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; max-width:1680px; margin:0 auto; }
+.overview-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; max-width:1680px; margin:0 auto 34px; }
+.overview-fam { max-width:1680px; margin:0 auto 14px; font-size:13px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--sauge); display:flex; align-items:center; gap:14px; }
+.overview-fam::after { content:''; flex:1; height:1px; background:rgba(252,251,248,0.14); }
 .overview-thumb { background:var(--white); border:0; border-radius:10px; padding:16px; cursor:pointer; text-align:left; display:flex; flex-direction:column; gap:8px; aspect-ratio:16/10; transition:transform .25s, box-shadow .25s; color:var(--ink); }
 .overview-thumb:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,.4); }
 .overview-thumb.dark { background:var(--bg-dark-2); color:#fff; } .overview-thumb.tint { background:var(--bg-tint); }
@@ -1028,7 +1750,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   });
 
   const frame=document.getElementById('stage-frame'), nav=document.querySelector('.nav-rail');
-  function fit(){ const reserve=(nav?nav.offsetHeight+24:64)+16; const scale=Math.min(window.innerWidth/1920,(window.innerHeight-reserve)/1080,1.5); frame.style.transform=`translate(-50%, calc(-50% + ${-reserve/2}px)) scale(${scale})`; }
+  function fit(){ const presenting=document.body.classList.contains('presenting'); const reserve=presenting?0:(nav?nav.offsetHeight+24:64)+16; const scale=Math.min(window.innerWidth/1920,(window.innerHeight-reserve)/1080,presenting?100:1.5); frame.style.transform=`translate(-50%, calc(-50% + ${-reserve/2}px)) scale(${scale})`; }
   fit(); addEventListener('resize', fit);
 
   const plates=[...document.querySelectorAll('.plate')], total=plates.length;
@@ -1041,13 +1763,21 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   document.getElementById('prev').onclick=()=>go(cur-1);
 
   const overview=document.getElementById('overview');
-  const grid=document.createElement('div'); grid.className='overview-grid'; overview.appendChild(grid);
-  plates.forEach((p,i)=>{
+  // Vue d'ensemble groupée par familles de layouts
+  const FAMILIES={ ouverture:'Ouverture & rythme', editorial:'Éditorial & narration', dataviz:'Data-visualisation', schema:'Schémas & processus', tableau:'Tableaux & offres', preuve:'Preuve & confiance', conclusion:'Conclusion' };
+  function makeThumb(p,i){
     const meta=p.dataset.meta||''; const bg=p.classList.contains('dark')?'dark':(p.classList.contains('tint')?'tint':'');
     const hEl=p.querySelector('h1,h2'); const title=hEl?hEl.textContent.trim():'';
     const b=document.createElement('button'); b.className='overview-thumb'+(bg?` ${bg}`:'');
     b.innerHTML=`<span class="thumb-num">${String(i+1).padStart(2,'0')} / ${total}</span><span class="thumb-meta">${meta}</span><span class="thumb-title">${title}</span>`;
-    b.onclick=()=>{go(i); closeOverview();}; grid.appendChild(b);
+    b.onclick=()=>{go(i); closeOverview();}; return b;
+  }
+  Object.entries(FAMILIES).forEach(([fam,label])=>{
+    const members=plates.map((p,i)=>[p,i]).filter(([p])=> (p.dataset.family||'ouverture')===fam);
+    if(!members.length)return;
+    const h=document.createElement('div'); h.className='overview-fam'; h.textContent=label; overview.appendChild(h);
+    const grid=document.createElement('div'); grid.className='overview-grid'; overview.appendChild(grid);
+    members.forEach(([p,i])=>grid.appendChild(makeThumb(p,i)));
   });
   function openOverview(){ overview.classList.add('open'); document.querySelectorAll('.overview-thumb').forEach((t,k)=>t.classList.toggle('active',k===cur)); }
   function closeOverview(){ overview.classList.remove('open'); }
@@ -1075,6 +1805,15 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
   function restoreRaster(el){ if(el.dataset.rasterized!=='true')return; el.innerHTML=el.dataset.originalHTML; delete el.dataset.rasterized; delete el.dataset.originalHTML; el.style.background=''; el.style.webkitTextFillColor=''; el.style.color=''; }
   function exportPDF(){ const btn=document.getElementById('pdf-export'); btn.classList.add('exporting'); if(overview.classList.contains('open'))closeOverview(); document.body.classList.add('printing-pdf'); document.querySelectorAll('.grad, .step-cell .ltr').forEach(rasterGradientText); requestAnimationFrame(()=>requestAnimationFrame(()=>window.print())); }
   document.getElementById('pdf-export').addEventListener('click',exportPDF);
+
+  // Mode présentation plein écran (touche F) : bascule body.presenting, nav masquée,
+  // réapparition de la nav quand la souris frôle le bas de l'écran (nav-peek)
+  function toggleFullscreen(){ const el=document.documentElement; if(!document.fullscreenElement&&!document.webkitFullscreenElement){ const req=el.requestFullscreen||el.webkitRequestFullscreen; if(req)req.call(el); } else { const ex=document.exitFullscreen||document.webkitExitFullscreen; if(ex)ex.call(document); } }
+  function onFsChange(){ const fs=document.fullscreenElement||document.webkitFullscreenElement; document.body.classList.toggle('presenting',!!fs); if(!fs)document.body.classList.remove('nav-peek'); fit(); }
+  document.addEventListener('fullscreenchange',onFsChange);
+  document.addEventListener('webkitfullscreenchange',onFsChange);
+  addEventListener('mousemove',(e)=>{ if(!document.body.classList.contains('presenting'))return; document.body.classList.toggle('nav-peek', e.clientY>window.innerHeight-90); });
+  document.getElementById('fullscreen-toggle').addEventListener('click',toggleFullscreen);
   addEventListener('afterprint',()=>{ document.body.classList.remove('printing-pdf'); document.getElementById('pdf-export').classList.remove('exporting'); document.querySelectorAll('[data-rasterized="true"]').forEach(restoreRaster); });
 
   let buf='',bufTimer;
@@ -1085,6 +1824,7 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
     else if(e.key==='Home'){go(0);e.preventDefault();}
     else if(e.key==='End'){go(total-1);e.preventDefault();}
     else if(e.key==='o'||e.key==='O'){toggleOverview();e.preventDefault();}
+    else if(e.key==='f'||e.key==='F'){toggleFullscreen();e.preventDefault();}
     else if(e.key==='p'||e.key==='P'){exportPDF();e.preventDefault();}
     else if(/^[0-9]$/.test(e.key)){buf+=e.key;clearTimeout(bufTimer);bufTimer=setTimeout(()=>buf='',1500);}
     else if(e.key==='Enter'&&buf){const n=parseInt(buf,10); if(n>=1&&n<=total)go(n-1); buf='';}

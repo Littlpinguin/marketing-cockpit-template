@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LANDING PAGE — VENTE LONG-FORM
+       Objectif : vente directe d’un programme / offre à ticket moyen.
+       Structure : hero promesse + qualification, récit (problème → agitation →
+       mécanisme), stack de valeur avec ancrage, garantie, preuve massive,
+       urgence honnête (cohorte datée), FAQ exhaustive, candidature.
+       CTA identique répété 5×. Copy à réécrire intégralement via copywriting.
+       Ambiance de démo : « récit éditorial crème » — long-form en mesure
+       étroite, lettrine, titres serif aux italiques, séparateurs méridiens,
+       stack de valeur hairline, carte de prix sombre, bandeau d'urgence
+       crème au liseré laiton.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill landing-page les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Trajectoire 90 jours — faites de la contrainte carbone un argument commercial | Meridian Conseil</title>
+  <meta name="description" content="Le programme qui entraîne votre binôme interne à produire et défendre son dossier carbone. Cohorte du 5 octobre, 12 places.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Trajectoire 90 jours — faites de la contrainte carbone un argument commercial | Meridian Conseil">
+  <meta property="og:description" content="Le programme qui entraîne votre binôme interne à produire et défendre son dossier carbone. Cohorte du 5 octobre, 12 places.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système (Iowan Old Style/Georgia,
+       system-ui). En production, décommenter pour la fidélité totale :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill landing-page) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1080px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--color-light); margin: 0; line-height: 1.7; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    /* Grain — texture papier discrète sur toute la page */
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 clamp(18px, 5vw, 36px); }
+    section { padding: var(--space-l) 0; }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1, h2 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; }
+    h1 { font-size: clamp(2.4rem, 5.4vw, 3.9rem); line-height: 1.06; }
+    h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.12; }
+    h1 em, h2 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease), background-color .35s var(--ease), border-color .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    .btn--ghost { border-color: var(--rule-strong); color: var(--color-dark); background: transparent; }
+    .btn--light { background: var(--color-light); color: var(--color-dark); }
+    .btn .btn__arrow { transition: transform .35s var(--ease); }
+    .btn:hover .btn__arrow { transform: translateX(3px); }
+    /* 1. Hero promesse — centré, éditorial */
+    .hero { padding: clamp(64px, 9vw, 110px) 0 var(--space-l); text-align: center; }
+    .hero .container { max-width: 860px; }
+    .hero__subtitle { font-size: 1.18rem; max-width: 620px; margin: 0 auto; color: var(--ink-soft); }
+    .hero__actions { display: flex; gap: var(--space-s); flex-wrap: wrap; margin: var(--space-m) 0 var(--space-s); justify-content: center; }
+    .hero__proof { font-size: 0.9rem; color: var(--ink-soft); display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .hero__proof::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--color-accent); flex: none; }
+    /* Séparateur de sections — motif méridien centré */
+    .sep { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 6px 0; color: var(--color-accent-ink); }
+    .sep::before, .sep::after { content: ""; width: 72px; height: 1px; background: var(--rule-strong); }
+    .sep svg { flex: none; opacity: 0.85; }
+    /* Récit long-form — mesure étroite, lettrine, titres serif */
+    .narrative { max-width: 68ch; margin: 0 auto; font-size: 1.12rem; }
+    .narrative h2 { margin-top: var(--space-l); }
+    .narrative h2:first-child { margin-top: 0; }
+    .narrative p { color: #37403b; }
+    .narrative h2:first-of-type + p::first-letter { font-family: var(--font-display); font-weight: 600; font-size: 3.4em; line-height: 0.82; float: left; padding: 8px 12px 0 0; color: var(--color-primary); }
+    .cta-block { text-align: center; margin: 0 0 var(--space-l); }
+    /* Stack de valeur — lignes hairline, valeurs serif laiton à droite */
+    .value { background: #fff; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .value .section-head { margin-left: auto; margin-right: auto; text-align: center; }
+    .value .section-head .eyebrow { margin-left: auto; margin-right: auto; }
+    .value-stack { list-style: none; margin: 0 auto; padding: 0; max-width: 680px; }
+    .value-stack li { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-m); padding: 18px 0; border-top: 1px solid var(--rule); }
+    .value-stack li:last-child { border-bottom: 1px solid var(--rule); }
+    .value-stack .val { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; color: var(--color-accent-ink); white-space: nowrap; }
+    /* Prix — carte sombre, ancien prix barré discret, prix serif géant */
+    .price-block { text-align: center; background: var(--bg-dark); color: var(--color-light); border-radius: var(--radius); padding: clamp(32px, 5vw, 48px); max-width: 520px; margin: var(--space-m) auto; position: relative; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(24, 39, 33, 0.55); }
+    .price-block__topo { position: absolute; inset: auto 0 -4px 0; height: 90px; color: var(--color-accent-bright); opacity: 0.12; pointer-events: none; }
+    .price-block > *:not(.price-block__topo) { position: relative; }
+    .price-block .old { text-decoration: line-through; color: rgba(252, 251, 248, 0.55); font-size: 1.02rem; margin-bottom: 2px; }
+    .price-block .now { font-family: var(--font-display); font-weight: 500; font-size: clamp(3rem, 7vw, 4.2rem); line-height: 1.08; color: var(--color-accent-bright); margin: 0 0 4px; }
+    .price-block p { color: rgba(252, 251, 248, 0.8); }
+    .guarantee-note { text-align: center; max-width: 620px; margin: 0 auto; padding: var(--space-s) var(--space-m); border: 1px solid rgba(200, 162, 75, 0.45); border-radius: var(--radius); background: var(--bg-tint); }
+    /* 6. Preuve massive — cartes hairline, citations serif */
+    .testimonials__grid { display: grid; gap: var(--space-m); grid-template-columns: repeat(2, 1fr); }
+    .testimonial { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin: 0; position: relative; transition: transform .45s var(--ease), box-shadow .45s var(--ease); }
+    .testimonial:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    .testimonial::before { content: "\201C"; font-family: var(--font-display); font-size: 4.4rem; line-height: 1; color: var(--color-accent); position: absolute; top: 14px; right: 22px; opacity: 0.5; }
+    .testimonial blockquote { margin: 0 0 var(--space-s); font-family: var(--font-display); font-size: 1.12rem; line-height: 1.45; font-weight: 450; padding-right: var(--space-m); }
+    .testimonial figcaption { display: flex; align-items: center; gap: var(--space-s); border-top: 1px solid var(--rule); padding-top: var(--space-s); }
+    .testimonial__avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--gradient); color: var(--color-light); display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
+    .testimonial__name { font-weight: 650; }
+    .testimonial__role { display: block; font-size: 0.85rem; color: var(--ink-soft); }
+    /* Urgence honnête — bandeau crème au liseré laiton, chiffres serif */
+    .stats { background: var(--bg-tint); border-top: 1px solid rgba(200, 162, 75, 0.55); border-bottom: 1px solid rgba(200, 162, 75, 0.55); padding: var(--space-l) 0; }
+    .stats__label { text-align: center; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin: 0 0 var(--space-m); }
+    .stats__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-m); margin: 0; text-align: center; }
+    .stat { display: flex; flex-direction: column; padding: 0 var(--space-s); }
+    .stat + .stat { border-left: 1px solid var(--rule-strong); }
+    .stat dt { font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); order: 2; }
+    .stat__number { font-family: var(--font-display); font-weight: 500; font-size: clamp(2.4rem, 5vw, 3.6rem); color: var(--color-accent-ink); line-height: 1.1; margin: 0 0 4px; }
+    /* 12. FAQ — hairlines, chevron animé */
+    .faq__item { border-bottom: 1px solid var(--rule); }
+    .faq__question { font-weight: 650; padding: var(--space-s) 34px var(--space-s) 0; cursor: pointer; list-style: none; position: relative; transition: color .3s var(--ease); }
+    .faq__question::-webkit-details-marker { display: none; }
+    .faq__question::after { content: ""; position: absolute; right: 6px; top: 50%; width: 9px; height: 9px; border-right: 1.5px solid var(--color-accent-ink); border-bottom: 1.5px solid var(--color-accent-ink); transform: translateY(-70%) rotate(45deg); transition: transform .3s var(--ease); }
+    .faq__item[open] .faq__question::after { transform: translateY(-30%) rotate(225deg); }
+    .faq__question:hover { color: var(--color-primary); }
+    .faq__answer { padding: 0 0 var(--space-s); color: var(--ink-soft); max-width: 720px; }
+    /* 13. Candidature */
+    .capture { background: var(--bg-tint); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .capture__form { display: grid; gap: var(--space-s); max-width: 460px; background: #fff; border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); box-shadow: var(--shadow-card); }
+    .capture__form .btn { width: 100%; justify-content: center; }
+    .capture__label, label { font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .capture__rgpd, .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .capture__rgpd a, .rgpd a { color: inherit; }
+    /* 14. CTA final — panneau sombre aux méridiens */
+    .final-cta { background: var(--bg-dark); color: var(--color-light); text-align: center; padding: var(--space-xl) 0; position: relative; overflow: hidden; }
+    .final-cta__topo { position: absolute; inset: auto 0 -4px 0; height: 150px; color: var(--color-primary-soft); opacity: 0.14; pointer-events: none; }
+    .final-cta .container { position: relative; }
+    .final-cta h2 { color: var(--color-light); }
+    .final-cta h2 em { color: var(--color-accent-bright); }
+    .final-cta__subtitle { color: var(--color-sage); max-width: 560px; margin: 0 auto var(--space-m); }
+    /* 15. Footer minimal — sur un vrai site, préférer templates/ header-footer partagés */
+    .footer { padding: var(--space-m) 0; font-size: 0.85rem; color: var(--ink-soft); border-top: 1px solid var(--rule); }
+    .footer .container { display: flex; flex-wrap: wrap; gap: var(--space-s); justify-content: space-between; align-items: center; }
+    .footer a { color: inherit; }
+    .section-head { max-width: 680px; margin-bottom: var(--space-m); }
+    .section-head p { color: var(--ink-soft); }
+    .grid-2 { display: grid; gap: var(--space-l); grid-template-columns: 1fr 1fr; align-items: center; }
+    /* Révélation au scroll — inactive sans JS ou si reduced-motion */
+    html.mrd-motion [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+    html.mrd-motion [data-reveal].is-in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    /* Responsive — mobile-first en pratique : ces overrides ramènent les grilles à 1-2 colonnes */
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      section { padding: var(--space-m) 0; }
+      .hero { padding: var(--space-l) 0 var(--space-m); }
+      .testimonials__grid, .stats__grid { grid-template-columns: 1fr; }
+      .stat + .stat { border-left: 0; border-top: 1px solid var(--rule-strong); padding-top: var(--space-s); }
+      .hero__actions .btn { width: 100%; justify-content: center; }
+      .value-stack li { flex-direction: column; gap: 4px; }
+      .sep::before, .sep::after { width: 44px; }
+    }
+    @media (max-width: 400px) {
+      .btn { padding: 12px 18px; font-size: 0.95rem; }
+      h1 { font-size: 1.85rem; }
+      .price-block .now { font-size: 2.7rem; }
+    }
+  </style>
+</head>
+<body data-page-slug="lp-vente-longue">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <!-- Long-form : pas de topbar, le lecteur reste dans le récit -->
+
+  <!-- 1. Hero promesse forte + qualification immédiate -->
+  <header class="hero">
+    <div class="container">
+      <p class="eyebrow">Programme d'accompagnement — prochaine cohorte : 5 octobre 2026</p>
+      <h1>En 90 jours, faites de la contrainte carbone <em>un argument commercial</em></h1>
+      <p class="hero__subtitle">Pour les dirigeants de PME B2B qui perdent des appels d'offres faute de dossier carbone — et qui n'ont ni le temps ni l'envie d'en faire un métier.</p>
+      <div class="hero__actions">
+        <a href="#conversion" class="btn btn--primary" data-track="cta_click" data-cta-position="hero">Rejoindre la cohorte d'octobre <span class="btn__arrow" aria-hidden="true">→</span></a>
+      </div>
+      <p class="hero__proof">4 cohortes menées · 87 dirigeants accompagnés (données fictives d'exemple)</p>
+    </div>
+  </header>
+
+  <div class="sep" aria-hidden="true"><svg width="20" height="20"><use href="#mrd-mark"/></svg></div>
+
+  <!-- Récit long-form : problème → agitation → mécanisme. Copy via skill copywriting. -->
+  <section>
+    <div class="container narrative" data-reveal>
+      <h2>Le mail qui a <em>tout déclenché</em></h2>
+      <p>En mars dernier, un dirigeant nous a transféré un mail de son plus gros client : « Merci de nous transmettre votre bilan carbone et votre plan de réduction avant le 30 juin, faute de quoi votre référencement sera revu. » (Situation fictive, représentative de dizaines de cas réels.)</p>
+      <p>Quatorze ans de relation commerciale. Un quart du chiffre d'affaires. Et 90 jours pour produire un dossier dont il ne connaissait même pas le vocabulaire.</p>
+      <h2>Ce qui <em>ne marche pas</em></h2>
+      <p>La première réaction est toujours la même : demander des devis à des cabinets. Ils sont compétents — mais leurs plannings sont pleins, leurs rapports arrivent tard, et surtout : quand le rapport est livré, personne en interne ne sait le défendre devant le client.</p>
+      <p>La deuxième réaction : confier ça à un collaborateur motivé « en plus de son poste ». Six mois plus tard, un tableur à moitié rempli et une motivation éteinte.</p>
+      <h2>Le mécanisme <em>du programme</em></h2>
+      <p>« Trajectoire 90 jours » inverse la logique : au lieu de vous livrer un rapport, nous entraînons votre binôme interne (dirigeant + référent) à produire, défendre et mettre à jour son propre dossier carbone — avec nos outils, nos modèles et deux points de travail par semaine.</p>
+      <p>À la fin, vous n'avez pas un PDF : vous avez une compétence installée dans l'entreprise, un dossier qui tient face à un acheteur, et un plan de réduction que vos équipes ont construit elles-mêmes.</p>
+    </div>
+  </section>
+
+  <div class="cta-block"><a href="#conversion" class="btn btn--primary" data-track="cta_click" data-cta-position="mid-1">Rejoindre la cohorte d'octobre</a></div>
+
+  <!-- Stack de valeur avec ancrage : classique long-form, chiffres fictifs -->
+  <section class="value">
+    <div class="container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">La valeur, poste par poste</p>
+        <h2>Ce que contient <em>le programme</em></h2>
+      </div>
+      <ul class="value-stack">
+        <li><span><strong>12 semaines d'accompagnement</strong> — 2 sessions de travail hebdomadaires avec un consultant senior</span><span class="val">6 000 €</span></li>
+        <li><span><strong>Accès à la plateforme Boussole Carbone</strong> pendant 12 mois</span><span class="val">3 700 €</span></li>
+        <li><span><strong>Kit appels d'offres</strong> — modèles de réponses, argumentaires acheteurs, dossier type</span><span class="val">1 200 €</span></li>
+        <li><span><strong>2 répétitions générales</strong> — votre dossier challengé comme le ferait un acheteur</span><span class="val">1 500 €</span></li>
+      </ul>
+      <div class="price-block">
+        <svg class="price-block__topo" preserveAspectRatio="none" aria-hidden="true"><use href="#mrd-topo"/></svg>
+        <p class="old">Valeur totale : 12 400 € HT</p>
+        <p class="now">4 900 € HT</p>
+        <p>par entreprise, tout compris (tarifs fictifs d'exemple)</p>
+        <a href="#conversion" class="btn btn--light" data-track="cta_click" data-cta-position="price">Rejoindre la cohorte d'octobre</a>
+      </div>
+      <p class="guarantee-note"><strong>Garantie sans risque :</strong> si au bout de 30 jours le programme ne correspond pas, vous partez remboursé intégralement — et vous gardez le kit appels d'offres.</p>
+    </div>
+  </section>
+
+  <!-- 6. Preuve massive : plusieurs témoignages en milieu et fin de page -->
+  <section class="testimonials">
+    <div class="container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">La preuve</p>
+        <h2>Ils ont suivi le programme <em>(témoignages fictifs d'exemple)</em></h2>
+      </div>
+      <div class="testimonials__grid">
+        <figure class="testimonial"><blockquote>« Le référencement a été maintenu. Mieux : l'acheteur a cité notre dossier en exemple aux autres fournisseurs. »</blockquote>
+        <figcaption><span class="testimonial__avatar" aria-hidden="true">PL</span><span><span class="testimonial__name">Pierre Lacoste</span><span class="testimonial__role">DG, Cap Horizon — cohorte de janvier</span></span></figcaption></figure>
+        <figure class="testimonial"><blockquote>« J'avais peur du temps à y passer. Deux créneaux par semaine, cadrés, c'est passé — et mon assistante est devenue notre référente carbone. »</blockquote>
+        <figcaption><span class="testimonial__avatar" aria-hidden="true">LP</span><span><span class="testimonial__name">Lucie Perrin</span><span class="testimonial__role">DG, Studio Ferran — cohorte d'avril</span></span></figcaption></figure>
+        <figure class="testimonial"><blockquote>« On a gagné un marché public trois mois après la fin du programme. Le mémoire environnemental venait directement du kit. »</blockquote>
+        <figcaption><span class="testimonial__avatar" aria-hidden="true">MB</span><span><span class="testimonial__name">Mehdi Bouzid</span><span class="testimonial__role">DAF, Nordik Industries — cohorte de janvier</span></span></figcaption></figure>
+        <figure class="testimonial"><blockquote>« Ce n'est pas une formation de plus : chaque session produit un morceau du dossier final. Rien n'est théorique. »</blockquote>
+        <figcaption><span class="testimonial__avatar" aria-hidden="true">NB</span><span><span class="testimonial__name">Nadia Benali</span><span class="testimonial__role">DAF, Fonderie Delmas — cohorte d'avril</span></span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Urgence honnête : une cohorte datée avec capacité réelle, pas un compteur artificiel -->
+  <section class="stats">
+    <div class="container" data-reveal>
+      <p class="stats__label">Cohorte du 5 octobre 2026 — capacité réelle, pas de compteur artificiel</p>
+      <dl class="stats__grid">
+        <div class="stat"><dt>entreprises max par cohorte</dt><dd class="stat__number">12</dd></div>
+        <div class="stat"><dt>semaines, du diagnostic au dossier final</dt><dd class="stat__number">12</dd></div>
+        <div class="stat"><dt>prochaine cohorte : 5 octobre</dt><dd class="stat__number">1</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 12. FAQ longue : le long-form traite TOUTES les objections -->
+  <section class="faq">
+    <div class="container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Avant de candidater</p>
+        <h2>Les questions qu'on nous pose avant de s'inscrire</h2>
+      </div>
+      <details class="faq__item"><summary class="faq__question">Combien de temps cela demande-t-il vraiment ?</summary><p class="faq__answer">Deux sessions de 90 minutes par semaine, plus environ 2 h de travail entre les sessions. Le binôme se répartit la charge.</p></details>
+      <details class="faq__item"><summary class="faq__question">Nous n'avons aucune donnée. Est-ce bloquant ?</summary><p class="faq__answer">Non — c'est le cas de la majorité des participants. Les trois premières semaines servent à constituer le socle de données à partir de vos factures.</p></details>
+      <details class="faq__item"><summary class="faq__question">Pourquoi une cohorte plutôt qu'un accompagnement individuel ?</summary><p class="faq__answer">L'émulation entre pairs et les revues croisées de dossiers font progresser plus vite — et le format divise le coût par trois par rapport à un accompagnement dédié.</p></details>
+      <details class="faq__item"><summary class="faq__question">Que se passe-t-il après les 90 jours ?</summary><p class="faq__answer">Vous gardez la plateforme 12 mois, les modèles à vie, et l'accès au groupe d'anciens. Un point de suivi collectif a lieu à 6 mois.</p></details>
+      <details class="faq__item"><summary class="faq__question">Et si je ne suis pas disponible aux dates prévues ?</summary><p class="faq__answer">Toutes les sessions sont enregistrées et un rattrapage individuel par module est prévu. Au-delà de deux modules manqués, on vous bascule sur la cohorte suivante sans frais.</p></details>
+    </div>
+  </section>
+
+  <!-- 13. Conversion : candidature (le programme sélectionne — cohérent avec la rareté) -->
+  <section class="capture" id="conversion">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">12 places</p>
+        <h2>Candidater pour la cohorte <em>du 5 octobre</em></h2>
+        <p>12 places. Un appel de 20 minutes valide que le programme correspond à votre situation — sinon on vous le dit et on vous oriente.</p>
+      </div>
+      <form class="capture__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+        <input type="hidden" name="lead_source" value="lp-vente-longue">
+        <div><label for="email">Email professionnel</label>
+        <input type="email" id="email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr"></div>
+        <div><label for="context">Votre situation en une phrase</label>
+        <textarea id="context" name="context" rows="3" required placeholder="Ex. : donneur d'ordre qui exige un bilan avant décembre"></textarea></div>
+        <button type="submit" class="btn btn--primary">Envoyer ma candidature</button>
+        <p class="capture__rgpd">Vos données servent uniquement à vous répondre — désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Politique de confidentialité</a></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <svg class="final-cta__topo" preserveAspectRatio="none" aria-hidden="true"><use href="#mrd-topo"/></svg>
+    <div class="container">
+      <h2 class="final-cta__title">Dans 90 jours, votre dossier carbone <em>gagne des marchés</em></h2>
+      <p class="final-cta__subtitle">Cohorte du 5 octobre — 12 places, garantie 30 jours.</p>
+      <a href="#conversion" class="btn btn--light" data-track="cta_click" data-cta-position="final">Rejoindre la cohorte d'octobre <span class="btn__arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive)</p>
+      <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a> · <a href="mailto:{{EMAIL_CONTACT}}">Contact</a></p>
+    </div>
+  </footer>
+  <script>
+    // Tracking — relaie les attributs data-track vers GA4 si gtag est chargé.
+    // Sinon : les attributs restent en place pour brancher l'analytics plus tard.
+    document.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-track="cta_click"]');
+      if (el && typeof gtag === 'function') {
+        gtag('event', 'cta_click', { cta_position: el.getAttribute('data-cta-position') || 'body' });
+      }
+    });
+    document.addEventListener('submit', function (e) {
+      var f = e.target.closest('form[data-track="generate_lead"]');
+      if (f && typeof gtag === 'function') {
+        gtag('event', 'generate_lead', { lead_source: document.body.getAttribute('data-page-slug') || location.pathname });
+      }
+    });
+    // Révélation au scroll — sobre ; inactive sans JS ou si reduced-motion.
+    (function () {
+      if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.documentElement.classList.add('mrd-motion');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('[data-reveal]').forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>

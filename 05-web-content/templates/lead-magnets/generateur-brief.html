@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LEAD MAGNET — GÉNÉRATEUR DE BRIEF
+       Générateur : 6 champs → brief structuré copiable. La valeur immédiate
+       est totale (le brief est complet) ; l’email délivre la version enrichie
+       (budget type, planning, questions prestataire). Le déclencheur du projet
+       part avec le lead. Personnaliser : champs et gabarit (fonction buildBrief).
+       Ambiance de démo : « papier à en-tête » — fond crème, le brief rendu
+       comme une feuille blanche à en-tête Meridian (marque + filet laiton),
+       corps en serif interligne généreux, bouton copier en pilule hairline.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill lead-magnet les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Générateur de brief — votre projet bilan carbone cadré en 2 minutes | Meridian Conseil</title>
+  <meta name="description" content="6 champs, un brief structuré prêt à envoyer à votre direction ou à un prestataire — avec la version enrichie par email.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Générateur de brief — votre projet bilan carbone cadré en 2 minutes | Meridian Conseil">
+  <meta property="og:description" content="6 champs, un brief structuré prêt à envoyer à votre direction ou à un prestataire — avec la version enrichie par email.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système. En production, décommenter :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill lead-magnet) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--bg-tint); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; }
+    h1 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    select { appearance: none; -webkit-appearance: none; padding-right: 42px; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b655f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; }
+    .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .rgpd a { color: inherit; }
+    /* En-tête de l'outil */
+    .tool-topbar { text-align: center; padding: var(--space-l) var(--space-s) var(--space-s); position: relative; overflow: hidden; }
+    .tool-topbar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(560px 300px at 50% -120px, rgba(77, 165, 133, 0.12), transparent 70%); pointer-events: none; }
+    .tool-topbar h1 { max-width: 720px; margin-left: auto; margin-right: auto; position: relative; }
+    .tool__intro { max-width: 580px; margin: 0 auto var(--space-s); text-align: center; color: var(--ink-soft); position: relative; }
+    /* Cartes de l'outil — entrée en scène douce */
+    .tool { max-width: 720px; margin: 0 auto; padding: 0 var(--space-s) var(--space-l); }
+    .tool__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin-bottom: var(--space-m); animation: mrd-rise .8s var(--ease) backwards; }
+    @keyframes mrd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    .field { margin-bottom: var(--space-s); }
+    .field label { display: block; margin-bottom: 8px; line-height: 1.5; }
+    .field__hint { font-size: 0.8rem; color: var(--ink-soft); display: block; margin-top: 4px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+    /* La feuille — brief rendu comme un papier à en-tête */
+    .sheet-zone__label { display: flex; align-items: center; justify-content: center; gap: 14px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin: 0 0 var(--space-s); }
+    .sheet-zone__label::before, .sheet-zone__label::after { content: ""; width: 34px; height: 1px; background: var(--color-accent); flex: none; }
+    .brief-output { position: relative; background: #fff; color: var(--color-dark); border: 1px solid var(--rule); border-radius: 6px; max-width: 640px; min-height: 460px; margin: var(--space-s) auto var(--space-m); padding: 44px 46px 56px; box-shadow: 0 30px 60px -32px rgba(28, 36, 32, 0.38), 0 2px 8px rgba(28, 36, 32, 0.06); animation: mrd-rise .8s var(--ease) backwards; }
+    .sheet-head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--color-accent); position: relative; }
+    .sheet-head::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: var(--rule); }
+    .sheet-head svg { color: var(--color-primary); flex: none; }
+    .sheet-head__name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: -0.01em; white-space: nowrap; }
+    .sheet-head__doc { margin-left: auto; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.66rem; font-weight: 600; color: var(--color-accent-ink); text-align: right; }
+    #brief-text { display: block; margin-top: 28px; font-family: var(--font-display); font-size: 0.97rem; line-height: 1.9; white-space: pre-wrap; color: var(--color-dark); }
+    #brief-text::first-line { font-weight: 600; letter-spacing: 0.08em; color: var(--color-accent-ink); }
+    /* Bouton copier — pilule hairline, icône SVG persistante (le libellé change en JS) */
+    .copy-btn { position: absolute; top: -17px; right: 26px; display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px 9px 36px; background: #fff; border: 1px solid var(--rule-strong); border-radius: 999px; font-family: var(--font-primary); font-size: 0.82rem; font-weight: 600; color: var(--color-dark); cursor: pointer; box-shadow: 0 8px 18px -10px rgba(28, 36, 32, 0.35); transition: transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
+    .copy-btn::before { content: ""; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a7c30' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-size: contain; }
+    .copy-btn:hover { transform: translateY(-2px); border-color: var(--color-primary); box-shadow: 0 12px 22px -10px rgba(28, 36, 32, 0.4); }
+    .copy-btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    /* Gate : l'aperçu est visible, le détail est débloqué par l'email */
+    .gate__locked { display: block; }
+    .gate__full { display: none; }
+    .gate--done .gate__locked { display: none; }
+    .gate--done .gate__full { display: block; animation: mrd-rise .8s var(--ease) backwards; }
+    .gate__locked { background: var(--color-light); border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__form { display: grid; gap: var(--space-s); max-width: 420px; margin: 0 auto; }
+    .gate__pitch { text-align: center; max-width: 460px; margin: 0 auto var(--space-s); }
+    .gate__pitch h3 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+    .gate__pitch p { color: var(--ink-soft); }
+    .gate__full { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    .reco { border-left: 3px solid var(--color-accent); padding: var(--space-xs) var(--space-s); background: var(--bg-tint); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: var(--space-xs); }
+    .gate__mail-note { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--color-primary); font-weight: 600; }
+    .gate__mail-note svg { flex: none; }
+    .tool-footer { text-align: center; font-size: 0.85rem; color: var(--ink-soft); padding: var(--space-m) var(--space-s); border-top: 1px solid var(--rule); }
+    .tool-footer a { color: inherit; }
+    @media (max-width: 600px) {
+      .tool__card, .gate__locked, .gate__full { padding: var(--space-s); }
+      .brief-output { padding: 34px 20px 40px; min-height: 0; }
+      .sheet-head { flex-wrap: wrap; }
+      .sheet-head__doc { margin-left: 36px; text-align: left; width: 100%; }
+      .copy-btn { right: 14px; }
+    }
+    @media (max-width: 400px) { .btn { padding: 12px 18px; font-size: 0.95rem; } }
+  </style>
+</head>
+<body data-page-slug="lm-generateur-brief">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="tool-topbar">
+    <p class="eyebrow">Générateur — 6 champs, un brief prêt à envoyer</p>
+    <h1>Générez le brief de votre projet <em>bilan carbone</em></h1>
+    <p class="tool__intro">Remplissez 6 champs : l'outil rédige le brief structuré à envoyer à votre direction ou à un prestataire. Version enrichie (annexes, budget type, planning) par email.</p>
+  </header>
+
+  <main class="tool">
+    <form class="tool__card" id="brief-form">
+      <div class="field"><label for="f-company">Nom de l'entreprise</label>
+      <input type="text" id="f-company" required placeholder="Ex. : Fonderie Delmas"></div>
+      <div class="field"><label for="f-sector">Secteur d'activité</label>
+      <input type="text" id="f-sector" required placeholder="Ex. : fonderie aluminium, 340 salariés, 2 sites"></div>
+      <div class="field"><label for="f-trigger">Élément déclencheur</label>
+      <select id="f-trigger">
+        <option>Exigence d'un client / donneur d'ordre</option>
+        <option>Obligation réglementaire à venir</option>
+        <option>Appel d'offres à préparer</option>
+        <option>Démarche volontaire de la direction</option>
+      </select></div>
+      <div class="field"><label for="f-deadline">Échéance visée</label>
+      <input type="text" id="f-deadline" required placeholder="Ex. : restitution avant fin mars 2027"></div>
+      <div class="field"><label for="f-scope">Ambition</label>
+      <select id="f-scope">
+        <option>Scopes 1 et 2 (émissions directes + énergie)</option>
+        <option>Scopes 1, 2 et 3 (chaîne de valeur complète)</option>
+        <option>À arbitrer pendant le cadrage</option>
+      </select></div>
+      <div class="field"><label for="f-budget">Enveloppe budgétaire envisagée</label>
+      <select id="f-budget">
+        <option>Moins de 10 k€</option>
+        <option>10 à 25 k€</option>
+        <option>25 à 50 k€</option>
+        <option>Non définie — à proposer</option>
+      </select></div>
+      <button type="button" class="btn btn--primary" id="gen-btn" style="width:100%;">Générer mon brief</button>
+    </form>
+
+    <div id="result-zone" hidden>
+      <div class="sheet-zone">
+        <h3 class="sheet-zone__label">Votre brief</h3>
+        <div class="brief-output" id="brief-out" aria-live="polite"><button type="button" class="copy-btn" id="copy-btn">Copier</button><div class="sheet-head"><svg width="24" height="24" aria-hidden="true"><use href="#mrd-mark"/></svg><span class="sheet-head__name">Meridian Conseil</span><!-- remplacer par le nom / logo de votre marque --><span class="sheet-head__doc">Document de cadrage</span></div><span id="brief-text"></span></div>
+      </div>
+
+      <div class="gate" id="gate">
+        <div class="gate__locked">
+          <div class="gate__pitch">
+            <h3>Recevez la version enrichie de votre brief</h3>
+            <p>Le même brief, plus : grille de budget par taille d'entreprise, planning type en 8 semaines et les 10 questions à poser à un prestataire.</p>
+          </div>
+          <form id="gate-form" class="gate__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+            <input type="hidden" name="lead_magnet" value="generateur-brief">
+            <input type="hidden" name="declencheur" id="lead-trigger" value="">
+            <label for="gate-email">Votre email professionnel</label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr">
+            <button type="submit" class="btn btn--primary">Recevoir mon brief enrichi</button>
+            <p class="rgpd">Vous recevez le document + 3 emails de conseils, désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+          </form>
+        </div>
+        <div class="gate__full">
+          <p class="gate__mail-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>Le brief enrichi (budget type, planning, questions prestataire) vient de partir par email. Le texte ci-dessus reste copiable à volonté.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="tool-footer">
+    <p>Un outil offert par {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive). <a href="{{URL_SITE}}">Découvrir nos accompagnements</a></p>
+    <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+  </footer>
+  <script>
+    // ── Capture email (skill lead-magnet) ──────────────────────────────
+    // Principe : donner d'abord (aperçu du résultat), capturer ensuite.
+    // Le POST part vers {{FORM_ENDPOINT}} (formulaire → n8n → outil emailing).
+    // Les champs cachés (lead_magnet, profil/score) segmentent le nurturing.
+    function bindGate(formId, onUnlock) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = new FormData(form);
+        var endpoint = form.getAttribute('action');
+        var done = function () {
+          var gate = form.closest('.gate');
+          if (gate) gate.classList.add('gate--done');
+          if (onUnlock) onUnlock(data);
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', { lead_source: data.get('lead_magnet') || 'outil-web' });
+          }
+        };
+        if (endpoint && endpoint.indexOf('{ {'.replace(' ', '')) === -1) {
+          fetch(endpoint, { method: 'POST', body: data }).then(done).catch(done);
+        } else {
+          console.warn('FORM_ENDPOINT non configuré : déblocage local (mode démo).');
+          done();
+        }
+      });
+    }
+
+    // ── GABARIT PLACEHOLDER — adapter la trame du brief à votre prestation ──
+    function buildBrief() {
+      var company = document.getElementById('f-company').value.trim();
+      var sector = document.getElementById('f-sector').value.trim();
+      var trigger = document.getElementById('f-trigger').value;
+      var deadline = document.getElementById('f-deadline').value.trim();
+      var scope = document.getElementById('f-scope').value;
+      var budget = document.getElementById('f-budget').value;
+      return [
+        'BRIEF — PROJET BILAN CARBONE',
+        '',
+        '1. CONTEXTE',
+        company + ' (' + sector + ') engage un premier bilan carbone.',
+        'Déclencheur : ' + trigger.toLowerCase() + '.',
+        '',
+        '2. OBJECTIF',
+        'Disposer d\'un bilan défendable et d\'un plan d\'action priorisé.',
+        'Périmètre visé : ' + scope.toLowerCase() + '.',
+        '',
+        '3. CONTRAINTES',
+        'Échéance : ' + deadline + '.',
+        'Enveloppe : ' + budget.toLowerCase() + '.',
+        '',
+        '4. LIVRABLES ATTENDUS',
+        '- Bilan complet documenté (méthode et sources citées)',
+        '- Plan d\'action : 3 chantiers chiffrés avec responsables',
+        '- Support de restitution direction',
+        '- Transfert : l\'équipe doit savoir mettre à jour seule',
+        '',
+        '5. CRITÈRES DE CHOIX DU PRESTATAIRE',
+        '- Références dans un secteur comparable',
+        '- Prix forfaitaire, périmètre écrit',
+        '- Méthode de transfert de compétence explicite'
+      ].join('\n');
+    }
+
+    document.getElementById('gen-btn').addEventListener('click', function () {
+      var form = document.getElementById('brief-form');
+      if (!form.reportValidity()) return;
+      document.getElementById('brief-text').textContent = buildBrief();
+      document.getElementById('lead-trigger').value = document.getElementById('f-trigger').value;
+      document.getElementById('result-zone').hidden = false;
+      document.getElementById('result-zone').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    document.getElementById('copy-btn').addEventListener('click', function () {
+      var text = document.getElementById('brief-text').textContent;
+      var btn = this;
+      function ok() { btn.textContent = 'Copié ✓'; setTimeout(function () { btn.textContent = 'Copier'; }, 2000); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta); ok();
+      }
+    });
+
+    bindGate('gate-form', null);
+  </script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LANDING PAGE — ONE-PAGER SERVICE LOCAL
+       Objectif : appel téléphonique ou demande de rappel. Structure : hero
+       service + ville (SEO local), bloc NAP + horaires, 3 services, zone
+       d’intervention + carte, avis localisés, formulaire de rappel, FAQ
+       locale, barre d’appel collante mobile, schema LocalBusiness commenté.
+       Page pérenne : passer robots en index. NAP = identique à la fiche Google.
+       Ambiance de démo : « chaleureux local » — crème et vert, ville en
+       italique laiton, cartes NAP aux icônes rondes, carte de zone stylisée
+       aux méridiens avec pastille pulsante, étoiles laiton, barre d'appel verte.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill landing-page les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Bilan carbone & audit énergétique PME à Lyon | Meridian Conseil</title>
+  <meta name="description" content="Consultant carbone basé à Villeurbanne : bilan BEGES, audit énergétique, dossiers d’aides. Rendez-vous sous 10 jours dans la métropole de Lyon.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Bilan carbone & audit énergétique PME à Lyon | Meridian Conseil">
+  <meta property="og:description" content="Consultant carbone basé à Villeurbanne : bilan BEGES, audit énergétique, dossiers d’aides. Rendez-vous sous 10 jours dans la métropole de Lyon.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système (Iowan Old Style/Georgia,
+       system-ui). En production, décommenter pour la fidélité totale :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill landing-page) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1080px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--bg-tint); margin: 0; line-height: 1.68; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    /* Grain — texture papier discrète (sous la barre d'appel sticky, voir z-index) */
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 clamp(16px, 4vw, 32px); }
+    section { padding: var(--space-l) 0; }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1, h2 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; }
+    h1 { font-size: clamp(2.3rem, 5.2vw, 3.6rem); line-height: 1.06; }
+    h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1.12; }
+    h1 em, h2 em { font-style: italic; font-weight: 500; color: var(--color-accent-ink); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease), background-color .35s var(--ease), border-color .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    .btn--ghost { border-color: var(--rule-strong); color: var(--color-dark); background: transparent; }
+    .btn--ghost:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .btn--light { background: var(--color-light); color: var(--color-dark); }
+    /* Barre haute minimale : logo + CTA téléphone (le local convertit par l'appel) */
+    .topbar { padding: 16px 0; background: var(--color-light); border-bottom: 1px solid var(--rule); }
+    .topbar .container { display: flex; align-items: center; justify-content: space-between; gap: var(--space-s); }
+    .topbar__logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.08rem; letter-spacing: -0.01em; color: var(--color-dark); text-decoration: none; }
+    .topbar__logo .topbar__mark { color: var(--color-primary); flex: none; }
+    .topbar__logo span { color: var(--color-primary); font-weight: 500; }
+    .topbar .btn { padding: 11px 22px; font-size: 0.92rem; }
+    /* 1. Hero local : service + ville dans le titre (SEO local) */
+    .hero { padding: clamp(56px, 8vw, 100px) 0; position: relative; overflow: hidden; }
+    .hero__watermark { position: absolute; top: -170px; right: -190px; width: 540px; height: 540px; color: var(--color-primary); opacity: 0.07; pointer-events: none; }
+    .hero .container { position: relative; max-width: 800px; margin-left: auto; margin-right: auto; }
+    .hero__subtitle { font-size: 1.16rem; max-width: 620px; color: var(--ink-soft); }
+    .hero__actions { display: flex; gap: var(--space-s); flex-wrap: wrap; margin: var(--space-m) 0 var(--space-s); }
+    .hero__proof { font-size: 0.92rem; color: var(--ink-soft); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .stars { color: var(--color-accent-ink); letter-spacing: 3px; font-size: 1.02rem; }
+    /* NAP : nom, adresse, téléphone, horaires — icônes SVG rondes vertes */
+    .nap { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-s); }
+    .card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); transition: transform .45s var(--ease), box-shadow .45s var(--ease); }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    .nap .card h3 { display: flex; align-items: center; gap: 12px; }
+    .nap .card p { margin: 0; color: var(--ink-soft); }
+    .nap .card a { color: var(--color-primary); }
+    .nap__icon { flex: none; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--color-sage); background: rgba(158, 195, 174, 0.16); color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; }
+    /* Services : 3 cartes max pour un one-pager */
+    .benefits { background: var(--color-light); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .benefits__grid { display: grid; gap: var(--space-s); grid-template-columns: repeat(3, 1fr); }
+    .benefit { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); transition: transform .45s var(--ease), box-shadow .45s var(--ease); }
+    .benefit:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    .benefit__icon { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--color-sage); background: rgba(158, 195, 174, 0.14); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-s); color: var(--color-primary); }
+    .benefit p { color: var(--ink-soft); margin: 0; }
+    /* Zone d'intervention + carte stylisée Meridian */
+    .zone-list { columns: 3; list-style: none; padding: 0; margin: 0 0 var(--space-s); }
+    .zone-list li { padding: 5px 0; break-inside: avoid; }
+    .zone-list li::before { content: "— "; color: var(--color-accent-ink); font-weight: 600; }
+    .map-card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px; box-shadow: var(--shadow-card); }
+    .map-card__inner { border-radius: calc(var(--radius) - 6px); overflow: hidden; display: block; }
+    .map-card svg { display: block; width: 100%; height: auto; }
+    @keyframes mrd-pulse { 0% { transform: scale(0.5); opacity: 0.75; } 70% { transform: scale(1.9); opacity: 0; } 100% { transform: scale(1.9); opacity: 0; } }
+    .map-pulse { transform-origin: center; transform-box: fill-box; animation: mrd-pulse 2.8s var(--ease) infinite; }
+    /* 6. Avis locaux — cartes hairline, étoiles laiton */
+    .testimonials { background: var(--color-light); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .testimonials__grid { display: grid; gap: var(--space-m); grid-template-columns: repeat(2, 1fr); }
+    .testimonial { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin: 0; transition: transform .45s var(--ease), box-shadow .45s var(--ease); }
+    .testimonial:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    .testimonial__stars { display: block; margin-bottom: 10px; }
+    .testimonial blockquote { margin: 0 0 var(--space-s); font-family: var(--font-display); font-size: 1.12rem; line-height: 1.45; font-weight: 450; }
+    .testimonial figcaption { display: flex; align-items: center; gap: var(--space-s); border-top: 1px solid var(--rule); padding-top: var(--space-s); }
+    .testimonial__avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--gradient); color: var(--color-light); display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
+    .testimonial__name { font-weight: 650; }
+    .testimonial__role { display: block; font-size: 0.85rem; color: var(--ink-soft); }
+    /* 12. FAQ — hairlines, chevron animé */
+    .faq__item { border-bottom: 1px solid var(--rule); }
+    .faq__question { font-weight: 650; padding: var(--space-s) 34px var(--space-s) 0; cursor: pointer; list-style: none; position: relative; transition: color .3s var(--ease); }
+    .faq__question::-webkit-details-marker { display: none; }
+    .faq__question::after { content: ""; position: absolute; right: 6px; top: 50%; width: 9px; height: 9px; border-right: 1.5px solid var(--color-accent-ink); border-bottom: 1.5px solid var(--color-accent-ink); transform: translateY(-70%) rotate(45deg); transition: transform .3s var(--ease); }
+    .faq__item[open] .faq__question::after { transform: translateY(-30%) rotate(225deg); }
+    .faq__question:hover { color: var(--color-primary); }
+    .faq__answer { padding: 0 0 var(--space-s); color: var(--ink-soft); max-width: 720px; }
+    /* 13. Formulaire de rappel */
+    .capture__form { display: grid; gap: var(--space-s); max-width: 460px; background: #fff; border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); box-shadow: var(--shadow-card); }
+    .capture__form .btn { width: 100%; justify-content: center; }
+    .capture__label, label { font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .capture__rgpd, .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .capture__rgpd a, .rgpd a { color: inherit; }
+    /* 14. CTA final — panneau vert profond, filigrane de méridiens */
+    .final-cta { background: var(--bg-dark-2); color: var(--color-light); text-align: center; padding: var(--space-xl) 0; position: relative; overflow: hidden; }
+    .final-cta__watermark { position: absolute; bottom: -240px; right: -160px; width: 520px; height: 520px; color: var(--color-sage); opacity: 0.12; pointer-events: none; }
+    .final-cta .container { position: relative; }
+    .final-cta h2 { color: var(--color-light); }
+    .final-cta h2 em { color: var(--color-accent-bright); }
+    .final-cta__subtitle { color: var(--color-sage); max-width: 560px; margin: 0 auto var(--space-m); }
+    /* 15. Footer minimal — sur un vrai site, préférer templates/ header-footer partagés */
+    .footer { padding: var(--space-m) 0; font-size: 0.85rem; color: var(--ink-soft); border-top: 1px solid var(--rule); }
+    .footer .container { display: flex; flex-wrap: wrap; gap: var(--space-s); justify-content: space-between; align-items: center; }
+    .footer a { color: inherit; }
+    .section-head { max-width: 680px; margin-bottom: var(--space-m); }
+    .section-head p { color: var(--ink-soft); }
+    .grid-2 { display: grid; gap: var(--space-l); grid-template-columns: 1fr 1fr; align-items: center; }
+    .call-sticky { display: none; }
+    /* Révélation au scroll — inactive sans JS ou si reduced-motion */
+    html.mrd-motion [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+    html.mrd-motion [data-reveal].is-in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    /* Responsive — mobile-first en pratique : ces overrides ramènent les grilles à 1-2 colonnes */
+    @media (max-width: 900px) {
+      .nap, .benefits__grid { grid-template-columns: 1fr; }
+      .zone-list { columns: 2; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .hero__watermark { width: 380px; height: 380px; top: -130px; right: -150px; }
+    }
+    @media (max-width: 600px) {
+      section { padding: var(--space-m) 0; }
+      .hero { padding: var(--space-l) 0; }
+      .testimonials__grid, .zone-list { grid-template-columns: 1fr; columns: 1; }
+      .hero__actions .btn { width: 100%; justify-content: center; }
+      /* Barre d'appel collante : le mobile local convertit par le téléphone */
+      .call-sticky { display: block; position: fixed; bottom: 0; left: 0; right: 0; z-index: 95; padding: 12px var(--space-s); background: var(--color-primary); text-align: center; box-shadow: 0 -12px 30px -12px rgba(24, 39, 33, 0.4); }
+      .call-sticky a { color: var(--color-light); font-weight: 700; text-decoration: none; font-size: 1.02rem; display: inline-flex; align-items: center; gap: 10px; justify-content: center; }
+      .call-sticky svg { flex: none; }
+      body { padding-bottom: 64px; }
+    }
+    @media (max-width: 400px) {
+      .btn { padding: 12px 18px; font-size: 0.95rem; }
+      h1 { font-size: 1.85rem; }
+    }
+  </style>
+</head>
+<body data-page-slug="lp-one-pager-local">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <div class="topbar">
+    <div class="container">
+      <a class="topbar__logo" href="#" aria-label="Meridian Conseil">
+        <svg class="topbar__mark" width="26" height="26" aria-hidden="true"><use href="#mrd-mark"/></svg>
+        Meridian<span> Conseil</span><!-- remplacer par le logo SVG {{COMPANY_NAME}} -->
+      </a>
+      <a href="tel:+33123456789" class="btn btn--primary" data-track="cta_click" data-cta-position="topbar">01 23 45 67 89 (fictif)</a>
+    </div>
+  </div>
+
+  <!-- 1. Hero local : service + ville dans le H1 (SEO local), double CTA appel/formulaire -->
+  <header class="hero">
+    <svg class="hero__watermark" aria-hidden="true"><use href="#mrd-globe"/></svg>
+    <div class="container">
+      <p class="eyebrow">Meridian Conseil — antenne de Lyon</p>
+      <h1>Bilan carbone et audit énergétique pour les PME <em>à Lyon</em></h1>
+      <p class="hero__subtitle">Un consultant basé à Villeurbanne, des rendez-vous dans vos locaux sous 10 jours, et des dossiers conformes aux exigences de la Métropole et de la Région.</p>
+      <div class="hero__actions">
+        <a href="tel:+33123456789" class="btn btn--primary" data-track="cta_click" data-cta-position="hero">Appeler l'antenne de Lyon</a>
+        <a href="#conversion" class="btn btn--ghost">Être rappelé·e</a>
+      </div>
+      <p class="hero__proof"><span class="stars" aria-hidden="true">★★★★★</span> 4,9/5 — 37 avis locaux (fictifs — connecter les vrais avis Google)</p>
+    </div>
+  </header>
+
+  <!-- NAP : nom, adresse, téléphone, horaires — cohérents avec la fiche d'établissement -->
+  <section>
+    <div class="container nap">
+      <div class="card"><h3><span class="nap__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.4-7-11a7 7 0 0 1 14 0c0 5.6-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></span>Adresse</h3><p>12 rue des Teinturiers<br>69100 Villeurbanne (adresse fictive)<br><a href="{{URL_ITINERAIRE}}">Itinéraire</a></p></div>
+      <div class="card"><h3><span class="nap__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>Horaires</h3><p>Lundi – vendredi : 8 h 30 – 18 h 30<br>Rendez-vous sur site ou en visio</p></div>
+      <div class="card"><h3><span class="nap__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.81.32 1.6.59 2.37a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.71-1.71a2 2 0 0 1 2.11-.45c.77.27 1.56.47 2.37.59A2 2 0 0 1 22 16.92z"/></svg></span>Contact</h3><p><a href="tel:+33123456789">01 23 45 67 89</a> (fictif)<br><a href="mailto:{{EMAIL_CONTACT}}">{{EMAIL_CONTACT}}</a><br>Réponse sous 24 h ouvrées</p></div>
+    </div>
+  </section>
+
+  <!-- Services : 3 cartes max pour un one-pager -->
+  <section class="benefits">
+    <div class="container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Nos services</p>
+        <h2>Ce que nous faisons pour les PME <em>lyonnaises</em></h2>
+      </div>
+      <div class="benefits__grid">
+        <article class="benefit">
+          <div class="benefit__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg></div>
+          <h3>Bilan carbone réglementaire</h3><p>BEGES et bilans volontaires, avec collecte faite chez vous — pas de plateforme à apprendre.</p>
+        </article>
+        <article class="benefit">
+          <div class="benefit__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></div>
+          <h3>Audit énergétique</h3><p>Bâtiments et process : les gisements d'économie chiffrés, éligibilités aux aides régionales vérifiées.</p>
+        </article>
+        <article class="benefit">
+          <div class="benefit__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg></div>
+          <h3>Dossiers d'aides</h3><p>Montage des dossiers ADEME et Région — nous ne facturons que si le dossier part complet.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Zone d'intervention + carte stylisée Meridian (SVG de démo — remplacer par carte réelle si besoin) -->
+  <section>
+    <div class="container grid-2" data-reveal>
+      <div>
+        <p class="eyebrow">Zone d'intervention</p>
+        <h2>Toute la métropole, <em>et au-delà</em></h2>
+        <p>Déplacement inclus dans toute la métropole et au-delà :</p>
+        <ul class="zone-list">
+          <li>Lyon 1ᵉʳ – 9ᵉ</li><li>Villeurbanne</li><li>Vénissieux</li><li>Saint-Priest</li><li>Bron</li><li>Caluire-et-Cuire</li><li>Écully</li><li>Meyzieu</li><li>Givors</li>
+        </ul>
+      </div>
+      <div class="map-card" aria-hidden="true">
+        <span class="map-card__inner">
+        <!-- Carte stylisée Meridian de démo — remplacer par une vraie carte WebP si besoin -->
+        <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="440" height="300" fill="#edf3ee"/>
+          <!-- quartiers (patchs sauge très pâle) -->
+          <rect x="30" y="34" width="120" height="86" rx="14" fill="#9ec3ae" opacity="0.14"/>
+          <rect x="250" y="52" width="150" height="96" rx="16" fill="#9ec3ae" opacity="0.12"/>
+          <rect x="70" y="170" width="140" height="94" rx="16" fill="#9ec3ae" opacity="0.16"/>
+          <rect x="280" y="182" width="130" height="82" rx="14" fill="#9ec3ae" opacity="0.11"/>
+          <!-- rivières : la Saône rejoint le Rhône (confluence) -->
+          <path d="M150 0 C 158 60, 148 96, 172 132 C 188 156, 196 168, 198 196" fill="none" stroke="#4da585" stroke-width="8" stroke-linecap="round" opacity="0.4"/>
+          <path d="M258 0 C 244 56, 226 104, 208 148 C 196 176, 196 186, 198 196 C 202 232, 192 264, 186 300" fill="none" stroke="#4da585" stroke-width="11" stroke-linecap="round" opacity="0.45"/>
+          <!-- routes : hairlines blanches -->
+          <path d="M0 96 C 90 84, 190 116, 280 96 S 400 66, 440 84" fill="none" stroke="#ffffff" stroke-width="5"/>
+          <path d="M0 210 C 110 188, 220 226, 320 204 S 420 182, 440 192" fill="none" stroke="#ffffff" stroke-width="4"/>
+          <path d="M96 0 C 104 90, 88 190, 108 300" fill="none" stroke="#ffffff" stroke-width="3"/>
+          <path d="M330 0 C 318 100, 340 200, 326 300" fill="none" stroke="#ffffff" stroke-width="3"/>
+          <path d="M0 152 L 440 140" stroke="#ffffff" stroke-width="2"/>
+          <!-- périphérique -->
+          <ellipse cx="238" cy="146" rx="168" ry="112" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="1 7" stroke-linecap="round"/>
+          <!-- micro-labels de communes -->
+          <text x="58" y="72" font-family="'Inter', system-ui, sans-serif" font-size="9.5" letter-spacing="1.4" fill="#5b655f" opacity="0.8">ÉCULLY</text>
+          <text x="292" y="86" font-family="'Inter', system-ui, sans-serif" font-size="9.5" letter-spacing="1.4" fill="#5b655f" opacity="0.8">CALUIRE</text>
+          <text x="118" y="226" font-family="'Inter', system-ui, sans-serif" font-size="9.5" letter-spacing="1.4" fill="#5b655f" opacity="0.8">LYON</text>
+          <text x="312" y="238" font-family="'Inter', system-ui, sans-serif" font-size="9.5" letter-spacing="1.4" fill="#5b655f" opacity="0.8">VÉNISSIEUX</text>
+          <text x="352" y="152" font-family="'Inter', system-ui, sans-serif" font-size="9.5" letter-spacing="1.4" fill="#5b655f" opacity="0.8">BRON</text>
+          <!-- pastille laiton pulsante : l'antenne de Villeurbanne -->
+          <circle class="map-pulse" cx="252" cy="128" r="16" fill="none" stroke="#c8a24b" stroke-width="2"/>
+          <circle cx="252" cy="128" r="7.5" fill="#c8a24b" stroke="#fcfbf8" stroke-width="2.5"/>
+          <text x="266" y="120" font-family="'Inter', system-ui, sans-serif" font-size="10.5" font-weight="600" letter-spacing="1.4" fill="#9a7c30">VILLEURBANNE</text>
+        </svg>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Avis locaux : mentionner quartiers/communes renforce l'ancrage -->
+  <section class="testimonials">
+    <div class="container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Ils sont voisins</p>
+        <h2>Avis de clients de la métropole <em>(fictifs)</em></h2>
+      </div>
+      <div class="testimonials__grid">
+        <figure class="testimonial"><span class="testimonial__stars stars" aria-hidden="true">★★★★★</span><blockquote>« Consultant venu deux fois à l'atelier de Vénissieux. Dossier ADEME accepté du premier coup. »</blockquote>
+        <figcaption><span class="testimonial__avatar" aria-hidden="true">RD</span><span><span class="testimonial__name">Romain Duval</span><span class="testimonial__role">Gérant, menuiserie — Vénissieux</span></span></figcaption></figure>
+        <figure class="testimonial"><span class="testimonial__stars stars" aria-hidden="true">★★★★★</span><blockquote>« Enfin un cabinet qui connaît les aides de la Région et qui répond au téléphone. »</blockquote>
+        <figcaption><span class="testimonial__avatar" aria-hidden="true">AS</span><span><span class="testimonial__name">Amel Saïdi</span><span class="testimonial__role">DG, agroalimentaire — Meyzieu</span></span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. Formulaire de rappel -->
+  <section class="capture" id="conversion">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Rappel sous 24 h</p>
+        <h2>Être rappelé·e <em>sous 24 h</em></h2>
+        <p>Laissez votre numéro : un consultant lyonnais — pas un centre d'appels — vous rappelle pour un premier échange gratuit de 15 minutes.</p>
+      </div>
+      <form class="capture__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+        <input type="hidden" name="lead_source" value="lp-local-lyon">
+        <div><label for="phone">Téléphone</label>
+        <input type="tel" id="phone" name="phone" required autocomplete="tel" placeholder="06 12 34 56 78"></div>
+        <div><label for="email">Email (optionnel)</label>
+        <input type="email" id="email" name="email" autocomplete="email" placeholder="prenom@entreprise.fr"></div>
+        <button type="submit" class="btn btn--primary">Me faire rappeler</button>
+        <p class="capture__rgpd">Vos données servent uniquement à vous répondre — désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Politique de confidentialité</a></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- 12. FAQ locale -->
+  <section class="faq">
+    <div class="container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Questions locales</p>
+        <h2>Questions fréquentes</h2>
+      </div>
+      <details class="faq__item"><summary class="faq__question">Intervenez-vous en dehors de la métropole de Lyon ?</summary><p class="faq__answer">Oui, dans tout le département et jusqu'à Saint-Étienne et Bourgoin-Jallieu — des frais de déplacement peuvent s'appliquer au-delà.</p></details>
+      <details class="faq__item"><summary class="faq__question">Quelles aides locales existent pour un audit énergétique ?</summary><p class="faq__answer">Selon votre taille et votre secteur : dispositifs régionaux et programmes ADEME. Le premier échange sert justement à vérifier vos éligibilités.</p></details>
+      <details class="faq__item"><summary class="faq__question">Proposez-vous un premier rendez-vous gratuit ?</summary><p class="faq__answer">Oui — 15 minutes au téléphone ou 45 minutes dans vos locaux si votre site est dans la métropole.</p></details>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <svg class="final-cta__watermark" aria-hidden="true"><use href="#mrd-globe"/></svg>
+    <div class="container">
+      <h2 class="final-cta__title">Un consultant carbone à moins de 30 minutes <em>de chez vous</em></h2>
+      <p class="final-cta__subtitle">Premier échange gratuit — appel ou rappel sous 24 h ouvrées.</p>
+      <a href="tel:+33123456789" class="btn btn--light" data-track="cta_click" data-cta-position="final">Appeler l'antenne de Lyon</a>
+    </div>
+  </section>
+
+  <!-- Barre d'appel mobile (visible < 600 px) -->
+  <div class="call-sticky"><a href="tel:+33123456789" data-track="cta_click" data-cta-position="sticky-mobile"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.81.32 1.6.59 2.37a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.71-1.71a2 2 0 0 1 2.11-.45c.77.27 1.56.47 2.37.59A2 2 0 0 1 22 16.92z"/></svg>Appeler — premier échange gratuit</a></div>
+
+  <!-- Schema.org LocalBusiness — décommenter et compléter avec les VRAIES coordonnées
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "{{COMPANY_NAME}} — antenne de Lyon",
+    "telephone": "+33-1-23-45-67-89",
+    "address": { "@type": "PostalAddress", "streetAddress": "12 rue des Teinturiers", "addressLocality": "Villeurbanne", "postalCode": "69100", "addressCountry": "FR" },
+    "openingHours": "Mo-Fr 08:30-18:30",
+    "areaServed": "Métropole de Lyon"
+  }
+  </script>
+  -->
+
+  <footer class="footer">
+    <div class="container">
+      <p>© {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive)</p>
+      <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a> · <a href="mailto:{{EMAIL_CONTACT}}">Contact</a></p>
+    </div>
+  </footer>
+  <script>
+    // Tracking — relaie les attributs data-track vers GA4 si gtag est chargé.
+    // Sinon : les attributs restent en place pour brancher l'analytics plus tard.
+    document.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-track="cta_click"]');
+      if (el && typeof gtag === 'function') {
+        gtag('event', 'cta_click', { cta_position: el.getAttribute('data-cta-position') || 'body' });
+      }
+    });
+    document.addEventListener('submit', function (e) {
+      var f = e.target.closest('form[data-track="generate_lead"]');
+      if (f && typeof gtag === 'function') {
+        gtag('event', 'generate_lead', { lead_source: document.body.getAttribute('data-page-slug') || location.pathname });
+      }
+    });
+    // Révélation au scroll — sobre ; inactive sans JS ou si reduced-motion.
+    (function () {
+      if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.documentElement.classList.add('mrd-motion');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('[data-reveal]').forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>

@@ -14,6 +14,7 @@ Pourquoi ce choix plutôt qu'un outil SaaS de reporting :
 
 - **Zéro abonnement, zéro backend** — un fichier HTML + des snapshots JSON, ça se déploie partout et ça ne casse jamais.
 - **Aux couleurs de la marque** — le dashboard utilise les design tokens de `01-brand/style-guide.md`, pas un thème générique.
+- **Anti-look-IA** — le template du dashboard respecte la doctrine design `01-brand/design-anti-generique.md` : pas de défauts génériques, densité d'information, checklist de pré-livraison mesurable (contraste, focus states, `prefers-reduced-motion`, breakpoints).
 - **L'analyse humaine au centre** — les chiffres seuls ne disent rien ; chaque mois embarque une section « Analyse du mois » rédigée (via la skill `performance-report`) et des recommandations actionnables.
 - **Historique navigable** — navigation mois précédent / mois suivant, chaque mois est un snapshot JSON immuable.
 

@@ -37,9 +37,20 @@ Système complet : `../01-brand/style-guide.md`.
 │   ├── guides-pdf/<slug>/        ← guide PDF : brief, source HTML/DOCX chartée, PDF final
 │   └── outils-web/<slug>/        ← calculateurs, quiz, diagnostics (index.html autonome)
 ├── pages/<slug>/                 ← pages hors conversion directe (à-propos, légal, microsite)
-├── templates/                    ← composants partagés (header, footer) — jamais réimplémentés par page
+├── templates/                    ← composants partagés (header, footer) + galerie de templates
+│   ├── landing-pages/            ← 10 modèles de landing pages par objectif (+ README)
+│   └── lead-magnets/             ← 10 modèles d'outils interactifs avec capture (+ README)
 └── deployed.md                   ← registre des pages publiées (URL, date, responsable)
 ```
+
+## Galerie de templates — partir d'un modèle, pas d'une page blanche
+
+`templates/` contient une galerie de modèles single-file prêts à décliner, alignés sur `sections-library.md` (mêmes tokens `{{BRAND_*}}`, mêmes classes) et sur les conventions des skills `landing-page` / `lead-magnet` (`{{FORM_ENDPOINT}}`, `data-track`, UTM/GA4) :
+
+- **`templates/landing-pages/`** — 10 modèles par objectif de conversion : démo B2B, essai SaaS, capture de lead magnet, webinar, prestation de service, comparateur vs concurrent, tarifs, vente long-form, one-pager local, waitlist/lancement. Tableau de choix dans `templates/landing-pages/README.md`.
+- **`templates/lead-magnets/`** — 10 outils interactifs (HTML/JS vanilla) avec gate de capture email : calculateur de ROI, diagnostic par score, quiz de positionnement, comparateur de scénarios, grader, checklist interactive, générateur de brief, estimateur de budget, simulateur avant/après, mini-benchmark sectoriel. Tableau de choix dans `templates/lead-magnets/README.md`.
+
+Règle d'usage : **copier le modèle vers `landing-pages/<slug>/` ou `lead-magnets/outils-web/<slug>/`**, puis dérouler la skill correspondante — le modèle fournit structure et logique, il ne dispense d'aucune étape (brief, copy, tokens, tracking, brand-check). Les contenus d'exemple (« Meridian Conseil », données et formules placeholder) sont fictifs et ne se publient jamais tels quels.
 
 ## Règle n°1 — réutiliser avant de créer
 

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LANDING PAGE — CAPTURE LEAD MAGNET
+       Objectif : téléchargement contre email. Structure : hero 2 colonnes avec
+       formulaire au-dessus du pli + mockup couverture, sommaire, bénéfices,
+       témoignage + bio auteur, CTA final. Pas de topbar (zéro fuite).
+       Ambiance de démo : « crème éditorial » — papier crème, couverture de
+       guide sombre aux méridiens laiton légèrement inclinée, formulaire en
+       carte bordée laiton, sommaire numéroté en Fraunces italique.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill landing-page les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Guide gratuit — Réussir son premier bilan carbone | Meridian Conseil</title>
+  <meta name="description" content="La méthode pas à pas pour faire votre premier bilan carbone en interne : 24 pages, 4 checklists, zéro jargon.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Guide gratuit — Réussir son premier bilan carbone | Meridian Conseil">
+  <meta property="og:description" content="La méthode pas à pas pour faire votre premier bilan carbone en interne : 24 pages, 4 checklists, zéro jargon.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système (Iowan Old Style/Georgia,
+       system-ui). En production, décommenter pour la fidélité totale :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill landing-page) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--bg-tint); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    /* Grain — texture papier discrète sur toute la page */
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 clamp(16px, 4vw, 32px); }
+    section { padding: var(--space-l) 0; }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1, h2 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; }
+    h1 { font-size: clamp(2.4rem, 5.2vw, 3.7rem); line-height: 1.06; }
+    h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.12; }
+    h1 em, h2 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease), background-color .35s var(--ease), border-color .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    .btn--light { background: var(--color-light); color: var(--color-dark); }
+    .btn .btn__arrow { transition: transform .35s var(--ease); }
+    .btn:hover .btn__arrow { transform: translateX(3px); }
+    /* 1. Hero 2 colonnes : formulaire au-dessus du pli + couverture inclinée */
+    .hero--capture { padding: var(--space-xl) 0 var(--space-l); position: relative; overflow: hidden; }
+    .hero--capture .grid-2 { grid-template-columns: 1.05fr 0.95fr; align-items: center; }
+    .hero__subtitle { font-size: 1.15rem; max-width: 540px; color: var(--ink-soft); }
+    .hero__proof { font-size: 0.9rem; color: var(--ink-soft); display: flex; align-items: center; gap: 10px; margin-top: var(--space-s); }
+    .hero__proof::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--color-accent); flex: none; }
+    /* 13. Formulaire de capture : email seul, carte bordée laiton */
+    .capture__form { display: grid; gap: var(--space-s); max-width: 460px; background: #fff; border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); box-shadow: var(--shadow-card); margin-top: var(--space-m); }
+    .capture__form .btn { width: 100%; }
+    .capture__label, label { font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .capture__rgpd, .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; margin: 0; }
+    .capture__rgpd a, .rgpd a { color: inherit; }
+    /* Couverture du guide — composition SVG sombre aux méridiens laiton */
+    .guide-cover { display: flex; justify-content: center; position: relative; }
+    .guide-cover::before { content: ""; position: absolute; inset: 40px -40px -20px 30px; background: radial-gradient(420px 320px at 60% 50%, rgba(200, 162, 75, 0.16), transparent 70%); pointer-events: none; }
+    .guide-cover svg { filter: drop-shadow(0 24px 40px rgba(28, 36, 32, 0.32)); transform: rotate(2.2deg); position: relative; }
+    /* Sommaire : numéros 01-04 en Fraunces italique laiton + hairlines */
+    .chapters { list-style: none; margin: 0; padding: 0; max-width: 680px; }
+    .chapters li { padding: var(--space-s) 0 var(--space-s) 72px; position: relative; border-top: 1px solid var(--rule-strong); }
+    .chapters li:last-child { border-bottom: 1px solid var(--rule-strong); }
+    .chapters li::before { content: attr(data-num); position: absolute; left: 0; top: 14px; font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.7rem; line-height: 1.2; color: var(--color-accent-ink); }
+    .chapters strong { font-weight: 650; }
+    /* Bande sommaire sur papier clair */
+    .toc { background: var(--color-light); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    /* 4. Bénéfices courts — items éditoriaux à filet, pas de cartes clonées */
+    .benefits__grid { display: grid; gap: var(--space-m); grid-template-columns: repeat(3, 1fr); }
+    .benefit { border-top: 1px solid var(--rule-strong); padding-top: var(--space-s); }
+    .benefit h3 { color: var(--color-primary); }
+    .benefit p { color: var(--ink-soft); margin: 0; }
+    /* 6. Preuve : témoignage + bio auteur (E-E-A-T) */
+    .testimonials .grid-2 { align-items: stretch; }
+    .testimonial { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin: 0; position: relative; transition: transform .45s var(--ease), box-shadow .45s var(--ease); }
+    .testimonial:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    .testimonial::before { content: "\201C"; font-family: var(--font-display); font-size: 4.4rem; line-height: 1; color: var(--color-accent); position: absolute; top: 14px; right: 22px; opacity: 0.5; }
+    .testimonial blockquote { margin: 0 0 var(--space-s); font-family: var(--font-display); font-size: 1.15rem; line-height: 1.45; font-weight: 450; padding-right: var(--space-m); }
+    .testimonial figcaption { display: flex; align-items: center; gap: var(--space-s); border-top: 1px solid var(--rule); padding-top: var(--space-s); }
+    .testimonial__avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--gradient); color: var(--color-light); display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
+    .testimonial__name { font-weight: 650; }
+    .testimonial__role { display: block; font-size: 0.85rem; color: var(--ink-soft); }
+    .author { display: flex; gap: var(--space-s); align-items: center; max-width: 560px; background: transparent; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    .author__avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--gradient); color: var(--color-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.3rem; flex: none; }
+    .author p { margin: 0; color: var(--ink-soft); }
+    .author strong { color: var(--color-dark); }
+    /* 14. CTA final — panneau sombre, filigrane de méridiens */
+    .final-cta { background: var(--bg-dark); color: var(--color-light); text-align: center; padding: var(--space-xl) 0; position: relative; overflow: hidden; }
+    .final-cta__watermark { position: absolute; top: -180px; right: -160px; width: 520px; height: 520px; color: var(--color-accent); opacity: 0.08; pointer-events: none; }
+    .final-cta .container { position: relative; z-index: 1; }
+    .final-cta h2 em { color: var(--color-accent-bright); }
+    .final-cta__subtitle { color: var(--color-sage); max-width: 560px; margin: 0 auto var(--space-m); }
+    /* 15. Footer minimal — sur un vrai site, préférer templates/ header-footer partagés */
+    .footer { padding: var(--space-m) 0; font-size: 0.85rem; color: var(--ink-soft); border-top: 1px solid var(--rule); }
+    .footer .container { display: flex; flex-wrap: wrap; gap: var(--space-s); justify-content: space-between; align-items: center; }
+    .footer a { color: inherit; }
+    .section-head { max-width: 680px; margin-bottom: var(--space-m); }
+    .section-head p { color: var(--ink-soft); }
+    .grid-2 { display: grid; gap: var(--space-l); grid-template-columns: 1fr 1fr; align-items: center; }
+    .card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    /* Révélation au scroll — inactive sans JS ou si reduced-motion */
+    html.mrd-motion [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+    html.mrd-motion [data-reveal].is-in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    /* Responsive — mobile-first en pratique : ces overrides ramènent les grilles à 1-2 colonnes */
+    @media (max-width: 900px) {
+      .benefits__grid { grid-template-columns: 1fr 1fr; }
+      .grid-2, .hero--capture .grid-2 { grid-template-columns: 1fr; }
+      .guide-cover { order: -1; }
+      .guide-cover svg { width: 240px; height: auto; }
+    }
+    @media (max-width: 600px) {
+      section { padding: var(--space-m) 0; }
+      .hero--capture { padding: var(--space-l) 0 var(--space-m); }
+      .benefits__grid { grid-template-columns: 1fr; }
+      .capture__form { max-width: 100%; padding: var(--space-s); }
+      .chapters li { padding-left: 56px; }
+      .guide-cover svg { width: 200px; }
+      .author { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 400px) {
+      .btn { padding: 12px 18px; font-size: 0.95rem; }
+      h1 { font-size: 1.85rem; }
+      .chapters li { padding-left: 48px; }
+      .chapters li::before { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body data-page-slug="lp-lead-magnet">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <!-- Pas de topbar : page de capture pure, zéro fuite de conversion -->
+
+  <!-- 1. Hero 2 colonnes : promesse + formulaire AU-DESSUS DU PLI, mockup du guide -->
+  <header class="hero--capture">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Guide gratuit — 24 pages</p>
+        <h1>Réussir son premier bilan carbone <em>sans cabinet</em></h1>
+        <p class="hero__subtitle">La méthode pas à pas que Meridian Conseil applique chez ses clients PME : quoi mesurer, où trouver les données, quelles erreurs éviter.</p>
+        <!-- 13. Formulaire de capture : email seul (skill cro-form) -->
+        <form class="capture__form" id="conversion" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+          <input type="hidden" name="lead_source" value="lp-guide-bilan-carbone">
+          <input type="hidden" name="lead_magnet" value="guide-bilan-carbone">
+          <div><label for="email" class="capture__label">Où envoyer le guide ?</label>
+          <input type="email" id="email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr"></div>
+          <button type="submit" class="btn btn--primary">Recevoir le guide gratuit</button>
+          <p class="capture__rgpd">Vos données servent uniquement à vous répondre — désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Politique de confidentialité</a></p>
+        </form>
+        <p class="hero__proof">Déjà téléchargé 2 300 fois (donnée fictive d'exemple)</p>
+      </div>
+      <!-- Mockup couverture : composition SVG — remplacer par un rendu WebP de la vraie couverture -->
+      <div class="guide-cover" aria-hidden="true">
+        <svg width="300" height="410" viewBox="0 0 300 410" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Couverture du guide">
+          <defs>
+            <clipPath id="gc-page"><rect x="10" y="6" width="284" height="398" rx="7"/></clipPath>
+          </defs>
+          <rect x="10" y="6" width="284" height="398" rx="7" fill="#182721"/>
+          <g clip-path="url(#gc-page)">
+            <g fill="none" stroke="#c8a24b" stroke-width="1" opacity="0.42">
+              <circle cx="232" cy="318" r="118"/>
+              <ellipse cx="232" cy="318" rx="88" ry="118"/>
+              <ellipse cx="232" cy="318" rx="56" ry="118"/>
+              <ellipse cx="232" cy="318" rx="24" ry="118"/>
+              <ellipse cx="232" cy="318" rx="118" ry="86"/>
+              <line x1="114" y1="318" x2="350" y2="318"/>
+            </g>
+            <rect x="10" y="6" width="13" height="398" fill="#0f1a15"/>
+          </g>
+          <rect x="34" y="30" width="242" height="350" rx="4" fill="none" stroke="#c8a24b" stroke-width="1" opacity="0.35"/>
+          <g fill="none" stroke="#e3cd93" stroke-width="1.5">
+            <circle cx="60" cy="58" r="10"/>
+            <ellipse cx="60" cy="58" rx="4.2" ry="10"/>
+            <line x1="50" y1="58" x2="70" y2="58"/>
+          </g>
+          <text x="80" y="62" font-family="system-ui, sans-serif" font-size="9" letter-spacing="2.6" fill="#9ec3ae">MERIDIAN CONSEIL</text>
+          <text x="56" y="150" font-family="Georgia, 'Times New Roman', serif" font-size="31" fill="#fcfbf8">Réussir son</text>
+          <text x="56" y="188" font-family="Georgia, 'Times New Roman', serif" font-size="31" fill="#fcfbf8">premier bilan</text>
+          <text x="56" y="226" font-family="Georgia, 'Times New Roman', serif" font-size="31" font-style="italic" fill="#e3cd93">carbone</text>
+          <rect x="56" y="248" width="44" height="2" fill="#c8a24b"/>
+          <text x="56" y="278" font-family="system-ui, sans-serif" font-size="11" fill="#9ec3ae">La méthode pas à pas, sans cabinet</text>
+          <text x="56" y="366" font-family="system-ui, sans-serif" font-size="9" letter-spacing="1.8" fill="#e3cd93">24 PAGES · 4 CHECKLISTS</text>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sommaire : rendre la valeur concrète et scannable -->
+  <section class="toc">
+    <div class="container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Le sommaire</p>
+        <h2>Ce que vous allez <em>apprendre</em></h2>
+      </div>
+      <ul class="chapters">
+        <li data-num="01"><strong>Cadrer le périmètre</strong> — scopes 1, 2, 3 expliqués avec des exemples de PME, pas de jargon.</li>
+        <li data-num="02"><strong>Trouver les données</strong> — les 9 documents que vous avez déjà (factures, liasse, notes de frais).</li>
+        <li data-num="03"><strong>Calculer sans se tromper</strong> — les facteurs d'émission à utiliser et les 5 erreurs classiques.</li>
+        <li data-num="04"><strong>Passer du bilan à l'action</strong> — prioriser 3 chantiers qui pèsent, ignorer le reste la première année.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. Bénéfices courts -->
+  <section class="benefits">
+    <div class="container" data-reveal>
+      <div class="benefits__grid">
+        <article class="benefit"><h3>Actionnable</h3><p>Chaque chapitre finit par une checklist — vous avancez pendant la lecture.</p></article>
+        <article class="benefit"><h3>Sans prérequis</h3><p>Écrit pour un dirigeant ou un office manager, pas pour un ingénieur carbone.</p></article>
+        <article class="benefit"><h3>Éprouvé en mission</h3><p>La même trame que nos accompagnements facturés — condensée en 24 pages.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Preuve : témoignage + auteur (crédibilité E-E-A-T) -->
+  <section class="testimonials">
+    <div class="container grid-2" data-reveal>
+      <figure class="testimonial"><blockquote>« On a fait notre premier bilan en interne avec ce guide. Le devis cabinet qu'on avait reçu était à 12 000 €. »</blockquote>
+      <figcaption><span class="testimonial__avatar" aria-hidden="true">LP</span><span><span class="testimonial__name">Lucie Perrin</span><span class="testimonial__role">DG, Studio Ferran (témoignage fictif)</span></span></figcaption></figure>
+      <div class="author">
+        <span class="author__avatar" aria-hidden="true">AM</span>
+        <p><strong>Écrit par Anna Meridian</strong>, fondatrice de Meridian Conseil — 11 ans d'accompagnement carbone de PME industrielles (bio fictive : remplacer par le vrai auteur).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. CTA final : rappel promesse + renvoi au formulaire du hero -->
+  <section class="final-cta">
+    <svg class="final-cta__watermark" aria-hidden="true"><use href="#mrd-globe"/></svg>
+    <div class="container">
+      <h2 class="final-cta__title">Votre premier bilan carbone, <em>sans cabinet</em></h2>
+      <p class="final-cta__subtitle">24 pages, 4 checklists, zéro jargon. Envoyé par email en 2 minutes.</p>
+      <a href="#conversion" class="btn btn--light" data-track="cta_click" data-cta-position="final">Recevoir le guide gratuit <span class="btn__arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive)</p>
+      <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a> · <a href="mailto:{{EMAIL_CONTACT}}">Contact</a></p>
+    </div>
+  </footer>
+  <script>
+    // Tracking — relaie les attributs data-track vers GA4 si gtag est chargé.
+    // Sinon : les attributs restent en place pour brancher l'analytics plus tard.
+    document.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-track="cta_click"]');
+      if (el && typeof gtag === 'function') {
+        gtag('event', 'cta_click', { cta_position: el.getAttribute('data-cta-position') || 'body' });
+      }
+    });
+    document.addEventListener('submit', function (e) {
+      var f = e.target.closest('form[data-track="generate_lead"]');
+      if (f && typeof gtag === 'function') {
+        gtag('event', 'generate_lead', { lead_source: document.body.getAttribute('data-page-slug') || location.pathname });
+      }
+    });
+    // Révélation au scroll — sobre ; inactive sans JS ou si reduced-motion.
+    (function () {
+      if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.documentElement.classList.add('mrd-motion');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('[data-reveal]').forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>

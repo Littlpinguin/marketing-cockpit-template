@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LEAD MAGNET — MINI-BENCHMARK SECTORIEL
+       Format original : 4 métriques saisies vs médianes sectorielles (3
+       secteurs) → jauges de position + verdict. Position et secteur partent
+       avec le lead (double segmentation). IMPORTANT : les médianes fournies
+       sont FICTIVES — les remplacer par des données réelles sourcées
+       (_sources/reports/) avant toute mise en ligne.
+       Ambiance de démo : « données claires » — papier blanc cassé éditorial,
+       lignes hairline, votre position en barre verte pleine, médianes en
+       losanges laiton, verdicts en pilules sauge/crème, chiffres en serif.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill lead-magnet les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Mini-benchmark — votre maturité carbone face à votre secteur | Meridian Conseil</title>
+  <meta name="description" content="4 chiffres, 1 minute : positionnez-vous face aux médianes de votre secteur et recevez votre rapport de positionnement.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Mini-benchmark — votre maturité carbone face à votre secteur | Meridian Conseil">
+  <meta property="og:description" content="4 chiffres, 1 minute : positionnez-vous face aux médianes de votre secteur et recevez votre rapport de positionnement.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système. En production, décommenter :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill lead-magnet) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--color-light); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; }
+    h1 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    /* Chiffres saisis en serif, sélecteur avec chevron dessiné */
+    input[type="number"] { font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; font-feature-settings: 'tnum' on; }
+    select { -webkit-appearance: none; appearance: none; padding-right: 44px; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'%3E%3Cpath d='M1 1.5l6 6 6-6' stroke='%232f6f5e' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 16px center; }
+    .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .rgpd a { color: inherit; }
+    /* En-tête éditorial données — bandeau topo en pied de hero */
+    .tool-topbar { text-align: center; padding: var(--space-l) var(--space-s) 76px; position: relative; overflow: hidden; }
+    .tool-topbar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(560px 300px at 50% -120px, rgba(77, 165, 133, 0.13), transparent 70%); pointer-events: none; }
+    .tool-topbar__topo { position: absolute; inset: auto 0 -8px 0; height: 92px; color: var(--color-primary); opacity: 0.09; pointer-events: none; }
+    .tool-topbar h1 { max-width: 700px; margin-left: auto; margin-right: auto; position: relative; }
+    .tool__intro { max-width: 560px; margin: 0 auto var(--space-s); text-align: center; color: var(--ink-soft); position: relative; }
+    .tool { max-width: 720px; margin: 0 auto; padding: 0 var(--space-s) var(--space-l); }
+    .tool__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin-bottom: var(--space-m); animation: mrd-rise .8s var(--ease) backwards; }
+    @keyframes mrd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    /* Formulaire de saisie — grille 2 colonnes, secteur et bouton pleine largeur */
+    .bench-form { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-s) var(--space-m); }
+    .bench-form .field { margin: 0; }
+    .bench-form .field--wide, .bench-form .btn { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 8px; line-height: 1.5; }
+    /* Restitution — lignes hairline : barre verte pleine (vous), losange laiton (médiane) */
+    .bench-title { text-align: center; font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; margin-bottom: 4px; }
+    .bench-legend { display: block; font-family: var(--font-primary); font-weight: 400; font-size: 0.85rem; color: var(--ink-soft); margin-top: 4px; }
+    #bench-rows { margin-top: var(--space-s); }
+    .bench-row { padding: 12px 0 4px; border-bottom: 1px solid var(--rule); margin: 0; }
+    .bench-row:last-child { border-bottom: 0; }
+    .bench-row .labels { display: flex; justify-content: space-between; align-items: center; gap: var(--space-s); font-size: 0.93rem; margin-bottom: 0; }
+    .bench-tag { flex: none; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; padding: 4px 12px; border-radius: 999px; background: var(--bg-tint); border: 1px solid var(--color-accent); color: var(--color-accent-ink); }
+    .bench-tag--ahead { background: rgba(158, 195, 174, 0.3); border-color: var(--color-sage); color: var(--color-primary); }
+    .bench-scale { position: relative; height: 32px; overflow: hidden; }
+    .bench-scale::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--rule-strong); }
+    .bench-marker { position: absolute; top: 50%; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: var(--color-primary); }
+    .bench-marker::before { content: ""; position: absolute; right: 100%; top: 50%; height: 5px; margin-top: -2.5px; width: 100vw; border-radius: 999px; background: linear-gradient(90deg, rgba(47, 111, 94, 0.16), var(--color-primary)); }
+    .bench-median { position: absolute; top: 50%; height: 18px; margin: -9px 0 0 -1px; width: 1px; background: var(--color-accent); }
+    .bench-median::after { content: ""; position: absolute; top: -4px; left: 50%; width: 7px; height: 7px; margin-left: -3.5px; background: var(--color-light); border: 1px solid var(--color-accent-ink); transform: rotate(45deg); }
+    .bench-verdict { text-align: center; margin: var(--space-s) 0 0; padding-top: var(--space-s); border-top: 1px solid var(--rule); }
+    #bench-verdict { font-weight: 600; color: var(--color-primary); }
+    /* Gate : l'aperçu est visible, le détail est débloqué par l'email */
+    .gate__locked { display: block; }
+    .gate__full { display: none; }
+    .gate--done .gate__locked { display: none; }
+    .gate--done .gate__full { display: block; animation: mrd-rise .8s var(--ease) backwards; }
+    .gate__locked { background: var(--bg-tint); border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__form { display: grid; gap: var(--space-s); max-width: 420px; margin: 0 auto; }
+    .gate__pitch { text-align: center; max-width: 470px; margin: 0 auto var(--space-s); }
+    .gate__pitch h3 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+    .gate__pitch p { color: var(--ink-soft); }
+    .gate__full { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__full h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+    .reco { border-left: 3px solid var(--color-accent); padding: var(--space-xs) var(--space-s); background: var(--bg-tint); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: var(--space-xs); }
+    .gate__mail-note { display: flex; align-items: center; gap: 10px; margin-top: var(--space-s); color: var(--color-primary); font-weight: 600; }
+    .gate__mail-note svg { flex: none; }
+    .tool-footer { text-align: center; font-size: 0.85rem; color: var(--ink-soft); padding: var(--space-m) var(--space-s); border-top: 1px solid var(--rule); }
+    .tool-footer a { color: inherit; }
+    @media (max-width: 600px) {
+      .tool__card, .gate__locked, .gate__full { padding: var(--space-s); }
+      .bench-form { grid-template-columns: 1fr; }
+      .tool-topbar { padding-bottom: 64px; }
+      .bench-row .labels { flex-wrap: wrap; gap: 6px; }
+    }
+    @media (max-width: 400px) { .btn { padding: 12px 18px; font-size: 0.95rem; } }
+  </style>
+</head>
+<body data-page-slug="lm-mini-benchmark">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="tool-topbar">
+    <svg class="tool-topbar__topo" preserveAspectRatio="none" aria-hidden="true"><use href="#mrd-topo"/></svg>
+    <p class="eyebrow">Mini-benchmark — vous vs votre secteur</p>
+    <h1>Où en êtes-vous <em>par rapport à votre secteur</em> ?</h1>
+    <p class="tool__intro">Choisissez votre secteur, saisissez 4 chiffres : l'outil vous positionne face aux moyennes sectorielles. Rapport de positionnement complet par email.</p>
+  </header>
+
+  <main class="tool">
+    <div class="tool__card">
+      <div class="bench-form">
+        <div class="field field--wide">
+          <label for="in-sector">Votre secteur</label>
+          <select id="in-sector">
+            <option value="industrie">Industrie manufacturière</option>
+            <option value="services">Services B2B</option>
+            <option value="distribution">Distribution / négoce</option>
+          </select>
+        </div>
+        <div class="field"><label for="m0">Jours par an consacrés au reporting carbone</label><input type="number" id="m0" min="0" max="365" value="20"></div>
+        <div class="field"><label for="m1">Ancienneté de la démarche (années)</label><input type="number" id="m1" min="0" max="30" value="1"></div>
+        <div class="field"><label for="m2">Part des clients qui exigent des données carbone (%)</label><input type="number" id="m2" min="0" max="100" value="30"></div>
+        <div class="field"><label for="m3">Budget annuel carbone (k€)</label><input type="number" id="m3" min="0" max="500" value="10"></div>
+        <button type="button" class="btn btn--primary" id="bench-btn">Me positionner</button>
+      </div>
+    </div>
+
+    <div id="result-zone" hidden>
+      <div class="tool__card" aria-live="polite">
+        <h3 class="bench-title">Votre position <span class="bench-legend">barre verte = vous · losange laiton = médiane de votre secteur</span></h3>
+        <div id="bench-rows"></div>
+        <p class="bench-verdict"><strong id="bench-verdict">—</strong></p>
+      </div>
+
+      <div class="gate" id="gate">
+        <div class="gate__locked">
+          <div class="gate__pitch">
+            <h3>Recevez votre rapport de positionnement complet</h3>
+            <p>Vos 4 positions commentées, le quartile de tête du secteur en détail, et les 2 écarts à combler en priorité.</p>
+          </div>
+          <form id="gate-form" class="gate__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+            <input type="hidden" name="lead_magnet" value="mini-benchmark">
+            <input type="hidden" name="position" id="lead-position" value="">
+            <input type="hidden" name="secteur" id="lead-sector" value="">
+            <label for="gate-email">Votre email professionnel</label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr">
+            <button type="submit" class="btn btn--primary">Recevoir mon rapport de positionnement</button>
+            <p class="rgpd">Vous recevez le document + 3 emails de conseils, désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+          </form>
+        </div>
+        <div class="gate__full">
+          <h3>Vos écarts les plus significatifs</h3>
+          <div id="gaps"></div>
+          <p class="gate__mail-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>Le rapport complet avec le détail du quartile de tête vient de partir par email.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="tool-footer">
+    <p>Un outil offert par {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive). <a href="{{URL_SITE}}">Découvrir nos accompagnements</a></p>
+    <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+  </footer>
+  <script>
+    // ── Capture email (skill lead-magnet) ──────────────────────────────
+    // Principe : donner d'abord (aperçu du résultat), capturer ensuite.
+    // Le POST part vers {{FORM_ENDPOINT}} (formulaire → n8n → outil emailing).
+    // Les champs cachés (lead_magnet, profil/score) segmentent le nurturing.
+    function bindGate(formId, onUnlock) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = new FormData(form);
+        var endpoint = form.getAttribute('action');
+        var done = function () {
+          var gate = form.closest('.gate');
+          if (gate) gate.classList.add('gate--done');
+          if (onUnlock) onUnlock(data);
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', { lead_source: data.get('lead_magnet') || 'outil-web' });
+          }
+        };
+        if (endpoint && endpoint.indexOf('{ {'.replace(' ', '')) === -1) {
+          fetch(endpoint, { method: 'POST', body: data }).then(done).catch(done);
+        } else {
+          console.warn('FORM_ENDPOINT non configuré : déblocage local (mode démo).');
+          done();
+        }
+      });
+    }
+
+    // ── MOYENNES SECTORIELLES FICTIVES — à remplacer par vos données réelles
+    //    (_sources/reports/) et à sourcer dans le rapport envoyé par email. ──
+    // Pour chaque métrique : médiane, max d'échelle, sens (1 = plus c'est haut mieux c'est).
+    var METRICS = [
+      { label: 'Jours de reporting / an', max: 80, better: -1 },
+      { label: 'Ancienneté de la démarche (ans)', max: 8, better: 1 },
+      { label: 'Clients exigeant des données (%)', max: 100, better: 1 },
+      { label: 'Budget annuel (k€)', max: 100, better: 1 }
+    ];
+    var SECTORS = {
+      industrie:    { label: 'Industrie manufacturière', medians: [35, 3, 55, 30] },
+      services:     { label: 'Services B2B',             medians: [15, 2, 35, 12] },
+      distribution: { label: 'Distribution / négoce',    medians: [25, 2, 60, 18] }
+    };
+
+    document.getElementById('bench-btn').addEventListener('click', function () {
+      var sectorKey = document.getElementById('in-sector').value;
+      var S = SECTORS[sectorKey];
+      var values = METRICS.map(function (_, i) { return Number(document.getElementById('m' + i).value) || 0; });
+      var wrap = document.getElementById('bench-rows');
+      wrap.innerHTML = '';
+      var aheadCount = 0;
+      var gaps = [];
+
+      METRICS.forEach(function (m, i) {
+        var v = values[i], med = S.medians[i];
+        var ahead = m.better === 1 ? v >= med : v <= med;
+        if (ahead) aheadCount++;
+        else gaps.push({ label: m.label, you: v, med: med });
+        var row = document.createElement('div');
+        row.className = 'bench-row';
+        var pctYou = Math.min(100, v / m.max * 100);
+        var pctMed = Math.min(100, med / m.max * 100);
+        row.innerHTML = '<div class="labels"><span>' + m.label + '</span>' +
+          '<span class="bench-tag' + (ahead ? ' bench-tag--ahead' : '') + '">' +
+          (ahead ? 'devant' : 'derrière') + ' la médiane</span></div>' +
+          '<div class="bench-scale"><span class="bench-median" style="left:' + pctMed + '%"></span>' +
+          '<span class="bench-marker" style="left:' + pctYou + '%"></span></div>';
+        wrap.appendChild(row);
+      });
+
+      var verdicts = ['Vous partez de loin — le rapport priorise vos deux premiers chantiers.',
+        'Position mitigée : un écart bien choisi peut vous faire basculer devant.',
+        'Vous êtes dans le bon wagon — la différenciation se joue maintenant.',
+        'Vous êtes en tête de secteur : capitalisez commercialement.'];
+      var verdict = verdicts[Math.max(0, aheadCount - 1)];
+      document.getElementById('bench-verdict').textContent =
+        aheadCount + '/4 indicateurs devant la médiane « ' + S.label + ' » — ' + verdict;
+
+      var gapWrap = document.getElementById('gaps');
+      gapWrap.innerHTML = '';
+      if (gaps.length === 0) {
+        gapWrap.innerHTML = '<div class="reco">Aucun écart négatif — le rapport détaille comment le quartile de tête transforme cette avance en revenus.</div>';
+      } else {
+        gaps.slice(0, 2).forEach(function (g) {
+          var d = document.createElement('div'); d.className = 'reco';
+          d.innerHTML = '<strong>' + g.label + '</strong> — vous : ' + g.you + ', médiane secteur : ' + g.med + '.';
+          gapWrap.appendChild(d);
+        });
+      }
+      document.getElementById('lead-position').value = aheadCount + '/4';
+      document.getElementById('lead-sector').value = sectorKey;
+      document.getElementById('result-zone').hidden = false;
+      document.getElementById('result-zone').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    bindGate('gate-form', null);
+  </script>
+</body>
+</html>

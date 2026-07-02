@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ============================================================
+       TEMPLATE LEAD MAGNET — SIMULATEUR AVANT / APRÈS
+       Format original : 1 curseur de niveau d’investissement → projection
+       avant/après à 12 mois sur 3 indicateurs (barres comparées) + verdict.
+       Le niveau choisi part avec le lead (intention !). Personnaliser :
+       indicateurs, niveaux, projections et verdicts (constante LEVELS).
+       Ambiance de démo : « bascule » — colonne « aujourd'hui » grise et
+       désaturée face à la colonne « dans 12 mois » en vert profond aux
+       chiffres laiton, flèche de transition entre les deux, sélecteur de
+       niveau en pilule hairline.
+       À PERSONNALISER AVANT USAGE :
+       1. Tokens de marque : le :root ci-dessous porte les valeurs de DÉMO
+          « Meridian Conseil » (marque fictive), mappées en commentaire vers
+          les tokens {{BRAND_*}} de 01-brand/style-guide.md — le wizard ou la
+          skill lead-magnet les remplace par celles de votre marque
+       2. {{FORM_ENDPOINT}} → endpoint du formulaire (n8n / outil emailing)
+       3. Contenus d'exemple « Meridian Conseil » (marque fictive) → vrais
+          contenus via les skills copywriting + copy-editing
+       4. Chiffres, témoignages, logos : UNIQUEMENT des données vérifiées
+          (messaging-framework.md) — jamais les exemples fictifs ci-dessous
+       5. GA4 : si web_analytics est actif, insérer le snippet gtag avec
+          {{GA4_MEASUREMENT_ID}} juste avant </head> (voir skill landing-page)
+       6. Police : la démo utilise Fraunces + Inter avec fallbacks système —
+          aucune ressource externe n'est chargée. En production, décommenter
+          le bloc <link> fonts ci-dessous (font-display: swap garanti), ou le
+          remplacer par la webfont de {{BRAND_FONT_PRIMARY}}.
+       UTM : toute URL diffusée vers cette page porte utm_source / utm_medium /
+       utm_campaign / utm_content en kebab-case (skill landing-page) ;
+       reporter les combinaisons dans deployed.md.
+       ============================================================ -->
+  <title>Simulateur — votre organisation carbone dans 12 mois | Meridian Conseil</title>
+  <meta name="description" content="Réglez votre niveau d’investissement et visualisez l’avant/après sur le temps passé, la fiabilité et la valeur commerciale.">
+  <meta name="robots" content="noindex, nofollow"><!-- noindex par défaut pour une page de campagne — passer en index si page pérenne -->
+  <meta property="og:title" content="Simulateur — votre organisation carbone dans 12 mois | Meridian Conseil">
+  <meta property="og:description" content="Réglez votre niveau d’investissement et visualisez l’avant/après sur le temps passé, la fiabilité et la valeur commerciale.">
+  <!-- Typo de démo : Fraunces (display) + Inter (texte). Aucune ressource
+       externe n'est chargée : fallbacks système. En production, décommenter :
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+  -->
+  <style>
+    :root {
+      /* ── Tokens de marque {{BRAND_*}} — source : 01-brand/style-guide.md ──
+         Valeurs par défaut : « Meridian Conseil », marque fictive de démo.
+         Le wizard /start-copilot (ou la skill lead-magnet) REMPLACE chaque
+         valeur ci-dessous par celle de votre marque :
+           --font-primary   ← {{BRAND_FONT_PRIMARY}}
+           --color-primary  ← {{BRAND_COLOR_PRIMARY}}
+           --color-accent   ← {{BRAND_COLOR_ACCENT}}
+           --color-dark     ← {{BRAND_COLOR_DARK}}
+           --color-light    ← {{BRAND_COLOR_LIGHT}}
+           --gradient       ← {{BRAND_GRADIENT}}
+           --radius         ← {{BRAND_BORDER_RADIUS}}
+         Les dérivés (--font-display, --color-accent-ink, --bg-*…) s'ajustent
+         ensuite à l'œil sur la nouvelle palette. ─────────────────────────── */
+      --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+      --color-primary: #2f6f5e;
+      --color-accent: #c8a24b;
+      --color-dark: #1c2420;
+      --color-light: #fcfbf8;
+      --gradient: linear-gradient(120deg, #4da585 0%, #c8a24b 100%);
+      --radius: 14px;
+      /* Dérivés Meridian */
+      --color-primary-soft: #4da585;
+      --color-sage: #9ec3ae;
+      --color-accent-ink: #9a7c30;
+      --color-accent-bright: #e3cd93;
+      --ink-soft: #5b655f;
+      --bg-tint: #f2efe7;
+      --bg-dark: #182721;
+      --bg-dark-2: #213730;
+      --rule: rgba(28, 36, 32, 0.12);
+      --rule-strong: rgba(28, 36, 32, 0.22);
+      --rule-dark: rgba(252, 251, 248, 0.16);
+      --shadow-card: 0 18px 50px -20px rgba(28, 36, 32, 0.22);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --space-xs: 8px; --space-s: 16px; --space-m: 32px;
+      --space-l: 64px; --space-xl: 96px;
+      --container: 1120px;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: var(--font-primary); color: var(--color-dark); background: var(--color-light); margin: 0; line-height: 1.65; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum' on; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    ::selection { background: var(--color-accent-bright); color: var(--color-dark); }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 var(--space-s); }
+    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; }
+    h1 em { font-style: italic; font-weight: 500; color: var(--color-primary); }
+    h3 { font-size: 1.12rem; font-weight: 650; }
+    p { margin: 0 0 var(--space-s); }
+    img, svg { max-width: 100%; height: auto; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 600; color: var(--color-accent-ink); margin-bottom: var(--space-s); }
+    .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--color-accent); flex: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 15px 30px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-size: 1rem; font-family: var(--font-primary); transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+    .btn--primary { background: var(--color-primary); color: var(--color-light); box-shadow: 0 10px 24px -12px rgba(47, 111, 94, 0.55); }
+    .btn--primary:hover { box-shadow: 0 16px 32px -12px rgba(47, 111, 94, 0.6); }
+    label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-dark); }
+    input, select, textarea { font-family: var(--font-primary); font-size: 1rem; padding: 13px 16px; border: 1px solid var(--rule-strong); border-radius: calc(var(--radius) - 4px); width: 100%; background: #fff; color: var(--color-dark); transition: border-color .3s var(--ease), box-shadow .3s var(--ease); }
+    input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(47, 111, 94, 0.14); }
+    .rgpd { font-size: 0.8rem; color: var(--ink-soft); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .rgpd a { color: inherit; }
+    /* En-tête de l'outil — bandeau de méridiens en pied de hero */
+    .tool-topbar { text-align: center; padding: var(--space-l) var(--space-s) 76px; position: relative; overflow: hidden; }
+    .tool-topbar::before { content: ""; position: absolute; inset: 0; background: radial-gradient(560px 300px at 50% -120px, rgba(77, 165, 133, 0.13), transparent 70%); pointer-events: none; }
+    .tool-topbar h1 { max-width: 720px; margin-left: auto; margin-right: auto; position: relative; }
+    .tool-topbar__topo { position: absolute; inset: auto 0 -8px 0; height: 74px; color: var(--color-primary); opacity: 0.08; pointer-events: none; }
+    .tool__intro { max-width: 600px; margin: 0 auto var(--space-s); text-align: center; color: var(--ink-soft); position: relative; }
+    /* Cartes de l'outil — entrée en scène douce */
+    .tool { max-width: 860px; margin: 0 auto; padding: 0 var(--space-s) var(--space-l); }
+    .tool__card { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); margin-bottom: var(--space-m); animation: mrd-rise .8s var(--ease) backwards; }
+    @keyframes mrd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    .field { margin-bottom: 0; }
+    .field label { display: block; margin-bottom: 12px; line-height: 1.5; text-align: center; }
+    .range-value { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--color-primary); letter-spacing: 0; }
+    /* Sélecteur de niveau — pilule hairline segmentée */
+    .lvl { border: 1px solid var(--rule-strong); border-radius: 999px; background: #fff; padding: 6px 22px 2px; max-width: 560px; margin: 0 auto; }
+    .lvl__ticks { display: flex; justify-content: space-between; gap: 8px; max-width: 600px; margin: 10px auto 0; padding: 0 6px; }
+    .lvl__ticks span { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); text-align: center; }
+    .lvl__ticks span:first-child { text-align: left; }
+    .lvl__ticks span:last-child { text-align: right; }
+    /* Curseur — piste hairline, poignée verte cerclée de laiton */
+    input[type="range"] { -webkit-appearance: none; appearance: none; padding: 0; height: 30px; background: transparent; border: 0; cursor: pointer; }
+    input[type="range"]:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 4px; border-radius: 999px; box-shadow: none; }
+    input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--color-primary-soft), var(--color-accent)); opacity: 0.9; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--color-primary); border: 3px solid var(--color-light); box-shadow: 0 0 0 1px var(--color-accent), 0 4px 10px -2px rgba(28, 36, 32, 0.4); transition: transform .25s var(--ease); }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+    input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--color-primary-soft), var(--color-accent)); }
+    input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); border: 3px solid var(--color-light); box-shadow: 0 0 0 1px var(--color-accent), 0 4px 10px -2px rgba(28, 36, 32, 0.4); }
+    /* La bascule — aujourd'hui (désaturé) → dans 12 mois (vert profond) */
+    .sim { display: grid; grid-template-columns: 1fr 64px 1fr; gap: var(--space-s); align-items: stretch; margin-bottom: var(--space-s); animation: mrd-rise .8s var(--ease) .1s backwards; }
+    .sim-col { border-radius: var(--radius); padding: 26px 24px 20px; }
+    .sim-col--before { background: var(--bg-tint); border: 1px solid var(--rule); }
+    .sim-col--after { background: var(--color-primary); color: var(--color-light); box-shadow: 0 24px 48px -26px rgba(47, 111, 94, 0.6); }
+    .sim-col__tag { display: inline-flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.7rem; font-weight: 600; margin: 0 0 22px; }
+    .sim-col--before .sim-col__tag { color: var(--ink-soft); }
+    .sim-col--before .sim-col__tag::after { content: ""; width: 34px; height: 1px; background: var(--color-accent); transform: rotate(-8deg); flex: none; }
+    .sim-col--after .sim-col__tag { color: var(--color-accent-bright); }
+    .sim-col--after .sim-col__tag::after { content: ""; width: 34px; height: 1px; background: var(--color-accent-bright); flex: none; }
+    .ind { margin-bottom: 20px; }
+    .ind:last-child { margin-bottom: 8px; }
+    .ind__top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+    .ind__label { display: block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; }
+    .sim-col--before .ind__label { color: var(--ink-soft); margin-bottom: 8px; }
+    .sim-col--after .ind__label { color: rgba(252, 251, 248, 0.85); }
+    .delta { font-family: var(--font-display); font-weight: 600; font-size: 1.08rem; color: var(--color-accent-bright); white-space: nowrap; }
+    .bar { height: 10px; border-radius: 999px; overflow: hidden; }
+    .sim-col--before .bar { background: rgba(28, 36, 32, 0.08); }
+    .sim-col--after .bar { background: rgba(252, 251, 248, 0.18); }
+    .bar__fill { height: 100%; border-radius: 999px; transition: width 0.6s var(--ease); }
+    .bar__fill--before { background: rgba(91, 101, 95, 0.5); }
+    .bar__fill--after { background: linear-gradient(90deg, var(--color-accent-bright), var(--color-accent)); }
+    .sim-arrow { display: flex; align-items: center; justify-content: center; color: var(--color-accent-ink); }
+    .sim-arrow svg { flex: none; }
+    /* Verdict sous la bascule */
+    .sim-verdict { text-align: center; max-width: 560px; margin: 0 auto var(--space-m); animation: mrd-rise .8s var(--ease) .15s backwards; }
+    .sim-verdict strong { font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; line-height: 1.5; color: var(--color-dark); }
+    /* Gate : l'aperçu est visible, le détail est débloqué par l'email */
+    .gate__locked { display: block; }
+    .gate__full { display: none; }
+    .gate--done .gate__locked { display: none; }
+    .gate--done .gate__full { display: block; animation: mrd-rise .8s var(--ease) backwards; }
+    .gate__locked { background: var(--bg-tint); border: 1px solid var(--rule); border-top: 3px solid var(--color-accent); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__form { display: grid; gap: var(--space-s); max-width: 420px; margin: 0 auto; }
+    .gate__pitch { text-align: center; max-width: 460px; margin: 0 auto var(--space-s); }
+    .gate__pitch h3 { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+    .gate__pitch p { color: var(--ink-soft); }
+    .gate__full { background: #fff; border: 1px solid var(--rule); border-radius: var(--radius); padding: var(--space-m); }
+    .gate__full h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+    .reco { border-left: 3px solid var(--color-accent); padding: var(--space-xs) var(--space-s); background: var(--bg-tint); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: var(--space-xs); }
+    .gate__mail-note { display: flex; align-items: center; gap: 10px; margin-top: var(--space-s); color: var(--color-primary); font-weight: 600; }
+    .gate__mail-note svg { flex: none; }
+    .tool-footer { text-align: center; font-size: 0.85rem; color: var(--ink-soft); padding: var(--space-m) var(--space-s); border-top: 1px solid var(--rule); }
+    .tool-footer a { color: inherit; }
+    @media (max-width: 600px) {
+      .tool__card, .gate__locked, .gate__full { padding: var(--space-s); }
+      .sim { grid-template-columns: 1fr; gap: 6px; }
+      .sim-arrow { padding: 8px 0; }
+      .sim-arrow svg { transform: rotate(90deg); }
+      .sim-col { padding: 20px var(--space-s) 14px; }
+      .lvl { padding: 6px 14px 2px; }
+      .lvl__ticks span { font-size: 0.6rem; letter-spacing: 0.06em; }
+    }
+    @media (max-width: 400px) { .btn { padding: 12px 18px; font-size: 0.95rem; } }
+  </style>
+</head>
+<body data-page-slug="lm-simulateur-avant-apres">
+  <!-- Signature visuelle Meridian : marque + méridiens (motif déclinable) -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="mrd-mark" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <ellipse cx="16" cy="16" rx="5.6" ry="13" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="3" y1="16" x2="29" y2="16" stroke="currentColor" stroke-width="2.2"/>
+    </symbol>
+    <symbol id="mrd-globe" viewBox="0 0 480 480">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="240" cy="240" r="238"/>
+        <ellipse cx="240" cy="240" rx="180" ry="238"/>
+        <ellipse cx="240" cy="240" rx="120" ry="238"/>
+        <ellipse cx="240" cy="240" rx="60" ry="238"/>
+        <line x1="240" y1="2" x2="240" y2="478"/>
+        <line x1="2" y1="240" x2="478" y2="240"/>
+        <ellipse cx="240" cy="240" rx="238" ry="180"/>
+        <ellipse cx="240" cy="240" rx="238" ry="100"/>
+      </g>
+    </symbol>
+    <symbol id="mrd-topo" viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0,60 C180,20 340,96 540,72 C740,48 900,110 1200,64"/>
+        <path d="M0,120 C200,84 380,150 580,128 C780,106 960,164 1200,122"/>
+        <path d="M0,180 C160,148 360,208 560,186 C760,164 980,222 1200,178"/>
+        <path d="M0,240 C220,204 400,264 620,244 C840,224 1000,276 1200,236"/>
+        <path d="M0,300 C180,272 420,320 640,300 C860,280 1040,318 1200,292"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <header class="tool-topbar">
+    <p class="eyebrow">Simulateur avant / après — 1 curseur</p>
+    <h1>Votre organisation carbone, <em>dans 12 mois</em></h1>
+    <p class="tool__intro">Réglez le niveau d'investissement envisagé et voyez bouger vos trois indicateurs clés : temps passé, fiabilité, valeur commerciale. Feuille de route détaillée par email.</p>
+    <svg class="tool-topbar__topo" preserveAspectRatio="none" aria-hidden="true"><use href="#mrd-topo"/></svg>
+  </header>
+
+  <main class="tool">
+    <div class="tool__card">
+      <div class="field">
+        <label for="in-effort">Niveau d'investissement sur 12 mois : <span class="range-value" id="out-effort">Structuré</span></label>
+        <div class="lvl">
+          <input type="range" id="in-effort" min="0" max="3" step="1" value="2" aria-describedby="effort-hint">
+        </div>
+        <span class="lvl__ticks" id="effort-hint"><span>Rien</span><span>Minimum réglementaire</span><span>Structuré</span><span>Offensif commercial</span></span>
+      </div>
+    </div>
+
+    <!-- La bascule : aujourd'hui (gris désaturé) → dans 12 mois (vert profond) -->
+    <div class="sim" id="sim" aria-live="polite">
+      <div class="sim-col sim-col--before">
+        <p class="sim-col__tag">Aujourd'hui</p>
+        <!-- INDICATEURS PLACEHOLDER — data JS ci-dessous. Barre grise = aujourd'hui, barre laiton = dans 12 mois -->
+        <div class="ind"><span class="ind__label">Temps passé / an</span><div class="bar"><div class="bar__fill bar__fill--before" id="b0-before"></div></div></div>
+        <div class="ind"><span class="ind__label">Fiabilité des données</span><div class="bar"><div class="bar__fill bar__fill--before" id="b1-before"></div></div></div>
+        <div class="ind"><span class="ind__label">Valeur commerciale</span><div class="bar"><div class="bar__fill bar__fill--before" id="b2-before"></div></div></div>
+      </div>
+      <div class="sim-arrow" aria-hidden="true">
+        <svg width="52" height="26" viewBox="0 0 52 26" fill="none">
+          <circle cx="3" cy="13" r="2.4" fill="currentColor"/>
+          <path d="M8 13h35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M36 5l13 8-13 8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="sim-col sim-col--after">
+        <p class="sim-col__tag">Dans 12 mois</p>
+        <div class="ind"><div class="ind__top"><span class="ind__label">Temps passé / an</span><span class="delta" id="d0">—</span></div><div class="bar"><div class="bar__fill bar__fill--after" id="b0-after"></div></div></div>
+        <div class="ind"><div class="ind__top"><span class="ind__label">Fiabilité des données</span><span class="delta" id="d1">—</span></div><div class="bar"><div class="bar__fill bar__fill--after" id="b1-after"></div></div></div>
+        <div class="ind"><div class="ind__top"><span class="ind__label">Valeur commerciale</span><span class="delta" id="d2">—</span></div><div class="bar"><div class="bar__fill bar__fill--after" id="b2-after"></div></div></div>
+      </div>
+    </div>
+    <p class="sim-verdict"><strong id="sim-verdict">—</strong></p>
+
+      <div class="gate" id="gate">
+        <div class="gate__locked">
+          <div class="gate__pitch">
+            <h3>Recevez la feuille de route de votre scénario</h3>
+            <p>Trimestre par trimestre : les actions du niveau choisi, les prérequis et les indicateurs à suivre pour tenir la projection.</p>
+          </div>
+          <form id="gate-form" class="gate__form" method="post" action="{{FORM_ENDPOINT}}" data-track="generate_lead">
+            <input type="hidden" name="lead_magnet" value="simulateur-avant-apres">
+            <input type="hidden" name="niveau" id="lead-level" value="">
+            <label for="gate-email">Votre email professionnel</label>
+            <input type="email" id="gate-email" name="email" required autocomplete="email" placeholder="prenom@entreprise.fr">
+            <button type="submit" class="btn btn--primary">Recevoir ma feuille de route 12 mois</button>
+            <p class="rgpd">Vous recevez le document + 3 emails de conseils, désinscription en un clic. <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+          </form>
+        </div>
+        <div class="gate__full">
+          <h3>Ce que suppose votre scénario</h3>
+          <div id="assumptions"></div>
+          <p class="gate__mail-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 7 10-7"/></svg>La feuille de route trimestre par trimestre vient de partir par email.</p>
+        </div>
+      </div>
+  </main>
+
+  <footer class="tool-footer">
+    <p>Un outil offert par {{COMPANY_NAME}} — exemple : Meridian Conseil (marque fictive). <a href="{{URL_SITE}}">Découvrir nos accompagnements</a></p>
+    <p><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a> · <a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></p>
+  </footer>
+  <script>
+    // ── Capture email (skill lead-magnet) ──────────────────────────────
+    // Principe : donner d'abord (aperçu du résultat), capturer ensuite.
+    // Le POST part vers {{FORM_ENDPOINT}} (formulaire → n8n → outil emailing).
+    // Les champs cachés (lead_magnet, profil/score) segmentent le nurturing.
+    function bindGate(formId, onUnlock) {
+      var form = document.getElementById(formId);
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = new FormData(form);
+        var endpoint = form.getAttribute('action');
+        var done = function () {
+          var gate = form.closest('.gate');
+          if (gate) gate.classList.add('gate--done');
+          if (onUnlock) onUnlock(data);
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', { lead_source: data.get('lead_magnet') || 'outil-web' });
+          }
+        };
+        if (endpoint && endpoint.indexOf('{ {'.replace(' ', '')) === -1) {
+          fetch(endpoint, { method: 'POST', body: data }).then(done).catch(done);
+        } else {
+          console.warn('FORM_ENDPOINT non configuré : déblocage local (mode démo).');
+          done();
+        }
+      });
+    }
+
+    // ── MODÈLE PLACEHOLDER — projections par niveau d'investissement ──
+    // Chaque niveau : label, 3 indicateurs [avant %, après %], delta affiché, verdict, hypothèses.
+    var LEVELS = [
+      { label: 'Rien', verdict: 'Dans 12 mois : la même situation, avec un an de retard sur vos concurrents.',
+        rows: [[70, 75, '+7 %'], [30, 28, '−7 %'], [10, 8, '−20 %']],
+        notes: ['Aucun prérequis — c\'est bien le problème.', 'Le temps passé augmente quand même : les demandes clients, elles, continuent.'] },
+      { label: 'Minimum réglementaire', verdict: 'Dans 12 mois : en règle, mais le sujet reste un centre de coût.',
+        rows: [[70, 55, '−21 %'], [30, 55, '+83 %'], [10, 25, '×2,5']],
+        notes: ['Prérequis : un référent à 10 % du temps.', 'Le bilan sort, mais sans plan d\'action il vieillit vite.'] },
+      { label: 'Structuré', verdict: 'Dans 12 mois : un pilotage installé qui tient face aux acheteurs.',
+        rows: [[70, 35, '−50 %'], [30, 80, '+167 %'], [10, 55, '×5,5']],
+        notes: ['Prérequis : référent formé + outillage de collecte.', 'Le trimestre 2 est le plus exigeant (mise en place), tout s\'allège ensuite.'] },
+      { label: 'Offensif commercial', verdict: 'Dans 12 mois : le dossier carbone gagne des appels d\'offres.',
+        rows: [[70, 30, '−57 %'], [30, 90, '×3'], [10, 85, '×8,5']],
+        notes: ['Prérequis : sponsor direction + budget dédié voté.', 'Suppose le niveau « structuré » atteint en cours d\'année — la feuille de route enchaîne les deux.'] }
+    ];
+
+    function render() {
+      var lvl = Number(document.getElementById('in-effort').value);
+      var L = LEVELS[lvl];
+      document.getElementById('out-effort').textContent = L.label;
+      L.rows.forEach(function (r, i) {
+        document.getElementById('b' + i + '-before').style.width = r[0] + '%';
+        document.getElementById('b' + i + '-after').style.width = r[1] + '%';
+        document.getElementById('d' + i).textContent = r[2];
+      });
+      document.getElementById('sim-verdict').textContent = L.verdict;
+      document.getElementById('lead-level').value = L.label;
+      var wrap = document.getElementById('assumptions');
+      wrap.innerHTML = '';
+      L.notes.forEach(function (n) {
+        var d = document.createElement('div'); d.className = 'reco'; d.textContent = n;
+        wrap.appendChild(d);
+      });
+    }
+
+    document.getElementById('in-effort').addEventListener('input', render);
+    render();
+    bindGate('gate-form', null);
+  </script>
+</body>
+</html>
