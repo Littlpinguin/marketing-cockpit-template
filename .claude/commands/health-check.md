@@ -40,6 +40,10 @@ Rapporter le code de sortie et les placeholders restants.
 
 ### 4. Serveurs MCP réellement connectés
 
+- **Hygiène `.mcp.json`** (avant tout) :
+  - Si des outils MCP sont attendus (n8n-mcp, google-ads, lemlist en mode clé API, Palmier Pro…) : `.mcp.json` existe à la racine ? Absent = 🟠 → suggérer `cp .mcp.json.example .mcp.json` puis remplir les valeurs réelles.
+  - `git check-ignore -q .mcp.json` doit réussir ET `git ls-files .mcp.json` doit être vide. `.mcp.json` tracké ou non ignoré = 🔴 (risque de commit de tokens) → `git rm --cached .mcp.json` + vérifier `.gitignore`, et révoquer tout token déjà poussé.
+  - Détecter le pattern cassé : `grep -n '\${' .mcp.json` — des références `${VAR}` présentes = 🟠 (Claude Code ne les développe pas depuis le `.env` du projet → 401) → remplacer par les valeurs réelles dans ce fichier local (voir `SECURITY.md`).
 - `claude mcp list` — comparer avec `.mcp.json` et les MCP attendus par les outils configurés (ex. `magnific` si installé).
 - Pour chaque serveur : distinguer **déclaré** (présent dans la config) de **connecté** (le serveur démarre / répond). Un serveur déclaré mais en échec de connexion est un 🟠.
 
@@ -89,7 +93,8 @@ Un module actif dont un prérequis a disparu = 🟠 avec suggestion (`/modules` 
 
 - `git status --porcelain` — signaler les modifications non commitées sur les fichiers opérationnels.
 - `grep -r "API_KEY\|TOKEN\|SECRET\|PASSWORD" --include="*.md" --include="*.py" .` (en excluant `.env*`, `.setup-archive/`, `docs/`, `00-intel/`) — signaler toute chaîne ressemblant à un secret en dur.
-- Vérifier que `00-intel/` est bien couvert par `.gitignore` et qu'aucun fichier de contenu de `00-intel/` n'est tracké.
+- **Aucun token réel dans un fichier tracké** : `git grep -nE "(eyJ[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|api[_-]?key[\"'[:space:]]*[:=][\"'[:space:]]*[A-Za-z0-9_-]{20,})"` — toute correspondance sur une valeur qui n'est pas un placeholder = 🔴 (révoquer la clé immédiatement, cf. `SECURITY.md`).
+- Vérifier que `00-intel/` est bien couvert par `.gitignore` et qu'aucun fichier de contenu de `00-intel/` n'est tracké ; même vérification pour `.mcp.json` (check 4).
 
 ## Format du rapport
 

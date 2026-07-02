@@ -53,7 +53,7 @@ Pas de brief validé → pas de montage.
 
 ### Voie A — Palmier Pro via MCP (préférée, macOS Apple Silicon)
 
-Si le serveur MCP Palmier Pro est configuré (`.mcp.json`) :
+Si le serveur MCP Palmier Pro est configuré (dans le `.mcp.json` local, non versionné) :
 
 1. Vérifier que l'app est ouverte et le serveur répond (un appel de listing simple d'abord).
 2. Créer le projet au format cible (ex. 1080×1920 pour 9:16).

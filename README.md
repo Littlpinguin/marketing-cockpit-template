@@ -206,7 +206,7 @@ The wizard connects to tools holding customer data (CRM, email marketing, analyt
 
 References: [Anthropic training policy](https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training) · [Anthropic Trust Center](https://trust.anthropic.com). The wizard repeats this notice (with explicit confirmation) whenever a sensitive connector is configured.
 
-**Security non-negotiables** (full rules in [`SECURITY.md`](SECURITY.md)): secrets in `.env` only (gitignored) — never in chat or commits; dry-run before any production push; verify API endpoints; never share transcripts containing client data.
+**Security non-negotiables** (full rules in [`SECURITY.md`](SECURITY.md)): secrets in `.env` (scripts) or in the local, untracked `.mcp.json` (MCP servers) — both gitignored, never in chat, commits, or any tracked file; dry-run before any production push; verify API endpoints; never share transcripts containing client data.
 
 ## What "good" requires
 

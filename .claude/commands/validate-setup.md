@@ -33,6 +33,18 @@ If the exit code is non-zero:
   - Mark the placeholder as intentional (add it to the `allow` list in `scripts/lint-placeholders.py`)
 - Do **not** proceed to step 2 until the linter passes.
 
+### Step 1b — Secrets hygiene check
+
+Non-negotiable before lockdown (see `SECURITY.md`):
+
+```bash
+git check-ignore -q .mcp.json && echo "OK: .mcp.json ignored" || echo "FAIL"
+git ls-files .mcp.json        # must print NOTHING (.mcp.json never tracked)
+git diff --cached | grep -iE "api_key|secret|token|password"   # must print nothing suspicious
+```
+
+If `.mcp.json` is tracked or not ignored: stop, run `git rm --cached .mcp.json`, fix `.gitignore`, and tell the user to revoke any token already pushed. Also remind: MCP server tokens live in the local `.mcp.json` (real values — `${VAR}` references are NOT expanded from the project `.env`), script tokens live in `.env`.
+
 ### Step 2 — Generate sample artifacts
 
 Produce three samples using the corresponding production skills:
@@ -140,7 +152,7 @@ Output:
 >
 > Security reminders:
 >
-> - API keys live in `.env` only (gitignored)
+> - API keys live in `.env` (scripts) or in the local, untracked `.mcp.json` (MCP servers) — both gitignored, never in a tracked file
 > - Use `dry-run-push.py` before every production push
 > - Full rules: `SECURITY.md`
 >

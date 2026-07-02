@@ -50,4 +50,4 @@ Pas de serveur MCP officiel à ce jour, mais une API REST + webhooks qui se pilo
 - **Relecture humaine avant chaque campagne** : ciblage, séquence, mention d'information. Le copilot ne lance jamais un envoi seul.
 - **Brand-check obligatoire** sur chaque séquence, comme pour tout contenu du copilot.
 - **RGPD** : pertinence du ciblage et mention d'information sont votre responsabilité même si la plateforme gère l'opt-out — voir `conformite-rgpd.md`.
-- **Aucun secret dans ce dossier** : clé API dans `.env` (référencée par `.mcp.json`), jamais en clair dans un fichier committé.
+- **Aucun secret dans ce dossier** : OAuth quand le serveur MCP le propose (Lemlist), sinon clé API dans le `.mcp.json` local non versionné ; les clés des scripts (Apify…) dans `.env`. Jamais de secret dans un fichier committé (voir `SECURITY.md`).

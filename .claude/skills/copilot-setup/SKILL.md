@@ -12,7 +12,7 @@ Chaque commande du wizard charge cette skill en premier et applique ses règles 
 1. **Une étape par message.** Jamais plusieurs décisions groupées. Chaque étape : expliquer, demander, attendre la confirmation, puis avancer.
 2. **Aucun défaut silencieux.** Une valeur manque ? On la demande. On ne suppose jamais.
 3. **Aucune écriture avant validation.** Tout artefact généré (doctrine de marque, CLAUDE.md de rôle, métadonnées de setup) : présenter le brouillon, obtenir l'accord explicite, puis écrire.
-4. **Aucun secret dans les messages ou les commits.** Les secrets vont dans `.env` uniquement. Ne jamais renvoyer un secret à l'utilisateur — lui demander de vérifier `.env` de son côté.
+4. **Aucun secret dans les messages ou les commits.** Les secrets vont SOIT dans `.env` (scripts et connecteurs Python, chargés via dotenv), SOIT dans le `.mcp.json` local non versionné (serveurs MCP) — les deux sont gitignorés, jamais dans un fichier tracké. Rappel technique : les `${VAR}` de `.mcp.json` ne sont **pas** développées depuis le `.env` du projet (voir `SECURITY.md`). Ne jamais renvoyer un secret à l'utilisateur — lui demander de vérifier `.env` / `.mcp.json` de son côté.
 5. **Toute opération destructive exige confirmation.** Suppression de fichiers, déplacements vers `.setup-archive/`, opérations git forcées, `launchctl` : « oui » explicite requis.
 6. **Langue du repo : français** (le `README.md` reste en anglais, vitrine publique). Le contenu produit ensuite par le copilot suit la langue de marque choisie au setup.
 7. **Gate de confidentialité obligatoire** avant tout connecteur touchant des données clients (CRM, emailing, GA4/GSC, transcriptions `00-intel/`, scraping de personnes). Le texte canonique du gate vit dans `.claude/commands/tools-setup.md` — l'afficher, recueillir le plan Claude utilisé, et appliquer les règles associées. `/modules` le ré-applique pour `veille`, `acquisition` et `reporting`.
@@ -25,7 +25,8 @@ Chaque commande du wizard charge cette skill en premier et applique ses règles 
 2. **État git.** `git status --porcelain`. Arbre sale : demander stash, commit, ou continuer.
 3. **Dépendances Python.** `python3 -c "import yaml, dotenv, requests"`. Manquantes : suggérer `pip install pyyaml python-dotenv requests`.
 4. **`.env` existe.** Sinon `cp .env.example .env` et prévenir. Ne jamais lire les valeurs — présence uniquement.
-5. **État de `.setup-completed`.** Existe déjà ? Le wizard sert au premier setup — proposer de relancer des commandes individuelles (`/tools-setup`, `/brand-discover`, `/modules`) pour reconfigurer.
+5. **`.mcp.json` est bien ignoré par git.** `git check-ignore -q .mcp.json` doit réussir et `git ls-files .mcp.json` être vide. Tracké ou non ignoré = alerte immédiate (risque de commit de tokens) : proposer `git rm --cached .mcp.json` + correction du `.gitignore`. S'il n'existe pas encore et qu'un serveur MCP doit être configuré : `cp .mcp.json.example .mcp.json`.
+6. **État de `.setup-completed`.** Existe déjà ? Le wizard sert au premier setup — proposer de relancer des commandes individuelles (`/tools-setup`, `/brand-discover`, `/modules`) pour reconfigurer.
 
 ## Fichiers de référence — charger au besoin
 

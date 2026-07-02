@@ -64,7 +64,7 @@ Règle commune : **aucun workflow n'est activé ni modifié en production sans v
 | Fichier / dossier | Rôle |
 |---|---|
 | `INSTALL.md` | Installation n8n sur VPS (Docker, HTTPS, auth) + error workflow global + sécurité |
-| `mcp-setup.md` | Le bloc `n8n-mcp` exact à coller dans `.mcp.json` (env depuis `.env`) |
+| `mcp-setup.md` | Le bloc `n8n-mcp` exact à coller dans le `.mcp.json` **local** (gitignoré — valeurs réelles, copié depuis `.mcp.json.example`) |
 | `conventions.md` | **Le cœur du module** : méthode, architecture, nommage, erreurs, patterns connus, checklist |
 | `bibliotheques.md` | Les 3 bibliothèques de templates : rôle, licences, clone, workflow de consultation |
 | `plans/` | Méthode des plans + `plan-template.md` (design spec + tâches numérotées) |
@@ -83,7 +83,7 @@ Règle commune : **aucun workflow n'est activé ni modifié en production sans v
 ## Ordre de mise en route
 
 1. Installer n8n (`INSTALL.md`) — ou créer un compte n8n Cloud.
-2. Brancher Claude : `.env` + bloc `n8n-mcp` dans `.mcp.json` (`mcp-setup.md`), vérifier avec `/mcp`.
+2. Brancher Claude : `.env` pour les scripts + bloc `n8n-mcp` (valeurs réelles) dans le `.mcp.json` local non versionné (`mcp-setup.md`), vérifier avec `/mcp`.
 3. Cloner les bibliothèques de templates dans `libraries/` (`bibliotheques.md`) — dossier gitignoré.
 4. Importer et activer `workflows/examples/error-handler.json`, noter son ID (c'est le `{{ERROR_WORKFLOW_ID}}` de tous les autres workflows).
 5. Importer les autres exemples utiles (`workflows/examples/README.md`), credentials **dans le vault n8n uniquement**, tester, activer.

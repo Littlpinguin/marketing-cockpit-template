@@ -51,6 +51,12 @@ Rappel sécurité à afficher :
 
 > Pour chaque outil, je vous demanderai les noms des variables d'environnement et confirmation qu'elles sont renseignées dans `.env`. Je ne lirai jamais la valeur des clés. Si un outil n'a pas encore de connecteur intégré, je vous le dirai et je génèrerai un stub TODO — il faudra l'implémenter avant la première synchro ou le premier push.
 
+**Règle de destination des tokens (à appliquer partout dans ce wizard)** — un token va SOIT :
+- dans **`.env`** (local, gitignoré) quand le consommateur est un **script ou connecteur Python** qui le charge via dotenv — ex. MailerLite, Brevo, GA4/GSC, Apify, Postiz, FTP ;
+- dans le **`.mcp.json` local non versionné** (gitignoré ; `cp .mcp.json.example .mcp.json` s'il n'existe pas) quand le consommateur est un **serveur MCP** — ex. n8n-mcp, Google Ads, Lemlist en mode clé API. OAuth d'abord quand le serveur le propose (Lemlist, Magnific) : aucun token à stocker.
+
+Jamais dans un fichier tracké. Et ne jamais écrire de références `${VAR}` dans `.mcp.json` en supposant qu'elles seront lues depuis le `.env` du projet : Claude Code ne développe les `${VAR}` de `.mcp.json` que depuis l'environnement du processus (résultat : 401). Détails et hiérarchie complète : `SECURITY.md`.
+
 ### Étape 2 — Itérer les catégories
 
 Ordre des catégories :
@@ -84,7 +90,7 @@ Pour chaque catégorie, présenter une question structurée (connecteurs prêts 
   ```
   claude mcp add --transport http magnific https://mcp.magnific.com
   ```
-- Vérifier ensuite que le serveur apparaît dans `claude mcp list` et noter que l'authentification se fait au premier appel (OAuth).
+- Vérifier ensuite que le serveur apparaît dans `claude mcp list` et noter que l'authentification se fait au premier appel (**OAuth** — aucun token statique à stocker, cas idéal de la hiérarchie `SECURITY.md`). Si vous l'ajoutez en scope projet (`--scope project`), l'entrée s'écrit dans le `.mcp.json` local — non versionné, c'est voulu.
 - Usage : upscale des visuels produits par `image-generation` avant publication ou impression.
 
 **Google Analytics 4 + Search Console (web analytics)** ⚠️ gate de confidentialité
@@ -180,6 +186,8 @@ L'écriture réelle du fichier se fait dans `/validate-setup`.
 ## Modes d'échec à éviter
 
 - **Ne jamais écrire dans `.env`.** Seulement `.env.example`. L'utilisateur remplit `.env` lui-même.
+- **Ne jamais écrire un token dans un fichier tracké.** Les tokens des serveurs MCP vont dans le `.mcp.json` local (gitignoré), ceux des scripts dans `.env`. Ne jamais committer ni détracker à l'envers : `git ls-files .mcp.json` doit rester vide.
+- **Ne jamais utiliser `${VAR}` dans `.mcp.json`** en croyant lire le `.env` du projet — Claude Code ne fait pas cette interpolation (connexion 401). Valeurs réelles dans le fichier local, ou OAuth quand disponible.
 - **Ne jamais sauter le gate de confidentialité** pour un connecteur touchant des données clients, même en re-run.
 - **Ne pas écraser un `CLAUDE.md` de rôle sans sauvegarde** dans `.setup-archive/`.
 - **Ne pas laisser l'utilisateur choisir un outil « ready » sans confirmer qu'il a les credentials** : sinon avertir que l'outil est configuré mais inutilisable tant que `.env` n'est pas rempli.

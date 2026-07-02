@@ -10,7 +10,7 @@ Ce module produit les vidéos courtes de {{COMPANY_NAME}} (Reels, TikTok, Shorts
 
 - macOS sur **Apple Silicon** (M1 ou plus récent)
 - Palmier Pro installé (voir le repo GitHub pour la dernière release)
-- Serveur MCP de Palmier Pro déclaré dans `.mcp.json` du repo (suivre la doc d'installation du projet — vérifier la commande exacte dans leur README, elle peut évoluer)
+- Serveur MCP de Palmier Pro déclaré dans le `.mcp.json` **local** du repo (fichier gitignoré, jamais commité — `cp .mcp.json.example .mcp.json` s'il n'existe pas ; suivre la doc d'installation du projet et vérifier la commande exacte dans leur README, elle peut évoluer)
 - **Fonctions génératives sur abonnement** : la génération de clips par les modèles intégrés (Seedance, Kling) nécessite un abonnement Palmier Pro. Le montage classique (cuts, transitions, texte, export) est gratuit et open source.
 
 **Répartition des rôles :**

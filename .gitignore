@@ -1,6 +1,9 @@
 # Secrets and local state — NEVER commit these
 .env
 .env.local
+# MCP server config — LOCAL ONLY: it holds real tokens for MCP servers.
+# Versioned reference: .mcp.json.example (structure + placeholders). See SECURITY.md.
+.mcp.json
 .setup-completed
 .claude/settings.local.json
 .claude/projects/

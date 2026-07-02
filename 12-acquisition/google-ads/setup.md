@@ -23,33 +23,24 @@ cp /chemin/vers/credentials.json ~/.mcp-google-ads/credentials.json
 ./scripts/generate_token.sh ~/.mcp-google-ads/credentials.json   # ouvre le navigateur, écrit token.json
 ```
 
-## 3. Credentials dans `.env` — jamais en clair
+## 3. Où vivent les credentials — jamais dans un fichier tracké
 
-Ajouter au `.env` du repo (jamais commité, cf. `SECURITY.md`) :
-
-```bash
-# --- Google Ads (module acquisition, sous-module google-ads) ---
-GOOGLE_ADS_DEVELOPER_TOKEN=""          # Centre API Google Ads
-GOOGLE_ADS_CUSTOMER_ID=""              # format 123-456-7890
-GOOGLE_ADS_LOGIN_CUSTOMER_ID=""        # optionnel : ID du compte manager (MCC)
-GOOGLE_ADS_MCP_BINARY=""               # chemin absolu vers target/release/mcp-google-ads
-```
-
-Les fichiers OAuth restent hors repo (`~/.mcp-google-ads/credentials.json` et `token.json` — chemins par défaut du serveur).
+- Le **developer token et les customer IDs** vont dans le `.mcp.json` **local et non versionné** (étape 4) — c'est le serveur MCP qui les consomme, et le `.mcp.json` est gitignoré (cf. `SECURITY.md`).
+- Les **fichiers OAuth** restent hors repo (`~/.mcp-google-ads/credentials.json` et `token.json` — chemins par défaut du serveur).
 
 ## 4. Déclarer le serveur MCP
 
-Dans `.mcp.json` (les `${VAR}` sont résolues depuis l'environnement / `.env`) :
+Dans le `.mcp.json` local à la racine du repo (`cp .mcp.json.example .mcp.json` s'il n'existe pas encore), avec vos **valeurs réelles** :
 
 ```json
 {
   "mcpServers": {
     "google-ads": {
-      "command": "${GOOGLE_ADS_MCP_BINARY}",
+      "command": "/chemin/absolu/vers/target/release/mcp-google-ads",
       "env": {
-        "GOOGLE_ADS_DEVELOPER_TOKEN": "${GOOGLE_ADS_DEVELOPER_TOKEN}",
-        "GOOGLE_ADS_CUSTOMER_ID": "${GOOGLE_ADS_CUSTOMER_ID}",
-        "GOOGLE_ADS_LOGIN_CUSTOMER_ID": "${GOOGLE_ADS_LOGIN_CUSTOMER_ID}",
+        "GOOGLE_ADS_DEVELOPER_TOKEN": "VOTRE_DEVELOPER_TOKEN",
+        "GOOGLE_ADS_CUSTOMER_ID": "123-456-7890",
+        "GOOGLE_ADS_LOGIN_CUSTOMER_ID": "ID_DU_COMPTE_MCC_SI_APPLICABLE",
         "GOOGLE_ADS_READ_ONLY": "true",
         "GOOGLE_ADS_REQUIRE_DRY_RUN": "true"
       },
@@ -58,6 +49,8 @@ Dans `.mcp.json` (les `${VAR}` sont résolues depuis l'environnement / `.env`) :
   }
 }
 ```
+
+> ⚠️ N'utilisez **pas** de références `${VAR}` en pensant qu'elles seront lues depuis le `.env` du projet : Claude Code ne développe les `${VAR}` de `.mcp.json` que depuis l'environnement du processus. Le `.mcp.json` local n'est jamais commité — c'est lui qui porte les vraies valeurs (hiérarchie complète des pratiques : `SECURITY.md`).
 
 Garde-fous supplémentaires du serveur, si vous ouvrez un jour l'écriture : `GOOGLE_ADS_MAX_DAILY_BUDGET` (plafond de budget quotidien, défaut 50.0), `GOOGLE_ADS_MAX_BID_INCREASE_PCT` (défaut 100), `GOOGLE_ADS_AUDIT_LOG` (journal des mutations, défaut `~/.mcp-google-ads/audit.log`). Les entités créées le sont en statut PAUSED.
 
@@ -71,5 +64,5 @@ Garde-fous supplémentaires du serveur, si vous ouvrez un jour l'écriture : `GO
 
 1. **Lecture seule par défaut** : `GOOGLE_ADS_READ_ONLY=true` tant qu'aucun plan validé n'est en cours d'application.
 2. **Aucune mutation sans validation humaine explicite** — règle dure du `README.md`, qui s'ajoute aux garde-fous du serveur.
-3. **Aucun secret dans le repo** : token, credentials et customer IDs réels vivent dans `.env` et `~/.mcp-google-ads/`.
+3. **Aucun secret dans un fichier tracké** : token et customer IDs réels vivent dans le `.mcp.json` local (gitignoré), les fichiers OAuth dans `~/.mcp-google-ads/`.
 4. Ce repo **ne vendorise pas** le serveur : c'est une connexion MCP. Épingler une version taguée (ex. v0.6.0) lors du `git clone` et relire le changelog avant toute montée de version.

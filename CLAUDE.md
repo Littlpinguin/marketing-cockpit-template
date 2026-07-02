@@ -60,7 +60,7 @@ Quand la demande n'indique ni canal ni format (« il faut communiquer sur X »),
 
 See `SECURITY.md` for the full rules. The short list:
 
-1. **Never paste API keys, tokens, or secrets in a chat message or commit.** Use `.env` + `.env.example` with placeholders only. Before every push, grep the diff for secrets.
+1. **Never paste API keys, tokens, or secrets in a chat message or commit.** Secrets live in `.env` (scripts/connectors) or in the local, untracked `.mcp.json` (MCP servers) — the versioned counterparts (`.env.example`, `.mcp.json.example`) carry placeholders only. `${VAR}` references in `.mcp.json` are NOT expanded from the project `.env` (see `SECURITY.md`). Before every push, grep the diff for secrets.
 2. **Never use destructive Bash commands without explicit user confirmation** — `rm -rf`, `git push --force`, `git reset --hard`, `launchctl` on system-wide agents, anything that sends email or hits an external API.
 3. **Dry-run before production push.** Any connector that writes to Notion / Airtable / Mailchimp / MailerLite / HubSpot / etc. must first emit the payload to stdout via `scripts/dry-run-push.py` and wait for confirmation.
 4. **Verify, do not trust.** Claude can hallucinate API endpoints, field names, package names. Check docs before invoking a new API.

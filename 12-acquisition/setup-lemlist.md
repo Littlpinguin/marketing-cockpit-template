@@ -9,8 +9,8 @@
 Documentation Lemlist : https://developer.lemlist.com/mcp/setup
 
 Deux modes d'authentification :
-- **OAuth (recommandé)** : ajoutez le serveur MCP Lemlist dans une session interactive — le navigateur s'ouvre pour autoriser l'accès au workspace.
-- **Clé API** : générez la clé dans Lemlist (Settings → Integrations → API), stockez-la dans `.env` (`LEMLIST_API_KEY=...`, jamais commitée), et déclarez le serveur avec la clé en variable d'environnement.
+- **OAuth (recommandé)** : ajoutez le serveur MCP Lemlist dans une session interactive — le navigateur s'ouvre pour autoriser l'accès au workspace. Aucun token statique à stocker : Claude Code gère l'authentification. C'est la pratique n° 1 de la hiérarchie des secrets MCP (`SECURITY.md`).
+- **Clé API** : générez la clé dans Lemlist (Settings → Integrations → API) et mettez-la **directement dans le `.mcp.json` local** (gitignoré, jamais commité — `cp .mcp.json.example .mcp.json` s'il n'existe pas). Ne passez pas par `${LEMLIST_API_KEY}` + `.env` : Claude Code ne développe pas les `${VAR}` de `.mcp.json` depuis le `.env` du projet.
 
 Vérifiez ensuite avec `/mcp` que les outils Lemlist apparaissent, puis lancez `/health-check`.
 
