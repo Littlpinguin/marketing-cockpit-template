@@ -2,12 +2,12 @@
 
 **Your marketing department, running inside Claude Code — and it knows your brand by heart.**
 
-43 production skills · 9 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+45 production skills · 10 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
-[![Skills](https://img.shields.io/badge/skills-43-blue.svg)](#whats-inside)
-[![Agents](https://img.shields.io/badge/agents-9-blue.svg)](#whats-inside)
+[![Skills](https://img.shields.io/badge/skills-45-blue.svg)](#whats-inside)
+[![Agents](https://img.shields.io/badge/agents-10-blue.svg)](#whats-inside)
 
 Clone it once per company, run the wizard, and get a role-based copilot that behaves like a marketing director: strategy, social, email, landing pages, design, presentations, SEO — plus optional modules for video, n8n automation, client-facing reporting and outbound acquisition. Every deliverable is a file in your repo. Every word passes a brand gate before it ships.
 
@@ -149,7 +149,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 
 ## What's inside
 
-**43 skills**, organized by function (all in `.claude/skills/`):
+**45 skills**, organized by function (all in `.claude/skills/`):
 
 | Category | Skills | Count |
 |---|---|---|
@@ -178,7 +178,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 |---|---|---|
 | `veille` | Multi-level market watch (competitors, sector, trends) feeding the calendar with **sourced** content ideas | — |
 | `video` | AI-assisted video editing & captions | macOS + [Palmier Pro](https://github.com/palmier-io/palmier-pro) |
-| `automatisations` | n8n workflow engine: meeting transcripts → `00-intel/`, scheduled watch, reports | Self-hosted n8n (VPS guide included) |
+| `automatisations` | Build, debug and evolve n8n workflows from Claude (5-phase method, 5,100+ template libraries, `n8n-builder`/`n8n-audit`/`n8n-debugger`); feeds `00-intel/`, watch, reports | Self-hosted n8n (VPS guide included) |
 | `reporting` | Brand-styled performance dashboard hosted on the client's site (FTP + access code), monthly snapshots, month-to-month navigation, written analysis | ≥ 1 data source (GA4/GSC, Postiz, email tool) |
 | `acquisition` | Outbound campaigns: copilot does ICP + brand-voice sequences + lists, [Lemlist MCP](https://developer.lemlist.com/mcp/setup) does sending & deliverability; plus Google Ads operations and multi-platform ads audits | Lemlist account |
 | `publication-sociale` | Direct scheduling via [Postiz](https://postiz.com) (open source, self-hostable) | Postiz instance |
