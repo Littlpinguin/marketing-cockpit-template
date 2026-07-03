@@ -26,7 +26,7 @@ Working drafts for the open-source launch. Rules of engagement first, then two E
 
 I run a small marketing studio. Since the start of the year we've been running actual client accounts out of Claude Code — social, email, landing pages, decks, SEO, reporting. Today we're open-sourcing the template we work in every day (MIT).
 
-Repo: https://github.com/Littlpinguin/marketing-copilot-template
+Repo: https://github.com/Littlpinguin/marketing-cockpit-template
 
 The three design decisions that made it actually work, in case they're useful even if you never clone it:
 
@@ -91,7 +91,7 @@ J'ai passé 6 mois à transformer Claude Code en département marketing pour mes
 
 Je dirige un petit studio marketing. Depuis six mois, nos comptes clients tournent en production sur Claude Code : social, email, landing pages, présentations, SEO, reporting mensuel. Aujourd'hui, on ouvre le template qu'on utilise tous les jours.
 
-Repo : https://github.com/Littlpinguin/marketing-copilot-template
+Repo : https://github.com/Littlpinguin/marketing-cockpit-template
 
 Les trois décisions d'architecture qui ont tout changé :
 

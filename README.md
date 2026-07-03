@@ -124,7 +124,7 @@ Prerequisites: [Node.js 18+](https://nodejs.org) and a Claude account (Pro/Max, 
 npm install -g @anthropic-ai/claude-code
 
 # 2. Clone under a name that makes sense for you (or "Use this template" on GitHub)
-git clone https://github.com/Littlpinguin/marketing-copilot-template.git my-company-copilot
+git clone https://github.com/Littlpinguin/marketing-cockpit-template.git my-company-copilot
 cd my-company-copilot
 
 # 3. Create your local env file (filled in later by the wizard)
