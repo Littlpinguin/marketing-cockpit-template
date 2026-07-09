@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 **Added.** 4 web-animation skills vendored from [claudedesignskills](https://github.com/freshtechbro/claudedesignskills) (MIT): `animation-gsap` (GSAP + ScrollTrigger), `animation-animejs`, `animation-lottie`, `animation-scroll-reveal` (AOS & co) — SKILL.md + references only, no scripts (see `docs/vendored-animation.md` for scope, field-tested guardrails and re-sync procedure). Skill count: 45 → 49.
 
+**Added.** `strategy-challenger` skill — devil's advocate that stress-tests a positioning, offer, funnel or campaign against 13 marketing frameworks turned into challenge questions (`SKILL.md` + `frameworks.md`). Wired into the root routing table and skills catalogue, and into the `02-strategy` role (live `CLAUDE.md` + `_templates/role-claudemd/02-strategy.md`): challenges a campaign brief before human validation. Skill count: 49 → 50.
+
 ## [2.0.0] — The complete AI marketing department (major rework)
 
 **Core.** Brand doctrine injected as step 0 in every production skill (anti-AI writing + anti-generic design doctrines), central editorial calendar with validation statuses, `00-intel/` live context (n8n-fed meeting transcripts, gitignored), strategy cascade (objectives → briefs → personas → journey), marketing-director routing at the root.

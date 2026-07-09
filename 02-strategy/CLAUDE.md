@@ -59,7 +59,7 @@ objectifs.md → briefs/ → calendar/calendar.md → production (03-09) → per
 ### Lancement de campagne
 
 1. Copier `briefs/brief-campagne.md` → `briefs/AAAA-MM-slug.md`, remplir avec l'utilisateur (objectif, persona + signaux, message + preuve, mix canaux, KPIs).
-2. Validation humaine explicite du brief.
+2. Avant de soumettre : passer le brief (positionnement, offre, cible, message) au crible de `strategy-challenger`, corriger les risques fatals. Puis validation humaine explicite du brief.
 3. Créer les entrées calendrier (une par livrable, `utm_campaign` = slug du brief).
 4. Briefer les rôles producteurs (03-09) — chaque livrable cite le brief.
 5. À la clôture : remplir le §8 « apprentissages », reporter ce qui change dans `personas.md`, `parcours-client.md`, `objectifs.md`.
@@ -73,6 +73,7 @@ objectifs.md → briefs/ → calendar/calendar.md → production (03-09) → per
 ## Skills associées
 
 - `content-strategy` — planification éditoriale, équilibre des piliers (primaire)
+- `strategy-challenger` — avocat du diable d'un positionnement, d'une offre, d'un plan ou d'une campagne avant de s'engager
 - `performance-report` — snapshot mensuel (module `reporting`)
 - `veille-strategy` — alimente le backlog d'idées du calendrier
 

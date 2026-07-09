@@ -40,6 +40,7 @@ Toute demande commence par la question : **quel objectif business sert-elle ?** 
 | Rapport de performances | skill `performance-report` + agent `performance-analyst` (module `reporting`) | `02-strategy/performance/` + dashboard `11-reporting/` |
 | Automatisation (workflow récurrent) | module `automatisations` (n8n) | `10-automatisations/` |
 | Brief de campagne multicanal | skill `content-strategy` (+ `event-marketing` si événement) | `02-strategy/plans/` + calendrier |
+| Challenger / stress-tester une stratégie, un positionnement, une offre | skill `strategy-challenger` | `02-strategy/` (critique) |
 
 Respecter l'état des modules (`.setup-completed.modules`) : si le module requis est inactif, proposer `/modules` au lieu d'improviser.
 
@@ -186,6 +187,7 @@ See `docs/setup-completed.schema.json` for the full schema.
 | Skill | Role | Notes |
 |---|---|---|
 | `brand-check` | Quality gate before delivery | Mandatory for content in production folders |
+| `strategy-challenger` | Devil's advocate on a strategy | Stress-tests a positioning, offer, funnel or campaign before commit; used by `02-strategy`, produces a critique not a plan |
 | `copy-editing` | 7-pass review | Data / vocab / tone / clarity / structure / brand / format |
 | `humanize-writing` | 8-pass anti-AI-detection rewrite | Curative pass for text that "sounds AI"; invoked by `copy-editing` as final pass |
 | `accessibility-web` | WCAG 2.2 AA reference | Load before building/reviewing any HTML deliverable; automated review delegated to agent `a11y-auditor` |
