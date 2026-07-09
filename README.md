@@ -2,11 +2,11 @@
 
 **Your marketing department, running inside Claude Code — and it knows your brand by heart.**
 
-49 production skills · 10 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+50 production skills · 10 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
-[![Skills](https://img.shields.io/badge/skills-49-blue.svg)](#whats-inside)
+[![Skills](https://img.shields.io/badge/skills-50-blue.svg)](#whats-inside)
 [![Agents](https://img.shields.io/badge/agents-10-blue.svg)](#whats-inside)
 
 Clone it once per company, run the wizard, and get a role-based cockpit that operates like a marketing director: strategy, social, email, landing pages, design, presentations, SEO — plus optional modules for video, n8n automation, client-facing reporting and outbound acquisition. Every deliverable is a file in your repo. Every word passes a brand gate before it ships.
@@ -149,7 +149,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 
 ## What's inside
 
-**49 skills**, organized by function (all in `.claude/skills/`):
+**50 skills**, organized by function (all in `.claude/skills/`):
 
 | Category | Skills | Count |
 |---|---|---|
@@ -157,7 +157,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 | Design & presentations | `design-system`, `design-direction`, `design-review`, `design-taste`, `design-redesign`, `brandkit`, `image-generation`, `slides` (52-layout HTML decks + Playwright QA), `carousel` (LinkedIn PDF) | 9 |
 | Web & CRO | `landing-page`, `lead-magnet` (with full capture circuit), `cro-page`, `cro-form`, `cro-popup`, `cro-pricing`, `accessibility-web` (WCAG 2.2 AA) | 7 |
 | SEO & content engine | `seo`, `seo-audit`, `seo-schema`, `seo-geo` (AI-search/AEO), `seo-cluster`, `blog-engine` (fact-checked articles, ≥90/100 quality gate) | 6 |
-| Strategy & intelligence | `content-strategy`, `veille-strategy` (market watch), `scraping`, `performance-report` | 4 |
+| Strategy & intelligence | `content-strategy`, `veille-strategy` (market watch), `scraping`, `performance-report`, `strategy-challenger` (challenge any strategy) | 5 |
 | Governance & plumbing | `cockpit-setup` (wizard), `brand-check` (the quality gate), `inventory`, `sync-template`, `backport-to-template` | 5 |
 | Paid acquisition | `sea-google-ads`, `ads-audit` (Google/Meta/LinkedIn audit grids, ~157 checks) | 2 |
 | Video | `video-editing`, `captions` | 2 |
