@@ -728,3 +728,290 @@ If none of the above fits a beat in your deck, build a new one:
 5. Run QA. Verify the bottom-content gap to chrome ≥ 16px on every viewport.
 
 The discipline that keeps the system coherent: copy what's there before inventing something new.
+
+---
+
+## Compositions backportées des instances
+
+Layouts observés en production (decks réels, toutes marques) qui **ne figurent pas** dans les 52 du `catalogue.html` ni dans les composants ci-dessus. Rhabillés en tokens `--brand-*` + placeholders `{{…}}` (données 100 % fictives). À terme, les ajouter aussi au `catalogue.html` (une slide exécutée par layout) pour qu'ils soient piochables par la skill.
+
+### `legend-table` — légende / glossaire
+
+Explique les pictos ou catégories récurrents d'un deck : swatch + nom + définition + compteur. Souvent en split avec un bloc titré à gauche.
+
+```html
+<section class="slide" data-eyebrow="legend" data-heading="Key">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="mapkey">
+    <div class="mapkey-left">
+      <span class="eyebrow reveal">{{eyebrow}}</span>
+      <h2 class="display reveal" style="font-size:56px;">{{title}}</h2>
+      <p class="lede reveal">{{intro}}</p>
+    </div>
+    <div class="mapkey-table reveal" data-stagger>
+      <div class="mapkey-row">
+        <span class="mapkey-symbol"><span class="dot"></span></span>
+        <span class="mapkey-name">{{name}}</span>
+        <span class="mapkey-desc">{{definition}}</span>
+        <span class="mapkey-count">{{count}}</span>
+      </div>
+      <!-- repeat -->
+    </div>
+  </div>
+</section>
+```
+```css
+.mapkey { display:grid; grid-template-columns:460px 1fr; gap:80px; height:100%; align-items:center; }
+.mapkey-left { display:flex; flex-direction:column; gap:20px; }
+.mapkey-table { border-top:1px solid var(--rule); }
+.mapkey-row { display:grid; grid-template-columns:76px 200px 1fr 130px; align-items:center; gap:24px; padding:18px 0; border-bottom:1px solid var(--rule); }
+.mapkey-symbol { display:flex; align-items:center; justify-content:center; width:56px; height:56px; }
+.mapkey-symbol .dot { width:26px; height:26px; border-radius:50%; background:var(--brand-gradient); }
+.mapkey-name { font-weight:600; font-size:20px; }
+.mapkey-desc { font-size:18px; line-height:1.5; }
+.mapkey-count { font-family:var(--font-mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; text-align:right; color:var(--brand-primary-deep); font-weight:600; }
+```
+
+---
+
+### `avatar-wall` — mur de communauté
+
+La masse d'une communauté : mur dense d'avatars ronds (anonymes) + un compteur « {{N}}+ » dans l'en-tête. Distinct de `50 Mosaïque de logos` (logos) et de `19 Équipe` (personnes nommées).
+
+```html
+<section class="slide" data-eyebrow="community" data-heading="Members">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="qr-wall">
+    <div class="qr-wall-head">
+      <h2 class="display" style="font-size:56px;">{{title}}</h2>
+      <div class="qr-wall-count"><span class="n"><strong>{{N}}</strong>+</span><span class="t">{{label}}</span></div>
+    </div>
+    <div class="qr-wall-grid" data-stagger>
+      <div class="face"><img src="{{avatar}}" alt=""></div><!-- ×N -->
+    </div>
+  </div>
+</section>
+```
+```css
+.qr-wall { display:flex; flex-direction:column; height:100%; justify-content:center; gap:34px; }
+.qr-wall-head { display:grid; grid-template-columns:1fr auto; align-items:end; gap:40px; }
+.qr-wall-count .n { font-size:92px; font-weight:200; line-height:.9; }
+.qr-wall-count .t { font-family:var(--font-mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+.qr-wall-grid { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
+.qr-wall-grid .face { width:104px; height:104px; border-radius:50%; overflow:hidden; background:var(--brand-neutral-light-soft); border:1px solid var(--rule); }
+.qr-wall-grid .face img { width:100%; height:100%; object-fit:cover; object-position:center 22%; }
+```
+
+---
+
+### `branching-flow` — bifurcation en Y
+
+Un parcours qui part d'un tronc commun puis **bifurque** en 2 pistes/modes ; connecteur en Y explicite, puis deux colonnes d'étapes.
+
+```html
+<section class="slide" data-eyebrow="path" data-heading="Two tracks">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="parcours">
+    <div class="shared">
+      <div class="step-pill"><span class="sp-n">1</span><div><div class="sp-t">{{step}}</div></div></div>
+      <span class="lk">→</span>
+      <div class="step-pill"><span class="sp-n">2</span><div><div class="sp-t">{{step}}</div></div></div>
+    </div>
+    <div class="y-split"><span class="ys-stem"></span><span class="ys-bar"></span><span class="ys-leg ys-l"></span><span class="ys-leg ys-r"></span><span class="ys-label">{{condition}}</span></div>
+    <div class="tracks" data-stagger>
+      <div class="track a"><div class="track-head">{{track A}}</div><div class="tstep"><span class="tn">01</span><div><h4>{{step}}</h4><p>{{detail}}</p></div></div></div>
+      <div class="track b"><div class="track-head">{{track B}}</div><div class="tstep"><span class="tn">01</span><div><h4>{{step}}</h4><p>{{detail}}</p></div></div></div>
+    </div>
+  </div>
+</section>
+```
+```css
+.parcours { display:flex; flex-direction:column; align-items:center; height:100%; justify-content:center; gap:6px; }
+.shared { display:flex; align-items:stretch; justify-content:center; gap:18px; }
+.step-pill { display:flex; align-items:center; gap:16px; padding:16px 24px; background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:18px; }
+.step-pill .sp-n { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:600; background:var(--brand-gradient); color:var(--brand-neutral-dark); }
+.y-split { position:relative; width:100%; height:58px; }
+.y-split .ys-stem { position:absolute; top:0; left:50%; transform:translateX(-50%); width:2px; height:22px; background:var(--rule); }
+.y-split .ys-bar { position:absolute; top:22px; left:25%; width:50%; height:2px; background:var(--rule); }
+.y-split .ys-leg { position:absolute; top:22px; width:2px; height:24px; background:var(--rule); }
+.y-split .ys-leg.ys-l { left:25%; } .y-split .ys-leg.ys-r { left:75%; }
+.y-split .ys-label { position:absolute; top:11px; left:50%; transform:translateX(-50%); background:var(--brand-neutral-light); padding:0 14px; font-family:var(--font-mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; }
+.tracks { display:grid; grid-template-columns:1fr 1fr; gap:26px; width:100%; }
+.track { border-radius:24px; padding:22px 30px 24px; }
+.track.a { background:var(--brand-primary-soft); border:1px solid var(--brand-primary-soft); }
+.track.b { background:var(--brand-secondary-soft); border:1px solid var(--brand-secondary-soft); }
+.tstep { display:flex; gap:18px; padding:14px 0; } .tstep + .tstep { border-top:1px solid var(--rule); }
+.tstep .tn { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:600; background:var(--brand-primary); color:#fff; }
+```
+
+---
+
+### `chip-cloud` — nombre géant + nuage de pastilles
+
+Un catalogue/roadmap d'items comme nuage de pastilles, introduit par un chiffre géant. États : normal / `feat` (mis en avant) / `dim` (« + encore »).
+
+```html
+<section class="slide" data-eyebrow="scope" data-heading="Catalogue">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="vision-wrap">
+    <div class="vision-head">
+      <h2 class="num gradient-text">{{N}}<span class="plus">+</span></h2>
+      <div class="text"><span class="eyebrow">{{eyebrow}}</span><h2 class="display" style="font-size:52px;">{{title}}</h2></div>
+    </div>
+    <div class="vision-cloud" data-stagger>
+      <span class="vision-chip">{{item}}</span>
+      <span class="vision-chip feat"><span class="tag">{{tag}}</span>{{item}}</span>
+      <span class="vision-chip dim">+ {{more}}</span>
+    </div>
+  </div>
+</section>
+```
+```css
+.vision-wrap { display:flex; flex-direction:column; justify-content:center; height:100%; }
+.vision-head { display:grid; grid-template-columns:1.05fr .95fr; gap:80px; align-items:end; margin-bottom:64px; }
+.vision-head .num { font-size:240px; line-height:.9; letter-spacing:-.03em; }
+.vision-cloud { display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
+.vision-chip { display:inline-flex; align-items:center; gap:10px; padding:12px 22px; border:1px solid var(--rule); border-radius:100px; background:var(--brand-neutral-light-soft); font-size:18px; }
+.vision-chip.feat { background:var(--brand-primary-soft); border-color:var(--brand-primary); color:var(--brand-primary-deep); }
+.vision-chip.dim { opacity:.5; }
+```
+> Add `.vision-head .num` to `GRADIENT_TEXT_SELECTORS`.
+
+---
+
+### `editorial-foreword` — édito / manifeste
+
+Slide de texte long (lettre, manifeste) : rail latéral (gros numéro + méta) et corps rédactionnel avec lettrine, texte en 2 colonnes.
+
+```html
+<section class="slide" data-eyebrow="foreword" data-heading="Édito">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="foreword">
+    <div class="foreword-left">
+      <div class="foreword-issue">№ 01<small>{{subtitle}}</small></div>
+      <div class="foreword-meta"><div class="foreword-meta-row"><span>{{key}}</span><span>{{value}}</span></div></div>
+    </div>
+    <div class="foreword-right">
+      <span class="eyebrow">{{eyebrow}}</span>
+      <h2 class="foreword-drop">{{sentence}} <strong class="gradient-text">{{accent}}</strong>.</h2>
+      <div class="foreword-body"><p>{{para 1}}</p><p>{{para 2}}</p></div>
+    </div>
+  </div>
+</section>
+```
+```css
+.foreword { display:grid; grid-template-columns:320px 1fr; gap:80px; height:100%; align-items:center; }
+.foreword-left { display:flex; flex-direction:column; height:100%; justify-content:space-between; border-right:1px solid var(--rule); padding:80px 60px 80px 0; }
+.foreword-issue { font-family:var(--font-mono); font-size:56px; font-weight:200; line-height:1; }
+.foreword-issue small { display:block; font-size:12px; letter-spacing:.2em; text-transform:uppercase; margin-top:12px; }
+.foreword-meta-row { display:grid; grid-template-columns:80px 1fr; gap:16px; font-family:var(--font-mono); font-size:12px; padding:6px 0; }
+.foreword-drop { font-weight:200; font-size:72px; line-height:1.1; max-width:1100px; }
+.foreword-drop strong { font-weight:700; }
+.foreword-body { display:grid; grid-template-columns:1fr 1fr; gap:48px; font-size:18px; line-height:1.6; max-width:1100px; margin-top:32px; }
+.foreword-body p:first-of-type:first-letter { font-weight:700; font-size:1.4em; color:var(--brand-secondary-deep); }
+```
+
+---
+
+### `framed-cartouche` — charte / certificat encadré
+
+Panneau centré à crochets d'angle : logo + nom + énoncé fondateur + rangée de méta. Pour une charte, un engagement, un manifeste signé.
+
+```html
+<section class="slide" data-eyebrow="charter" data-heading="Manifeste">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="cartouche-stage">
+    <div class="cartouche">
+      <span class="cartouche-corner-a"></span><span class="cartouche-corner-b"></span>
+      <span class="eyebrow">{{label}}</span>
+      <div class="cartouche-name-row"><svg class="brand-mark" style="width:64px;height:32px;"><use href="#brand-logo"/></svg><h2 class="cartouche-name"><strong>{{name}}</strong></h2></div>
+      <p class="cartouche-charter">{{statement}} <em class="gradient-text">{{accent}}</em>.</p>
+      <div class="cartouche-row"><div class="cartouche-cell"><span class="k">{{key}}</span><span class="v">{{value}}</span></div><!-- ×4 --></div>
+    </div>
+  </div>
+</section>
+```
+```css
+.cartouche-stage { display:flex; align-items:center; justify-content:center; height:100%; }
+.cartouche { width:1380px; padding:60px 100px 52px; border:1px solid var(--rule); border-radius:4px; background:var(--brand-neutral-light-soft); position:relative; display:flex; flex-direction:column; gap:20px; align-items:center; text-align:center; }
+.cartouche::before, .cartouche::after, .cartouche-corner-a, .cartouche-corner-b { content:""; position:absolute; width:48px; height:48px; border:1px solid var(--brand-neutral-dark); }
+.cartouche::before { top:-1px; left:-1px; border-right:0; border-bottom:0; }
+.cartouche::after { bottom:-1px; right:-1px; border-left:0; border-top:0; }
+.cartouche-corner-a { top:-1px; right:-1px; border-left:0; border-bottom:0; }
+.cartouche-corner-b { bottom:-1px; left:-1px; border-right:0; border-top:0; }
+.cartouche-name { font-weight:200; font-size:96px; line-height:1; }
+.cartouche-charter { font-weight:300; font-size:22px; line-height:1.5; max-width:1080px; font-style:italic; }
+.cartouche-charter em { font-style:normal; font-weight:600; }
+.cartouche-row { display:grid; grid-template-columns:repeat(4,1fr); width:100%; margin-top:8px; padding-top:22px; border-top:1px solid var(--rule); }
+.cartouche-cell { display:flex; flex-direction:column; gap:5px; align-items:center; border-right:1px solid var(--rule); padding:0 12px; }
+.cartouche-cell:last-child { border-right:0; }
+.cartouche-cell .k { font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
+```
+
+---
+
+### `qr-closing` — clôture avec QR
+
+Fin actionnable « scannez pour… » : copie + liste de bénéfices face à une carte QR (image + label + lien). Variante centrée pour un sondage live.
+
+```html
+<section class="slide" data-eyebrow="next" data-heading="Scan">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="studio-end">
+    <div class="studio-end-copy">
+      <h2 class="display" style="font-size:60px;">{{title}}</h2>
+      <p class="lede">{{text}}</p>
+      <div class="studio-end-feats"><span class="sfeat">{{benefit}}</span></div>
+    </div>
+    <div class="qr-card">
+      <img src="{{qr.png}}" alt="QR" width="300" height="300">
+      <span class="qr-label">{{label}}</span>
+      <a class="qr-link" href="{{url}}">{{url}}</a>
+    </div>
+  </div>
+</section>
+```
+```css
+.studio-end { display:grid; grid-template-columns:1.12fr .88fr; gap:80px; align-items:center; height:100%; }
+.studio-end-feats { display:flex; flex-direction:column; gap:14px; margin-top:24px; }
+.studio-end-feats .sfeat { font-size:21px; font-weight:500; }
+.qr-card { background:#fff; border:1px solid var(--rule); border-radius:24px; box-shadow:0 20px 60px -22px rgba(0,0,0,.18); padding:36px; display:flex; flex-direction:column; align-items:center; gap:18px; }
+.qr-card img { width:300px; height:300px; display:block; }
+.qr-link { display:inline-flex; align-items:center; gap:12px; padding:13px 22px; border:1px solid var(--brand-primary); border-radius:999px; background:var(--brand-primary-soft); font-family:var(--font-mono); color:var(--brand-primary-deep); text-decoration:none; }
+```
+
+---
+
+### `kpi-trend-cards` — KPI avec tendance
+
+Variante « delta » du bandeau KPI (`05`) : 3-4 cartes « grande valeur + flèche de tendance ↗/↘ colorée + label », filet supérieur. Pour un reporting/revue.
+
+```html
+<section class="slide" data-eyebrow="review" data-heading="KPIs">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;"><h1 class="display" style="font-size:56px;">{{title}}</h1></div>
+  <div class="qr-kpi-grid" data-stagger>
+    <div class="qr-kpi-card"><div class="row"><span class="val">{{value}}</span><span class="trend up">↗</span></div><span class="lab">{{label}}</span></div>
+    <div class="qr-kpi-card"><div class="row"><span class="val">{{value}}</span><span class="trend down">↘</span></div><span class="lab">{{label}}</span></div>
+    <!-- … -->
+  </div>
+</section>
+```
+```css
+.qr-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:44px; }
+.qr-kpi-card { display:flex; flex-direction:column; gap:10px; border-top:2px solid var(--brand-neutral-dark); padding-top:18px; }
+.qr-kpi-card .row { display:flex; align-items:baseline; gap:10px; }
+.qr-kpi-card .val { font-size:60px; font-weight:200; letter-spacing:-.03em; }
+.qr-kpi-card .trend { font-size:21px; font-weight:600; }
+.qr-kpi-card .trend.up { color:var(--brand-primary-deep); }
+.qr-kpi-card .trend.down { color:var(--brand-secondary-deep); }
+.qr-kpi-card .lab { font-size:18px; line-height:1.35; color:var(--brand-neutral-dark-soft); }
+```
+
+---
+
+### Autres candidats (à backporter si besoin)
+
+Variantes ou formats plus spécifiques repérés en production, non détaillés ici : **`bento-photowall`** (mosaïque bento de photos, tuiles inégales) · **`product-mockup`** (captures produit empilées / écran + téléphone / cadre navigateur, plus riche que `14`) · **`spectrum-tiers`** (3 paliers sur un continuum à marqueurs) · **`offer-two-tier`** (offre an 1 / an 2 empilée + colonne conditions) · **`one-pager-sheet`** (feuille A4 imprimable de synthèse — format hors 16:9, à traiter à part). Les copier depuis un deck d'instance et les normaliser aux tokens `--brand-*`.
+
+> **Rappel backport** : ces layouts sont documentés ici mais **pas encore dans `catalogue.html`**. Pour que la skill les pioche automatiquement, ajouter une `<section class="plate">` exécutée par layout dans `_examples/deck-catalogue/catalogue.html` (charte Meridian, données fictives), avec `data-family`, `data-meta` et cartouche `.legend`. Re-passer la QA Playwright.
