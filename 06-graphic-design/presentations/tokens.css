@@ -77,3 +77,40 @@
   --pattern-opacity-dark: .07;  /* watermark on dark backgrounds */
   --corner-opacity: .09;        /* corner motif on editorial slides */
 }
+
+/* ============================================================
+   CAROUSEL MOBILE-SAFE TYPE SCALE — portrait 1080×1350 (4:5)
+   ------------------------------------------------------------
+   Consumed by carousel / multi-slide layouts (see
+   ../compositions-carrousel.md). DISTINCT from the 1920×1080
+   landscape deck scale — a carousel is read on a phone feed,
+   not projected.
+
+   A 1080px canvas renders at ~390px on a phone (perceived
+   size ≈ canvas × 0.36), so these floors are legibility
+   engineering, not a style choice — do NOT shrink them.
+   Values assume a ~1080px-wide canvas; scale proportionally
+   for other widths. This block is purely additive: it defines
+   new custom properties and changes nothing above.
+   ============================================================ */
+:root {
+  /* Canvas & safe margins */
+  --carousel-canvas-w: 1080px;
+  --carousel-canvas-h: 1350px;
+  --carousel-margin-side: 80px;
+  --carousel-margin-top: 120px;
+  --carousel-margin-bottom: 160px;  /* clears the platform's slide counter + reactions */
+
+  /* Type scale — comfort targets (per-role floor noted in the comment) */
+  --carousel-fs-hook: 150px;        /* hook hero — floor 110, target 130–180 */
+  --carousel-fs-title: 96px;        /* slide title — floor 72, target 88–110 */
+  --carousel-fs-subtitle: 64px;     /* subtitle — floor 52, target 60–72 */
+  --carousel-fs-body: 50px;         /* body / bullet — floor 44, target 48–56 */
+  --carousel-fs-caption: 34px;      /* caption / source — floor 28, target 32–36 */
+  --carousel-fs-folio: 28px;        /* folio / legal — floor 26 */
+  --carousel-fs-number: 280px;      /* number anchor — floor 200, target 240–330 */
+
+  /* Leading */
+  --carousel-lh-body: 1.5;          /* 1.4–1.6 */
+  --carousel-lh-display: 1.1;       /* 1.0–1.15 */
+}

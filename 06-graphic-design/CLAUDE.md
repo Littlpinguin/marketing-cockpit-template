@@ -22,6 +22,7 @@ All three share the same brand source of truth (`../01-brand/`) and the same ban
 ```
 06-graphic-design/
 ├── CLAUDE.md                 ← this file
+├── compositions-carrousel.md ← carousel / multi-slide layout system (grid, mobile-safe scale, 8 compositions)
 ├── briefs/                   ← visual briefs (visuals + signatures)
 ├── outputs/                  ← final visuals (AI or human), with metadata sidecars
 ├── prompts/                  ← reusable Gemini prompts (hero, carousel, portrait, ...)
@@ -86,6 +87,17 @@ The skill auto-appends:
    - Landing page → copy into the page's folder
    - Decks → reference inline from `./presentations/decks/<deck>.html`
    - Always archive the original in `./outputs/`
+
+### Carousels & multi-slide visuals
+
+Any LinkedIn / social carousel or multi-slide visual follows the layout system in [`./compositions-carrousel.md`](./compositions-carrousel.md) — the reference grid, the mobile-safe type scale, the eight named compositions, the alternation rhythm, and the banned AI tells. **Read it before laying out the first slide.**
+
+Two rules from it are load-bearing enough to restate here:
+
+- **Mobile-safe scale.** A 1080px carousel canvas renders at ~390px on a phone: **perceived size ≈ canvas size × 0.36**. Body copy floors at 44px (48px+ is comfortable); never smaller. The full scale is tokenised as `--carousel-fs-*` in `presentations/tokens.css`.
+- **No UPPERCASE eyebrow.** The spaced uppercase kicker above the title is the #1 template / AI tell — banned. Fold the information into the title itself.
+
+Colours, fonts and illustration come from the brand tokens (`presentations/tokens.css` → `../01-brand/style-guide.md`), never hardcoded.
 
 ---
 
