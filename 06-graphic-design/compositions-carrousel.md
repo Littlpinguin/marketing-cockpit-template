@@ -53,18 +53,19 @@ Always compute contrast against **your chosen background**, not a nominal one.
 - **Line length 30–50 characters** (guaranteed by a ~880 px column at body size; if it overflows, narrow the column or split the slide).
 - **Hook ≤ 12 words**, readable in < 1 s — the feed grants a two-second audition before the reader (and the algorithm) decides.
 - **One focal point per slide**, built from the four hierarchy levers: size, weight, colour, position.
+- **One illustration = one concrete metaphor object.** Never illustrate a concept with another abstract concept: pick a physical object that embodies the idea and reads in 1 s (a battery = saving energy, CTRL+C/V keys = copying without anchoring, a magnifier = checking, a lightbulb = insight). One object per slide, in the brand's line-art language.
 
 ---
 
 ## 5. The eight compositions (rotate them)
 
-Each composition is a reusable skeleton anchored in a principle. Rotate them; **two neighbouring slides never share the same skeleton.**
+Each composition is a reusable skeleton anchored in a principle. Rotate them; **two neighbouring slides never share the same treatment** (even when they rest on the shared 3-register frame of composition 2: illustration placement, ratio and block type change on every slide).
 
 ### 1. Framed cover — *page canon (Tschichold / Van de Graaf)*
 Display title (110–160 px) **flush-left, anchored top-left**, 2–4 short lines, the keyword on its own line. One accent word. Large void at the bottom (30–40 %). Illustration absent or very faint. **→ cover / hook.**
 
-### 2. Asymmetric 7/5 field — *Swiss grid (Müller-Brockmann)*
-**Full-width title on top** (78–110 px, 1–2 lines) followed by an accent rule; never trap the title in the narrow column, it crams into 3–4 lines. Below it, two fields: line-art illustration on one side, bullet list (body 46–48 px) on the other, **side alternated left↔right slide to slide**. This is the workhorse (60–70 % of content slides). **→ one idea + one visual.**
+### 2. Three-register partition — *vertical triptych (workhorse)*
+The default skeleton for content slides (60–70 % of them). Three stacked horizontal bands: **title on top**, full width (72–110 px, 1–3 words, flush-left; never trap it in a narrow column), **illustration alone in the middle** (line-art at full opacity, surrounded by air, never watermarked), **text block at the bottom, full width** (body ≥ 48 px, two-level hierarchy: keyword in accent + rest in ink). The body takes the full live width (≈ 880 px): 30–50 character lines, maximum mobile legibility. **Replaces the old side-by-side text|illustration** (text left / illus right and reverse), dropped because it squeezed the body into a narrow column and broke phone reading. Variety comes from **treatment**, never two neighbouring slides alike: illustration placement (top-right tucked under the title / centred / full-width), illus↔text ratio (dense at the core, airy bullets toward the end), block type (paragraph, bullets). **→ one idea + one visual; the default frame of a carousel, punctuated by a number anchor (3) or a full quote (6) to breathe.**
 
 ### 3. Number anchor — *scale contrast (Ruder / Gerstner)*
 A giant ExtraBold figure (240–330 px, or in the script / accent family) placed on the focal point, deliberately overflowing its column. Caption (~48 px) hung on its baseline. **→ stat, numbered step, proof.**
@@ -84,7 +85,7 @@ Illustration **large and at full opacity** (top or centre — it dominates), cri
 ### 8. Signoff / CTA — *closing symmetry*
 One-line recap + **a single** action + signoff (avatar + name + role). Symmetric centring, banned everywhere else, becomes the end signal here. **→ last slide only.**
 
-**Connectors.** A **constant footer** (handle + optional counter) locked on the same baseline, out of the bottom danger zone. Optional **continuity**: one element (a rule, an illustration) bleeding from one slide into the next to pull the swipe — sparingly, 1–2 times max.
+**Connectors.** A **constant footer** (handle + optional counter) locked on the same baseline, out of the bottom danger zone. Optional **continuity**: one element (a rule, an illustration) bleeding from one slide into the next to pull the swipe — sparingly, 1–2 times max. **Red thread (bookend):** one signature motif (a recurring illustration, a totem object) opens the cover, returns once at the core, then closes the signoff — it signs the carousel and creates a sense of loop (mere exposure). One motif only, 2–3 appearances maximum.
 
 ## 6. Rhythm of a 9-slide sequence
 
@@ -94,11 +95,11 @@ Arc **Hook → Context → 3× Value → Proof → Breather → Signoff**. A ver
 |---|---|---|
 | 1 | Hook | Framed cover |
 | 2 | Context / figure | Number anchor |
-| 3 | Value 1 | Asymmetric 7/5 (illus left) |
+| 3 | Value 1 | Three-register partition (illus top-right) |
 | 4 | Pivot value | Two-column comparison **or** Hero illustration |
-| 5 | Value 2 | Asymmetric 7/5 (illus right) |
+| 5 | Value 2 | Three-register partition (illus full-width) |
 | 6 | Value 3 | Numbered steps |
-| 7 | Proof / rule | Asymmetric 7/5 (illus left) |
+| 7 | Proof / rule | Three-register partition (illus tucked under title) |
 | 8 | Punchline | Full quote |
 | 9 | Signoff | Signoff / CTA |
 
@@ -123,7 +124,7 @@ Arc **Hook → Context → 3× Value → Proof → Breather → Signoff**. A ver
 3. Contrast: ink or accent on the chosen background; nothing below the WCAG floor.
 4. One idea + one focal point per slide; ≤ 30 words; ≤ 6–8 lines.
 5. Line length 30–50 characters.
-6. Neighbouring slides on different compositions.
+6. Neighbouring slides on different treatment (under a shared 3-register frame: vary illustration placement, ratio, block type).
 7. Zero UPPERCASE eyebrow; zero tell from §7.
 8. No trailing period on title / hook / kicker / CTA; no em-dash; no Unicode emoji.
 9. One accent only; line-art at full opacity (never watermarked).
