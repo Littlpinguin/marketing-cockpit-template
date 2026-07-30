@@ -1,13 +1,20 @@
-# Notifies the showcase site (jm-consulting-site) whenever the template's
-# skills or agents change on main, so the site's displayed numbers update
-# automatically (workflow update-cockpit-stats.yml on the site repo).
+# On every skills/agents change on main:
+#   1. re-syncs the README counts (tagline + section headings) and commits
+#      if needed — the bot commit only touches README.md, so it never
+#      re-triggers this workflow (paths filter);
+#   2. notifies the showcase site (jm-consulting-site) via repository_dispatch
+#      so its displayed numbers update and redeploy automatically.
 #
-# Requires the SITE_DISPATCH_TOKEN secret: a fine-grained PAT scoped to the
-# site repository with "Contents: read-write" permission — create it at
-# https://github.com/settings/personal-access-tokens and store it with:
+# The dispatch requires the SITE_DISPATCH_TOKEN secret: a fine-grained PAT
+# scoped to the site repository with "Contents: read-write" permission —
+# create it at https://github.com/settings/personal-access-tokens then:
 #   gh secret set SITE_DISPATCH_TOKEN --repo Littlpinguin/marketing-cockpit-template
-# Without the secret, this workflow no-ops; the site still resyncs via its
-# daily cron.
+# Without it the dispatch step no-ops (and the site has no other automatic
+# resync path — the token is required for the automation to work).
+#
+# Note: the repo's "About" description on GitHub cannot be updated from a
+# workflow (needs admin rights the default token does not have) — update it
+# manually when the counts change (gh repo edit --description "…").
 name: Notify site of template update
 
 on:
@@ -18,16 +25,42 @@ on:
       - ".claude/agents/**"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: notify-site
+  cancel-in-progress: false
+
 jobs:
-  dispatch:
+  sync-and-dispatch:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Sync README counts with repo content
+        run: python3 scripts/update-readme-counts.py
+
+      - name: Commit README if changed
+        run: |
+          if git diff --quiet; then
+            echo "README already in sync."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs(readme): sync skill/agent counts with repo content"
+          git push origin main
+
       - name: Send repository_dispatch to the site repo
         env:
           TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
         run: |
           if [ -z "$TOKEN" ]; then
-            echo "::notice::SITE_DISPATCH_TOKEN not set — skipping dispatch (site resyncs via daily cron)."
+            echo "::warning::SITE_DISPATCH_TOKEN not set — site NOT notified. The site only resyncs via this dispatch: create the PAT (see header comment)."
             exit 0
           fi
           curl -sS -f -X POST \
