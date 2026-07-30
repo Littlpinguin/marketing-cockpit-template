@@ -1,0 +1,38 @@
+# Notifies the showcase site (jm-consulting-site) whenever the template's
+# skills or agents change on main, so the site's displayed numbers update
+# automatically (workflow update-cockpit-stats.yml on the site repo).
+#
+# Requires the SITE_DISPATCH_TOKEN secret: a fine-grained PAT scoped to the
+# site repository with "Contents: read-write" permission — create it at
+# https://github.com/settings/personal-access-tokens and store it with:
+#   gh secret set SITE_DISPATCH_TOKEN --repo Littlpinguin/marketing-cockpit-template
+# Without the secret, this workflow no-ops; the site still resyncs via its
+# daily cron.
+name: Notify site of template update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".claude/skills/**"
+      - ".claude/agents/**"
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send repository_dispatch to the site repo
+        env:
+          TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::notice::SITE_DISPATCH_TOKEN not set — skipping dispatch (site resyncs via daily cron)."
+            exit 0
+          fi
+          curl -sS -f -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/Littlpinguin/jm-consulting-site/dispatches \
+            -d '{"event_type":"cockpit-template-updated"}'
+          echo "Dispatch sent."

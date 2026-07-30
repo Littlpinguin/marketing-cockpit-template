@@ -149,7 +149,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 
 ## What's inside
 
-**50 skills**, organized by function (all in `.claude/skills/`):
+**53 skills**, organized by function (all in `.claude/skills/`):
 
 | Category | Skills | Count |
 |---|---|---|
@@ -160,10 +160,11 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 | Strategy & intelligence | `content-strategy`, `veille-strategy` (market watch), `scraping`, `performance-report`, `strategy-challenger` (challenge any strategy) | 5 |
 | Governance & plumbing | `cockpit-setup` (wizard), `brand-check` (the quality gate), `inventory`, `sync-template`, `backport-to-template` | 5 |
 | Paid acquisition | `sea-google-ads`, `ads-audit` (Google/Meta/LinkedIn audit grids, ~157 checks) | 2 |
-| Video | `video-editing`, `captions` | 2 |
+| Video | `video-editing`, `captions`, `video-generation` (t2v/i2v rushes + text-fidelity check), `video-matting`, `reel-talking-head` (orchestrator, two validation gates) | 5 |
+| Automation | `n8n-builder`, `n8n-audit` | 2 |
 | Web animation | `animation-gsap` (GSAP + ScrollTrigger), `animation-animejs`, `animation-lottie`, `animation-scroll-reveal` (AOS & co) | 4 |
 
-**10 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger` — dispatched in parallel for audits and multi-channel campaigns.
+**12 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger`, `video-art-director`, `video-model-scout` — dispatched in parallel for audits and multi-channel campaigns.
 
 **Working assets, not lorem ipsum:**
 
@@ -178,7 +179,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 | Module | What it adds | Prerequisites |
 |---|---|---|
 | `veille` | Multi-level market watch (competitors, sector, trends) feeding the calendar with **sourced** content ideas | — |
-| `video` | AI-assisted video editing & captions | macOS + [Palmier Pro](https://github.com/palmier-io/palmier-pro) |
+| `video` | AI-assisted editing & captions, AI rushes (t2v/i2v with text-fidelity check), local matting, talking-head reel orchestration, editing doctrine (`08-video/montage.md`) | macOS + [Palmier Pro](https://github.com/palmier-io/palmier-pro) ; generation needs a multi-model MCP |
 | `automatisations` | Build, debug and evolve n8n workflows from Claude (5-phase method, 5,100+ template libraries, `n8n-builder`/`n8n-audit`/`n8n-debugger`); feeds `00-intel/`, watch, reports | Self-hosted n8n (VPS guide included) |
 | `reporting` | Brand-styled performance dashboard hosted on the client's site (FTP + access code), monthly snapshots, month-to-month navigation, written analysis | ≥ 1 data source (GA4/GSC, Postiz, email tool) |
 | `acquisition` | Outbound campaigns: the cockpit does ICP + brand-voice sequences + lists, [Lemlist MCP](https://developer.lemlist.com/mcp/setup) does sending & deliverability; plus Google Ads operations and multi-platform ads audits | Lemlist account |
