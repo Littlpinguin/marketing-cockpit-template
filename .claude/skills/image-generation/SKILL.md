@@ -62,6 +62,14 @@ Si un serveur MCP Magnific est configuré (vérifier ses outils en session), l'u
 
 Si le MCP n'est pas connecté, ne pas le suggérer comme prérequis : la voie A couvre tout. Mentionner qu'il s'active via `/tools-setup`.
 
+#### Discipline de dépense (le MCP consomme des crédits réels)
+
+- **Itérer là où c'est inclus, produire par le MCP.** Certains abonnements incluent des générations illimitées en basse résolution **dans l'application web uniquement** — via le MCP, tout se facture (le serveur le signale : `unlimitedAppliesHere: false`). Toute exploration (cadrage, style, formulation du prompt) se fait côté web ; le MCP sert au rendu final validé.
+- **Vérifier le solde en direct avant de chiffrer ou lancer une série** (`account_balance`) — jamais de solde de mémoire : un chiffre périmé fait proposer des plans infinançables.
+- **Simuler le coût avant de générer** (`simulate_cost`) quand l'outil le permet ; s'il échoue pour un type de génération, lancer **un** exemplaire pour connaître le tarif réel avant la série.
+- **Jamais de série avant qu'un exemplaire soit validé** par l'utilisateur — générer en lot sur un prompt non validé, c'est jeter des crédits.
+- **Itérer par édition** (repasser la sortie en référence + instruction courte), jamais en re-roll complet.
+
 ## Workflow
 
 ### 1. Parser la demande

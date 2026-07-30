@@ -31,7 +31,7 @@ Toute demande commence par la question : **quel objectif business sert-elle ?** 
 | Landing page | skill `landing-page` | `05-web-content/landing-pages/` |
 | Lead magnet (guide, calculateur, quiz…) | skill `lead-magnet` | `05-web-content/` + circuit de capture |
 | Image / visuel de marque | skill `image-generation` | `06-graphic-design/` |
-| Vidéo (montage, Reel, Short, sous-titres) | module `video` — skills `video-editing`, `captions` | `08-video/` |
+| Vidéo (montage, Reel, Short, sous-titres) | module `video` — skills `video-editing`, `captions`, `video-generation`, `video-matting`, `reel-talking-head` | `08-video/` (doctrine : `08-video/montage.md`) |
 | Article SEO / blog | skill `seo` | `09-seo/` |
 | Audit SEO (technique, contenu, GEO) | plugin claude-seo (agents `seo-technical`, `seo-content`, `seo-geo`…) via la skill `seo` | synthèse dans `09-seo/` |
 | Campagne Google Ads (audit, optimisation, création) | skill `sea-google-ads` + agent `sea-analyst` (module `acquisition`) | `12-acquisition/google-ads/` |
@@ -236,8 +236,11 @@ See `docs/setup-completed.schema.json` for the full schema.
 
 | Skill | Role | Notes |
 |---|---|---|
-| `video-editing` | AI-assisted video editing | Palmier Pro via MCP or ffmpeg fallback, per-platform exports |
-| `captions` | Video subtitling | Transcription, clean .srt, brand-styled burned-in subtitles via ffmpeg |
+| `video-editing` | AI-assisted video editing | Palmier Pro via MCP or ffmpeg fallback, field-tested MCP/export guardrails, per-platform exports |
+| `captions` | Video subtitling | Transcription, clean .srt, brand-styled burn-in via ffmpeg, or true karaoke via editor text clips |
+| `video-generation` | AI video rushes (t2v/i2v) | Motion-first EN prompts, spend discipline, audio-envelope text-fidelity check |
+| `video-matting` | Local video matting (alpha layer) | RobustVideoMatting via ONNX, QC, ProRes 4444 export |
+| `reel-talking-head` | Raw talking-head → edited vertical reel | Orchestrator with two hard validation gates before any spend |
 
 ### SEO analysis (support of skill `seo`)
 

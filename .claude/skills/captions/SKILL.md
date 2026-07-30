@@ -87,6 +87,20 @@ ffmpeg -i <video>.mp4 -vf "ass=08-video/subtitles/<slug>.ass" -c:a copy <video>-
 
 C'est la voie pour reproduire les styles « mot à mot » type TikTok — à réserver aux vidéos à fort enjeu, le coût d'édition est réel.
 
+⚠️ **Vérifier que le ffmpeg de la machine embarque libass avant de promettre un burn-in** (`ffmpeg -filters | grep subtitles`) : certaines builds n'ont ni `subtitles` ni `drawtext`. Dans ce cas, l'incrustation passe par l'éditeur vidéo (méthode ci-dessous).
+
+### Méthode karaoké dans l'éditeur (Palmier Pro) — le vrai « mot actif »
+
+Pour un karaoké type Reels (groupe de 3-5 mots visible, mot actif coloré), la voie robuste est de poser les sous-titres **comme clips texte dans l'éditeur**, pas en burn-in ffmpeg :
+
+1. **Transcrire avec les timings par token** : `whisper-cli -ml 1` (timings au mot — indispensable ; la transcription automatique intégrée aux éditeurs découpe en groupes de 1-2 mots aux timings approximatifs : ne pas l'utiliser quand on maîtrise le SRT).
+2. **Regrouper en chunks de 3-5 mots**, coupés aux frontières de sens, sans segment à cheval sur un cut.
+3. **Poser chaque chunk comme un clip texte** avec l'animation de surbrillance de l'éditeur (preset type `highlightBlock`/`highlightPop` + couleur du mot actif `{{BRAND_COLOR_ACCENT}}`), fond `{{BRAND_COLOR_DARK}}` semi-opaque, centré à ~65 % de la hauteur.
+4. **Relire les homophones** : la transcription écrit ce qu'elle entend (« qu'il dit » pour « qui le dit ») — corriger dans le texte affiché, l'audio, lui, est juste.
+5. Si le montage insère un cold open, **décaler la grille** d'autant et reconstituer les sous-titres du cold open à la main.
+
+Le rendu est vectoriel (pas de perte au réencodage), éditable au mot près, et survit aux changements de montage — trois avantages décisifs sur le burn-in.
+
 ## Règles de placement (rappel de `08-video/formats.md`)
 
 - 9:16 (1080×1920) : centrés, au-dessus de la marge basse de 420 px (≈ `MarginV` 100–130), jamais dans la colonne d'icônes à droite.
