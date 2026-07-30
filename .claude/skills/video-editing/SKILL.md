@@ -63,6 +63,21 @@ Si le serveur MCP Palmier Pro est configuré (dans le `.mcp.json` local, non ver
 
 Les noms exacts des outils MCP dépendent de la version de Palmier Pro : les découvrir en session, ne pas les inventer.
 
+#### Règles de robustesse MCP (éprouvées en production)
+
+- **Un appel à la fois, jamais de parallèle** : la concurrence est le déclencheur le plus fiable du gel du serveur MCP interne. Un lot de 30 entrées dans un seul appel ne pose aucun problème — c'est la concurrence qui casse, pas la taille.
+- **Si le serveur gèle** (l'app vit, le port écoute, mais aucune réponse HTTP) : quitter l'app proprement, relancer, rouvrir le projet (~30 s, rien n'est perdu si la sauvegarde a suivi).
+- **Forcer la sauvegarde après chaque série structurante** (`close` puis `open` du projet) : l'autosave n'est pas instantané, et un gel au milieu d'une série peut recharger un état **partiellement** à jour — y compris des modifications pourtant confirmées par l'outil. **Après tout redémarrage forcé : relire la timeline et rejouer le delta manquant**, ne jamais se fier aux retours d'outils antérieurs au gel.
+- **Vérifier la timeline active avant chaque mutation** quand le projet en contient plusieurs : elle peut rebasculer d'elle-même (resynchronisation avec l'UI).
+- **Les positions en secondes s'arrondissent mal** : poser un clip avec un point d'entrée en secondes peut le décaler d'une frame (troncature flottante). Relire le delta retourné et corriger les trims en **frames entières** ; sur une voix, une frame décale une couture audible.
+- **Placer par lot puis vérifier les `gaps`** de la timeline : un plan posé une frame trop court laisse un flash de fond au rendu.
+- **Le zoom/recadrage se fait avec `transform` > 1** (une échelle de 86 % = 1/0,86 ≈ 1,163) ; un punch-in continu = keyframes de scale en `linear` sur toute la durée du plan.
+- **Rushes issus d'un modèle génératif qui refait parler quelqu'un** (lipsync, i2v sur une voix) : contrôle de fidélité du texte **avant** import — voir la skill `video-generation`, section « fidélité du texte ». C'est le contrôle le plus important de la chaîne.
+
+#### Montage à sources régénérées (voix)
+
+Quand une zone joue l'audio d'un fichier régénéré (phrasé ≠ original) : **un clip audio continu par zone** (WAV extrait du fichier), jamais les audios liés plan par plan — sinon chaque coupe est une épissure audible. Muter tous les audios liés des clips vidéo, recaler sous-titres et SFX sur les onsets du fichier régénéré.
+
 ### Voie B — Plan de montage ffmpeg (fallback)
 
 Sans Palmier Pro, produire un **plan de montage** : une suite de commandes ffmpeg commentées dans `08-video/scripts/<slug>-montage.sh`, exécutées après validation humaine. Briques types :
@@ -103,6 +118,26 @@ ffmpeg -i tmp/final.mp4 -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
   -c:a aac -b:a 192k -movflags +faststart exports/<slug>-tiktok.mp4
 ```
 
+### Export depuis Palmier Pro — les pièges connus, et la parade
+
+**Ne jamais exporter en H.264 depuis Palmier** : l'encodeur intégré se bloque de façon reproductible. Sortir en **ProRes**, puis transcoder en local :
+
+```bash
+ffmpeg -i master.mov -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p \
+  -af "loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k -ar 48000 \
+  -movflags +faststart exports/<slug>.mp4
+```
+
+Le master ProRes est aussi le bon fichier à archiver, et le `loudnorm` garantit un livrable social à −14 LUFS.
+
+Les cinq pièges, dans l'ordre où ils piègent :
+
+1. **Le fichier de sortie est caché pendant l'export** (`.<nom>-<UUID>.partial.mov`, préfixe point) et n'est renommé qu'à la fin. Surveiller le `.partial`, jamais la cible.
+2. **Le rendu peut se figer à la finalisation** : progression à 100 %, `.partial` à taille finale mais mtime figé → moov atom manquant, partiel **irrécupérable**. Annuler, quitter, relancer, réexporter.
+3. **Le rendu peut mourir en silence après ~10-15 min** : le `.partial` cesse de grossir, l'app spinne. **Repère de normalité : un rendu sain tourne à ~30× temps réel** (1 min de film → ~1-2 min de rendu). Si le `.partial` grossit nettement plus lentement, le rendu est déjà malade. **Parade éprouvée : exporter en segments courts** — dupliquer la timeline, la découper aux frontières de plans (splitter les clips traversants : les keyframes sont recalées proprement), exporter chaque segment par son id de timeline, puis concaténer sans réencodage (`ffmpeg -f concat -c copy` pour la vidéo, audio PCM recollé à l'échantillon près). Contrôler ensuite : nombre total de frames, continuité aux jonctions (diff perceptuelle : forte pile à la coupe, ~nulle ailleurs), transcription du master.
+4. **Un master exporté peut provenir d'un état antérieur de la timeline** (même durée, contenu différent) : **toujours transcrire le master final** (whisper) et le comparer au texte attendu avant livraison. Un mot que la transcription déforme sous un effet sonore se vérifie par corrélation d'enveloppe avec la source (> 0,9 = fidèle).
+5. **Une boucle de surveillance avec `sleep` en avant-plan** peut être bloquée par l'environnement d'exécution : surveiller en tâche de fond.
+
 ## Checklist avant livraison
 
 - [ ] Hook lisible à l'arrêt sur image, validé par un humain
@@ -125,8 +160,13 @@ Voir `docs/etat-de-lart/video-courte.md` pour le détail sourcé :
 5. **Une déclinaison par plateforme, jamais de repost brut** (watermark TikTok sur Reels = sous-distribution) — adapter au minimum hook, sous-titres, ratio, son.
 6. **Rendu « créateur », pas corporate** en organique : smartphone, face caméra, imperfections assumées ; tout contenu promotionnel TikTok exige le label contenu commercial natif activé.
 
+## Doctrine de montage
+
+Les règles de coupe, de rythme et de plan sonore (cuts francs, J/L-cuts, raccord d'échelle ≥ 20 %, punch-in continu, médiane de plans, silence) sont dans **`08-video/montage.md`** — les charger avant tout montage narratif (talking-head, documentaire, interview). Pour orchestrer la transformation complète d'une vidéo brute de client en reel : skill `reel-talking-head`.
+
 ## Ce que cette skill ne fait pas
 
 - ❌ Publier (→ validation humaine, publication via le module social)
 - ❌ Le sous-titrage (→ skill `captions`)
 - ❌ Les visuels fixes (→ `image-generation`)
+- ❌ Générer des rushes IA (→ `video-generation`) ni détourer (→ `video-matting`)
