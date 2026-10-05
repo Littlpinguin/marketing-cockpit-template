@@ -1,0 +1,107 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "proof-band",
+  "name": "Bande de preuve immédiate",
+  "objection": "Est-ce sérieux",
+  "when": "Juste sous le hero, dès qu'on a 3 ou 4 faits vérifiables : un chiffre en grand, un libellé court, une source si le chiffre n'est pas un fait de l'offre.",
+  "avoid": "Chiffres arrondis à la hausse ou sans source, plus de quatre faits, faits qui répètent le hero. Pour des logos clients, utiliser la section logos.",
+  "reduced_motion": "Les chiffres s'affichent à leur valeur finale, sans compteur qui monte.",
+  "slots": {
+    "title": {"type": "text", "doc": "Titre lu par les lecteurs d'écran seulement (la bande n'affiche pas de titre).", "example": "Le parcours en chiffres"},
+    "facts": {"type": "list", "doc": "3 ou 4 faits. value : le nombre seul (il compte jusqu'à sa valeur), unit : unité courte collée au nombre, label : libellé de 2 à 8 mots, source : facultative.", "fields": {"value": "nombre (« 12 », « 1 900 »)", "unit": "unité courte ou vide", "label": "libellé court", "source": "source du chiffre, ou vide"}, "example": [
+      {"value": "6", "unit": "", "label": "ateliers de deux heures en petit groupe", "source": ""},
+      {"value": "12", "unit": "", "label": "entreprises au plus par cohorte", "source": ""},
+      {"value": "3", "unit": "", "label": "scopes mesurés, achats compris", "source": ""},
+      {"value": "14", "unit": "p.", "label": "de bilan à présenter à vos clients", "source": ""}
+    ]}
+  }
+}
+</script>
+<style data-section-style="proof-band">
+.s-proof {
+  padding-block: 0 clamp(48px, 2rem + 3vw, 80px);
+}
+
+.s-proof__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.s-proof__item {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: clamp(20px, 1rem + 1vw, 32px) clamp(16px, 0.6rem + 1.4vw, 32px);
+}
+
+.s-proof__item + .s-proof__item {
+  border-left: 1px solid var(--line);
+}
+
+.s-proof__value {
+  order: -1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: var(--t-number);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-proof__unit {
+  color: var(--hl);
+  font-size: 0.42em;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.s-proof__label {
+  max-width: 18em;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.s-proof__source {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+}
+
+@media (max-width: 900px) {
+  .s-proof__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s-proof__item + .s-proof__item {
+    border-left: 0;
+  }
+
+  .s-proof__item:nth-child(even) {
+    border-left: 1px solid var(--line);
+  }
+
+  .s-proof__item:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-proof section" aria-labelledby="{{id}}-titre" data-section="proof-band">
+  <div class="wrap">
+    <h2 id="{{id}}-titre" class="sr-only">{{title}}</h2>
+    <dl class="s-proof__list" data-reveal-group>
+      {{#facts}}<div class="s-proof__item" data-reveal>
+        <dt class="s-proof__label">{{label}}</dt>
+        <dd class="s-proof__value"><span data-count>{{value}}</span>{{#unit}}<span class="s-proof__unit">{{unit}}</span>{{/unit}}</dd>
+        {{#source}}<dd class="s-proof__source">{{source}}</dd>{{/source}}
+      </div>{{/facts}}
+    </dl>
+  </div>
+</section>
+<!-- /section:{{id}} -->

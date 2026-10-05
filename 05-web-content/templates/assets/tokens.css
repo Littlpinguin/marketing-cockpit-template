@@ -1,0 +1,80 @@
+/* ============================================================
+   LANDING TOKENS · the brand file of the landing section library
+   ------------------------------------------------------------
+   Every landing page assembled from 05-web-content/templates/
+   (base.css, sections/*.html, assemble-landing.py) reads its brand
+   from this file, and from nowhere else: no colour, font or radius
+   is ever written by hand in base.css or in a section.
+
+   The lines between the brand-tokens markers are GENERATED from
+   01-brand/tokens.json by scripts/build-tokens.py (target and
+   derivation formulas in scripts/build-tokens.toml). Never edit
+   them by hand: change tokens.json, re-run the script;
+   `python3 scripts/build-tokens.py --check` flags any drift.
+
+   Before the wizard, the block carries the NEUTRAL EXAMPLE PALETTE
+   of docs/placeholders.json (deep blue, amber, slate, near white,
+   Inter and JetBrains Mono): the library and its catalogue render
+   and pass the landing QA as they are. Never write a {{...}}
+   placeholder into a CSS value: an invalid custom property silently
+   disables every rule that consumes it.
+
+   What each variable is for (semantic layer in base.css):
+     --brand-primary / -accent / -dark / -light / -white
+                              the five base colours of tokens.json
+     --brand-primary-soft     pastel fills (selected states, tints)
+     --brand-accent-soft      pastel of the accent (badges, notes)
+     --brand-surface-2        tinted cards on the light page
+     --brand-band-2 / -3      raised surfaces inside a dark band
+     --brand-line(-on-dark)   hairlines on light (dark) grounds
+     --brand-shadow(-soft)    card shadows
+     --brand-gradient(-vertical)  signature gradient: rules, rails,
+                              progress line, ticket edge. Never under
+                              running text
+     --brand-muted(-on-dark)  muted text, 4.6:1 on every ground it
+                              sits on
+     --brand-primary-text     accented title segment and links on light
+     --brand-accent-on-dark   the same inside a dark band
+     --brand-on-accent        label of the conversion button (on the
+                              accent fill, 19 px bold)
+     --brand-field-border(-on-dark)  form fields and controls, 3:1
+     --brand-danger           form error messages
+     --font-display / -mono   brand fonts
+     --radius-card / -cta / -badge / -input   radii
+   ============================================================ */
+
+:root {
+  /* brand-tokens:start */
+  /* Généré depuis 01-brand/tokens.json (python3 scripts/build-tokens.py). Ne pas éditer. */
+  --brand-primary: #1E40AF;
+  --brand-accent: #F59E0B;
+  --brand-dark: #0F172A;
+  --brand-light: #F8FAFC;
+  --brand-white: #FFFFFF;
+  --brand-primary-soft: rgba(30, 64, 175, 0.10);
+  --brand-accent-soft: rgba(245, 158, 11, 0.18);
+  --brand-surface-2: #EFF1F3;
+  --brand-band-2: #202739;
+  --brand-band-3: #313748;
+  --brand-line: rgba(15, 23, 42, 0.12);
+  --brand-line-on-dark: rgba(248, 250, 252, 0.16);
+  --brand-shadow: rgba(15, 23, 42, 0.16);
+  --brand-shadow-soft: rgba(15, 23, 42, 0.06);
+  --brand-gradient: linear-gradient(90deg, #1E40AF 0%, #F59E0B 100%);
+  --brand-gradient-vertical: linear-gradient(180deg, #1E40AF 0%, #F59E0B 100%);
+  --brand-muted: #656B78;
+  --brand-muted-on-dark: #9FA4AC;
+  --brand-primary-text: #1E40AF;
+  --brand-accent-on-dark: #F59E0B;
+  --brand-on-accent: #0F172A;
+  --brand-field-border: #8A8F99;
+  --brand-field-border-on-dark: #6C727E;
+  --brand-danger: #A4221A;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Menlo', monospace;
+  --radius-card: 16px;
+  --radius-cta: 999px;
+  --radius-badge: 999px;
+  --radius-input: 8px;
+  /* brand-tokens:end */
+}

@@ -1,0 +1,121 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "comparison",
+  "name": "Tableau comparatif",
+  "objection": "Pourquoi cette option plutôt qu'une autre",
+  "when": "Trafic en phase d'évaluation (requêtes « alternative à », comparaison de formules) : un vrai tableau, daté, factuel, dont la première colonne de données est l'offre de la page. Chaque cellule dit oui, non ou partiel en texte, jamais par la couleur seule.",
+  "avoid": "Comparaisons invérifiables ou non datées, concurrents nommés sans base factuelle, plus de quatre colonnes, plus de huit lignes.",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Trois façons de faire <span class=\"hl\">votre bilan</span>"},
+    "intro": {"type": "text", "doc": "Chapô : base de la comparaison et date.", "example": "Comparaison établie en janvier 2027, à partir de devis et d'offres publiques de prestataires de bilan."},
+    "caption": {"type": "text", "doc": "Légende du tableau (lue par les lecteurs d'écran).", "example": "Comparaison du parcours Meridian, d'un bilan mené seul et d'un bilan sous-traité"},
+    "criteria_label": {"type": "text", "doc": "En-tête de la colonne des critères.", "example": "Critère"},
+    "columns": {"type": "list", "doc": "2 ou 3 colonnes ; la première est l'offre de la page.", "fields": {"name": "nom de la colonne"}, "example": [{"name": "Parcours Meridian"}, {"name": "Seul avec un tableur"}, {"name": "Bilan sous-traité"}]},
+    "rows": {"type": "list", "doc": "Lignes. label : critère ; cells : une cellule par colonne, {yes|no|partial: true, text}.", "fields": {"label": "critère", "cells": "[{yes: true, text}, {no: true, text}, {partial: true, text}]"}, "example": [
+      {"label": "Délai jusqu'au bilan", "cells": [{"yes": true, "text": "6 semaines"}, {"partial": true, "text": "Variable"}, {"partial": true, "text": "3 à 5 mois"}]},
+      {"label": "Méthode documentée", "cells": [{"yes": true, "text": "Oui"}, {"no": true, "text": "Rarement"}, {"yes": true, "text": "Oui"}]},
+      {"label": "Vous savez refaire le calcul", "cells": [{"yes": true, "text": "Oui"}, {"partial": true, "text": "En partie"}, {"no": true, "text": "Non"}]},
+      {"label": "Plan d'action chiffré", "cells": [{"yes": true, "text": "Inclus"}, {"no": true, "text": "Non"}, {"partial": true, "text": "En option"}]},
+      {"label": "Prix indicatif", "cells": [{"yes": true, "text": "1 900 € HT"}, {"yes": true, "text": "Votre temps"}, {"partial": true, "text": "Sur devis"}]}
+    ]}
+  }
+}
+</script>
+<style data-section-style="comparison">
+.s-compare__scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.s-compare__table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-compare__table th,
+.s-compare__table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.s-compare__table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.s-compare__table thead th {
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  font-size: var(--t-small);
+  font-weight: 700;
+}
+
+.s-compare__table thead th:nth-child(2) {
+  background: var(--brand-primary-text);
+}
+
+.s-compare__table tbody th {
+  font-weight: 600;
+}
+
+.s-compare__table td:nth-child(2) {
+  background: var(--tint);
+  font-weight: 700;
+}
+
+.s-compare__cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.s-compare__icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+.s-compare__icon--yes {
+  background: var(--hl);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.s-compare__icon--no {
+  background: var(--muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24ZM8.5 7.1 7.1 8.5l3.5 3.5-3.5 3.5 1.4 1.4 3.5-3.5 3.5 3.5 1.4-1.4-3.5-3.5 3.5-3.5-1.4-1.4-3.5 3.5-3.5-3.5Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24ZM8.5 7.1 7.1 8.5l3.5 3.5-3.5 3.5 1.4 1.4 3.5-3.5 3.5 3.5 1.4-1.4-3.5-3.5 3.5-3.5-1.4-1.4-3.5 3.5-3.5-3.5Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.s-compare__icon--partial {
+  border: 2px solid var(--muted);
+  background: linear-gradient(90deg, var(--muted) 50%, transparent 50%);
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-compare section" aria-labelledby="{{id}}-titre" data-section="comparison">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+    <div class="s-compare__scroll" role="region" aria-label="{{caption}}" tabindex="0" data-reveal>
+      <table class="s-compare__table">
+        <caption class="sr-only">{{caption}}</caption>
+        <thead><tr><th scope="col">{{criteria_label}}</th>{{#columns}}<th scope="col">{{name}}</th>{{/columns}}</tr></thead>
+        <tbody>
+          {{#rows}}<tr><th scope="row">{{label}}</th>{{#cells}}<td><span class="s-compare__cell">{{#yes}}<span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>{{/yes}}{{#no}}<span class="s-compare__icon s-compare__icon--no" aria-hidden="true"></span>{{/no}}{{#partial}}<span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>{{/partial}}{{text}}</span></td>{{/cells}}</tr>{{/rows}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

@@ -24,6 +24,7 @@ CONFIG_LIVREE = REPO / "scripts" / "build-tokens.toml"
 GABARIT_TOKENS = REPO / "_templates" / "brand" / "tokens.json"
 GABARIT_STYLE_GUIDE = REPO / "_templates" / "brand" / "style-guide.md"
 TOKENS_CSS_DECKS = "06-graphic-design/presentations/tokens.css"
+TOKENS_CSS_LANDINGS = "05-web-content/templates/assets/tokens.css"
 TOKENS = "01-brand/tokens.json"
 
 
@@ -337,9 +338,10 @@ def racine_du_template_apres_wizard(tmp_path: Path) -> Path:
     (root / TOKENS).write_text(rempli, encoding="utf-8")
     (root / "01-brand/style-guide.md").write_text(
         GABARIT_STYLE_GUIDE.read_text(encoding="utf-8"), encoding="utf-8")
-    dst = root / TOKENS_CSS_DECKS
-    dst.parent.mkdir(parents=True)
-    dst.write_text((REPO / TOKENS_CSS_DECKS).read_text(encoding="utf-8"), encoding="utf-8")
+    for cible in (TOKENS_CSS_DECKS, TOKENS_CSS_LANDINGS):
+        dst = root / cible
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text((REPO / cible).read_text(encoding="utf-8"), encoding="utf-8")
     return root
 
 
@@ -374,6 +376,9 @@ def test_cibles_livrees_generees_sans_placeholder(tmp_path):
     css = (root / TOKENS_CSS_DECKS).read_text(encoding="utf-8")
     assert build_tokens.PLACEHOLDER_RE.search(css) is None
     assert "--brand-primary: #1E40AF;" in css
+    landings = (root / TOKENS_CSS_LANDINGS).read_text(encoding="utf-8")
+    assert build_tokens.PLACEHOLDER_RE.search(landings) is None
+    assert "--brand-accent: #F59E0B;" in landings and "--font-display: 'Inter'" in landings
     guide = (root / "01-brand/style-guide.md").read_text(encoding="utf-8")
     debut = guide.index(build_tokens.MARKER_START)
     assert build_tokens.PLACEHOLDER_RE.search(guide[debut:]) is None
@@ -521,3 +526,49 @@ def test_valeurs_par_defaut_identiques_au_starter_vendorise():
     ecarts = {nom: (starter[nom], tokens[nom]) for nom in comparees
               if _normaliser(starter[nom]) != _normaliser(tokens[nom])}
     assert ecarts == {}
+
+
+# --------------------------------------------------------------------------
+# Fichier de marque des landings (bibliothèque de sections)
+# --------------------------------------------------------------------------
+
+@template_non_configure
+def test_tokens_css_des_landings_livre_est_la_sortie_de_la_palette_d_exemple(tmp_path):
+    """Le bloc livré dans 05-web-content/templates/assets/tokens.css est celui que le script écrit."""
+    root = racine_du_template_apres_wizard(tmp_path)
+    assert run(root, config=CONFIG_LIVREE).returncode == 0
+    assert (root / TOKENS_CSS_LANDINGS).read_text(encoding="utf-8") == \
+        (REPO / TOKENS_CSS_LANDINGS).read_text(encoding="utf-8")
+
+
+def _valeurs_landings(tokens: dict) -> dict[str, str]:
+    config = build_tokens.load_config(CONFIG_LIVREE)
+    cible = next(c for c in config["targets"] if c["path"] == TOKENS_CSS_LANDINGS)
+    lignes = build_tokens.target_lines(tokens, cible, "test")
+    return dict(re.findall(r"(--[A-Za-z0-9-]+): ([^;]+);", "\n".join(lignes)))
+
+
+@pytest.mark.parametrize("accent, primaire", [
+    ("#F59E0B", "#1E40AF"),    # palette d'exemple
+    ("#E11D48", "#7C3AED"),    # accent de ton moyen : ni le sombre ni le blanc n'y tiennent 4,5:1
+    ("#1E3A8A", "#FACC15"),    # accent sombre, primaire claire
+])
+def test_derivees_des_landings_tiennent_leurs_contrastes(accent, primaire):
+    """Quelle que soit la palette, les couleurs de texte dérivées tiennent leur seuil (ou le build échoue)."""
+    tokens = json.loads(json.dumps(TOKENS_FICTIFS))
+    tokens["color"]["accent"]["$value"] = accent
+    tokens["color"]["primary"]["$value"] = primaire
+    tokens["color"]["white"] = {"$value": "#FFFFFF"}
+    tokens["radius"].update({"cta": {"$value": "999px"}, "badge": {"$value": "999px"},
+                             "input": {"$value": "8px"}})
+    tokens["font"]["mono"] = {"$value": ["JetBrains Mono", "monospace"]}
+    v = _valeurs_landings(tokens)
+    clair, blanc, sombre = "#F8FAFC", "#FFFFFF", "#0F172A"
+    assert build_tokens.contraste(v["--brand-muted"], clair) >= 4.6
+    assert build_tokens.contraste(v["--brand-muted"], blanc) >= 4.6
+    assert build_tokens.contraste(v["--brand-muted-on-dark"], sombre) >= 4.6
+    assert build_tokens.contraste(v["--brand-primary-text"], clair) >= 4.6
+    assert build_tokens.contraste(v["--brand-accent-on-dark"], sombre) >= 4.6
+    assert build_tokens.contraste(v["--brand-on-accent"], accent) >= 3
+    assert build_tokens.contraste(v["--brand-field-border"], blanc) >= 3
+    assert build_tokens.contraste(v["--brand-danger"], blanc) >= 4.6

@@ -39,8 +39,11 @@ Système complet : `../01-brand/style-guide.md`.
 │   └── outils-web/<slug>/        ← calculateurs, quiz, diagnostics (index.html autonome)
 ├── pages/<slug>/                 ← pages hors conversion directe (à-propos, légal, microsite)
 ├── templates/                    ← composants partagés (header, footer) + galerie de templates
+│   ├── sections/                 ← bibliothèque de sections des landings : un fragment par mécanique, catalogue.html (+ README)
+│   ├── assets/                   ← tokens.css (généré depuis 01-brand/tokens.json), base.css, moteurs reveal / scroll / offer / forms / tracking
 │   ├── landing-pages/            ← 10 modèles de landing pages par objectif (+ README)
 │   └── lead-magnets/             ← 10 modèles d'outils interactifs avec capture (+ README)
+├── scripts/assemble-landing.py   ← assemble une landing autonome depuis une spec et la bibliothèque de sections
 ├── scripts/qa-landing.py         ← QA mesurable d'une page (Playwright, 3 tailles d'écran + mouvement réduit)
 └── deployed.md                   ← registre des pages publiées (URL, date, responsable)
 ```
@@ -60,10 +63,10 @@ La friction réelle mesurée sur ce type de projet n'est pas d'écrire une secti
 
 Avant d'écrire le moindre bloc HTML :
 
-1. **Lire `sections-library.md`** — si une section du type recherché existe, la décliner (contenu, pas structure).
+1. **Landing page : la bibliothèque `templates/sections/`** (ouvrir `catalogue.html`, lire son `README.md`) — si une section du type recherché existe, l'assembler avec ses slots (`scripts/assemble-landing.py`), sans toucher à sa structure. Autres pages : lire `sections-library.md` — si une section du type recherché existe, la décliner (contenu, pas structure).
 2. **Scanner `landing-pages/` et `pages/`** — si une page proche existe, repartir de ses sections.
 3. **`templates/`** — header et footer viennent toujours de là.
-4. Créer une nouvelle section **seulement si aucune ne couvre le besoin** — et dans ce cas, l'ajouter à `sections-library.md` dans la foulée pour la prochaine fois.
+4. Créer une nouvelle section **seulement si aucune ne couvre le besoin** — et dans ce cas, l'ajouter dans la foulée à la bibliothèque (`templates/sections/README.md` § 7) pour une landing, à `sections-library.md` pour une autre page.
 
 ## Skills orchestrées — ordre d'invocation
 
@@ -110,7 +113,7 @@ Tout est dans `.claude/skills/lead-magnet/SKILL.md` : typologie → production p
 
 ## Conventions techniques (toutes pages)
 
-- Tokens de `../01-brand/style-guide.md` déclarés en CSS custom properties dans `:root` (voir bloc de référence dans `sections-library.md`).
+- Tokens de `../01-brand/style-guide.md` déclarés en CSS custom properties dans `:root`. Landing pages : `templates/assets/tokens.css` (généré depuis `01-brand/tokens.json` par `scripts/build-tokens.py`, jamais à la main) et la couche sémantique de `templates/assets/base.css`, inlinés par l'assembleur ; autres pages : bloc de référence de `sections-library.md`.
 - Mobile-first ; contrôler à 375, 768 et 1440 px avec la QA mesurable (ci-dessous), et à l'œil aux tailles intermédiaires.
 - **QA mesurable** : `python3 05-web-content/scripts/qa-landing.py <page.html>` rend la page dans Chromium à 375×812, 768×1024 et 1440×900, puis en `prefers-reduced-motion`, et mesure débordement horizontal, planchers typographiques (12 px pour toute étiquette, 16 px minimum pour le texte courant, 18 px recommandés sur bureau), contraste WCAG AA avec opacités composées, titres, alternatives, noms accessibles, champs, cibles tactiles mobiles, CTA (destination, CTA primaire visible sans défiler sur mobile), mouvement réduit, langue et suivi. Zéro erreur avant livraison ; le CTA primaire porte `data-cta="primaire"`.
 - Accessibilité : HTML sémantique, alt text, contrastes AA, navigation clavier, attribut `lang`.

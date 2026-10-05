@@ -1,0 +1,202 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "faq",
+  "name": "FAQ avec carte collante",
+  "objection": "Les dernières questions avant d'agir",
+  "when": "Avant ou après le bloc de conversion : les vraies questions venues des ventes ou du support, en accordéon natif (<details>), et à côté une carte collante qui rappelle l'offre et ramène au bloc de conversion. JSON-LD FAQPage seulement sur une page indexée (jsonld: true).",
+  "avoid": "Questions inventées pour placer un argument, réponses qui renvoient ailleurs que vers la conversion, plus de huit questions, virgule ou point dans une question.",
+  "reduced_motion": "L'accordéon s'ouvre sans animation.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Vos <span class=\"hl\">questions</span>"},
+    "intro": {"type": "text", "doc": "Chapô facultatif (vide : rien).", "example": "Les questions qui reviennent le plus avant une inscription."},
+    "items": {"type": "list", "doc": "4 à 8 questions. q : question sans virgule, terminée par « ? » ; a : réponse courte et précise.", "fields": {"q": "question", "a": "réponse"}, "example": [
+      {"q": "Faut-il des connaissances en carbone pour suivre le parcours ?", "a": "Non. Le premier atelier pose le vocabulaire et la méthode, et l'animateur vous accompagne poste par poste. Il faut surtout savoir où trouver vos factures et vos achats."},
+      {"q": "Combien de temps faut-il prévoir chaque semaine ?", "a": "Deux heures d'atelier le mardi, puis deux à trois heures pour réunir et saisir vos données. La semaine 3 demande un peu plus, pour les achats."},
+      {"q": "Que se passe-t-il si je manque un atelier ?", "a": "Chaque atelier est enregistré et mis en ligne sous 24 heures. La permanence du jeudi permet de poser vos questions sur la séance manquée."},
+      {"q": "Le bilan est-il reconnu par mes clients ?", "a": "Le dossier suit une méthode documentée et cite ses facteurs d'émission et leurs sources : c'est ce que demandent les questionnaires fournisseurs courants. Il ne remplace pas un bilan réglementaire audité quand la loi l'exige."},
+      {"q": "Peut-on payer sur facture ?", "a": "Oui, à 30 jours. Choisissez le paiement sur facture au moment de la réservation."}
+    ]},
+    "jsonld": {"type": "bool", "doc": "Ajoute le JSON-LD FAQPage (page indexée seulement).", "example": false},
+    "card_label": {"type": "text", "doc": "Étiquette courte de la carte.", "example": "Cohorte de printemps"},
+    "card_title": {"type": "text", "doc": "Titre de la carte (le nom de l'offre).", "example": "Parcours Bilan carbone"},
+    "card_meta": {"type": "text", "doc": "Rappel court : dates, prix, places.", "example": "Du 14 avril au 19 mai 2027 · dès 1 900 € HT · 12 places"},
+    "cta_label": {"type": "text", "doc": "Verbe du bouton de la carte.", "example": "Voir le billet"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion.", "example": "#offre"},
+    "contact": {"type": "html", "doc": "Autre question : contact direct (lien mailto ou page).", "example": "Une autre question ? <a href=\"mailto:bonjour@example.com\">bonjour@example.com</a>"}
+  }
+}
+</script>
+<style data-section-style="faq">
+.s-faq__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.9fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-faq__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-faq__item {
+  border-bottom: 1px solid var(--line);
+}
+
+.s-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 64px;
+  padding: 18px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.s-faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.s-faq__q h3 {
+  font-size: 1.1875rem;
+  line-height: var(--lh-snug);
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.s-faq__icon {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  transition: transform var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.s-faq__icon::before,
+.s-faq__icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 2px;
+  margin: -1px 0 0 -6px;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.s-faq__icon::after {
+  transform: rotate(90deg);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-faq__item[open] .s-faq__icon {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+}
+
+.s-faq__item[open] .s-faq__icon::after {
+  transform: rotate(0deg);
+}
+
+.s-faq__a {
+  max-width: 62ch;
+  padding: 0 52px 24px 0;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-faq__card {
+  position: sticky;
+  top: calc(var(--topbar-h) + 32px);
+  display: grid;
+  gap: 12px;
+  padding: clamp(24px, 1rem + 1.4vw, 36px);
+}
+
+.s-faq__card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gradient);
+}
+
+.s-faq__card-title {
+  font-size: 1.375rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-faq__card-meta {
+  color: var(--muted);
+}
+
+.s-faq__card .btn {
+  margin-top: 8px;
+}
+
+.s-faq__contact {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+@media (max-width: 1100px) {
+  .s-faq__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-faq__card {
+    position: static;
+    max-width: 520px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-faq section" aria-labelledby="{{id}}-titre" data-section="faq">
+  <div class="wrap s-faq__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+        {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+      </div>
+      <div class="s-faq__list"{{#jsonld}} data-faq-jsonld{{/jsonld}}>
+        {{#items}}<details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>{{q}}</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>{{a}}</p></div>
+        </details>{{/items}}
+      </div>
+    </div>
+    <aside class="s-faq__card card" aria-labelledby="{{id}}-carte">
+      <p class="label">{{card_label}}</p>
+      <p id="{{id}}-carte" class="s-faq__card-title">{{card_title}}</p>
+      <p class="s-faq__card-meta">{{card_meta}}</p>
+      <a class="btn btn--secondary btn--block" href="{{cta_href}}" data-track="cta_click" data-cta-position="faq">{{cta_label}}</a>
+      <p class="s-faq__contact">{{{contact}}}</p>
+    </aside>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="faq">
+(function () {
+  // FAQPage JSON-LD built from the visible questions (indexed pages only).
+  document.querySelectorAll('.s-faq__list[data-faq-jsonld]').forEach(function (list) {
+    var entities = Array.prototype.map.call(list.querySelectorAll('details'), function (d) {
+      var q = d.querySelector('summary');
+      var a = d.querySelector('.s-faq__a');
+      return { '@type': 'Question', name: q ? q.textContent.trim() : '',
+               acceptedAnswer: { '@type': 'Answer', text: a ? a.textContent.trim() : '' } };
+    });
+    var script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: entities });
+    document.head.appendChild(script);
+  });
+})();
+</script>

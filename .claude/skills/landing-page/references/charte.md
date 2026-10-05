@@ -10,7 +10,7 @@ Lire `pilotage/research-notes.md`. S'il ne couvre pas le besoin de la section, c
 
 ## 2. Grille et rythme
 
-Les jetons sont posés une seule fois, dans le `:root` du socle, et toutes les sections en héritent. Aucun fragment ne redéclare une couleur, une police ni une valeur de rythme.
+Les jetons sont posés une seule fois, dans le `:root` du socle, et toutes les sections en héritent. Aucun fragment ne redéclare une couleur, une police ni une valeur de rythme. Une page assemblée depuis la bibliothèque les reçoit de `05-web-content/templates/assets/tokens.css` (généré depuis `01-brand/tokens.json`) et de `base.css` (couche sémantique `--ink`, `--muted`, `--hl`, `--line`… que la classe `band-dark` repointe sur la palette sombre) : un fragment sur mesure lit ces mêmes noms.
 
 | Jeton | Bureau | ≤ 768 px | Valeur de la page |
 |---|---|---|---|

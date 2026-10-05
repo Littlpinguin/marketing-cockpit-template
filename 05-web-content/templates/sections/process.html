@@ -1,0 +1,119 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "process",
+  "name": "Étapes (ce qui se passe ensuite)",
+  "objection": "Et après le clic, que se passe-t-il",
+  "when": "Sur une page à formulaire ou à rendez-vous engageant : 3 ou 4 étapes numérotées, avec le délai de chacune. Rassure juste avant ou juste après le bloc de conversion.",
+  "avoid": "Plus de quatre étapes, étapes sans délai, processus interne qui ne concerne pas le visiteur.",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Après votre réservation <span class=\"hl\">tout est simple</span>"},
+    "intro": {"type": "text", "doc": "Chapô facultatif (vide : rien).", "example": ""},
+    "steps": {"type": "list", "doc": "3 ou 4 étapes. title : court ; text : une phrase ; delay : délai court (« sous 24 h »).", "fields": {"title": "titre", "text": "une phrase", "delay": "délai"}, "example": [
+      {"title": "Confirmation", "text": "Vous recevez la confirmation, la facture et le lien de l'espace de travail.", "delay": "Dans l'heure"},
+      {"title": "Appel de cadrage", "text": "Vingt minutes pour vérifier vos données disponibles et fixer votre périmètre.", "delay": "Sous 5 jours"},
+      {"title": "Premier atelier", "text": "Le groupe se retrouve en visio pour cadrer le périmètre de chacun.", "delay": "Le 14 avril"}
+    ]}
+  }
+}
+</script>
+<style data-section-style="process">
+.s-process__steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(24px, 1rem + 2vw, 48px);
+}
+
+.s-process__step {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.s-process__num {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 8px;
+  border: 2px solid var(--brand-primary);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--hl);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.s-process__step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 26px;
+  left: 64px;
+  right: calc(-1 * clamp(24px, 1rem + 2vw, 48px) + 12px);
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 12px);
+}
+
+.s-process__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-process__text {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-process__delay {
+  color: var(--hl);
+}
+
+@media (max-width: 900px) {
+  .s-process__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-process__step {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 4px 20px;
+  }
+
+  .s-process__num {
+    grid-row: span 3;
+    margin-bottom: 0;
+  }
+
+  .s-process__step:not(:last-child)::after {
+    top: 60px;
+    bottom: -20px;
+    left: 25px;
+    right: auto;
+    width: 2px;
+    height: auto;
+    background: repeating-linear-gradient(180deg, var(--line-strong) 0 6px, transparent 6px 12px);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-process section" aria-labelledby="{{id}}-titre" data-section="process">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+    </div>
+    <ol class="s-process__steps" role="list" data-reveal-group>
+      {{#steps}}<li class="s-process__step" data-reveal>
+        <span class="s-process__num" aria-hidden="true">{{@index}}</span>
+        <h3 class="s-process__title">{{title}}</h3>
+        <p class="s-process__text">{{text}}</p>
+        {{#delay}}<p class="s-process__delay label">{{delay}}</p>{{/delay}}
+      </li>{{/steps}}
+    </ol>
+  </div>
+</section>
+<!-- /section:{{id}} -->

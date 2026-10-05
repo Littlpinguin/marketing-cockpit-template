@@ -53,6 +53,8 @@ _bootstrap/inputs/*
 
 05-web-content/*/index.html
 05-web-content/*/assets/
+# shared engines and generated brand tokens of the landing section library: versioned
+!05-web-content/templates/assets/
 
 07-events/*/
 !07-events/templates/

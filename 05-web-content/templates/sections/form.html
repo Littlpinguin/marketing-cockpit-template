@@ -1,0 +1,164 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "form",
+  "name": "Formulaire qualifiant (rendez-vous, démo, devis)",
+  "objection": "Comment je prends contact, et qui me répond",
+  "engines": ["forms"],
+  "when": "Vente assistée : demande de démo, rendez-vous découverte, devis. Quatre ou cinq champs qui paient leur friction en qualification, à côté de ce qui se passe ensuite et de la personne qui répond.",
+  "avoid": "Plus de six champs, téléphone obligatoire sans raison, menu déroulant à rallonge, placeholder en guise de label, case pré-cochée.",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Parlons de <span class=\"hl\">votre périmètre</span>"},
+    "intro": {"type": "text", "doc": "Une phrase : ce que la demande déclenche.", "example": "Pour une entreprise multi-sites ou un groupe, nous préparons un parcours sur mesure. Réponse sous deux jours ouvrés."},
+    "next": {"type": "list", "doc": "2 à 4 étapes après l'envoi.", "example": ["Une réponse écrite sous deux jours ouvrés", "Un appel de trente minutes avec un animateur", "Une proposition chiffrée dans la semaine"]},
+    "action": {"type": "url", "doc": "Endpoint POST du formulaire.", "example": "{{FORM_ENDPOINT}}"},
+    "primary": {"type": "bool", "doc": "true : le formulaire est la conversion de la page (data-cta=\"primaire\", accent fort). false : bouton secondaire.", "example": true},
+    "position": {"type": "text", "doc": "Position mesurée du bouton.", "example": "formulaire"},
+    "labels": {"type": "object", "doc": "Labels visibles des champs.", "fields": {"name": "nom", "email": "email", "company": "entreprise", "size": "effectif", "message": "message", "optional": "mention facultatif"}, "example": {"name": "Nom et prénom", "email": "Email professionnel", "company": "Entreprise", "size": "Effectif", "message": "Votre contexte", "optional": "(facultatif)"}},
+    "size_options": {"type": "list", "doc": "Options du champ effectif (la première est l'invite vide).", "example": ["Choisir", "Moins de 50 personnes", "50 à 250 personnes", "Plus de 250 personnes"]},
+    "consent": {"type": "text", "doc": "Phrase de consentement (vide : pas de case).", "example": "J'accepte d'être recontacté au sujet de ma demande."},
+    "cta_label": {"type": "text", "doc": "Verbe du bouton.", "example": "Envoyer ma demande"},
+    "privacy": {"type": "html", "doc": "Mention de confidentialité avec lien (nouvel onglet annoncé).", "example": "Vos données servent seulement à répondre à cette demande. <a href=\"https://www.example.com/confidentialite\" target=\"_blank\" rel=\"noopener\">Politique de confidentialité<span class=\"sr-only\"> (nouvel onglet)</span></a>"},
+    "error_required": {"type": "text", "doc": "Message champ vide.", "example": "Ce champ est nécessaire pour vous répondre."},
+    "error_email": {"type": "text", "doc": "Message email mal formé.", "example": "Cette adresse email semble incomplète."},
+    "error_consent": {"type": "text", "doc": "Message consentement.", "example": "Cochez la case pour que nous puissions vous répondre."},
+    "msg_success": {"type": "text", "doc": "Confirmation.", "example": "Merci, votre demande est partie. Réponse sous deux jours ouvrés."},
+    "msg_failure": {"type": "text", "doc": "Échec d'envoi.", "example": "L'envoi n'a pas abouti. Nouvel essai en cours."},
+    "msg_unwired": {"type": "text", "doc": "Endpoint non branché.", "example": "Formulaire de démonstration : rien n'a été envoyé."}
+  }
+}
+</script>
+<style data-section-style="form">
+.s-form__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-form__next {
+  display: grid;
+  gap: 14px;
+  counter-reset: next;
+}
+
+.s-form__next > li {
+  position: relative;
+  padding-left: 40px;
+  counter-increment: next;
+}
+
+.s-form__next > li::before {
+  content: counter(next);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--hl);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.s-form__card {
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+}
+
+.s-form__form,
+.s-form__fields {
+  display: grid;
+  gap: 18px;
+}
+
+.s-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.s-form__privacy {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-form__status:not(:empty) {
+  padding: 14px 16px;
+  border-radius: var(--radius-input);
+  background: var(--tint);
+}
+
+@media (max-width: 1100px) {
+  .s-form__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-form__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-form section" aria-labelledby="{{id}}-titre" data-section="form">
+  <div class="wrap s-form__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+        <p class="section-intro">{{intro}}</p>
+      </div>
+      <ol class="s-form__next" role="list">{{#next}}<li>{{.}}</li>{{/next}}</ol>
+    </div>
+    <div class="s-form__card card" data-reveal>
+      <form class="s-form__form" id="{{id}}-form" action="{{action}}" method="post" data-form="contact" data-track="generate_lead" data-error-required="{{error_required}}" data-error-email="{{error_email}}" data-error-consent="{{error_consent}}" data-msg-success="{{msg_success}}" data-msg-failure="{{msg_failure}}" data-msg-unwired="{{msg_unwired}}">
+        <div class="hp" aria-hidden="true"><label for="{{id}}-site">Site web</label><input type="text" id="{{id}}-site" name="site" tabindex="-1" autocomplete="off"></div>
+        <div class="s-form__fields" data-form-fields>
+          <div class="s-form__row">
+            <div class="field">
+              <label class="field__label" for="{{id}}-name">{{labels.name}}</label>
+              <input class="field__input" type="text" id="{{id}}-name" name="name" autocomplete="name" required aria-describedby="{{id}}-name-error">
+              <p class="field__error" id="{{id}}-name-error" hidden></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="{{id}}-email">{{labels.email}}</label>
+              <input class="field__input" type="email" id="{{id}}-email" name="email" autocomplete="email" required aria-describedby="{{id}}-email-error">
+              <p class="field__error" id="{{id}}-email-error" hidden></p>
+            </div>
+          </div>
+          <div class="s-form__row">
+            <div class="field">
+              <label class="field__label" for="{{id}}-company">{{labels.company}}</label>
+              <input class="field__input" type="text" id="{{id}}-company" name="company" autocomplete="organization" required aria-describedby="{{id}}-company-error">
+              <p class="field__error" id="{{id}}-company-error" hidden></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="{{id}}-size">{{labels.size}}</label>
+              <div class="field__select">
+                <select class="field__input" id="{{id}}-size" name="size" required aria-describedby="{{id}}-size-error">
+                  {{#size_options}}<option{{#@first}} value=""{{/@first}}>{{.}}</option>{{/size_options}}
+                </select>
+              </div>
+              <p class="field__error" id="{{id}}-size-error" hidden></p>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="{{id}}-message">{{labels.message}} <span class="field__optional">{{labels.optional}}</span></label>
+            <textarea class="field__input" id="{{id}}-message" name="message" rows="4"></textarea>
+          </div>
+          {{#consent}}<div>
+            <div class="consent"><input type="checkbox" id="{{id}}-consent" name="consent" value="oui" required aria-describedby="{{id}}-consent-error"><label for="{{id}}-consent">{{consent}}</label></div>
+            <p class="field__error" id="{{id}}-consent-error" hidden></p>
+          </div>{{/consent}}
+          <button type="submit" class="btn btn--block {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" data-cta-position="{{position}}"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</button>
+          <p class="s-form__privacy">{{{privacy}}}</p>
+        </div>
+        <p class="form-status s-form__status" role="status" data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

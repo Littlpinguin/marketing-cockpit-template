@@ -1,0 +1,70 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "topbar",
+  "name": "Barre du haut",
+  "region": "header",
+  "objection": "Où agir, à tout moment de la lecture",
+  "when": "Toute landing : le logo et un seul bouton, qui mène à la même conversion que le CTA primaire. Collante, elle garde l'action à portée sur toute la page.",
+  "avoid": "Un menu complet, des liens vers le reste du site ou un second bouton : chaque lien de sortie est une fuite. Le logo n'est pas un lien.",
+  "reduced_motion": "Rien ne bouge.",
+  "slots": {
+    "brand": {"type": "html", "doc": "Logo : un <img> dont l'alt est le nom de la marque, ou un logotype HTML (marque SVG en currentColor + nom). Aucun halo ni aplat derrière.", "example": "<svg class=\"s-topbar__mark\" viewBox=\"0 0 32 32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"16\" cy=\"16\" r=\"13\"/><path d=\"M16 3c-5 4-5 22 0 26M16 3c5 4 5 22 0 26M3.5 12h25M3.5 20h25\"/></svg><span>Meridian</span>"},
+    "cta_label": {"type": "text", "doc": "Libellé du bouton : un verbe court, sans prix.", "example": "Réserver"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion (#offre) ou URL de la conversion.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" : la barre mène à la conversion de la page.", "example": true}
+  }
+}
+</script>
+<style data-section-style="topbar">
+.s-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--line);
+  background: var(--brand-light);
+}
+
+.s-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 100%;
+}
+
+.s-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-topbar__brand img {
+  height: 32px;
+  width: auto;
+}
+
+.s-topbar__mark {
+  width: 30px;
+  height: 30px;
+  color: var(--hl);
+}
+
+.s-topbar__cta.btn {
+  min-height: 44px;
+  padding: 8px 22px;
+  font-size: 0.9375rem;
+}
+</style>
+<!-- section:{{id}} -->
+<header id="{{id}}" class="s-topbar" data-section="topbar">
+  <div class="wrap s-topbar__inner">
+    <p class="s-topbar__brand">{{{brand}}}</p>
+    <a class="btn btn--secondary s-topbar__cta" href="{{cta_href}}" data-track="cta_click" data-cta-position="topbar"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</a>
+  </div>
+</header>
+<!-- /section:{{id}} -->

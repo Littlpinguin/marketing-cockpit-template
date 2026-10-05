@@ -1,0 +1,168 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "showcase-dark",
+  "name": "Vitrine d'un objet tangible (bande sombre)",
+  "objection": "Qu'est-ce que j'emporte de concret",
+  "when": "Un bonus ou un livrable qui mérite sa propre section : dans une bande sombre, un objet composé (dossier, kit, carte) dont chaque partie répond à une carte. Le survol d'une carte soulève la partie de l'objet qui lui correspond, et inversement.",
+  "avoid": "Lueurs, ressorts, texte en opacité sur le fond sombre, deux bandes sombres d'affilée, plus de cinq parties.",
+  "reduced_motion": "Tout est allumé, immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Le kit que vous <span class=\"hl\">gardez</span>"},
+    "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Tout ce qui a servi pendant le parcours reste chez vous, en fichiers ouverts."},
+    "parts": {"type": "list", "doc": "3 à 5 parties. tab : étiquette courte sur l'objet ; title : h3 de la carte ; text : une phrase.", "fields": {"tab": "étiquette de l'objet", "title": "titre de la carte", "text": "une phrase"}, "example": [
+      {"tab": "Méthode", "title": "Le guide de méthode", "text": "Quarante pages : périmètre, collecte, calcul et hypothèses, avec les choix à documenter."},
+      {"tab": "Collecte", "title": "Le modèle de collecte", "text": "Un classeur par poste, avec la liste des pièces à demander à la comptabilité."},
+      {"tab": "Facteurs", "title": "La table de facteurs", "text": "Les facteurs utilisés, leur source et leur date, prêts pour la mise à jour annuelle."},
+      {"tab": "Restitution", "title": "La trame de présentation", "text": "Quatorze pages à remplir, pensées pour un comité de direction et pour vos clients."}
+    ]}
+  }
+}
+</script>
+<style data-section-style="showcase-dark">
+.s-showcase__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 1rem + 5vw, 96px);
+  align-items: center;
+}
+
+.s-showcase__object {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.s-showcase__folder {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  border-radius: 18px;
+  background: var(--brand-band-2);
+  box-shadow: inset 0 0 0 1px var(--brand-line-on-dark);
+}
+
+.s-showcase__sheet {
+  --lift: 0px;
+  position: absolute;
+  top: 8%;
+  left: 6%;
+  width: 70%;
+  height: 52%;
+  padding: 18px 20px;
+  transform: translate(calc(var(--k) * 9%), calc(var(--k) * 22% - var(--lift))) rotate(calc((var(--k) - 1.5) * 1.6deg));
+  transition:
+    transform 0.45s var(--ease),
+    opacity 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.s-showcase__tab {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--brand-primary-soft);
+  color: var(--brand-primary-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.s-showcase__folder:has([data-on]) .s-showcase__sheet:not([data-on]) {
+  opacity: 0.55;
+}
+
+.s-showcase__sheet[data-on] {
+  --lift: 22px;
+  border-color: var(--brand-accent);
+}
+
+.s-showcase__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.s-showcase__card {
+  padding: 22px;
+  box-shadow: none;
+  transition:
+    border-color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.s-showcase__card[data-on] {
+  border-color: var(--brand-accent);
+  transform: translateY(-3px);
+}
+
+.s-showcase__num {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-showcase__title {
+  font-size: 1.1875rem;
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-showcase__text {
+  margin-top: 8px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 1100px) {
+  .s-showcase__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-showcase__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-showcase__sheet {
+    padding: 12px 14px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-showcase section band-dark" aria-labelledby="{{id}}-titre" data-section="showcase-dark">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+    <div class="s-showcase__grid">
+      <div class="obj s-showcase__object" aria-hidden="true" data-qa-decor data-reveal="scale">
+        <div class="s-showcase__folder">
+          {{#parts}}<div class="obj-sheet s-showcase__sheet" data-part="{{@index}}" style="--k:{{@index0}}"><span class="s-showcase__tab">{{tab}}</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div>{{/parts}}
+        </div>
+      </div>
+      <ul class="s-showcase__cards" role="list" data-reveal-group>
+        {{#parts}}<li class="s-showcase__card card" data-part="{{@index}}" data-reveal><span class="s-showcase__num" aria-hidden="true">0{{@index}}</span><h3 class="s-showcase__title">{{title}}</h3><p class="s-showcase__text">{{text}}</p></li>{{/parts}}
+      </ul>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="showcase-dark">
+(function () {
+  if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+  document.querySelectorAll('.s-showcase').forEach(function (section) {
+    var parts = section.querySelectorAll('[data-part]');
+    function light(n) {
+      parts.forEach(function (el) { el.toggleAttribute('data-on', n !== null && el.getAttribute('data-part') === n); });
+    }
+    parts.forEach(function (el) {
+      el.addEventListener('pointerenter', function () { light(el.getAttribute('data-part')); });
+      el.addEventListener('pointerleave', function () { light(null); });
+    });
+  });
+})();
+</script>

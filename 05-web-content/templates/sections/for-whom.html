@@ -1,0 +1,67 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "for-whom",
+  "name": "Pour qui, et pour qui ce n'est pas",
+  "objection": "Est-ce pour moi",
+  "when": "Toujours utile avant le prix : deux colonnes courtes dans les mots des personas. Le second volet qualifie et rassure.",
+  "avoid": "Listes génériques valables pour tout le monde, plus de cinq lignes par colonne, un volet « pas pour vous » qui dénigre.",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 centré sans virgule ni point.", "example": "Pour qui <span class=\"hl\">est ce parcours</span>"},
+    "yes_title": {"type": "text", "doc": "Titre de la colonne positive.", "example": "Pour vous si"},
+    "yes": {"type": "list", "doc": "3 à 5 situations, une phrase chacune.", "example": ["Vous dirigez ou gérez une entreprise de 10 à 250 personnes.", "Un client ou une banque vous demande vos émissions cette année.", "Vous pouvez réunir vos factures et vos achats de l'an passé.", "Vous voulez comprendre vos chiffres pour pouvoir les défendre."]},
+    "no_title": {"type": "text", "doc": "Titre de la colonne négative.", "example": "Pas pour vous si"},
+    "no": {"type": "list", "doc": "2 à 4 situations, une phrase chacune.", "example": ["Votre groupe publie déjà un bilan audité chaque année.", "Vous cherchez un prestataire qui fait tout à votre place.", "Vos données de l'an passé sont impossibles à réunir avant l'été."]}
+  }
+}
+</script>
+<style data-section-style="for-whom">
+.s-forwhom__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.s-forwhom__col {
+  padding: clamp(24px, 1rem + 1.4vw, 40px);
+  border-radius: var(--radius-card);
+}
+
+.s-forwhom__col--no {
+  border: 1.5px dashed var(--line-strong);
+}
+
+.s-forwhom__title {
+  margin-bottom: 20px;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .s-forwhom__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-forwhom section" aria-labelledby="{{id}}-titre" data-section="for-whom">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+    </div>
+    <div class="s-forwhom__grid" data-reveal-group>
+      <div class="s-forwhom__col card" data-reveal>
+        <h3 class="s-forwhom__title">{{yes_title}}</h3>
+        <ul class="list-check" role="list">{{#yes}}<li>{{.}}</li>{{/yes}}</ul>
+      </div>
+      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
+        <h3 class="s-forwhom__title">{{no_title}}</h3>
+        <ul class="list-check list-cross" role="list">{{#no}}<li>{{.}}</li>{{/no}}</ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

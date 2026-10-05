@@ -1,0 +1,224 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "map-pinned",
+  "name": "Carte ou schéma épinglé",
+  "objection": "Est-ce compatible avec ma vie (lieux, fuseaux, rythme, rattrapage)",
+  "engines": ["scroll"],
+  "when": "Quand le format se comprend mieux sur un schéma : lieux, fuseaux, rythme, rattrapage. Un tracé se découvre au défilement (stroke-dashoffset), les repères se posent quand il les atteint, puis une fin immobile pour lire. La légende, à gauche, porte toute l'information en texte.",
+  "avoid": "Tête de tracé qui ressemble à un repère, ondes qui pulsent sans fin, information portée par le schéma seul, deux épinglages d'affilée.",
+  "reduced_motion": "Le schéma complet, d'emblée, tous les repères posés.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Un rythme qui tient <span class=\"hl\">dans votre semaine</span>"},
+    "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Deux heures fixes par semaine, le reste quand vous voulez."},
+    "path": {"type": "text", "doc": "Attribut d du tracé SVG, dans un viewBox de 600 × 480.", "example": "M70 400 C 150 392 172 302 250 292 S 398 318 420 232 S 360 128 450 92"},
+    "marks": {"type": "list", "doc": "3 à 5 repères, dans l'ordre du tracé. x, y : position dans le viewBox ; at : avancement du tracé (0 à 1) où le repère se pose ; label : étiquette courte sur le schéma ; title : h3 de la légende ; text : une phrase.", "fields": {"x": "0-600", "y": "0-480", "at": "0-1", "label": "étiquette du schéma", "title": "titre de légende", "text": "une phrase"}, "example": [
+      {"x": 70, "y": 400, "at": 0.02, "label": "Mardi 9 h", "title": "Depuis votre bureau", "text": "Chaque mardi de 9 h à 11 h en visio, caméra facultative."},
+      {"x": 250, "y": 292, "at": 0.36, "label": "Jeudi", "title": "Une permanence chaque jeudi", "text": "Trente minutes pour débloquer une question sur vos données, sur réservation."},
+      {"x": 420, "y": 232, "at": 0.69, "label": "Lyon", "title": "Une demi-journée à Lyon", "text": "En semaine 3, le groupe se retrouve pour l'atelier achats. La visio reste possible."},
+      {"x": 450, "y": 92, "at": 0.98, "label": "Replay", "title": "Le replay sous 24 heures", "text": "Chaque atelier est enregistré : une séance manquée se rattrape dans la semaine."}
+    ]}
+  }
+}
+</script>
+<style data-section-style="map-pinned">
+.s-map__track {
+  --q: min(1, calc(var(--p, 1) / 0.8));
+}
+
+.s-map__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 1rem + 5vw, 96px);
+  align-items: center;
+}
+
+.s-map__legend {
+  display: grid;
+  gap: 18px;
+}
+
+.s-map__item {
+  --on: clamp(0, calc((var(--q) - var(--at)) * 50), 1);
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 0 16px;
+}
+
+.s-map__key {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--brand-primary);
+  border-radius: 50%;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 700;
+}
+
+.s-map__key::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--tint);
+  opacity: var(--on);
+}
+
+.s-map__key span {
+  position: relative;
+}
+
+.s-map__item-title {
+  font-size: 1.1875rem;
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-map__item-text {
+  margin-top: 4px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-map__figure {
+  position: relative;
+  border-radius: calc(var(--radius-card) + 8px);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  overflow: clip;
+}
+
+.s-map__svg {
+  width: 100%;
+  height: auto;
+}
+
+.s-map__meridian {
+  fill: none;
+  stroke: var(--brand-line);
+  stroke-width: 1.5;
+}
+
+.s-map__base {
+  fill: none;
+  stroke: var(--brand-field-border);
+  stroke-width: 2;
+  stroke-dasharray: 2 8;
+  stroke-linecap: round;
+}
+
+.s-map__route {
+  fill: none;
+  stroke: var(--brand-primary);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--q));
+}
+
+.s-map__mark {
+  opacity: clamp(0, calc((var(--q) - var(--at)) * 40 + 1), 1);
+}
+
+.s-map__mark circle {
+  fill: var(--brand-white);
+  stroke: var(--brand-primary);
+  stroke-width: 3;
+}
+
+.s-map__mark .s-map__num {
+  fill: var(--brand-primary-text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.s-map__mark .s-map__tag {
+  fill: var(--brand-dark);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.s-map__tag-bg {
+  fill: var(--brand-white);
+}
+
+@media (max-width: 1100px) {
+  .s-map__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-map__figure {
+    order: -1;
+    max-width: 640px;
+  }
+}
+
+/* Pinned: 2 screens of travel; the route is drawn in the first 80 %, then holds. */
+.sc-pin .s-map {
+  padding-block: 0;
+}
+
+.sc-pin .s-map__track {
+  height: calc(100vh + 200vh);
+}
+
+.sc-pin .s-map__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  height: calc(100vh - var(--topbar-h));
+}
+
+.sc-pin .s-map__stage > .wrap {
+  width: var(--wrap);
+}
+
+.sc-pin .s-map__mark {
+  opacity: clamp(0, calc((var(--q) - var(--at)) * 40), 1);
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-map section" aria-labelledby="{{id}}-titre" data-section="map-pinned">
+  <div class="s-map__track" data-scroll-track data-steps="1">
+    <div class="s-map__stage">
+      <div class="wrap s-map__grid">
+        <div>
+          <div class="section-head">
+            <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+            <p class="section-intro">{{intro}}</p>
+          </div>
+          <ol class="s-map__legend" role="list">
+            {{#marks}}<li class="s-map__item" style="--at:{{at}}">
+              <span class="s-map__key" aria-hidden="true"><span>{{@index}}</span></span>
+              <div>
+                <h3 class="s-map__item-title">{{title}}</h3>
+                <p class="s-map__item-text">{{text}}</p>
+              </div>
+            </li>{{/marks}}
+          </ol>
+        </div>
+        <div class="s-map__figure" aria-hidden="true" data-qa-decor>
+          <svg class="s-map__svg" viewBox="0 0 600 480" role="presentation" focusable="false">
+            <path class="s-map__meridian" d="M300 -20 C 120 120 120 360 300 500 M300 -20 C 480 120 480 360 300 500 M300 -20 V 500 M-20 160 C 200 130 400 130 620 160 M-20 320 C 200 350 400 350 620 320"/>
+            <path class="s-map__base" d="{{path}}"/>
+            <path class="s-map__route" d="{{path}}" pathLength="1"/>
+            {{#marks}}<g class="s-map__mark" style="--at:{{at}}" transform="translate({{x}} {{y}})">
+              <rect class="s-map__tag-bg" x="15" y="-15" width="115" height="30" rx="8"/>
+              <circle r="14"/>
+              <text class="s-map__num" text-anchor="middle" dy="5">{{@index}}</text>
+              <text class="s-map__tag" x="30" dy="6">{{label}}</text>
+            </g>{{/marks}}
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

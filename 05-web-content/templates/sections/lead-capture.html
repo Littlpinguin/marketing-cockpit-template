@@ -1,0 +1,105 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "lead-capture",
+  "name": "Formulaire de capture",
+  "objection": "Qu'est-ce que je donne, et qu'est-ce que je reçois",
+  "engines": ["forms"],
+  "when": "Quand la conversion est un email contre un contenu ou une alerte (guide, liste d'attente, rappel d'ouverture). L'email seul si la suite le permet, consentement explicite quand la loi l'exige, une phrase sur ce qui arrive après l'envoi. Circuit complet : skill lead-magnet.",
+  "avoid": "Placeholder en guise de label, case pré-cochée, champ qui ne paie pas sa friction, promesse d'envoi que le circuit ne tient pas.",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Recevez la liste des <span class=\"hl\">données à réunir</span>"},
+    "intro": {"type": "text", "doc": "Ce que contient l'envoi, en une ou deux phrases.", "example": "Une liste de 41 postes, avec pour chacun la pièce à demander et la personne qui la détient en général."},
+    "points": {"type": "list", "doc": "2 à 4 points concrets sur le contenu.", "example": ["Format tableur, prêt à partager en interne", "Les postes classés par poids moyen dans une PME", "Un modèle d'email à envoyer à votre comptable"]},
+    "action": {"type": "url", "doc": "Endpoint POST du formulaire (webhook n8n ou outil d'emailing).", "example": "{{FORM_ENDPOINT}}"},
+    "primary": {"type": "bool", "doc": "true : la capture est la conversion de la page (data-cta=\"primaire\", bouton à l'accent fort). false : bouton secondaire.", "example": true},
+    "position": {"type": "text", "doc": "Position mesurée du bouton (data-cta-position).", "example": "capture"},
+    "email_label": {"type": "text", "doc": "Label visible du champ email.", "example": "Votre email professionnel"},
+    "email_placeholder": {"type": "text", "doc": "Exemple dans le champ (jamais à la place du label).", "example": "prenom@example.com"},
+    "email_hint": {"type": "text", "doc": "Aide sous le champ (vide : rien).", "example": "Un seul envoi, puis un email par mois au plus."},
+    "consent": {"type": "text", "doc": "Phrase de consentement (case à cocher, jamais pré-cochée). Vide : pas de case.", "example": "J'accepte de recevoir la liste et les nouvelles du parcours. Désinscription en un clic."},
+    "cta_label": {"type": "text", "doc": "Verbe du bouton.", "example": "Recevoir la liste"},
+    "after": {"type": "text", "doc": "Ce qui arrive après l'envoi.", "example": "La liste arrive dans votre boîte dans la minute."},
+    "error_required": {"type": "text", "doc": "Message champ vide.", "example": "Ce champ est nécessaire pour vous envoyer la liste."},
+    "error_email": {"type": "text", "doc": "Message email mal formé.", "example": "Cette adresse email semble incomplète."},
+    "error_consent": {"type": "text", "doc": "Message consentement non coché.", "example": "Cochez la case pour recevoir la liste."},
+    "msg_success": {"type": "text", "doc": "Confirmation après envoi.", "example": "C'est envoyé. Vérifiez votre boîte de réception."},
+    "msg_failure": {"type": "text", "doc": "Message si l'envoi échoue.", "example": "L'envoi n'a pas abouti. Nouvel essai en cours."},
+    "msg_unwired": {"type": "text", "doc": "Message si l'endpoint n'est pas branché.", "example": "Formulaire de démonstration : rien n'a été envoyé."}
+  }
+}
+</script>
+<style data-section-style="lead-capture">
+.s-lead__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: center;
+}
+
+.s-lead__points {
+  margin-top: 8px;
+}
+
+.s-lead__card {
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+}
+
+.s-lead__form,
+.s-lead__fields {
+  display: grid;
+  gap: 18px;
+}
+
+.s-lead__after {
+  color: var(--muted);
+  font-size: var(--t-small);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.s-lead__status:not(:empty) {
+  padding: 14px 16px;
+  border-radius: var(--radius-input);
+  background: var(--tint);
+}
+
+@media (max-width: 900px) {
+  .s-lead__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-lead section" aria-labelledby="{{id}}-titre" data-section="lead-capture">
+  <div class="wrap s-lead__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+        <p class="section-intro">{{intro}}</p>
+      </div>
+      <ul class="list-check s-lead__points" role="list">{{#points}}<li>{{.}}</li>{{/points}}</ul>
+    </div>
+    <div class="s-lead__card card" data-reveal>
+      <form class="s-lead__form" id="{{id}}-form" action="{{action}}" method="post" data-form="lead" data-track="generate_lead" data-error-required="{{error_required}}" data-error-email="{{error_email}}" data-error-consent="{{error_consent}}" data-msg-success="{{msg_success}}" data-msg-failure="{{msg_failure}}" data-msg-unwired="{{msg_unwired}}">
+        <div class="hp" aria-hidden="true"><label for="{{id}}-site">Site web</label><input type="text" id="{{id}}-site" name="site" tabindex="-1" autocomplete="off"></div>
+        <div class="s-lead__fields" data-form-fields>
+          <div class="field">
+            <label class="field__label" for="{{id}}-email">{{email_label}}</label>
+            <input class="field__input" type="email" id="{{id}}-email" name="email" autocomplete="email" required placeholder="{{email_placeholder}}" aria-describedby="{{id}}-email-hint {{id}}-email-error">
+            {{#email_hint}}<p class="field__hint" id="{{id}}-email-hint">{{email_hint}}</p>{{/email_hint}}
+            <p class="field__error" id="{{id}}-email-error" hidden></p>
+          </div>
+          {{#consent}}<div>
+            <div class="consent"><input type="checkbox" id="{{id}}-consent" name="consent" value="oui" required aria-describedby="{{id}}-consent-error"><label for="{{id}}-consent">{{consent}}</label></div>
+            <p class="field__error" id="{{id}}-consent-error" hidden></p>
+          </div>{{/consent}}
+          <button type="submit" class="btn btn--block {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" data-cta-position="{{position}}"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</button>
+          <p class="s-lead__after">{{after}}</p>
+        </div>
+        <p class="form-status s-lead__status" role="status" data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

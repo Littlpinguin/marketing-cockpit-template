@@ -1,0 +1,152 @@
+/* ==========================================================================
+   catalogue.css · notes of the section catalogue (annotate: true only)
+   --------------------------------------------------------------------------
+   Loaded by assemble-landing.py when a spec sets `annotate: true`: the intro
+   with its table of contents, and the note placed before each section (name,
+   objection, when, when not, reduced motion, slots, engines). Never part of a
+   real landing page.
+   ========================================================================== */
+.lib-intro {
+  padding: 40px 0 24px;
+}
+
+.lib-intro__inner {
+  display: grid;
+  gap: 16px;
+  padding: 28px 32px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.lib-intro__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.lib-intro__text {
+  max-width: 64ch;
+  color: var(--muted);
+  font-size: var(--t-body);
+  text-wrap: pretty;
+}
+
+.lib-intro__toc ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lib-intro__toc a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lib-intro__toc a:hover {
+  border-color: var(--line-strong);
+}
+
+.lib-intro__toc code,
+.lib-note code {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  color: var(--hl);
+}
+
+.lib-note {
+  padding: 56px 0 0;
+}
+
+.lib-note + .section,
+.lib-note + .gated {
+  margin-top: 0;
+}
+
+.lib-note__inner {
+  display: grid;
+  gap: 14px;
+  padding: 20px 24px;
+  border-left: 4px solid var(--brand-primary);
+  border-radius: 0 var(--radius-input) var(--radius-input) 0;
+  background: var(--surface-2);
+}
+
+.lib-note__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 14px;
+}
+
+.lib-note__id {
+  padding: 2px 10px;
+  border-radius: var(--radius-input);
+  background: var(--surface);
+}
+
+.lib-note__name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.lib-note__anchor {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  color: var(--muted);
+}
+
+.lib-note__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 32px;
+}
+
+.lib-note__grid > div {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+}
+
+.lib-note__grid dt {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lib-note__grid dd {
+  font-size: var(--t-body);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.lib-note__codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+@media (max-width: 900px) {
+  .lib-note__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lib-intro__inner {
+    padding: 22px 20px;
+  }
+}

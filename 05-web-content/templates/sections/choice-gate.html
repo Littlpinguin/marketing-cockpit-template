@@ -1,0 +1,258 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "choice-gate",
+  "name": "Porte de choix",
+  "objection": "Laquelle est pour moi",
+  "when": "Seulement pour une offre à variantes réelles (formules, profils). Deux grandes cartes dont toute la surface est cliquable. Le choix révèle la suite de la page (sections marquées « gated: true » dans la spec), règle le billet sur la formule choisie, part en mesure (select_content) et s'inscrit dans l'URL (?<param>=<valeur>) : un lien direct ouvre la bonne suite sans glissé.",
+  "avoid": "Une porte qui cache l'essentiel à un visiteur pressé, plus de trois options, des options sans différence réelle de prix ou de contenu.",
+  "reduced_motion": "La suite apparaît sans transition ; le saut vers elle est instantané.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Vous menez le bilan <span class=\"hl\">seul ou à plusieurs</span>"},
+    "intro": {"type": "text", "doc": "Une phrase : ce que le choix change.", "example": "Le contenu est le même. Le prix et l'accompagnement changent avec le nombre de personnes."},
+    "param": {"type": "text", "doc": "Nom du paramètre d'URL et du type de contenu mesuré.", "example": "formule"},
+    "options": {"type": "list", "doc": "2 ou 3 options. value : identifiant (aussi la valeur d'une radio du billet) ; title : h3 court ; text : pour qui ; label : libellé du bouton (un verbe) ; art : objet composé décoratif.", "fields": {"value": "identifiant", "name": "nom court de la formule (repris dans la confirmation)", "title": "titre court", "text": "pour qui", "label": "libellé du bouton", "art": "HTML décoratif (kit .obj)"}, "example": [
+      {"value": "solo", "name": "Solo", "title": "Je pilote seul", "text": "Une dirigeante ou un responsable qui mène le bilan pour son entreprise.", "label": "Choisir la formule Solo", "art": "<div class=\"obj s-gate__obj\"><div class=\"obj-sheet\"><div class=\"obj-mail__from\"><span class=\"obj-avatar\">ND</span><span><b>Un référent</b><br>tous les postes</span></div><div class=\"obj-rule\"></div><div class=\"obj-check\"><span class=\"is-done\">Énergie</span><span class=\"is-done\">Achats</span><span>Déplacements</span></div></div></div>"},
+      {"value": "equipe", "name": "Équipe", "title": "Nous sommes une équipe", "text": "Jusqu'à trois personnes de la même entreprise, chacune sur ses postes.", "label": "Choisir la formule Équipe", "art": "<div class=\"obj s-gate__obj\"><div class=\"obj-sheet\"><div class=\"s-gate__team\"><span class=\"obj-avatar\">AB</span><span class=\"obj-avatar\">CM</span><span class=\"obj-avatar\">LR</span><span class=\"obj-small\">3 référents</span></div><div class=\"obj-rule\"></div><div class=\"obj-check\"><span class=\"is-done\">Énergie · AB</span><span class=\"is-done\">Achats · CM</span><span class=\"is-done\">Déplacements · LR</span></div></div></div>"}
+    ]},
+    "result": {"type": "text", "doc": "Confirmation affichée après le choix ; {label} reçoit le nom court de l'option.", "example": "Formule retenue : {label}. Le billet plus bas est réglé sur elle."},
+    "reset_label": {"type": "text", "doc": "Bouton pour revenir au choix.", "example": "Changer de formule"},
+    "noscript": {"type": "text", "doc": "Texte affiché sans JavaScript (la suite est alors visible d'office).", "example": "Les deux formules sont détaillées plus bas."}
+  }
+}
+</script>
+<style data-section-style="choice-gate">
+.s-gate__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(16px, 0.6rem + 1.5vw, 32px);
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+.s-gate__card {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 12px;
+  padding: clamp(22px, 1rem + 1.2vw, 36px);
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.s-gate__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+
+.s-gate__card:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.s-gate__card[data-chosen] {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px var(--brand-primary), var(--shadow-lift);
+}
+
+.s-gate__art {
+  display: grid;
+  place-items: center;
+  min-height: 200px;
+  margin-bottom: 8px;
+  padding: 24px;
+  border-radius: calc(var(--radius-card) - 4px);
+  background: var(--surface-2);
+}
+
+.s-gate__obj {
+  width: min(100%, 300px);
+}
+
+.s-gate__team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.s-gate__team .obj-avatar + .obj-avatar {
+  margin-left: -12px;
+  box-shadow: 0 0 0 2px var(--brand-white);
+}
+
+.s-gate__team .obj-small {
+  margin-left: 8px;
+}
+
+.s-gate__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-gate__text {
+  color: var(--muted);
+}
+
+/* The whole card is the target: the real button's pseudo-element covers it. */
+.s-gate__choose {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.s-gate__choose::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.s-gate__choose:focus-visible {
+  outline: none;
+}
+
+.s-gate__choose svg {
+  width: 20px;
+  height: 20px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-gate__card:hover .s-gate__choose svg {
+  transform: translateX(4px);
+}
+
+.s-gate__result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 20px;
+  max-width: 1040px;
+  margin: 28px auto 0;
+  padding: 16px 24px;
+  border-radius: var(--radius-card);
+  background: var(--tint);
+  text-align: center;
+}
+
+.s-gate__result-text {
+  font-weight: 600;
+}
+
+.s-gate__noscript {
+  margin-top: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-gate section" aria-labelledby="{{id}}-titre" data-section="choice-gate" data-enter="fade" data-gate-param="{{param}}">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+    <div class="s-gate__options" role="group" aria-labelledby="{{id}}-titre">
+      {{#options}}<div class="s-gate__card card" data-value="{{value}}">
+        <div class="s-gate__art" aria-hidden="true" data-qa-decor>{{{art}}}</div>
+        <h3 class="s-gate__title">{{title}}</h3>
+        <p class="s-gate__text">{{text}}</p>
+        <button type="button" class="s-gate__choose" data-gate-choice="{{value}}" data-gate-title="{{name}}" aria-pressed="false" data-track="select_content" data-track-content_type="{{param}}" data-track-content_id="{{value}}">{{label}}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+      </div>{{/options}}
+    </div>
+    <div class="s-gate__result" data-gate-result data-template="{{result}}" hidden>
+      <p class="s-gate__result-text" data-gate-result-text></p>
+      <button type="button" class="link-arrow" data-gate-reset>{{reset_label}}</button>
+    </div>
+    <p class="sr-only" role="status" data-gate-status></p>
+    <noscript><p class="s-gate__noscript">{{noscript}}</p></noscript>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="choice-gate">
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.s-gate').forEach(function (gate) {
+    var param = gate.getAttribute('data-gate-param') || 'choix';
+    var buttons = Array.prototype.slice.call(gate.querySelectorAll('[data-gate-choice]'));
+    var result = gate.querySelector('[data-gate-result]');
+    var resultText = gate.querySelector('[data-gate-result-text]');
+    var live = gate.querySelector('[data-gate-status]');
+    var values = buttons.map(function (b) { return b.getAttribute('data-gate-choice'); });
+
+    function reveal() {
+      var parts = document.querySelectorAll('[data-gated][hidden]');
+      parts.forEach(function (p) { p.hidden = false; });
+      if (parts.length) document.dispatchEvent(new CustomEvent('landing:revealed'));
+      return document.querySelector('[data-gated]');
+    }
+
+    function choose(value, opts) {
+      var button = buttons[values.indexOf(value)];
+      if (!button) return;
+      buttons.forEach(function (b) {
+        var on = b === button;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.closest('.s-gate__card').toggleAttribute('data-chosen', on);
+      });
+      document.documentElement.setAttribute('data-choice', value);
+      document.querySelectorAll('[data-for]').forEach(function (el) {
+        el.hidden = el.getAttribute('data-for').split(/\s+/).indexOf(value) === -1;
+      });
+      var label = button.getAttribute('data-gate-title');
+      var text = (result.getAttribute('data-template') || '{label}').replace('{label}', label);
+      resultText.textContent = text;
+      result.hidden = false;
+      live.textContent = text;
+      var first = reveal();
+      document.dispatchEvent(new CustomEvent('landing:choice', { detail: { param: param, value: value, label: label } }));
+      try {
+        var url = new URL(window.location.href);
+        url.searchParams.set(param, value);
+        window.history.replaceState(null, '', url.toString());
+      } catch (e) { /* file:// or old browser: the choice still applies */ }
+      if (opts.jump && first) {
+        var heading = first.querySelector('h2');
+        window.scrollTo({ top: first.getBoundingClientRect().top + window.scrollY, behavior: reduce || !opts.smooth ? 'auto' : 'smooth' });
+        if (heading) {
+          heading.setAttribute('tabindex', '-1');
+          heading.focus({ preventScroll: true });
+        }
+      }
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () { choose(b.getAttribute('data-gate-choice'), { jump: true, smooth: true }); });
+    });
+    gate.querySelector('[data-gate-reset]').addEventListener('click', function () {
+      result.hidden = true;
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); b.closest('.s-gate__card').removeAttribute('data-chosen'); });
+      buttons[0].focus();
+    });
+
+    // Deep link: ?<param>=<value>, or an anchor inside the hidden part.
+    var initial = new URLSearchParams(window.location.search).get(param);
+    if (initial && values.indexOf(initial) !== -1) {
+      choose(initial, { jump: false });
+    } else if (window.location.hash) {
+      var target = document.getElementById(window.location.hash.slice(1));
+      if (target && target.closest('[data-gated]')) {
+        reveal();
+        target.scrollIntoView({ behavior: 'auto' });
+      }
+    }
+  });
+})();
+</script>

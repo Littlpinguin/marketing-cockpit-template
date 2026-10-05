@@ -1,0 +1,117 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "sticky-bar",
+  "name": "Barre d'action mobile collante",
+  "region": "after",
+  "objection": "Agir sans remonter la page (mobile)",
+  "when": "Pages longues sur mobile, ou page locale (le bouton appelle). Sous 768 px seulement : une barre fixe en bas porte le CTA primaire. Elle apparaît une fois le hero passé et s'efface devant le bloc de conversion et le pied de page, pour ne rien masquer.",
+  "avoid": "Une barre sur bureau, une barre visible dès le chargement, une destination différente du CTA primaire, un bouton sous 44 px.",
+  "reduced_motion": "La barre apparaît et disparaît sans glissement.",
+  "slots": {
+    "label": {"type": "text", "doc": "Nom accessible de la barre (repère).", "example": "Réserver"},
+    "title": {"type": "text", "doc": "Fait court (nom ou prix).", "example": "Dès 1 900 € HT"},
+    "detail": {"type": "text", "doc": "Échéance ou places, très court.", "example": "Clôture le 31 mars"},
+    "cta_label": {"type": "text", "doc": "Verbe du bouton (un ou deux mots).", "example": "Réserver"},
+    "cta_href": {"type": "url", "doc": "Même destination que le CTA primaire (ancre du bloc de conversion ou tel:).", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\".", "example": true}
+  }
+}
+</script>
+<style data-section-style="sticky-bar">
+.s-sticky {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body:has(.s-sticky) {
+    padding-bottom: 88px;
+  }
+
+  .s-sticky {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    display: block;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    background: var(--brand-light);
+    box-shadow: 0 -12px 30px -20px var(--brand-shadow);
+    visibility: hidden;
+    transform: translateY(110%);
+    transition:
+      transform 0.35s var(--ease),
+      visibility 0s linear 0.35s;
+  }
+
+  .s-sticky[data-visible] {
+    visibility: visible;
+    transform: none;
+    transition: transform 0.35s var(--ease);
+  }
+}
+
+.s-sticky__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.s-sticky__text {
+  display: grid;
+  line-height: 1.3;
+}
+
+.s-sticky__text strong {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.s-sticky__text span {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-sticky__btn.btn {
+  flex: none;
+  min-height: 48px;
+  padding: 10px 22px;
+}
+</style>
+<!-- section:{{id}} -->
+<aside id="{{id}}" class="s-sticky" aria-label="{{label}}" data-section="sticky-bar">
+  <div class="s-sticky__inner">
+    <p class="s-sticky__text"><strong>{{title}}</strong><span>{{detail}}</span></p>
+    <a class="btn btn--primary s-sticky__btn" href="{{cta_href}}" data-track="cta_click" data-cta-position="barre-mobile"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</a>
+  </div>
+</aside>
+<!-- /section:{{id}} -->
+<script data-section-script="sticky-bar">
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  document.querySelectorAll('.s-sticky').forEach(function (bar) {
+    var link = bar.querySelector('a[href]');
+    var href = link ? link.getAttribute('href') : '';
+    // Shown once the hero has been scrolled past; hidden again while the
+    // conversion block or the footer is on screen.
+    var hero = document.querySelector('main section');
+    var guards = [document.querySelector('footer')];
+    if (href && href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+    guards = guards.filter(Boolean);
+    var onScreen = new Map();
+    var heroPassed = !hero;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
+        else onScreen.set(e.target, e.isIntersecting);
+      });
+      var blocked = guards.some(function (g) { return onScreen.get(g); });
+      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+    });
+    if (hero) io.observe(hero);
+    guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });
+  });
+})();
+</script>

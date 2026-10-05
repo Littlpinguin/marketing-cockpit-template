@@ -1,0 +1,83 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "outcomes",
+  "name": "Résultats (respiration)",
+  "objection": "Qu'est-ce que ça change",
+  "when": "Après une section dense, pour faire respirer la page : une rangée sans carte, pour chaque résultat un filet qui se trace, un grand numéro, un titre court et une phrase.",
+  "avoid": "Cartes, icônes, plus de quatre résultats, chiffres inventés (le numéro est un rang, pas une statistique, sauf chiffre sourcé).",
+  "reduced_motion": "Filets tracés d'emblée.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 centré sans virgule ni point.", "example": "Ce qui change <span class=\"hl\">après six semaines</span>"},
+    "items": {"type": "list", "doc": "3 ou 4 résultats. number : rang (« 01 ») ou chiffre sourcé ; title : 5 mots au plus ; text : une phrase.", "fields": {"number": "rang ou chiffre", "title": "titre court", "text": "une phrase"}, "example": [
+      {"number": "01", "title": "Vous répondez seul", "text": "Les questionnaires de vos clients trouvent leur réponse dans votre dossier, sans prestataire."},
+      {"number": "02", "title": "Vous savez où agir", "text": "Les trois postes qui pèsent le plus sont identifiés, avec les mesures qui les réduisent."},
+      {"number": "03", "title": "Vous recommencez sans aide", "text": "La méthode et les fichiers restent : le bilan suivant prend quelques jours."}
+    ]}
+  }
+}
+</script>
+<style data-section-style="outcomes">
+.s-outcomes__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(32px, 1rem + 3vw, 64px);
+}
+
+.s-outcomes__item {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.s-outcomes__rule {
+  display: block;
+  height: 2px;
+  margin-bottom: 18px;
+  background: var(--gradient);
+  transform-origin: 0 50%;
+  transition: transform 0.9s var(--ease);
+  transition-delay: calc(var(--rv-i, 0) * 0.15s + 0.2s);
+}
+
+.rv-on .s-outcomes__item:not(.is-in) .s-outcomes__rule {
+  transform: scaleX(0);
+}
+
+.s-outcomes__num {
+  color: var(--hl);
+  font-size: var(--t-number);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-outcomes__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-outcomes__text {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-outcomes section" aria-labelledby="{{id}}-titre" data-section="outcomes">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+    </div>
+    <ol class="s-outcomes__row" role="list" data-reveal-group>
+      {{#items}}<li class="s-outcomes__item" data-reveal="fade">
+        <span class="s-outcomes__rule" aria-hidden="true"></span>
+        <p class="s-outcomes__num">{{number}}</p>
+        <h3 class="s-outcomes__title">{{title}}</h3>
+        <p class="s-outcomes__text">{{text}}</p>
+      </li>{{/items}}
+    </ol>
+  </div>
+</section>
+<!-- /section:{{id}} -->

@@ -14,7 +14,7 @@ Une landing réussie se lit comme un seul récit, section par section, et amène
 | Fichier | Rôle |
 |---|---|
 | `references/charte.md` | Modèle de charte de page, copié au démarrage dans `pilotage/page-charter.md` et donné à **chaque** agent : grille, en-têtes, matières, mouvement, interdits, conversion, technique, décisions de l'humain (§ 9, qui prime) |
-| `references/sections.md` | Catalogue des mécaniques de section éprouvées : objection servie, quand, pourquoi, anti-modèles, mouvement réduit |
+| `references/sections.md` | Catalogue des mécaniques de section éprouvées : objection servie, quand, pourquoi, anti-modèles, mouvement réduit. Leur implémentation : la bibliothèque `05-web-content/templates/sections/` (un fragment par mécanique, voir son `README.md` et `catalogue.html`) |
 | `references/pieges.md` | Pièges techniques, de session et de marque, avec leur parade, plus les règles tirées des retours d'arbitrage |
 | `references/inspiration.md` | Méthode de recherche : benchmark de pages qui convertissent, galeries publiques, filtre de marque |
 | `references/revues.md` | Lancer les quatre revues et arbitrer leurs rapports |
@@ -51,15 +51,19 @@ Les quatre relecteurs sont en lecture seule : ils n'écrivent que leur rapport. 
 │       ├── reports/<nn>-<id>.md          ← rapports des builders
 │       ├── review-<grille>.md            ← rapports des revues
 │       └── fix-wave-brief.md             ← arbitrage de la vague de corrections
-└── scripts/qa-landing.py                 ← QA mesurable (phases 5 à 8)
+├── templates/sections/<mécanique>.html   ← bibliothèque de sections (fragments à slots) + catalogue.html
+├── templates/assets/                     ← tokens.css (généré), base.css, moteurs reveal / scroll / offer / forms / tracking
+└── scripts/
+    ├── assemble-landing.py               ← spec (pilotage/page.json) → index.html autonome
+    └── qa-landing.py                     ← QA mesurable (phases 5 à 8)
 ```
 
 ## Gabarit de données ou page sur mesure
 
-- **Gabarit de données** : la galerie `05-web-content/templates/landing-pages/` et les sections de `05-web-content/sections-library.md`. On copie un modèle et on remplace les données (textes, chiffres, visuels, endpoint). À choisir pour une offre de type courant, un délai court, ou une série de pages de même forme (pages partenaires, pages locales, éditions successives d'un événement). Le modèle ne dispense de rien : brief, charte, QA, revues de marque et de conversion, brand-check. Les phases 2, 4 et 5 se réduisent à l'adaptation du modèle.
-- **Page sur mesure** : tout le playbook. À choisir pour une offre phare, un lancement, un ticket élevé, une page qui doit porter sa propre signature visuelle. Une section qu'on crée ici et qui servira ailleurs entre ensuite dans `sections-library.md` (règle « réutiliser avant de créer »).
+- **Gabarit de données** : une spec qui assemble des sections de la bibliothèque `05-web-content/templates/sections/` (compositions de départ par type de page dans son `README.md`, rendu de chaque section dans `catalogue.html`), ou un modèle complet de `05-web-content/templates/landing-pages/`. On remplit les slots (textes, chiffres, visuels, endpoint) et on assemble avec `05-web-content/scripts/assemble-landing.py`. À choisir pour une offre de type courant, un délai court, ou une série de pages de même forme (pages partenaires, pages locales, éditions successives d'un événement). Le modèle ne dispense de rien : brief, charte, QA, revues de marque et de conversion, brand-check. Les phases 2, 4 et 5 se réduisent à l'adaptation du modèle.
+- **Page sur mesure** : tout le playbook. À choisir pour une offre phare, un lancement, un ticket élevé, une page qui doit porter sa propre signature visuelle. Les sections courantes viennent quand même de la bibliothèque ; une section qu'on crée ici et qui servira ailleurs y entre ensuite comme fragment (`05-web-content/templates/sections/README.md` § 7, règle « réutiliser avant de créer »).
 
-Dans les deux cas, une section qui figure sur deux pages est **la même section** : même structure, mêmes jetons, au pixel près. On la recopie à l'identique depuis la bibliothèque, on ne la redessine pas.
+Dans les deux cas, une section qui figure sur deux pages est **la même section** : même structure, mêmes jetons, au pixel près. Elle vient du même fragment de la bibliothèque, on ne la redessine pas.
 
 ## Phase 0 : doctrine et matière réelle
 
@@ -114,8 +118,8 @@ La spec est figée pendant chaque étape de construction. Si elle doit changer, 
 
 Le contrôleur (l'agent principal), seul, prépare ce qui suit, puis le montre :
 
-1. **`index.html` socle** : `<head>` complet (titre, description, `robots`, Open Graph, favicon, `<meta name="viewport">`), bloc `:root` des jetons (`05-web-content/sections-library.md`, valeurs de `01-brand/tokens.json`), CSS commun de la charte (base, en-tête de section, famille de cartes, boutons, focus, bandes sombres), **un seul moteur d'apparition** (attributs `data-reveal`, opacité seule, coupé par `prefers-reduced-motion`), le relais de mesure (`data-track` vers `dataLayer` / `gtag`), et la configuration de l'offre.
-2. **Une paire de marqueurs par section**, à sa place définitive, avec une section provisoire (id, `aria-labelledby`, titre) pour que la page s'affiche à chaque étape :
+1. **`index.html` socle**, assemblé depuis une spec `pilotage/page.json` par `python3 05-web-content/scripts/assemble-landing.py pilotage/page.json` (format, slots et garde-fous : `05-web-content/templates/sections/README.md`). L'assembleur pose le `<head>` complet (titre, description, `robots`, Open Graph, favicon, `<meta name="viewport">`), les jetons (`templates/assets/tokens.css`, généré depuis `01-brand/tokens.json`), le CSS commun de la charte (`templates/assets/base.css` : base, en-tête de section, famille de cartes, boutons, focus, bandes sombres), **un seul moteur d'apparition** (`reveal.js` : attributs `data-reveal`, opacité et position, coupé par `prefers-reduced-motion`), le relais de mesure (`tracking.js` : `data-track` vers `dataLayer` / `gtag`, UTM) et la configuration de l'offre (`offer` de la spec, lue par `offer.js`). Les sections courantes y entrent déjà remplies depuis la bibliothèque.
+2. **Une paire de marqueurs par section**, à sa place définitive. Une section sur mesure prend d'abord le fragment `_placeholder` (section provisoire : id, `aria-labelledby`, titre), pour que la page s'affiche à chaque étape :
    ```html
    <!-- section:hero -->
    <section id="hero" aria-labelledby="hero-titre">…</section>
@@ -128,7 +132,7 @@ Le contrôleur (l'agent principal), seul, prépare ce qui suit, puis le montre :
 ## Phase 5 : construction en parallèle
 
 - **Un agent par section** : un `landing-section-builder` propriétaire d'un seul fragment, `pilotage/sections/<nn>-<id>.html` (la `<section>`, son `<style>` préfixé par `#<id>`, son `<script>` éventuel enfermé dans une fonction). Personne d'autre n'écrit dans ce fichier, et aucun builder n'écrit dans `index.html`. Les lancer tous dans un seul message, chacun avec un brief tiré de `templates/brief-section.md`.
-- **Assemblage** : à réception d'un rapport, le contrôleur remplace le contenu entre les marqueurs de la section par le fragment, avec un script qui vérifie que chaque marqueur existe une seule fois :
+- **Assemblage** : à réception d'un rapport, le contrôleur remplace dans la spec l'entrée `_placeholder` de la section par `{"file": "sections/<nn>-<id>.html", "id": "<id>"}` et réassemble : l'assembleur insère le fragment tel quel entre ses marqueurs. Si la page a été retouchée à la main depuis le dernier assemblage, l'assembleur refuse de l'écraser (empreinte dans `<meta name="generator">`) : le contrôleur insère alors le fragment avec un script qui vérifie que chaque marqueur existe une seule fois :
   ```python
   import re, pathlib
   page = pathlib.Path("05-web-content/landing-pages/<slug>/index.html")
@@ -210,7 +214,7 @@ La QA vérifie les deux cas : suivi déclaré, un événement doit partir au cli
 |---|---|---|
 | `cro-page` | Structure CRO (phase 3) et regard CRO en revue | Ordre des objections de `references/charte.md` § 7 |
 | `copywriting` / `copy-editing` | Textes définitifs de la spec | Aucun : obligatoires |
-| `design-direction` / `design-system` / `design-taste` | Directions et système visuel, sous les jetons de `01-brand/tokens.json` | `sections-library.md` + `style-guide.md` |
+| `design-direction` / `design-system` / `design-taste` | Directions et système visuel, sous les jetons de `01-brand/tokens.json` | bibliothèque `05-web-content/templates/sections/` + `style-guide.md` |
 | `design-review` | Regard UI en complément de `landing-reviewer-design` | La grille de l'agent |
 | `accessibility-web` | Référentiel WCAG 2.2 AA chargé avant de construire | Grille de `landing-reviewer-a11y` |
 | `cro-form` / `lead-magnet` | Formulaire de capture ; circuit complet si la page capture un email contre un contenu | Règles formulaire de `references/sections.md` |

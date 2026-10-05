@@ -1,0 +1,191 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "problem-pinned",
+  "name": "Problème épinglé",
+  "objection": "Pourquoi maintenant",
+  "engines": ["scroll"],
+  "when": "Quand le document source porte 3 à 5 vrais constats, dans les mots de l'audience. Sur grand écran, la section se bloque le temps de parcourir les constats (55 vh par constat) : seul le constat actif déplie son texte, le visuel change avec lui.",
+  "avoid": "Registre de la peur, constats inventés, plus de cinq constats, deux sections épinglées d'affilée. Une liste épinglée plus haute que l'écran.",
+  "reduced_motion": "Liste illustrée : tous les constats dépliés, visuels en vignettes (masqués sur mobile).",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, segment fort en <span class=\"hl\">.", "example": "Vos clients demandent<br><span class=\"hl\">vos émissions</span>"},
+    "intro": {"type": "text", "doc": "Chapô d'une ou deux phrases.", "example": "Les questionnaires carbone arrivent avec les appels d'offres. Voici ce que nous entendons le plus souvent."},
+    "items": {"type": "list", "doc": "3 à 5 constats. title : 8 mots au plus, sans point ; text : une ou deux phrases ; visual : objet composé (kit .obj), décoratif.", "fields": {"title": "constat court", "text": "développement", "visual": "HTML décoratif (kit .obj)"}, "example": [
+      {"title": "Les questionnaires clients s'empilent", "text": "Trois donneurs d'ordre vous demandent vos émissions cette année, chacun avec son formulaire et sa date limite.", "visual": "<div class=\"obj obj-window s-problem__obj\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Boîte de réception</span></div><div class=\"obj-window__body obj-mail\"><div class=\"obj-mail__from\"><span class=\"obj-avatar\">SA</span><span><b>Service achats</b><br>Questionnaire fournisseurs 2027</span></div><div class=\"obj-lines\"><i style=\"--w:92%\"></i><i style=\"--w:70%\"></i></div><p class=\"obj-small\">Merci de renseigner vos émissions <span class=\"obj-highlight\">scopes 1, 2 et 3</span> avant le 15.</p><div class=\"obj-rule\"></div><div class=\"obj-mail__from\"><span class=\"obj-avatar\">LG</span><span><b>Logistique groupe</b><br>Relance : données carbone</span></div><div class=\"obj-mail__from\"><span class=\"obj-avatar\">CP</span><span><b>Centrale d'achat</b><br>Nouveau référencement</span></div></div></div>"},
+      {"title": "Le tableur ne suit plus", "text": "Énergie, achats et déplacements vivent dans quatre fichiers, et personne ne sait plus quels facteurs d'émission ont servi.", "visual": "<div class=\"obj obj-window s-problem__obj\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>bilan_v7_final(2).xlsx</span></div><div class=\"obj-window__body\"><div class=\"obj-grid\" style=\"--cols:4\"><span class=\"is-head\">Poste</span><span class=\"is-head\">Quantité</span><span class=\"is-head\">Facteur</span><span class=\"is-head\">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span class=\"is-warn\">?</span><span class=\"is-warn\">#REF!</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span class=\"is-warn\">source ?</span><span class=\"is-warn\">?</span><span>Fret</span><span>n.c.</span><span>n.c.</span><span>n.c.</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div>"},
+      {"title": "Le devis dépasse le budget", "text": "Le devis reçu pour un bilan sous-traité dépasse le budget de l'année, et son délai dépasse la date de vos clients.", "visual": "<div class=\"obj obj-sheet s-problem__obj\"><div class=\"obj-head\"><b>Devis n° 2027-031</b><span class=\"obj-push\">Bilan complet</span></div><div class=\"obj-rule\"></div><div class=\"obj-lines\"><i style=\"--w:88%\"></i><i style=\"--w:64%\"></i><i style=\"--w:76%\"></i><i style=\"--w:52%\"></i></div><div class=\"obj-rule\"></div><div class=\"obj-head\"><span>Total</span><b class=\"obj-push\">18 400 € HT</b></div><div class=\"obj-head\" style=\"margin-top:8px\"><span>Délai annoncé</span><b class=\"obj-push obj-highlight\">4 mois</b></div></div>"},
+      {"title": "Des chiffres difficiles à défendre", "text": "Quand un acheteur demande d'où vient un chiffre, la réponse dort dans un fichier que plus personne ne sait relire.", "visual": "<div class=\"obj obj-sheet s-problem__obj\"><div class=\"obj-head\"><b>Émissions par poste</b><span class=\"obj-stamp obj-push\">Source ?</span></div><div class=\"obj-rule\"></div><div class=\"obj-chart\"><i style=\"--v:.35\"></i><i style=\"--v:.82\" class=\"is-hl\"></i><i style=\"--v:.5\"></i><i style=\"--v:.62\"></i><i style=\"--v:.28\"></i></div><p class=\"obj-small\" style=\"margin-top:12px\">Facteurs d'émission : version inconnue</p></div>"}
+    ]}
+  }
+}
+</script>
+<style data-section-style="problem-pinned">
+.s-problem__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+  align-items: start;
+}
+
+.s-problem__head {
+  margin-bottom: clamp(24px, 1rem + 1.5vw, 40px);
+}
+
+.s-problem__visuals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.s-problem__obj {
+  width: 100%;
+  max-width: 400px;
+}
+
+.s-problem__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-problem__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 0 16px;
+  padding: clamp(18px, 0.8rem + 0.8vw, 26px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-problem__item::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient);
+  transition: width 0.6s var(--ease);
+}
+
+.s-problem__num {
+  padding-top: 0.3em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-problem__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  transition: color 0.4s var(--ease);
+}
+
+.s-problem__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 0.5s var(--ease),
+    opacity 0.4s var(--ease);
+}
+
+.s-problem__body > p {
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 10px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 1100px) {
+  .s-problem__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-problem__visuals {
+    display: none;
+  }
+}
+
+/* Pinned (large screen, motion allowed): the stage holds while the
+   constats pass, 55 vh each. Keep in sync with scroll.js (.sc-pin). */
+.sc-pin .s-problem {
+  padding-block: 0;
+}
+
+.sc-pin .s-problem__track {
+  height: calc(100vh + var(--steps, 4) * 55vh);
+}
+
+.sc-pin .s-problem__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  height: calc(100vh - var(--topbar-h));
+}
+
+.sc-pin .s-problem__stage > .wrap {
+  width: var(--wrap);
+}
+
+.sc-pin .s-problem__visuals {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sc-pin .s-problem__visual {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.sc-pin .s-problem__visual[data-active] {
+  opacity: 1;
+  transform: none;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__body {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__title {
+  color: var(--muted);
+}
+
+.sc-pin .s-problem__item[data-active]::before {
+  width: 100%;
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-problem section" aria-labelledby="{{id}}-titre" data-section="problem-pinned">
+  <div class="s-problem__track" data-scroll-track>
+    <div class="s-problem__stage">
+      <div class="wrap s-problem__grid">
+        <div class="s-problem__aside">
+          <div class="section-head s-problem__head">
+            <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+            <p class="section-intro">{{intro}}</p>
+          </div>
+          <div class="s-problem__visuals" aria-hidden="true" data-qa-decor>
+            {{#items}}<div class="s-problem__visual" data-step-visual>{{{visual}}}</div>{{/items}}
+          </div>
+        </div>
+        <ol class="s-problem__list" role="list">
+          {{#items}}<li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">0{{@index}}</span>
+            <div>
+              <h3 class="s-problem__title">{{title}}</h3>
+              <div class="s-problem__body"><p>{{text}}</p></div>
+            </div>
+          </li>{{/items}}
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

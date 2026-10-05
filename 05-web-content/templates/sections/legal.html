@@ -1,0 +1,82 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "legal",
+  "name": "Informations légales",
+  "objection": "Qui vend, à quelles conditions",
+  "when": "Vente directe, formation, événement payant : une fiche sobre, liste de définitions en deux colonnes (organisateur, conditions, rétractation, données, accessibilité). Les liens qui ouvrent un nouvel onglet l'annoncent.",
+  "avoid": "Texte juridique intégral (lien vers les conditions), mise en avant visuelle, titre accrocheur.",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "title": {"type": "text", "doc": "Titre simple.", "example": "Informations pratiques et légales"},
+    "items": {"type": "list", "doc": "3 à 7 lignes. term : intitulé ; text : HTML court, liens permis (nouvel onglet annoncé par un texte sr-only).", "fields": {"term": "intitulé", "text": "HTML"}, "example": [
+      {"term": "Organisateur", "text": "Meridian Conseil (entreprise fictive de démonstration), 10 rue de l'Exemple, 69000 Lyon."},
+      {"term": "Prix", "text": "Prix hors taxes, TVA de 20 % en sus. Facture émise à la réservation."},
+      {"term": "Annulation", "text": "Sans frais jusqu'à 14 jours avant le premier atelier, puis 50 % du prix. Remboursement intégral si la cohorte n'atteint pas 6 entreprises."},
+      {"term": "Conditions générales", "text": "Les <a href=\"https://www.example.com/conditions\" target=\"_blank\" rel=\"noopener\">conditions générales de vente<span class=\"sr-only\"> (nouvel onglet)</span></a> s'appliquent à toute réservation."},
+      {"term": "Données personnelles", "text": "Vos données servent à l'inscription et au suivi du parcours. <a href=\"https://www.example.com/confidentialite\" target=\"_blank\" rel=\"noopener\">Politique de confidentialité<span class=\"sr-only\"> (nouvel onglet)</span></a>"},
+      {"term": "Accessibilité", "text": "Ateliers sous-titrés en direct. Pour un besoin particulier, écrivez à <a href=\"mailto:bonjour@example.com\">bonjour@example.com</a>."}
+    ]}
+  }
+}
+</script>
+<style data-section-style="legal">
+.s-legal__inner {
+  max-width: 980px;
+}
+
+.s-legal__title {
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-legal__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-legal__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.32fr) minmax(0, 1fr);
+  gap: 8px 32px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-legal__row dt {
+  font-weight: 700;
+}
+
+.s-legal__row dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-legal__row a[target="_blank"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.3em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 640px) {
+  .s-legal__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-legal section" aria-labelledby="{{id}}-titre" data-section="legal">
+  <div class="wrap s-legal__inner">
+    <h2 id="{{id}}-titre" class="s-legal__title">{{title}}</h2>
+    <dl class="s-legal__list">
+      {{#items}}<div class="s-legal__row"><dt>{{term}}</dt><dd>{{{text}}}</dd></div>{{/items}}
+    </dl>
+  </div>
+</section>
+<!-- /section:{{id}} -->

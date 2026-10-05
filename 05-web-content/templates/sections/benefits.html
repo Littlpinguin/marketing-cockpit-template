@@ -1,0 +1,107 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "benefits",
+  "name": "Bénéfices",
+  "objection": "Qu'est-ce que j'y gagne, concrètement",
+  "when": "Pour 3 ou 4 bénéfices, chacun ancré dans un fait (chiffre du messaging framework, livrable, délai). Le bénéfice avant la fonctionnalité.",
+  "avoid": "Cartes creuses sans preuve, icônes emoji, plus de quatre cartes, bénéfices génériques valables pour tout le monde. Une section qui redit le hero.",
+  "reduced_motion": "Cartes visibles d'emblée.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Ce que vous avez <span class=\"hl\">en sortant</span>"},
+    "intro": {"type": "text", "doc": "Chapô facultatif (vide : pas de chapô).", "example": "Chaque atelier produit une pièce de votre bilan. À la sixième semaine, le dossier est complet."},
+    "items": {"type": "list", "doc": "3 ou 4 bénéfices. icon : SVG trait (Lucide, Heroicons, Phosphor) en currentColor ; title : court, sans point ; text : une ou deux phrases ; proof : fait court qui l'ancre.", "fields": {"icon": "SVG aria-hidden", "title": "bénéfice", "text": "comment", "proof": "fait vérifiable"}, "example": [
+      {"icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 3v4a1 1 0 0 0 1 1h4\"/><path d=\"M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z\"/><path d=\"M9 17v-3M12 17v-6M15 17v-2\"/></svg>", "title": "Un bilan présentable", "text": "Un dossier de quatorze pages, méthode et sources comprises, que vous envoyez tel quel à vos clients.", "proof": "Format accepté par les questionnaires fournisseurs courants"},
+      {"icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 3v18h18\"/><path d=\"m7 14 4-4 3 3 5-6\"/></svg>", "title": "Vos priorités chiffrées", "text": "Un plan de neuf mesures classées par tonnes évitées et par coût, à présenter en comité.", "proof": "Chaque mesure avec son estimation"},
+      {"icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12a9 9 0 1 1-3-6.7L21 8\"/><path d=\"M21 3v5h-5\"/></svg>", "title": "Une méthode réutilisable", "text": "Le modèle de collecte et le calcul restent chez vous : l'an prochain, vous refaites le bilan en deux jours.", "proof": "Fichiers ouverts, sans abonnement"},
+      {"icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8\"/></svg>", "title": "Des pairs qui avancent avec vous", "text": "Douze entreprises au plus par cohorte : vous comparez vos méthodes avec des dirigeants dans la même situation.", "proof": "Un groupe d'échange qui reste ouvert"}
+    ]}
+  }
+}
+</script>
+<style data-section-style="benefits">
+.s-benefits__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
+}
+
+.s-benefits__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 20px;
+  align-content: start;
+  padding: clamp(22px, 1rem + 1.2vw, 34px);
+}
+
+.s-benefits__icon {
+  grid-row: span 3;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--tint);
+  color: var(--hl);
+}
+
+.s-benefits__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.s-benefits__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-benefits__text {
+  margin-top: 6px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-benefits__proof {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line-strong);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .s-benefits__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-benefits__item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-benefits__icon {
+    grid-row: auto;
+    margin-bottom: 12px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-benefits section" aria-labelledby="{{id}}-titre" data-section="benefits">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+    </div>
+    <ul class="s-benefits__grid" role="list" data-reveal-group>
+      {{#items}}<li class="s-benefits__item card" data-reveal>
+        <span class="s-benefits__icon" aria-hidden="true">{{{icon}}}</span>
+        <h3 class="s-benefits__title">{{title}}</h3>
+        <p class="s-benefits__text">{{text}}</p>
+        {{#proof}}<p class="s-benefits__proof">{{proof}}</p>{{/proof}}
+      </li>{{/items}}
+    </ul>
+  </div>
+</section>
+<!-- /section:{{id}} -->
