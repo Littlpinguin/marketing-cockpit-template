@@ -2,12 +2,12 @@
 
 **Your marketing department, running inside Claude Code, on a brand your agents can read, apply and check.**
 
-54 production skills · 14 specialist agents · 120 slide layouts · 20 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+54 production skills · 20 specialist agents · 120 slide layouts · 20 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
 [![Skills](https://img.shields.io/badge/skills-54-blue.svg)](#whats-inside)
-[![Agents](https://img.shields.io/badge/agents-14-blue.svg)](#whats-inside)
+[![Agents](https://img.shields.io/badge/agents-20-blue.svg)](#whats-inside)
 
 Clone it once per company, run the wizard, and get a role-based cockpit that operates like a marketing director: strategy, social, email, landing pages, design, presentations, SEO, plus optional modules for video, n8n automation, client-facing reporting, outbound acquisition and print production. Every deliverable is a file in your repo. Every word passes a brand gate before it ships.
 
@@ -204,7 +204,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 | Print | `print` (flatplan → grid layout → opaque plate → PDF/X-4 CMYK chain → prepress checks) | 1 |
 | Web animation | `animation-gsap` (GSAP + ScrollTrigger), `animation-animejs`, `animation-lottie`, `animation-scroll-reveal` (AOS & co) | 4 |
 
-**14 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger`, `video-art-director`, `video-model-scout`, `print-preflight`, `print-editorial`, dispatched in parallel for audits and multi-channel campaigns.
+**20 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger`, `video-art-director`, `video-model-scout`, `print-preflight`, `print-editorial`, and the six landing agents (`landing-researcher`, `landing-section-builder`, `landing-reviewer-design`, `landing-reviewer-brand`, `landing-reviewer-cro`, `landing-reviewer-a11y`), dispatched in parallel for audits, landing pages and multi-channel campaigns.
 
 **Brand-as-code tooling.** The brand brain's scripts carry no brand value in their code: they read `01-brand/tokens.json` and a TOML config next to them. `build-tokens`, `lint-brand` and `build-inventory` need nothing beyond the Python standard library; tests run with `python3 -m pytest scripts/tests -q` (fictional brand fixtures).
 
@@ -231,7 +231,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 - **10 interactive lead magnets** (`05-web-content/templates/lead-magnets/`): ROI calculator, diagnostic score, grader, quiz, budget estimator… all with an email capture gate and nurturing segmentation baked in.
 - **A client reporting dashboard** (`11-reporting/`): static HTML + monthly JSON snapshots + written analysis, deployed on the client's own site by FTP behind an access code. A demo with 4 months of fictional data (all sources, embedded, opens on double-click) lives in `11-reporting/dashboard/demo/index.html`.
 - **Brand doctrine templates** ([`_templates/brand/`](_templates/brand/)): voice, style guide, messaging framework, personas, design tokens, anti-AI writing doctrine, rejection corpus, AI disclosure policy, rights register. The wizard fills them; their method and default rules stay generic.
-- **A fictional starter corpus** (`_examples/acme-saas/`) to calibrate tone on day one, and **6 slash commands** (`/start-cockpit`, `/brand-discover`, `/tools-setup`, `/modules`, `/validate-setup`, `/health-check`).
+- **A fictional starter corpus** (`_examples/acme-saas/`) to calibrate tone on day one, and **7 slash commands** (`/start-cockpit`, `/brand-discover`, `/tools-setup`, `/modules`, `/validate-setup`, `/health-check`, `/new-landing`).
 
 ## Modules
 

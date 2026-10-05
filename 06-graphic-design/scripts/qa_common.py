@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Briques de calcul partagées par les scripts de QA visuelle.
 
-Les scripts de QA du template (carrousels, visuels composés : qa-visuel.py ; la
-QA des decks, vendorisée depuis slides-agent, porte ses propres calculs) collectent dans le
+Les scripts de QA du template (carrousels, visuels composés : qa-visuel.py ;
+landing pages : 05-web-content/scripts/qa-landing.py ; la QA des decks,
+vendorisée depuis slides-agent, porte ses propres calculs) collectent dans le
 navigateur des valeurs CSS déjà calculées (`getComputedStyle`), sous forme de
 chaînes, puis délèguent ici tout le raisonnement : lecture des couleurs,
 luminance relative, contraste WCAG 2.x, aplatissement d'une pile de fonds
-semi-transparents, seuil de contraste exigé selon le corps, conformité de la
+semi-transparents, opacité effective d'un texte, seuil de contraste exigé selon le corps, conformité de la
 police, et comparaison d'une couleur mesurée à la palette de `01-brand/tokens.json`
 (conversion sRGB vers Lab D65, distance ΔE76, portée des couleurs).
 
@@ -226,6 +227,29 @@ def resoudre_fond_et_uniformite(niveaux: list[dict]) -> tuple[Couleur, bool]:
         if couleur is not None and couleur[3] >= 1.0:
             break
     return resoudre_fond(couleurs), True
+
+
+def opacite_effective(niveaux: list[dict]) -> float:
+    """Produit des opacités (clé `o`) du texte jusqu'à son fond opaque, celui-ci exclu.
+
+    Mêmes `niveaux` que `resoudre_fond_et_uniformite`, du texte vers la racine,
+    chacun avec son `opacity` calculé en clé `o`. Un texte posé à 60 % d'opacité
+    sur son fond se compose avec ce fond avant le calcul du contraste. Le niveau
+    qui porte le fond opaque est exclu : s'il s'estompe, il s'estompe avec le
+    texte et leur contraste relatif bouge à peine. La marche s'arrête aussi au
+    premier fond non uni (dégradé, image), où le contraste n'est pas calculable.
+    """
+    opacite = 1.0
+    for niveau in niveaux:
+        if not fond_uni(niveau.get("i")):
+            break
+        couleur = lire_couleur(niveau.get("c"))
+        if couleur is not None and couleur[3] >= 1.0:
+            break
+        valeur = niveau.get("o")
+        if isinstance(valeur, (int, float)) and 0.0 <= valeur <= 1.0:
+            opacite *= valeur
+    return opacite
 
 
 def lire_viewport(valeur: str) -> dict:

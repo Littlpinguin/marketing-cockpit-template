@@ -1,6 +1,6 @@
 # Registre des pages publiées — {{COMPANY_NAME}}
 
-Mettre à jour à chaque mise en ligne (règle : skill `landing-page`, étape 9 ; skill `lead-magnet`, étape 8).
+Mettre à jour à chaque mise en ligne (règle : skill `landing-page`, phase 8 ; skill `lead-magnet`, étape 8).
 
 | Date | Page / lead magnet | Type | URL | UTM de campagne | Métrique de succès | Responsable | Statut |
 |---|---|---|---|---|---|---|---|

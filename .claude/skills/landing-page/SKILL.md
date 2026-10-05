@@ -1,151 +1,231 @@
 ---
 name: landing-page
-description: Créer une landing page de conversion pour {{COMPANY_NAME}}, du brief à la livraison HTML statique dans 05-web-content/landing-pages/. Orchestre la structure CRO (skill cro-page), le copy (skill copywriting), le design (skills design-direction / design-system sous contrainte des tokens 01-brand), le tracking UTM + GA4 et la QA responsive/vitesse. Utiliser dès que l'utilisateur demande une landing page, une page de vente, une page de capture, une page d'inscription à un événement ou une page de campagne.
+description: Playbook de production d'une landing page de conversion pour {{COMPANY_NAME}}, du cadrage à la livraison d'un HTML statique dans 05-web-content/landing-pages/. Méthode en huit phases (doctrine et matière réelle, cadrage en une salve, directions, spec, charte commune posée avant le travail parallèle, construction en parallèle par fichiers disjoints, montrer et appliquer les retours, quatre revues parallèles puis une vague de corrections arbitrée, livraison), six agents dédiés (landing-researcher, landing-section-builder, landing-reviewer-design / -brand / -cro / -a11y) et une QA mesurable (05-web-content/scripts/qa-landing.py). Orchestre cro-page, copywriting, design-direction, design-system, design-review, accessibility-web et brand-check. Utiliser dès que l'utilisateur demande une landing page, une page de vente, une page de capture, une page d'inscription à un événement, une page d'offre ou de campagne, ou la refonte d'une page de conversion. Commande d'entrée : /new-landing.
 ---
 
-# landing-page — landing pages de conversion {{COMPANY_NAME}}
+# landing-page : produire une landing page de haut niveau pour {{COMPANY_NAME}}
 
-Vous produisez des landing pages au meilleur niveau du marché : structure CRO éprouvée, copy ancré dans le messaging framework, design premium sous contrainte stricte de la marque, tracking mesurable dès le premier jour.
+Une landing réussie se lit comme un seul récit, section par section, et amène son visiteur à une seule action. Ce playbook donne la méthode et le système qui y mènent : il ne donne ni un ordre de sections à recopier ni une apparence. Chaque landing a sa propre direction, sinon toutes les pages finissent pareilles.
 
-## Étape 0 — Doctrine de marque (OBLIGATOIRE)
+**La barre.** Une page faite de cartes blanches empilées qui respecte le plan et passe ses tests reste refusée. Ce qu'on vise : des visuels de marque, un hero construit autour d'un objet fort, un ou deux moments de mise en scène au défilement, une alternance de sections claires et de bandes sombres, et partout de la preuve concrète.
 
-Avant toute production :
+## Contenu du skill
 
-1. Charger `01-brand/checklist-pre-composition.md` — règles de voix, anti-style-IA, typographie, assets, réutilisation.
-2. Charger `01-brand/voice.md` — position de voix, vocabulaire, interdits.
-3. Charger `01-brand/style-guide.md` — tokens (couleurs, police, radius, gradient) : ils seront injectés à l'étape design.
-4. Lire `05-web-content/CLAUDE.md` — structure du dossier, conventions techniques, règle de réutilisation.
-5. Charger `01-brand/design-anti-generique.md` — doctrine design anti-générique : marqueurs du look IA interdits par défaut, workflow deux passes (plan de tokens → auto-critique), checklist de pré-livraison mesurable.
+| Fichier | Rôle |
+|---|---|
+| `references/charte.md` | Modèle de charte de page, copié au démarrage dans `pilotage/page-charter.md` et donné à **chaque** agent : grille, en-têtes, matières, mouvement, interdits, conversion, technique, décisions de l'humain (§ 9, qui prime) |
+| `references/sections.md` | Catalogue des mécaniques de section éprouvées : objection servie, quand, pourquoi, anti-modèles, mouvement réduit |
+| `references/pieges.md` | Pièges techniques, de session et de marque, avec leur parade, plus les règles tirées des retours d'arbitrage |
+| `references/inspiration.md` | Méthode de recherche : benchmark de pages qui convertissent, galeries publiques, filtre de marque |
+| `references/revues.md` | Lancer les quatre revues et arbitrer leurs rapports |
+| `templates/spec.md` | Squelette de spec de landing |
+| `templates/brief-section.md` | Brief d'un agent de section |
+| `templates/brief-corrections.md` | Brief d'arbitrage et de vague de corrections |
 
-**Ne jamais produire sans.** Si un de ces fichiers manque ou contient encore des `{{...}}`, arrêter et lancer `/start-cockpit`.
+## Agents (`.claude/agents/`)
 
-## Skills internes orchestrées
-
-Le chemin nominal passe par les skills internes du template (`.claude/skills/`). Si l'une manque (template partiellement synchronisé), appliquer le fallback inline documenté à l'étape correspondante — ne jamais bloquer.
-
-| Skill interne | Rôle dans le workflow | Fallback inline |
+| Agent | Phase | Rôle |
 |---|---|---|
-| `cro-page` | Valider/challenger la structure et faire la revue CRO finale | Structure de référence documentée à l'étape 2 |
-| `design-direction` | Direction artistique : compositions, hiérarchie, typographie appliquée | Style-guide + `05-web-content/sections-library.md` seuls |
-| `design-system` | Système de composants, tokens, états d'interaction | idem |
-| `design-review` | QA visuelle finale | Checklist QA de l'étape 7 |
-| `cro-form` | Optimiser le formulaire de capture s'il y en a un | Règles formulaire de la skill `lead-magnet` |
-| `cro-popup` | Popup/exit-intent si explicitement demandé | Pas de popup — CTA inline uniquement |
+| `landing-researcher` | 0, en arrière-plan | Benchmark de pages qui convertissent et recherche visuelle, consolidés dans `pilotage/research-notes.md`. Ne code rien |
+| `landing-section-builder` | 4 à 7 | Construit ou corrige une section (ou un lot) dans les seuls fichiers qu'on lui confie. Ne commite jamais |
+| `landing-reviewer-design` | 7 | Cohérence webdesign : en-têtes, rythme, matières, typographie, mouvement, responsive, boutons |
+| `landing-reviewer-brand` | 7 | Marque : voix et anti-style-IA, ton, visuel contre `tokens.json`, preuve, audience, divulgation IA, droits |
+| `landing-reviewer-cro` | 7 | Conversion : récit et objections, CTA, bloc de conversion, urgence honnête, preuve, mesure |
+| `landing-reviewer-a11y` | 7 | WCAG 2.2 AA en 14 points, sur la QA mesurée et le code |
 
-## Workflow
+Les quatre relecteurs sont en lecture seule : ils n'écrivent que leur rapport. Si un type d'agent n'est pas reconnu dans la session (registre chargé au démarrage), dispatcher un agent généraliste dont le prompt commence par « Lis et applique `.claude/agents/<nom>.md` ».
 
-### 1. Brief
+## Où vit quoi
 
-Créer (ou compléter) `05-web-content/briefs/<slug>.md` avec, au minimum :
+```
+05-web-content/
+├── briefs/<slug>.md                      ← brief validé (phase 1)
+├── landing-pages/<slug>/
+│   ├── index.html                        ← la page : HTML + CSS + JS inline, livrable unique
+│   ├── assets/                           ← images, polices locales, données
+│   └── pilotage/                         ← la fabrication, versionnée, jamais déployée
+│       ├── spec.md                       ← spec validée (phase 3)
+│       ├── page-charter.md               ← charte de la page (copie de references/charte.md)
+│       ├── research-notes.md             ← recherche consolidée (landing-researcher)
+│       ├── sections/<nn>-<id>.html       ← un fragment par section, propriété d'un seul agent
+│       ├── reports/<nn>-<id>.md          ← rapports des builders
+│       ├── review-<grille>.md            ← rapports des revues
+│       └── fix-wave-brief.md             ← arbitrage de la vague de corrections
+└── scripts/qa-landing.py                 ← QA mesurable (phases 5 à 8)
+```
 
-- **Objectif de conversion** : UNE action mesurable (inscription, demande de démo, téléchargement, achat). Une page = un objectif = un CTA primaire.
-- **Cible** : persona (référence `01-brand/personas.md`) + niveau de conscience (découvre le problème / compare les solutions / prêt à agir).
-- **Offre** : ce que le visiteur obtient, formulé en bénéfice ; prix ou contrepartie (email, formulaire).
-- **Source de trafic prévue** : d'où viennent les visiteurs (post LinkedIn, newsletter, ads, QR event) — le message de la page doit prolonger le message de la source (*message match*).
-- **Preuves disponibles** : chiffres du messaging framework, témoignages, logos, études de cas.
-- **Métrique de succès** : taux de conversion visé, volume attendu.
+## Gabarit de données ou page sur mesure
 
-{{COMPANY_MAIN_CONTACT}} valide le brief avant rédaction.
+- **Gabarit de données** : la galerie `05-web-content/templates/landing-pages/` et les sections de `05-web-content/sections-library.md`. On copie un modèle et on remplace les données (textes, chiffres, visuels, endpoint). À choisir pour une offre de type courant, un délai court, ou une série de pages de même forme (pages partenaires, pages locales, éditions successives d'un événement). Le modèle ne dispense de rien : brief, charte, QA, revues de marque et de conversion, brand-check. Les phases 2, 4 et 5 se réduisent à l'adaptation du modèle.
+- **Page sur mesure** : tout le playbook. À choisir pour une offre phare, un lancement, un ticket élevé, une page qui doit porter sa propre signature visuelle. Une section qu'on crée ici et qui servira ailleurs entre ensuite dans `sections-library.md` (règle « réutiliser avant de créer »).
 
-### 2. Structure CRO
+Dans les deux cas, une section qui figure sur deux pages est **la même section** : même structure, mêmes jetons, au pixel près. On la recopie à l'identique depuis la bibliothèque, on ne la redessine pas.
 
-**Chemin nominal** : invoquer la skill interne **`cro-page`** avec le brief pour construire et challenger la structure, puis continuer.
+## Phase 0 : doctrine et matière réelle
 
-**Fallback** (si `cro-page` manque) : appliquer la structure de référence (l'ordre s'adapte au niveau de conscience de la cible) :
+1. **Doctrine**, jamais de mémoire :
+   - `01-brand/checklist-pre-composition.md`, `01-brand/voice.md`, `01-brand/anti-ai-writing-style.md` ;
+   - `01-brand/messaging-framework.md` (chiffres clés et hiérarchie de preuves), `01-brand/personas.md` ;
+   - `01-brand/style-guide.md` et `01-brand/tokens.json` (valeurs exactes de couleur, police, rayon) ;
+   - `01-brand/design-anti-generique.md` (marqueurs du look IA, workflow en deux passes) ;
+   - `01-brand/divulgation-ia.md` et `01-brand/droits.md` (visuels générés, logos tiers, personnes) ;
+   - `01-brand/exemples-rejetes.md` (ce que la marque a déjà refusé) ;
+   - `05-web-content/CLAUDE.md` (conventions techniques, publication).
+   Si un de ces fichiers manque ou porte encore des `{{...}}`, arrêter et lancer `/start-cockpit`.
+2. **Matière réelle** : le document de l'offre (programme, proposition commerciale, fiche produit), les chiffres de `_sources/reports/`, le calendrier `02-strategy/calendar/calendar.md`, les assets de `01-brand/assets/` et de leur catalogue, les pages déjà produites dans `05-web-content/landing-pages/`. L'intel de `00-intel/` est confidentielle : on reformule, et aucun fait sur une personne n'en vient.
+3. **Nom de l'offre** : vérifier que le nom ou la marque affichés ont le droit de porter un prix et des dates (marque tierce, partenaire, programme officiel).
+4. **Recherche** : lancer tout de suite `landing-researcher` en arrière-plan, avec l'offre, l'audience et les besoins de section pressentis. Sa synthèse arrive pendant le cadrage.
 
-1. **Hero** — proposition de valeur en une phrase (bénéfice + spécificité), sous-titre qui précise pour qui / comment, CTA primaire visible sans scroller. Test des 5 secondes : un inconnu doit pouvoir dire ce que la page propose, pour qui, et quoi faire.
-2. **Preuve immédiate** — logos clients, chiffre-clé ou note ; crédibilise avant même d'argumenter.
-3. **Problème** — les frustrations du persona, dans ses mots (personas.md).
-4. **Solution / bénéfices** — 3-4 blocs, bénéfice avant fonctionnalité, chaque bloc ancré dans un chiffre du messaging framework.
-5. **Preuve détaillée** — stats, témoignages avec nom et contexte, étude de cas concrète.
-6. **Traitement des objections** — FAQ, garanties, réponses aux freins identifiés dans personas.md.
-7. **CTA final** — reformulation de la proposition de valeur + CTA identique au hero (même action, même libellé).
+## Phase 1 : cadrage, en une seule salve
 
-Règles transverses : un seul objectif de conversion ; le CTA primaire répété à chaque écran de scroll ; aucune navigation sortante (pas de menu complet — logo + CTA suffisent) ; message match avec la source de trafic ; les sections viennent de `05-web-content/sections-library.md` (règle « réutiliser avant de créer »).
+Poser toutes les questions bloquantes en une fois (outil de question à choix s'il existe), chacune avec l'option recommandée en premier et la conséquence de chaque option :
 
-### 3. Copy
+1. **Audience et accès** : page publique indexée (balise `robots`, JSON-LD, liens depuis le site) ou lien direct en `noindex`.
+2. **Objectif unique et action de conversion** : réservation, prise de rendez-vous, formulaire, achat, téléchargement, appel. Une page, un objectif, un CTA primaire.
+3. **Circuit de vente** : qui inscrit, qui facture, qui encaisse, qui envoie la confirmation. Ce choix réécrit le bloc de conversion, les étapes et la FAQ : il se tranche avant d'écrire ces textes.
+4. **Chiffres affichés** : places, prix (HT ou TTC), dates, remises, échéance. Signaler chaque écart entre la demande et le document source : le document fait foi.
+5. **Preuves disponibles** : vraies personnes (avec leur accord pour le portrait), vrais documents, vrais chiffres, vrais témoignages. Ce qui manque ne s'invente pas.
+6. **Visuels** : réutiliser la bibliothèque, ou générer (skill `image-generation`), avec le coût de chaque option.
+7. **Source de trafic et mesure** : d'où viennent les visiteurs (message match), suivi d'audience actif ou non dans `.setup-completed`.
 
-Invoquer la skill **`copywriting`** avec le brief et la structure validée. Elle applique sa propre étape 0 doctrine, ancre chaque section dans `01-brand/messaging-framework.md` et respecte les interdits anti-style-IA. Passer ensuite la skill `copy-editing` si la page est à fort enjeu.
+Un point ouvert se formule dans les mots de l'humain : ce que voit le visiteur, et pourquoi ça compte. Jamais dans ceux de l'outil.
 
-### 4. Design — tokens d'abord, skill ensuite
+Les réponses vont dans `05-web-content/briefs/<slug>.md` (objectif, cible et niveau de conscience, offre, source de trafic, preuves, métrique de succès). {{COMPANY_MAIN_CONTACT}} valide le brief avant la suite.
 
-Ordre impératif :
+## Phase 2 : directions
 
-1. **Charger les tokens** de `01-brand/style-guide.md` : `{{BRAND_FONT_PRIMARY}}`, `{{BRAND_COLOR_PRIMARY}}`, `{{BRAND_COLOR_ACCENT}}`, `{{BRAND_COLOR_DARK}}`, `{{BRAND_COLOR_LIGHT}}`, `{{BRAND_GRADIENT}}`, `{{BRAND_BORDER_RADIUS}}`, style d'illustration, interdits visuels.
-2. **Invoquer les skills design internes** — `design-direction` (compositions, hiérarchie visuelle, typographie appliquée) puis `design-system` (composants, états d'interaction) — **en injectant les tokens dans la demande** et en précisant explicitement : « la charte de marque fournie prime sur tout style générique ; ne pas proposer de palette ni de typographie alternatives ». Les skills design décident des compositions, hiérarchies visuelles, rythmes, interactions — jamais des couleurs ni des polices.
-3. **Fallback** (si ces skills manquent) : décliner les structures HTML de `05-web-content/sections-library.md` avec les tokens, en soignant hiérarchie typographique et espacements généreux.
+Montrer 2 ou 3 directions visuelles en maquettes rapides (widget, capture ou page jetable dans le scratchpad), chacune nommée par son **objet signature** : l'élément dont on se souviendra. En recommander une. Écarter toute direction qui reprend la signature d'une autre page de la marque. Appliquer le workflow en deux passes de `01-brand/design-anti-generique.md` § 3 (plan de jetons, puis auto-critique contre le brief) et la skill `design-direction`, en injectant les jetons de `01-brand/tokens.json` : la marque prime, la skill décide des compositions, jamais des couleurs ni des polices.
 
-Visuels : assets existants de `01-brand/assets/` d'abord, sinon skill `image-generation` (sortie copiée dans `assets/` de la page).
+L'humain choisit. Détailler ensuite la conception dans la conversation et la faire valider.
 
-### 5. Build
+## Phase 3 : spec
 
-- `05-web-content/landing-pages/<slug>/index.html` — single-file, CSS + JS inline, tokens en custom properties `:root` (bloc de référence dans `sections-library.md`).
-- Header/footer depuis `05-web-content/templates/` s'ils existent (une landing page de campagne peut légitimement s'en passer).
-- Mobile-first, HTML sémantique, alt text, contrastes AA, navigation clavier, `lang="{{BRAND_LANGUAGE}}"`.
-- SEO/meta : `<title>`, meta description, Open Graph, favicon, `<meta name="robots">` (`noindex` par défaut pour une page de campagne, à confirmer au brief).
+Écrire `pilotage/spec.md` à partir de `templates/spec.md` :
 
-### 6. Tracking — UTM + conversion
+- le cadre (réponses de la phase 1, avec leur source) ;
+- la direction retenue et son objet signature ;
+- le récit : une ligne par section, l'objection du visiteur qu'elle traite, la mécanique (`references/sections.md`), son moment orchestré, son fond ;
+- les comportements : état de l'offre (ouverte, liste d'attente, close) piloté par **une seule configuration** en tête du script, porte de choix éventuelle, liens profonds, échéance, événements de mesure ;
+- **les textes définitifs, clé par clé**, dans chaque langue de la marque. La structure CRO vient de la skill `cro-page`, le texte de la skill `copywriting` (puis `copy-editing` si l'enjeu le justifie), chaque chiffre de `messaging-framework.md` ou d'une source citée.
 
-**Conventions UTM** (pour toutes les URL diffusées vers la page — kebab-case, minuscules) :
+La spec est figée pendant chaque étape de construction. Si elle doit changer, prévenir les agents en cours.
+
+## Phase 4 : poser avant de paralléliser
+
+Le contrôleur (l'agent principal), seul, prépare ce qui suit, puis le montre :
+
+1. **`index.html` socle** : `<head>` complet (titre, description, `robots`, Open Graph, favicon, `<meta name="viewport">`), bloc `:root` des jetons (`05-web-content/sections-library.md`, valeurs de `01-brand/tokens.json`), CSS commun de la charte (base, en-tête de section, famille de cartes, boutons, focus, bandes sombres), **un seul moteur d'apparition** (attributs `data-reveal`, opacité seule, coupé par `prefers-reduced-motion`), le relais de mesure (`data-track` vers `dataLayer` / `gtag`), et la configuration de l'offre.
+2. **Une paire de marqueurs par section**, à sa place définitive, avec une section provisoire (id, `aria-labelledby`, titre) pour que la page s'affiche à chaque étape :
+   ```html
+   <!-- section:hero -->
+   <section id="hero" aria-labelledby="hero-titre">…</section>
+   <!-- /section:hero -->
+   ```
+3. `pilotage/page-charter.md`, copié depuis `references/charte.md` et complété (§ 9 : les décisions déjà prises), et `pilotage/research-notes.md` à côté.
+
+**Le hero d'abord.** Le construire, le montrer à l'humain et le faire valider avant de lancer le reste : un hero raté entraîne toute la page.
+
+## Phase 5 : construction en parallèle
+
+- **Un agent par section** : un `landing-section-builder` propriétaire d'un seul fragment, `pilotage/sections/<nn>-<id>.html` (la `<section>`, son `<style>` préfixé par `#<id>`, son `<script>` éventuel enfermé dans une fonction). Personne d'autre n'écrit dans ce fichier, et aucun builder n'écrit dans `index.html`. Les lancer tous dans un seul message, chacun avec un brief tiré de `templates/brief-section.md`.
+- **Assemblage** : à réception d'un rapport, le contrôleur remplace le contenu entre les marqueurs de la section par le fragment, avec un script qui vérifie que chaque marqueur existe une seule fois :
+  ```python
+  import re, pathlib
+  page = pathlib.Path("05-web-content/landing-pages/<slug>/index.html")
+  html = page.read_text(encoding="utf-8")
+  for frag in sorted(page.parent.glob("pilotage/sections/*.html")):
+      sid = frag.stem.split("-", 1)[1]
+      debut, fin = f"<!-- section:{sid} -->", f"<!-- /section:{sid} -->"
+      assert html.count(debut) == 1 and html.count(fin) == 1, sid
+      motif = re.compile(re.escape(debut) + r".*?" + re.escape(fin), re.S)
+      html = motif.sub(lambda _: f"{debut}\n{frag.read_text(encoding='utf-8').strip()}\n{fin}", html)
+  page.write_text(html, encoding="utf-8")
+  ```
+  Puis `python3 05-web-content/scripts/qa-landing.py <index.html>` et un commit, sur go de l'humain si la session l'exige.
+- **Recherche visuelle** : elle se fait en amont (`landing-researcher`), parce que la navigation des agents de section sur les galeries peut leur être refusée. Les builders lisent `research-notes.md`.
+- **Limite d'usage** : si des agents sont coupés, assembler et commiter ce qui est fini, puis reprendre chacun par `SendMessage` avec l'endroit où il s'est arrêté et la consigne « relis d'abord l'état actuel de ton fichier ». Ne jamais relancer un agent neuf qui repartirait de zéro.
+
+## Phase 6 : montrer, écouter, appliquer
+
+- **Montrer** après chaque étape : donner à l'humain le chemin ou l'URL locale de la page (serveur statique lancé depuis la racine du dépôt si la page lit `01-brand/assets/`), avec la liste des points à regarder, puis enchaîner l'étape suivante sans attendre.
+- **Appliquer un retour** : il s'applique, puis s'écrit au § 9 de `pilotage/page-charter.md`. S'il vaut pour toutes les landings, proposer de le reporter dans la doctrine (`01-brand/style-guide.md`, `01-brand/exemples-rejetes.md`) ou dans ce skill.
+- **Micro-retouches** : le contrôleur les fait lui-même, par un remplacement scripté qui vérifie la chaîne d'origine (`assert texte in html`), puis QA et commit.
+- **Ce que les revues ne voient pas** : un en-tête collé, un fond qui masque la matière, un épinglage absent, une page qui « fait template ». L'œil de l'humain reste la dernière porte.
+
+## Phase 7 : mesure, quatre revues, une vague de corrections
+
+1. **Mesure** : `python3 05-web-content/scripts/qa-landing.py <index.html> --format json > pilotage/qa.json`. Les relecteurs partent de ces constats au lieu de les recalculer.
+2. **Revues** : lancer les quatre relecteurs en parallèle, dans un seul message, en lecture seule. Chacun écrit `pilotage/review-<grille>.md` (`references/revues.md`).
+3. **Arbitrage** : le contrôleur écrit `pilotage/fix-wave-brief.md` à partir de `templates/brief-corrections.md`. Les décisions de l'humain priment, aucun chiffre n'est inventé, une structure reçoit une seule valeur, les décisions business ou légales sont posées à l'humain en une fois.
+4. **Corrections** : deux `landing-section-builder` en parallèle, sur des fragments disjoints (par exemple les sections 1 à 4 pour l'un, 5 à 8 pour l'autre). Le socle (`index.html` hors marqueurs) et toute section partagée avec d'autres pages se corrigent par le contrôleur, à l'identique partout. Les constats tardifs et les retours de l'humain partent aux deux agents par `SendMessage`, avec la mention « ils priment sur le brief ».
+5. **Clôture** : assembler, relancer la QA jusqu'à zéro erreur, montrer la page.
+
+## Phase 8 : livraison
+
+1. **Contrôles bloquants** :
+   - `qa-landing.py` sans erreur aux trois tailles d'écran et en mouvement réduit ; les avertissements restants sont listés et assumés dans le rapport de livraison ;
+   - agent `a11y-auditor` (rendu réel, axe-core, parcours clavier complet) : aucun constat bloquant ni majeur ;
+   - `python3 scripts/lint-brand.py 05-web-content/landing-pages/<slug>/index.html` sans erreur ;
+   - skill `brand-check` (texte et visuel) : verdict positif ;
+   - aucun secret ni identifiant en dur dans le diff (l'ID de mesure vit dans la configuration, jamais écrit au hasard).
+2. **Budget** : HTML, CSS et JS inline sous 200 Ko ; images en WebP dimensionnées à l'usage, `loading="lazy"` hors hero ; polices en `font-display: swap` ; aucun script bloquant ; cible LCP < 2,5 s.
+3. **Enregistrement** : UTM et métrique de succès dans `05-web-content/deployed.md`, calendrier éditorial à jour, `python3 scripts/build-inventory.py --add 05-web-content/landing-pages/<slug>/index.html` pour l'index anti-répétition, conversions signalées au module `reporting` s'il est actif.
+4. **Publication** : suivre `05-web-content/CLAUDE.md` § Publication (dry-run obligatoire), sans le dossier `pilotage/`. Contrôler ensuite la page en ligne : HTTP 200, balise `robots` conforme au brief, rendu identique à la version validée.
+5. **Commit, push, publication** : seulement sur go explicite de l'humain, à chaque fois.
+
+## Mesure : UTM et événements
+
+**UTM** (toute URL diffusée vers la page, kebab-case, minuscules) :
 
 | Paramètre | Contenu | Exemples |
 |---|---|---|
 | `utm_source` | Plateforme d'origine | `linkedin`, `newsletter`, `google`, `partenaire-x` |
 | `utm_medium` | Type de canal | `social`, `email`, `cpc`, `qr`, `referral` |
 | `utm_campaign` | Slug de campagne + année | `{{CAMPAIGN_SLUG}}-2026` |
-| `utm_content` | Variante/emplacement | `post-1`, `cta-hero`, `cta-final` |
+| `utm_content` | Variante ou emplacement | `post-1`, `cta-hero`, `cta-final` |
 
-Générer le tableau des URL trackées dans le brief et le reporter dans `deployed.md`.
+Le tableau des URL trackées va dans le brief et dans `deployed.md`.
 
-**Événement de conversion** :
+**Événements** :
 
-- Si `web_analytics` est activé dans `.setup-completed` (GA4) : intégrer le snippet gtag avec `{{GA4_MEASUREMENT_ID}}` et déclencher :
-  - `generate_lead` à la soumission du formulaire (avec `lead_source` = slug de la page) ;
-  - `cta_click` au clic sur le CTA primaire (paramètre `cta_position`: `hero` | `final`).
-  - Marquer `generate_lead` comme conversion clé dans GA4 (action manuelle côté interface — le signaler à l'utilisateur).
-- Sinon : poser des attributs `data-track="generate_lead"` / `data-track="cta_click"` sur les éléments concernés, pour brancher l'analytics plus tard sans retoucher le HTML.
+- chaque CTA porte `data-track` (`cta_click` au clic, avec `data-cta-position` : `hero`, `offre`, `final`…), le formulaire `data-track="generate_lead"` ; le CTA primaire porte en plus `data-cta="primaire"`, que la QA lit pour savoir quelle conversion protéger ;
+- si `web_analytics` est activé dans `.setup-completed` (GA4) : snippet gtag avec `{{GA4_MEASUREMENT_ID}}`, et un relais qui transforme ces attributs en événements `gtag('event', …)` ou `dataLayer.push(…)`, avec la formule et la langue en paramètres. `generate_lead` se marque comme conversion clé côté GA4 (action manuelle, à signaler) ;
+- sinon : les attributs restent posés, pour brancher la mesure plus tard sans retoucher le HTML.
 
-Jamais de clé ou d'ID en dur non documenté : l'ID de mesure vit dans `.env` / la config, référencé en placeholder dans le template.
+La QA vérifie les deux cas : suivi déclaré, un événement doit partir au clic de chaque CTA primaire ; suivi absent, le crochet `data-track` doit être là.
 
-### 7. QA responsive + vitesse
+## Règles dures
 
-- **Responsive** : vérifier le rendu à 375, 600, 900 et 1280 px (outil de preview navigateur si disponible, sinon revue attentive des media queries). Aucun débordement horizontal ; CTA atteignable au pouce sur mobile ; hero lisible sans zoom.
-- **Vitesse** : HTML+CSS+JS inline < 200 Ko ; images en WebP, compressées, dimensionnées à l'usage, `loading="lazy"` hors hero ; fonts en `font-display: swap` avec `preconnect` ; pas de JS bloquant ; cible LCP < 2,5 s.
-- **Accessibilité** : contrastes AA sur les CTA, labels de formulaire explicites, focus visibles.
+- **Contenu** : aucun chiffre, client, logo, témoignage, compteur ni fait sur une personne inventé. Un compteur sans vrai chiffre reste vide.
+- **Une page, un objectif** : tous les boutons mènent à la conversion ou à l'étape de choix qui y conduit. Pas de navigation complète : logo et CTA suffisent.
+- **Urgence honnête** : vraies places, vraie date de clôture, comptées en jours. Jamais de compte à rebours en secondes.
+- **Fichiers** : un fichier, un propriétaire. Aucun agent n'écrit dans un fichier qu'on ne lui a pas confié ; le contrôleur seul assemble et commite.
+- **Actions refusées** : une action refusée à un agent (suppression, navigation, écriture) n'est refaite par personne sans l'accord de l'humain.
+- **Outils tiers** : toute écriture dans un outil de vente, d'emailing ou de calendrier passe par un dry-run montré, puis un go.
+- **Mouvement** : `prefers-reduced-motion: reduce` affiche tout, d'emblée, et rien ne bouge.
 
-**Revues finales** : soumettre la page finie à `design-review` (QA visuelle : espacements, hiérarchie, cohérence des composants) puis à `cro-page` (revue CRO : frictions, clarté du CTA) et appliquer les corrections pertinentes. Si ces skills manquent, la checklist ci-dessus tient lieu de revue.
+## Skills orchestrées
 
-### 8. Brand-check (obligatoire)
+| Skill | Rôle dans le playbook | Repli si absente |
+|---|---|---|
+| `cro-page` | Structure CRO (phase 3) et regard CRO en revue | Ordre des objections de `references/charte.md` § 7 |
+| `copywriting` / `copy-editing` | Textes définitifs de la spec | Aucun : obligatoires |
+| `design-direction` / `design-system` / `design-taste` | Directions et système visuel, sous les jetons de `01-brand/tokens.json` | `sections-library.md` + `style-guide.md` |
+| `design-review` | Regard UI en complément de `landing-reviewer-design` | La grille de l'agent |
+| `accessibility-web` | Référentiel WCAG 2.2 AA chargé avant de construire | Grille de `landing-reviewer-a11y` |
+| `cro-form` / `lead-magnet` | Formulaire de capture ; circuit complet si la page capture un email contre un contenu | Règles formulaire de `references/sections.md` |
+| `image-generation` | Visuels manquants, après la bibliothèque | Assets de `01-brand/assets/` |
+| `brand-check` | Validation finale obligatoire | Aucun : obligatoire |
+| `performance-report` | Suivi des conversions (module `reporting`) | Notes de mesure dans `deployed.md` |
 
-Invoquer `brand-check` — copy ET conformité visuelle (couleurs, police, espacements contre le style guide). Aucune livraison sans verdict positif.
+## Checklist de livraison
 
-### 9. Livraison et enregistrement
-
-1. Livrer `05-web-content/landing-pages/<slug>/index.html` (+ `assets/`).
-2. Mettre à jour `05-web-content/deployed.md` : URL prévue/réelle, date, responsable, UTM, métrique de succès.
-3. Mettre à jour le calendrier éditorial (`02-strategy/calendar/calendar.md`).
-4. Déploiement : suivre `05-web-content/CLAUDE.md` § Publication (dry-run obligatoire).
-5. Si module `reporting` actif : signaler la page à suivre (conversions `generate_lead`) dans `11-reporting/`.
-
-## Checklist pré-livraison
-
-- [ ] Brief validé par {{COMPANY_MAIN_CONTACT}} (objectif, cible, offre, source de trafic)
-- [ ] Un seul objectif de conversion, CTA identique du hero au final
-- [ ] Sections issues de `sections-library.md` (ou nouvelles sections reversées à la bibliothèque)
-- [ ] Copy via skill `copywriting`, chiffres vérifiés contre le messaging framework
-- [ ] Tokens 01-brand injectés AVANT toute skill design ; aucune couleur/police hors charte
-- [ ] Test des 5 secondes concluant sur le hero
-- [ ] UTM documentés + événement de conversion en place (GA4 ou `data-track`)
-- [ ] QA responsive 375/600/900/1280 + budget vitesse respecté
-- [ ] `brand-check` passé (copy + visuel)
-- [ ] `deployed.md` et calendrier éditorial à jour
-
-## Skills associées
-
-- `copywriting` / `copy-editing` — texte
-- `cro-page` / `cro-form` / `cro-popup` — structure et revues CRO
-- `design-direction` / `design-system` / `design-review` — design sous tokens 01-brand
-- `lead-magnet` — si la page capture un email contre un contenu (workflow complet côté lead magnet)
-- `image-generation` — visuels
-- `brand-check` — validation finale obligatoire
-- `performance-report` — suivi des conversions (module `reporting`)
+- [ ] Brief validé par {{COMPANY_MAIN_CONTACT}} ; spec validée, textes définitifs clé par clé
+- [ ] Direction choisie par l'humain, objet signature nommé, aucune signature reprise d'une autre page
+- [ ] Charte de page à jour (§ 9 : toutes les décisions de l'humain)
+- [ ] Un seul objectif, `data-cta="primaire"` posé, CTA primaire visible sans défiler sur mobile
+- [ ] `qa-landing.py` : zéro erreur ; avertissements restants listés et assumés
+- [ ] Quatre revues rendues, vague de corrections arbitrée et appliquée
+- [ ] `a11y-auditor` sans bloquant ni majeur ; `lint-brand.py` et `brand-check` au vert
+- [ ] UTM et événements en place ; `deployed.md`, calendrier et inventaire à jour
+- [ ] Publication par dry-run, sans `pilotage/` ; contrôle en ligne fait

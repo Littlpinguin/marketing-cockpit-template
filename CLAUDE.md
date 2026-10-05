@@ -28,7 +28,7 @@ Toute demande commence par la question : **quel objectif business sert-elle ?** 
 | Carrousel LinkedIn | skill `carousel` | `06-graphic-design/` |
 | Présentation / slides | skill `slides` | `06-graphic-design/presentations/` |
 | Email (newsletter, promo, nurture) | skill `email` | `04-email/` |
-| Landing page | skill `landing-page` | `05-web-content/landing-pages/` |
+| Landing page | skill `landing-page` (commande `/new-landing`) + agents `landing-*` | `05-web-content/landing-pages/<slug>/` |
 | Lead magnet (guide, calculateur, quiz…) | skill `lead-magnet` | `05-web-content/` + circuit de capture |
 | Image / visuel de marque | skill `image-generation` | `06-graphic-design/` |
 | Vidéo (montage, Reel, Short, sous-titres) | module `video` — skills `video-editing`, `captions`, `video-generation`, `video-matting`, `reel-talking-head` | `08-video/` (doctrine : `08-video/montage.md`) |
@@ -216,7 +216,7 @@ See `docs/setup-completed.schema.json` for the full schema.
 
 | Skill | Role | Notes |
 |---|---|---|
-| `landing-page` | Conversion landing pages | CRO structure + copy + on-brand design + UTM/GA4 tracking, delivered in `05-web-content/landing-pages/` |
+| `landing-page` | Conversion landing pages, end-to-end playbook | 8 phases: doctrine and real material → one-salvo framing → 2-3 directions → spec with final copy → shared charter before parallel work → parallel build by disjoint files → show, listen, apply → measured QA + 4 parallel reviews + one arbitrated fix wave → delivery. Data template (gallery) or bespoke page. Six `landing-*` agents, `/new-landing`, QA `05-web-content/scripts/qa-landing.py` |
 | `lead-magnet` | Lead magnets (guide, calculator, quiz…) | Always shipped with the full capture circuit (page → form → automation → nurturing) |
 | `cro-page` | Page conversion audit | 7-dimension analysis, prioritized recommendations; orchestrated by `landing-page` |
 | `cro-form` | Form optimization | Field pruning, labels, errors, completion rate; orchestrated by `landing-page` / `lead-magnet` |
@@ -282,6 +282,7 @@ La marque est vérifiable par script ; ces contrôles priment sur toute appréci
 | Valeur exacte d'une couleur, d'une police, d'un rayon ? | `01-brand/tokens.json` ; `python3 scripts/build-tokens.py --check` |
 | Ce texte respecte-t-il la charte (mots interdits, tirets, titres, hashtags, placeholders, palette, police) ? | `python3 scripts/lint-brand.py <fichier>`, étape 0 de `brand-check` |
 | Ce deck tient-il le cadre et les planchers ? | `python3 06-graphic-design/presentations/scripts/qa.py <deck.html>` |
+| Cette landing tient-elle ses planchers, ses contrastes, ses CTA (pli mobile compris) et le mouvement réduit ? | `python3 05-web-content/scripts/qa-landing.py <page.html>` |
 | A-t-on déjà traité ce sujet, sur quel canal, quand ? | `_templates/inventory.md` ; `python3 scripts/build-inventory.py --check` |
 | A-t-on le droit de publier cette police, ce logo, cette photo ? | `01-brand/droits.md` |
 | Faut-il mentionner que c'est généré par IA, et comment ? | `01-brand/divulgation-ia.md` |
@@ -307,6 +308,12 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 | `veille-analyst` | Deep web research on ONE watch level, sourced and dated signals | Skill `veille-strategy` (one per level, in parallel) |
 | `print-preflight` | Prepress audit of the final PDF: boxes, colour space, ink coverage, effective image resolution, rules, minimum sizes, residual transparency, QR codes | Skill `print`, before any order and after each rebuild |
 | `print-editorial` | Spread-by-spread layout review of a print piece: grid, hierarchy, measure, rhythm, white space, widows | Skill `print`, alongside `print-preflight` |
+| `landing-researcher` | Benchmark of converting pages + visual research from public galleries, consolidated in the landing's `pilotage/research-notes.md`; codes nothing | Skill `landing-page`, phase 0, in the background |
+| `landing-section-builder` | Builds or fixes one landing section (or a fix batch) in the files it is given only; several run in parallel on disjoint fragments, never commits | Skill `landing-page`, phases 4-7 |
+| `landing-reviewer-design` | Read-only web-design coherence review: headings, rhythm, materials, type, motion, responsive, buttons | Skill `landing-page`, phase 7 (in parallel) |
+| `landing-reviewer-brand` | Read-only brand review against `01-brand/` (voice, anti-AI, tokens, proof, audience, AI disclosure, rights), runs `lint-brand.py` | Skill `landing-page`, phase 7 (in parallel) |
+| `landing-reviewer-cro` | Read-only conversion review: narrative vs objections, CTA inventory, conversion block, honest urgency, proof, measurement | Skill `landing-page`, phase 7 (in parallel) |
+| `landing-reviewer-a11y` | Read-only WCAG 2.2 AA review in 14 points, grounded on the `qa-landing.py` measures; `a11y-auditor` stays the delivery gate | Skill `landing-page`, phase 7 (in parallel) |
 
 ---
 
@@ -320,6 +327,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 | `/modules` | Enable/disable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print). |
 | `/validate-setup` | Placeholder lint + sample generation + voice check. Writes `.setup-completed` on success. |
 | `/health-check` | Ongoing: verify env vars, MCP servers, hook wiring, cron state. Run monthly. |
+| `/new-landing` | Produce a conversion landing page with the `landing-page` playbook, from framing to a QA'd static HTML page. |
 
 ---
 
