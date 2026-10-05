@@ -41,7 +41,7 @@ Système complet : `../01-brand/style-guide.md`.
 ├── templates/                    ← composants partagés (header, footer) + galerie de templates
 │   ├── sections/                 ← bibliothèque de sections des landings : un fragment par mécanique, catalogue.html (+ README)
 │   ├── assets/                   ← tokens.css (généré depuis 01-brand/tokens.json), base.css, moteurs reveal / scroll / offer / forms / tracking
-│   ├── landing-pages/            ← 10 modèles de landing pages par objectif (+ README)
+│   ├── landing-pages/            ← 6 modèles de landing : specs YAML (specs/) et pages assemblées (+ README)
 │   └── lead-magnets/             ← 10 modèles d'outils interactifs avec capture (+ README)
 ├── scripts/assemble-landing.py   ← assemble une landing autonome depuis une spec et la bibliothèque de sections
 ├── scripts/qa-landing.py         ← QA mesurable d'une page (Playwright, 3 tailles d'écran + mouvement réduit)
@@ -50,12 +50,12 @@ Système complet : `../01-brand/style-guide.md`.
 
 ## Galerie de templates — partir d'un modèle, pas d'une page blanche
 
-`templates/` contient une galerie de modèles single-file prêts à décliner, alignés sur `sections-library.md` (mêmes tokens `{{BRAND_*}}`, mêmes classes) et sur les conventions des skills `landing-page` / `lead-magnet` (`{{FORM_ENDPOINT}}`, `data-track`, UTM/GA4) :
+`templates/` contient des modèles prêts à décliner, alignés sur les conventions des skills `landing-page` / `lead-magnet` (`{{FORM_ENDPOINT}}`, `data-track`, UTM/GA4) :
 
-- **`templates/landing-pages/`** — 10 modèles par objectif de conversion : démo B2B, essai SaaS, capture de lead magnet, webinar, prestation de service, comparateur vs concurrent, tarifs, vente long-form, one-pager local, waitlist/lancement. Tableau de choix dans `templates/landing-pages/README.md`.
-- **`templates/lead-magnets/`** — 10 outils interactifs (HTML/JS vanilla) avec gate de capture email : calculateur de ROI, diagnostic par score, quiz de positionnement, comparateur de scénarios, grader, checklist interactive, générateur de brief, estimateur de budget, simulateur avant/après, mini-benchmark sectoriel. Tableau de choix dans `templates/lead-magnets/README.md`.
+- **`templates/landing-pages/`** : 6 modèles de landing, un par archétype (formation en cohorte, vente longue en ligne, capture d'un lead magnet, démo B2B, prestation sur devis, événement). Chacun est une spec (`specs/<modèle>.yaml`) qui assemble des sections de la bibliothèque `templates/sections/`, et la page autonome qui en sort. Tableau de choix et méthode d'adaptation dans `templates/landing-pages/README.md`.
+- **`templates/lead-magnets/`** : 10 outils interactifs (HTML/JS vanilla) avec gate de capture email : calculateur de ROI, diagnostic par score, quiz de positionnement, comparateur de scénarios, grader, checklist interactive, générateur de brief, estimateur de budget, simulateur avant/après, mini-benchmark sectoriel. Tableau de choix dans `templates/lead-magnets/README.md`.
 
-Règle d'usage : **copier le modèle vers `landing-pages/<slug>/` ou `lead-magnets/outils-web/<slug>/`**, puis dérouler la skill correspondante — le modèle fournit structure et logique, il ne dispense d'aucune étape (brief, copy, tokens, tracking, brand-check). Les contenus d'exemple (« Meridian Conseil », données et formules placeholder) sont fictifs et ne se publient jamais tels quels.
+Règle d'usage : **landing : copier la spec vers `landing-pages/<slug>/pilotage/page.yaml` et l'assembler (`scripts/assemble-landing.py`) ; outil : copier le modèle vers `lead-magnets/outils-web/<slug>/`**, puis dérouler la skill correspondante. Le modèle fournit structure et logique, il ne dispense d'aucune étape (brief, copy, tokens, tracking, brand-check). Les contenus d'exemple (une marque inventée par modèle de landing, « Meridian Conseil » pour les outils, données et formules placeholder) sont fictifs et ne se publient jamais tels quels.
 
 ## Règle n°1 — réutiliser avant de créer
 

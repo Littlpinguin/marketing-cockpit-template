@@ -29,17 +29,26 @@
                       slug), optin (true when an input[data-optin] box is
                       ticked, false otherwise)
      begin_checkout   submit of a form[data-track="begin_checkout"] (the
-                      conversion ticket). value, currency, formula
+                      conversion ticket). value, currency, formula, and
+                      items (GA4 array) when the form carries
+                      data-checkout-items (JSON, written by bundle-receipt)
      form_demo_submit sent INSTEAD of the form's own event when its action
                       is still a {{MARKER}} (or the form carries data-demo,
                       written by forms.js, which then sends nothing): a
                       demonstration submission never counts as a lead or a
                       checkout. form_event (the event it replaces),
                       form_id, and the parameters of that event
-     select_content   choice gate: content_type, content_id
+     select_content   choice gate (content_type, content_id); also pushed
+                      through window.landingTrack by sections: recommender
+                      (content_type = its param, content_id = the offer,
+                      answers = "question:answer,…"), work-wall filter
+                      (content_type "filtre"), demonstrator request
+     viewer_open      viewer.js opened: content_type, content_id, pages
      faq_open         a details[data-track="faq_open"] opened: question
      <any name>       any other data-track value on a link or button: pushed
-                      on click under that name
+                      on click under that name; a section may also call
+                      window.landingTrack(name, params) (demonstrator:
+                      its track_event, demo_calculate by default)
    Extra parameters: every data-track-<name>="value" attribute on the tracked
    element is sent as <name>: value (dashes become underscores). A form
    exposes its current formula through a checked radio input[name="formule"]
@@ -166,6 +175,17 @@
     }
     if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
       data.value = Number(formula.getAttribute('data-price'));
+    }
+    // GA4 items of the checkout, as JSON written by the section (bundle-receipt:
+    // the articles ticked, or the pack). Malformed or empty: no items.
+    if (name === 'begin_checkout') {
+      var rawItems = form.getAttribute('data-checkout-items');
+      if (rawItems) {
+        try {
+          var list = JSON.parse(rawItems);
+          if (Array.isArray(list) && list.length) data.items = list;
+        } catch (err) { /* not JSON: leave items out */ }
+      }
     }
     if (isDemo(form)) {
       data.form_event = name;

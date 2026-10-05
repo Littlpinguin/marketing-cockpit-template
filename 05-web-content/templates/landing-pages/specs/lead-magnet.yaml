@@ -28,6 +28,9 @@
 #               et décochée ; la phrase sous le bouton dit ce qui suit.
 #   contenu     Qu'y a-t-il dedans, exactement : les six relances sur un rail,
 #               de J+1 à J+45, et une vraie page du kit en spécimen.
+#   preuve      Est-ce que relancer tôt change vraiment quelque chose : un
+#               chiffre, un graphique en barres, une source (evidence-chart,
+#               données fictives marquées comme telles).
 #   pour-qui    Est-ce pour moi : clients professionnels oui, particuliers non.
 #   auteures    Qui l'a écrit, est-ce sérieux : la praticienne et l'avocate.
 #   questions   Les dernières questions : gratuité, confirmation, format, données.
@@ -165,6 +168,26 @@ sections:
         </div></div>
       specimen_badge: "Extrait"
       specimen_caption: "Le modèle 3, page 6 du kit."
+
+  - use: evidence-chart
+    id: preuve
+    slots:
+      title: 'Relancer dès J+1<br><span class="hl">raccourcit le retard de 32 jours</span>'
+      intro: >-
+        Sur les factures suivies en 2026, la date de la première relance a pesé
+        plus lourd que son ton : plus elle part tôt, plus le virement arrive vite.
+      measure: "Retard moyen de paiement après l’échéance, en jours"
+      bars:
+        - {label: "Relance dès J+1", value: "9 j", bar: 22, focus: true}
+        - {label: "Première relance à J+8", value: "14 j", bar: 34}
+        - {label: "Première relance à J+30", value: "26 j", bar: 63}
+        - {label: "Aucune relance écrite", value: "41 j", bar: 100}
+      focus_mark: circle
+      reading: >-
+        Lecture : une facture relancée le lendemain de son échéance est réglée
+        en moyenne 9 jours après celle-ci.
+      source: "Source : 1 200 factures suivies par Encaisse, 2026 (données fictives)"
+      poster: ""                   # chiffre géant décoratif : laissé vide
 
   - use: for-whom
     id: pour-qui

@@ -12,12 +12,12 @@
     "intro": {"type": "text", "doc": "Chapô facultatif : d’où viennent les avis (vide : rien).", "example": "Des avis recueillis à la fin de chaque cohorte, publiés avec l’accord de leurs auteurs."},
     "summary": {"type": "object", "doc": "Ligne de synthèse facultative (null : rien). value : le chiffre en grand (note moyenne ou nombre d’avis) ; detail : ce qu’il mesure et sur combien de personnes ; source : d’où il vient, moins de 12 mots. Jamais de note sans effectif ni source.", "fields": {"value": "chiffre", "detail": "ce qu’il mesure", "source": "source courte"}, "example": {"value": "4,6 sur 5", "detail": "note moyenne donnée par 38 participants en fin de parcours", "source": "Questionnaire de fin de cohorte 2025 et 2026 (chiffres fictifs)"}},
     "pull": {"type": "object", "doc": "Citation phare facultative, en grand dans la colonne de gauche (null : rien). Un avis réel et court, qui n’est pas repris dans le mur.", "fields": {"quote": "citation courte", "name": "nom", "role": "fonction et contexte", "initials": "deux lettres"}, "example": {"quote": "Le bilan nous sert maintenant à choisir nos fournisseurs. Nous le rouvrons à chaque appel d’offres.", "name": "Valérie N.", "role": "Directrice générale, fabricant de luminaires (avis fictif)", "initials": "VN"}},
-    "quotes": {"type": "list", "doc": "Les avis, dans l’ordre d’affichage (les plus parlants d’abord). quote : la citation exacte ; name, role : signature (role en moins de 12 mots) ; initials : avatar sans photo ; result : le résultat en quelques mots, facultatif ; video : facultative, {src (fichier .mp4 : sans JavaScript, le lien y mène), poster (image, sinon une composition aux couleurs de la marque), duration, captions (.vtt), transcript (texte)}.", "fields": {"result": "résultat court ou vide", "quote": "citation", "name": "nom", "role": "fonction et contexte", "initials": "deux lettres", "video": "objet facultatif {src, poster, duration, captions, transcript}"}, "example": [
+    "quotes": {"type": "list", "doc": "Les avis, dans l’ordre d’affichage (les plus parlants d’abord). quote : la citation exacte ; name, role : signature (role en moins de 12 mots) ; initials : avatar sans photo ; result : le résultat en quelques mots, facultatif ; video : facultative, {src (fichier .mp4 : sans JavaScript, le lien y mène), poster (image, sinon une composition aux couleurs de la marque), duration, captions (.vtt), transcript (texte)}, ouverte dans la visionneuse, sa transcription dépliable sous l’avis. Toujours un vrai fichier publié avec la page : une adresse d’exemple ouvrirait une visionneuse vide (l’exemple n’en porte donc aucune).", "fields": {"result": "résultat court ou vide", "quote": "citation", "name": "nom", "role": "fonction et contexte", "initials": "deux lettres", "video": "objet facultatif {src, poster, duration, captions, transcript}"}, "example": [
       {"result": "Bilan remis à la banque en mai", "quote": "Notre banque conditionnait un prêt à un bilan d’émissions. Nous l’avons remis avec ses sources trois semaines avant le comité, sans aucune relance de leur part.", "name": "Claire D.", "role": "Gérante, imprimerie, 23 salariés (avis fictif)", "initials": "CD"},
-      {"result": "Les achats enfin triés par famille", "quote": "Le grand livre faisait 4 000 lignes. L’atelier sur les achats nous a appris à le trier par famille en une matinée, et les achats sont devenus notre premier poste.", "name": "Karim B.", "role": "Directeur financier, négoce de matériaux (avis fictif)", "initials": "KB", "video": {"src": "https://www.example.com/videos/temoignage-karim.mp4", "poster": "", "duration": "1 min 48", "captions": "https://www.example.com/videos/temoignage-karim.vtt", "transcript": "Avant le parcours, notre bilan tenait sur une estimation de notre expert-comptable. Pendant l’atelier sur les achats, nous avons trié le grand livre par famille, et les achats sont apparus comme notre premier poste, loin devant l’énergie. Depuis, nous demandons leurs facteurs d’émission à nos dix plus gros fournisseurs."}},
+      {"result": "Les achats enfin triés par famille", "quote": "Le grand livre faisait 4 000 lignes. L’atelier sur les achats nous a appris à le trier par famille en une matinée, et les achats sont devenus notre premier poste.", "name": "Karim B.", "role": "Directeur financier, négoce de matériaux (avis fictif)", "initials": "KB"},
       {"result": "Trois sites sur la même méthode", "quote": "Chaque site calculait à sa façon. Le modèle de collecte a mis tout le monde sur les mêmes facteurs, et les écarts entre usines veulent enfin dire quelque chose.", "name": "Julien M.", "role": "Responsable QSE, agroalimentaire, trois sites (avis fictif)", "initials": "JM"},
       {"result": "", "quote": "J’avais peur de ne pas suivre sans formation scientifique. Les ateliers partent de nos factures, et l’animatrice reprend chaque poste avec nous jusqu’à ce qu’il soit clair.", "name": "Nadia F.", "role": "Assistante de direction, cabinet d’architectes (avis fictif)", "initials": "NF"},
-      {"result": "Le questionnaire du donneur d’ordre rempli en deux jours", "quote": "Notre client principal envoie le même questionnaire chaque année. Cette fois, toutes les réponses étaient déjà dans le dossier du parcours, sources comprises.", "name": "Thierry L.", "role": "Dirigeant, sous-traitant automobile, 60 salariés (avis fictif)", "initials": "TL", "video": {"src": "https://www.example.com/videos/temoignage-thierry.mp4", "poster": "", "duration": "2 min 05", "captions": "https://www.example.com/videos/temoignage-thierry.vtt", "transcript": "Chaque année, notre donneur d’ordre nous envoie un questionnaire sur nos émissions. Nous y passions une semaine, en estimant presque tout. Cette année, j’ai ouvert le dossier du parcours et recopié les chiffres avec leurs sources : deux jours, et aucune question en retour."}},
+      {"result": "Le questionnaire du donneur d’ordre rempli en deux jours", "quote": "Notre client principal envoie le même questionnaire chaque année. Cette fois, toutes les réponses étaient déjà dans le dossier du parcours, sources comprises.", "name": "Thierry L.", "role": "Dirigeant, sous-traitant automobile, 60 salariés (avis fictif)", "initials": "TL"},
       {"result": "Deux références passées de l’avion au bateau", "quote": "Le calcul a montré que deux références arrivaient par avion par simple habitude. Nous les faisons venir par bateau depuis septembre, avec un mois de stock en plus.", "name": "Émilie G.", "role": "Responsable logistique, cosmétiques (avis fictif)", "initials": "ÉG"},
       {"result": "Un plan d’action chiffré présenté au conseil", "quote": "Les mesures classées par tonnes évitées et par coût, c’est exactement ce que notre conseil d’administration attendait pour trancher.", "name": "Bernard O.", "role": "Président, coopérative agricole (avis fictif)", "initials": "BO"},
       {"result": "", "quote": "Le format en groupe m’a surprise. Entendre comment une boulangerie traitait ses déplacements m’a débloquée pour nos tournées d’équipes.", "name": "Sophie A.", "role": "Gérante, entreprise de nettoyage, 85 salariés (avis fictif)", "initials": "SA"},
@@ -213,7 +213,8 @@
 
 /* Video: a compact row (thumbnail, label, duration) under the quote, opened
    by the viewer engine; a plain link to the file without JavaScript. Without
-   a poster, a composition in the brand colours: initials and a play disc. */
+   a poster, a composition in the brand colours: the initials on the left and
+   the play disc in the bottom right corner, never on top of each other. */
 .s-wall__video {
   display: flex;
   align-items: center;
@@ -234,8 +235,8 @@
   position: relative;
   display: grid;
   flex: none;
-  place-items: center end;
-  padding-right: 14px;
+  place-items: center start;
+  padding-left: 14px;
   width: clamp(112px, 34%, 148px);
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -261,12 +262,12 @@
 
 .s-wall__play {
   position: absolute;
-  top: calc(50% - 16px);
-  left: 10px;
+  right: 8px;
+  bottom: 8px;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--ink);
   color: var(--paper);
@@ -274,8 +275,8 @@
 }
 
 .s-wall__play svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   margin-left: 2px;
 }
 

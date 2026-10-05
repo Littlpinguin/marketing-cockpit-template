@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Le kit de relance des factures impayées">
 <meta property="og:description" content="Six modèles d’emails, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.">
-<meta name="generator" content="assemble-landing.py · sha256:7317cdb37e84c18e3aeffc9c13123c0791e7a814b03bd14ec8ff4c51af95b404">
+<meta name="generator" content="assemble-landing.py · sha256:a5d5e488383a8aa4ccdb574fcbec2294f33a1596f5783d3a73bda836efed9de0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1187,6 +1187,292 @@ textarea.field__input {
     scroll-behavior: auto !important;
   }
 }
+
+/* === notes en marge : bloc réservé (chapters, notes, jauge) === */
+
+/* ---------- 7. Margin notes: the source of a figure, in the margin ----------
+   principe : Tufte CSS (Dave Liepmann et contributeurs), MIT. The note is
+   written inside the sentence it documents and floats into the right
+   margin, aligned with the line of its call; the checkbox toggle of Tufte
+   CSS (badly announced by screen readers) is not taken.
+   Markup, inside a paragraph or a list item, right after the figure or at
+   the end of the sentence (phrasing content only, links allowed):
+     <span class="note"><span class="note__body" role="note">Source…</span></span>
+   The call (in the text) and the number (in front of the note) are drawn
+   by one page-wide counter, hidden from assistive tech (alt text ""):
+   the note itself is read in place, announced as a note.
+   - From 1101 px, inside a .wrap--notes: the text column keeps a measure
+     of --note-measure and the note sits beside it, at running-text size
+     (a note is often 12 words or more: never in small type).
+   - Elsewhere (narrow screens, or a section without .wrap--notes): the
+     note opens as a numbered block right under the line of its call.
+   No script, nothing moves, identical in reduced motion. */
+:root {
+  --note-w: 20rem;
+  --note-gap: 2.5rem;
+  --note-measure: 44rem;
+}
+
+body {
+  counter-reset: landing-note;
+}
+
+.note {
+  counter-increment: landing-note;
+}
+
+.note::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  position: relative;
+  top: -0.5em;
+  margin-inline: 0.12em 0.18em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: max(12px, 0.7em);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.note__body {
+  display: block;
+  margin-block: 0.5em 0.75em;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: start;
+  text-transform: none;
+  text-wrap: pretty;
+}
+
+.note__body::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  margin-inline-end: 0.6em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+@media (min-width: 1101px) {
+  /* The column leaves room: the text keeps its measure on the left, the
+     notes run beside it. Text blocks that carry their own max-width
+     (intro, lede) take the full column so that every note lines up. */
+  .wrap--notes {
+    padding-inline-end: max(calc(var(--note-w) + var(--note-gap)), calc(var(--wrap) - var(--note-measure)));
+  }
+
+  .wrap--notes .section-head,
+  .wrap--notes .section-intro,
+  .wrap--notes .lede {
+    max-width: none;
+  }
+
+  .wrap--notes .note__body {
+    float: right;
+    clear: right;
+    width: var(--note-w);
+    margin-block: 0.15em 0.9em;
+    margin-inline: 0 calc(-1 * (var(--note-w) + var(--note-gap)));
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    line-height: var(--lh-body);
+  }
+}
+
+/* ---------- 8. Narrative gauge (journey, program: field gauge) ----------
+   Where the reader is, in the unit of the story (« Semaine 3 sur 6 »).
+   Each step carries its label (HTML of a phrase, the value in <b>).
+   Decorative double of the step's moment and title: always in a container
+   marked aria-hidden="true" data-qa-decor, never the only carrier of an
+   information.
+   - .gauge--step: the label of one step, before its moment, in the list.
+     Shown wherever the scroll theatre does not run (small screen, reduced
+     motion, short screen, no script); the section hides it under .sc-pin.
+   - .gauge--live: one label in the left margin, read bottom to top like
+     the spine of a book, holding one .gauge__label per step. Hidden by
+     default; under .sc-pin the section shows it and reveals the label of
+     the current step (data-active or data-reached, written by scroll.js),
+     matched by rank in CSS: no script of its own. */
+.gauge {
+  display: none;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.gauge b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.gauge--step {
+  display: inline;
+  color: var(--ink);
+}
+
+.gauge--step::after {
+  content: "·";
+  content: "·" / "";
+  margin-inline: 0.6em;
+  color: var(--muted);
+}
+
+.gauge--live {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.gauge--live .gauge__label {
+  display: none;
+}
+
+.gauge--live b {
+  margin-inline: 0.2em;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* The hairline that carries the label, as on an altimeter. */
+.gauge--live::after {
+  content: "";
+  display: inline-block;
+  inline-size: 56px;
+  block-size: 1px;
+  margin-inline-start: 16px;
+  vertical-align: middle;
+  background: var(--line-strong);
+}
+
+/* === fin notes en marge === */
+
+/* === annotations à main levée : bloc réservé (annotate.js) === */
+/* Hand-drawn annotations: <mark data-annotate="underline | highlight |
+   strike | circle | box | bracket">. principe : Rough Notation, MIT (see
+   annotate.js). Without the engine (no JavaScript, or a page that does not
+   load annotate.js): a sober emphasis in the highlight colour, never the
+   browser's yellow <mark>. With it (html.an-on): the drawn stroke replaces
+   that emphasis. Two per page at most. */
+mark:where([data-annotate]) {
+  background: none;
+  color: inherit;
+}
+
+[data-annotate] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--hl);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+[data-annotate="strike"] {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.07em;
+}
+
+/* A highlighted word is read in ink: muted text on a tint would fall under
+   4.5:1. */
+[data-annotate="highlight"] {
+  text-decoration-line: none;
+  background-color: var(--tint);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* A circle or a frame never breaks across two lines (1 to 3 words), and
+   keeps the neighbouring words out of its stroke (set with or without the
+   engine, so that nothing shifts when it starts). */
+[data-annotate="circle"],
+[data-annotate="box"] {
+  margin-inline: 0.22em;
+  white-space: nowrap;
+}
+
+[data-annotate="bracket"] {
+  margin-inline: 0.3em;
+}
+
+/* Engine running: the element hosts its stroke (stacking context, so that
+   the highlighter passes under the letters and over any card). */
+.an-on [data-annotate] {
+  position: relative;
+  z-index: 0;
+  text-decoration-line: none;
+  background-color: transparent;
+}
+
+/* max-width: none, or the base svg rule (max-width: 100%) collapses the
+   overlay to 0 px when the phrase wraps (the containing block of a split
+   inline has no width), and a 0 px SVG is not painted. */
+.an-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 1px;
+  max-width: none;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.an-svg path {
+  fill: none;
+  stroke: var(--hl);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-annotate="highlight"] > .an-svg {
+  z-index: -1;
+}
+
+[data-annotate="highlight"] > .an-svg path {
+  stroke-linecap: butt;
+  stroke-opacity: 0.2;
+}
+
+.band-dark [data-annotate="highlight"] > .an-svg path {
+  stroke-opacity: 0.34;
+}
+
+/* Drawn once: the dash runs from hidden to whole (pathLength="1"). */
+[data-annotate].an-pending > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+[data-annotate].is-drawn > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--an-dur, 0.8s) var(--ease) var(--an-delay, 0s);
+}
+
+@media (forced-colors: active) {
+  .an-svg path {
+    stroke: CanvasText;
+  }
+}
+/* === fin annotations === */
 /* ---- section : topbar ---- */
 .s-topbar {
   position: sticky;
@@ -1195,6 +1481,21 @@ textarea.field__input {
   height: var(--topbar-h);
   border-bottom: 1px solid var(--line);
   background: var(--brand-light);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+/* Scrolled: the bar lifts off the page (M10, without blur). */
+.s-topbar[data-scrolled] {
+  box-shadow: 0 12px 28px -24px var(--brand-shadow);
+}
+
+/* Hidden while reading down: off screen, and inert (script), so that neither
+   the logo nor the button can take the focus or reach a screen reader. */
+.s-topbar[data-hidden] {
+  transform: translateY(calc(-100% - 16px));
+  box-shadow: none;
 }
 
 .s-topbar__inner {
@@ -1230,6 +1531,28 @@ textarea.field__input {
   min-height: 44px;
   padding: 8px 22px;
   font-size: 0.9375rem;
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+/* The button steps aside (hero button, conversion block or final CTA on
+   screen; on a small screen, the mobile bar shown): transparent AND inert
+   (script), never just transparent. */
+.s-topbar[data-cta-off] .s-topbar__cta.btn {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-topbar,
+  .s-topbar__cta.btn {
+    transition: none;
+  }
+
+  .s-topbar[data-cta-off] .s-topbar__cta.btn {
+    transform: none;
+  }
 }
 /* ---- section : hero ---- */
 .s-hero {
@@ -1531,6 +1854,224 @@ textarea.field__input {
 
   .s-program__text {
     grid-column: 2;
+  }
+}
+/* Narrative gauge (optional field gauge of each module; the .gauge
+   component lives in base.css). With motion on a large screen, a track as
+   tall as the list, in the left margin, holds one label centred in the
+   viewport: the label of the last module reached by the reading line
+   (data-reached, written by scroll.js on the rail), matched by rank
+   without a script (twelve modules at most). Elsewhere: each module shows
+   its own label before its date. */
+.s-program__run {
+  position: relative;
+}
+
+.s-program__track {
+  display: none;
+}
+
+.sc-pin .s-program__item .gauge--step {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+  .sc-pin .s-program__track {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: calc(100% + 20px);
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .sc-pin .s-program__gauge {
+    display: block;
+    position: sticky;
+    top: 50vh;
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.s-program__run:not(:has([data-reached="true"])) .s-program__gauge .gauge__label:first-child,
+.s-program__run:has(.s-program__item:last-child[data-reached="true"]) .s-program__gauge .gauge__label:last-child,
+.s-program__run:has(.s-program__item:nth-child(1)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(1),
+.s-program__run:has(.s-program__item:nth-child(2)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(2),
+.s-program__run:has(.s-program__item:nth-child(3)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(3),
+.s-program__run:has(.s-program__item:nth-child(4)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(4),
+.s-program__run:has(.s-program__item:nth-child(5)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(5),
+.s-program__run:has(.s-program__item:nth-child(6)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(6),
+.s-program__run:has(.s-program__item:nth-child(7)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(7),
+.s-program__run:has(.s-program__item:nth-child(8)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(8),
+.s-program__run:has(.s-program__item:nth-child(9)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(9),
+.s-program__run:has(.s-program__item:nth-child(10)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(10),
+.s-program__run:has(.s-program__item:nth-child(11)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(11),
+.s-program__run:has(.s-program__item:nth-child(12)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(12) {
+  display: inline;
+}
+/* ---- section : evidence-chart ---- */
+/* The poster figure is cut by the bottom edge of the section. */
+.s-chart {
+  overflow: clip;
+}
+
+.s-chart__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+}
+
+.s-chart__aside {
+  display: flex;
+  flex-direction: column;
+}
+
+.s-chart__head {
+  margin-bottom: 0;
+}
+
+/* V10 : un chiffre en affiche, coupé par le bord de la section. Static (a
+   gradient clipped to text is lost on a transformed element). The box
+   ends 0.17em under the section's edge: about a fifth of the digits is
+   cut, the rest reads whole. The negative inline margin lines the ink of
+   the first glyph up with the title (side bearing of a 12rem glyph). */
+.s-chart__poster {
+  align-self: flex-start;
+  margin-top: auto;
+  margin-inline-start: -0.05em;
+  margin-bottom: calc(-1 * var(--section-gap) - 0.17em);
+  padding-top: 32px;
+  font-size: clamp(8rem, 3rem + 10vw, 15rem);
+  line-height: 0.8;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: transparent;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.s-chart__figure {
+  display: grid;
+  gap: 22px;
+  align-self: start;
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+}
+
+.s-chart__measure {
+  font-weight: 700;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.s-chart__bars {
+  display: grid;
+  gap: clamp(16px, 0.7rem + 0.6vw, 22px);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.s-chart__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label value"
+    "track track";
+  gap: 8px 16px;
+  align-items: baseline;
+}
+
+.s-chart__label {
+  grid-area: label;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.s-chart__value {
+  grid-area: value;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.s-chart__track {
+  grid-area: track;
+  display: block;
+  height: 14px;
+  overflow: hidden;
+  border-radius: calc(var(--radius-input) / 4);
+  background: var(--surface-2);
+}
+
+/* The bar is the value itself: its length is --v % of the track. */
+.s-chart__fill {
+  display: block;
+  width: calc(var(--v, 100) * 1%);
+  max-width: 100%;
+  height: 100%;
+  background: var(--line-strong);
+  transform-origin: 0 50%;
+  transition: transform 0.9s var(--ease);
+  transition-delay: calc(var(--rv-i, 0) * 0.12s + 0.15s);
+}
+
+/* The one bar the title speaks of: ink label, bold value, highlight fill.
+   Weight carries the emphasis too, never the colour alone. */
+.s-chart__row[data-focus] .s-chart__label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.s-chart__row[data-focus] .s-chart__value {
+  color: var(--hl);
+  font-size: 1.25em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.s-chart__row[data-focus] .s-chart__fill {
+  background: var(--hl);
+}
+
+/* Bars grow when their row enters (reveal.js); final width without the
+   engine, without JavaScript and in reduced motion. */
+.rv-on .s-chart__row:not(.is-in) .s-chart__fill {
+  transform: scaleX(0);
+}
+
+.s-chart__reading {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-chart__source {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .s-chart__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .s-chart__head {
+    margin-bottom: var(--head-gap);
+  }
+
+  .s-chart__poster {
+    display: none;
+  }
+
+  .s-chart__figure {
+    max-width: 760px;
   }
 }
 /* ---- section : for-whom ---- */
@@ -1986,45 +2527,48 @@ textarea.field__input {
         <h2 id="contenu-titre" class="section-title">Six relances <span class="hl">de J+1 à J+45</span></h2>
         <p class="section-intro">Chaque modèle monte d’un cran. Le ton reste courtois, la demande devient plus précise.</p>
       </div>
-      <ol class="s-program__list" role="list" data-rail>
-        <li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+1</p>
-          <h3 class="s-program__title">Le rappel aimable</h3>
-          <p class="s-program__duration">4 lignes</p>
-          <p class="s-program__text">Une ligne pour signaler l’échéance, la facture en pièce jointe.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+8</p>
-          <h3 class="s-program__title">La relance claire</h3>
-          <p class="s-program__duration">6 lignes</p>
-          <p class="s-program__text">Le montant dû et le moyen de paiement, sans un mot de reproche.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+15</p>
-          <h3 class="s-program__title">La relance ferme</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">Une date de règlement précise et le rappel des pénalités prévues à vos conditions générales.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+22</p>
-          <h3 class="s-program__title">L’appel et l’email qui le résume</h3>
-          <p class="s-program__duration">1 script</p>
-          <p class="s-program__text">Le déroulé d’un appel de cinq minutes et l’email qui confirme ce qui a été convenu.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+30</p>
-          <h3 class="s-program__title">Le dernier rappel</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">L’annonce de la mise en demeure et le rappel de l’indemnité forfaitaire de 40 € due par un client professionnel en retard.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+45</p>
-          <h3 class="s-program__title">La mise en demeure</h3>
-          <p class="s-program__duration">1 lettre</p>
-          <p class="s-program__text">La lettre recommandée prête à compléter, dernière étape avant une injonction de payer.</p>
-        </li>
-      </ol>
+      <div class="s-program__run">
+        <ol class="s-program__list" role="list" data-rail>
+          <li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">J+1</p>
+            <h3 class="s-program__title">Le rappel aimable</h3>
+            <p class="s-program__duration">4 lignes</p>
+            <p class="s-program__text">Une ligne pour signaler l’échéance, la facture en pièce jointe.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">J+8</p>
+            <h3 class="s-program__title">La relance claire</h3>
+            <p class="s-program__duration">6 lignes</p>
+            <p class="s-program__text">Le montant dû et le moyen de paiement, sans un mot de reproche.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">J+15</p>
+            <h3 class="s-program__title">La relance ferme</h3>
+            <p class="s-program__duration">8 lignes</p>
+            <p class="s-program__text">Une date de règlement précise et le rappel des pénalités prévues à vos conditions générales.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">J+22</p>
+            <h3 class="s-program__title">L’appel et l’email qui le résume</h3>
+            <p class="s-program__duration">1 script</p>
+            <p class="s-program__text">Le déroulé d’un appel de cinq minutes et l’email qui confirme ce qui a été convenu.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">J+30</p>
+            <h3 class="s-program__title">Le dernier rappel</h3>
+            <p class="s-program__duration">8 lignes</p>
+            <p class="s-program__text">L’annonce de la mise en demeure et le rappel de l’indemnité forfaitaire de 40 € due par un client professionnel en retard.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">J+45</p>
+            <h3 class="s-program__title">La mise en demeure</h3>
+            <p class="s-program__duration">1 lettre</p>
+            <p class="s-program__text">La lettre recommandée prête à compléter, dernière étape avant une injonction de payer.</p>
+          </li>
+        </ol>
+        
+      </div>
     </div>
     <figure class="s-program__specimen">
       <div class="s-program__figure">
@@ -2035,6 +2579,43 @@ textarea.field__input {
   </div>
 </section>
 <!-- /section:contenu -->
+<!-- section:preuve -->
+<section id="preuve" class="s-chart section" aria-labelledby="preuve-titre" data-section="evidence-chart">
+  <div class="wrap s-chart__grid">
+    <div class="s-chart__aside">
+      <div class="section-head s-chart__head">
+        <h2 id="preuve-titre" class="section-title">Relancer dès J+1<br><span class="hl">raccourcit le retard de 32 jours</span></h2>
+        <p class="section-intro">Sur les factures suivies en 2026, la date de la première relance a pesé plus lourd que son ton : plus elle part tôt, plus le virement arrive vite.</p>
+      </div>
+      
+    </div>
+    <figure class="s-chart__figure card">
+      <figcaption class="s-chart__measure">Retard moyen de paiement après l’échéance, en jours</figcaption>
+      <ol class="s-chart__bars" role="list" data-reveal-group>
+        <li class="s-chart__row" data-focus style="--v: 22" data-reveal="fade">
+          <span class="s-chart__label">Relance dès J+1</span>
+          <span class="s-chart__value" data-annotate="circle">9 j</span>
+          <span class="s-chart__track" aria-hidden="true"><span class="s-chart__fill"></span></span>
+        </li><li class="s-chart__row" style="--v: 34" data-reveal="fade">
+          <span class="s-chart__label">Première relance à J+8</span>
+          <span class="s-chart__value">14 j</span>
+          <span class="s-chart__track" aria-hidden="true"><span class="s-chart__fill"></span></span>
+        </li><li class="s-chart__row" style="--v: 63" data-reveal="fade">
+          <span class="s-chart__label">Première relance à J+30</span>
+          <span class="s-chart__value">26 j</span>
+          <span class="s-chart__track" aria-hidden="true"><span class="s-chart__fill"></span></span>
+        </li><li class="s-chart__row" style="--v: 100" data-reveal="fade">
+          <span class="s-chart__label">Aucune relance écrite</span>
+          <span class="s-chart__value">41 j</span>
+          <span class="s-chart__track" aria-hidden="true"><span class="s-chart__fill"></span></span>
+        </li>
+      </ol>
+      <p class="s-chart__reading">Lecture : une facture relancée le lendemain de son échéance est réglée en moyenne 9 jours après celle-ci.</p>
+      <p class="s-chart__source">Source : 1 200 factures suivies par Encaisse, 2026 (données fictives)</p>
+    </figure>
+  </div>
+</section>
+<!-- /section:preuve -->
 <!-- section:pour-qui -->
 <section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
   <div class="wrap">
@@ -2598,6 +3179,346 @@ textarea.field__input {
 })();
 </script>
 <script>
+/* ---- annotate.js ---- */
+/* ==========================================================================
+   annotate.js · hand-drawn annotations on a word or a phrase (optional engine)
+   --------------------------------------------------------------------------
+   principe : Rough Notation (Preet Shihn, github.com/rough-stuff/rough-notation), MIT.
+   The idea is taken and rewritten: an irregular SVG stroke laid on the text
+   and drawn once when it comes into view. Here the irregularity is seeded by
+   the annotated text (the same stroke on every load), there is no
+   dependency, and the stroke takes the colour of the tokens (--hl, never the
+   accent of the conversion button).
+
+   Contract (markup, in any slot that accepts HTML):
+     <mark data-annotate="underline">two words</mark>
+       underline   a line under the text, one per line of text
+       highlight   a marker band behind the text, one per line of text
+       strike      a line through the text, one per line (if the meaning
+                   "removed" matters, say it in words or use <s>)
+       circle      a hand ellipse around 1 to 3 words (they never wrap)
+       box         a hand frame around 1 to 3 words (they never wrap)
+       bracket     a bracket on each side of the phrase
+     Any inline element works (<mark>, <strong>, <s>, <span>). An unknown
+     value falls back to underline.
+   Classes written:
+     html.an-on                  engine running: base.css drops the no-JS
+                                 emphasis, the drawn stroke replaces it
+     [data-annotate].an-pending  stroke laid out, dash hidden, about to draw
+     [data-annotate].is-drawn    stroke drawn (once, ~0.8 s)
+     svg.an-svg                  decorative overlay inside the element,
+                                 aria-hidden: the text itself is unchanged
+   Dosage: two annotations per page at most; never in a title that already
+   carries a .hl segment; circle and box on 1 to 3 words.
+   Loading: declared by evidence-chart and quote-interlude; anywhere else,
+   add `engines: [annotate]` to the page spec.
+   Without JavaScript (or on a page that does not load this engine): base.css
+   gives a sober emphasis in --hl, never the browser's yellow <mark>.
+   Under prefers-reduced-motion, or without IntersectionObserver: strokes are
+   placed at once, without drawing. Strokes are laid out again (never drawn
+   again) when the lines change: resize, web fonts loaded, a part revealed by
+   the choice gate, a transform that ends (reveal entries).
+   Styles: base.css, reserved block "annotations à main levée".
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingAnnotate) return;
+  window.__landingAnnotate = true;
+
+  var SHAPES = { underline: 1, highlight: 1, strike: 1, circle: 1, box: 1, bracket: 1 };
+  var NS = 'http://www.w3.org/2000/svg';
+  var root = document.documentElement;
+
+  /* ---- seeded randomness: the same text always gets the same stroke ---- */
+  function hash(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function random(seed) { // mulberry32
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  var items = [];
+  var seen = {};
+  Array.prototype.forEach.call(document.querySelectorAll('[data-annotate]'), function (el) {
+    var type = (el.getAttribute('data-annotate') || '').trim().toLowerCase();
+    if (!SHAPES[type]) type = 'underline';
+    var key = type + '|' + (el.textContent || '').replace(/\s+/g, ' ').trim();
+    seen[key] = (seen[key] || 0) + 1;
+    items.push({ el: el, type: type, seed: hash(key + '|' + seen[key]), svg: null, drawn: false, waiting: false });
+  });
+  if (!items.length) return;
+
+  root.classList.add('an-on');
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var animate = !reduce && 'IntersectionObserver' in window;
+
+  /* ---- geometry ---- */
+  function r1(v) { return Math.round(v * 10) / 10; }
+  function pt(p) { return r1(p[0]) + ' ' + r1(p[1]); }
+
+  // Catmull-Rom spline through the points, written as cubic Béziers.
+  function spline(points) {
+    var d = 'M' + pt(points[0]);
+    for (var i = 0; i < points.length - 1; i++) {
+      var p0 = points[i - 1] || points[i];
+      var p1 = points[i];
+      var p2 = points[i + 1];
+      var p3 = points[i + 2] || p2;
+      d += 'C' + pt([p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6]) +
+        ' ' + pt([p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6]) +
+        ' ' + pt(p2);
+    }
+    return d;
+  }
+
+  // The element's line boxes, in the coordinates of its SVG overlay. An
+  // ancestor scale (a reveal entry still running) is divided out; the final
+  // layout is redone when the transform ends.
+  function lines(item) {
+    var el = item.el;
+    var box = el.getBoundingClientRect();
+    var scale = el.offsetWidth ? box.width / el.offsetWidth : 1;
+    if (!(scale > 0.2 && scale < 5)) scale = 1;
+    var o = item.svg.getBoundingClientRect();
+    var out = [];
+    var rects = el.getClientRects();
+    for (var i = 0; i < rects.length; i++) {
+      var r = rects[i];
+      if (r.width < 1 || r.height < 1) continue;
+      var x = (r.left - o.left) / scale;
+      var y = (r.top - o.top) / scale;
+      var w = r.width / scale;
+      var h = r.height / scale;
+      var last = out[out.length - 1];
+      if (last && Math.abs(last.y - y) < h / 2) {
+        var right = Math.max(last.x + last.w, x + w);
+        last.x = Math.min(last.x, x);
+        last.w = right - last.x;
+        last.y = Math.min(last.y, y);
+        last.h = Math.max(last.h, h);
+      } else {
+        out.push({ x: x, y: y, w: w, h: h });
+      }
+    }
+    return out;
+  }
+
+  function shapes(type, ls, rnd) {
+    function j(a) { return (rnd() * 2 - 1) * a; }
+    // A slightly bowed hand line from x0 to x1 around y, rising by `rise`.
+    function hand(x0, x1, y, em, rise) {
+      var w = x1 - x0;
+      return spline([
+        [x0, y + rise / 2 + j(em * 0.03)],
+        [x0 + w * 0.34, y + rise / 6 + j(em * 0.05)],
+        [x0 + w * 0.67, y - rise / 6 + j(em * 0.05)],
+        [x1, y - rise / 2 + j(em * 0.03)]
+      ]);
+    }
+    var out = [];
+    if (type === 'underline' || type === 'strike' || type === 'highlight') {
+      ls.forEach(function (r) {
+        var em = r.h / 1.2; // an inline box is about 1.2 em high
+        // A short fragment (one word left on a line) gets a calmer stroke.
+        var k = Math.min(1, r.w / (em * 4));
+        if (type === 'underline') {
+          out.push({ d: hand(r.x - em * 0.06, r.x + r.w + em * 0.1, r.y + r.h * 1.02, em * k, em * k * 0.05 + j(em * k * 0.04)),
+                     w: Math.max(2, em * 0.085) });
+        } else if (type === 'strike') {
+          out.push({ d: hand(r.x - em * 0.08, r.x + r.w + em * 0.08, r.y + r.h * 0.56, em * k, em * k * 0.14 + j(em * k * 0.04)),
+                     w: Math.max(2, em * 0.08) });
+        } else {
+          out.push({ d: hand(r.x - em * 0.12, r.x + r.w + em * 0.12, r.y + r.h * 0.54, em * k, j(em * k * 0.05)),
+                     w: r.h * 0.72 });
+        }
+      });
+      return out;
+    }
+
+    var u = ls.reduce(function (a, r) {
+      var x0 = Math.min(a.x, r.x);
+      var y0 = Math.min(a.y, r.y);
+      return { x: x0, y: y0, w: Math.max(a.x + a.w, r.x + r.w) - x0, h: Math.max(a.y + a.h, r.y + r.h) - y0 };
+    });
+    var em = ls[0].h / 1.2;
+    var sw = Math.max(2, em * 0.07);
+
+    if (type === 'circle') {
+      var cx = u.x + u.w / 2;
+      var cy = u.y + u.h / 2;
+      var rx = u.w / 2 + em * 0.42;
+      var ry = u.h / 2 + em * 0.26;
+      var start = Math.PI * (1.06 + rnd() * 0.14); // left, a little above the middle
+      var sweep = Math.PI * 2 + 0.42 + rnd() * 0.26; // the end runs past the start
+      var pts = [];
+      var steps = 16;
+      for (var i = 0; i <= steps; i++) {
+        var k = i / steps;
+        var a = start + sweep * k;
+        var f = 0.985 + 0.07 * k + j(0.03);
+        pts.push([cx + Math.cos(a) * rx * f, cy + Math.sin(a) * ry * f]);
+      }
+      out.push({ d: spline(pts), w: sw });
+      return out;
+    }
+
+    if (type === 'box') {
+      var b = em * 0.06;
+      var x0 = u.x - em * 0.26;
+      var x1 = u.x + u.w + em * 0.26;
+      var y0 = u.y - em * 0.15;
+      var y1 = u.y + u.h + em * 0.13;
+      var c = [[x0 + j(b), y0 + j(b)], [x1 + j(b), y0 + j(b)], [x1 + j(b), y1 + j(b)], [x0 + j(b), y1 + j(b)]];
+      var edge = function (p, q) {
+        return 'Q' + pt([(p[0] + q[0]) / 2 + j(b), (p[1] + q[1]) / 2 + j(b)]) + ' ' + pt(q);
+      };
+      var first = [c[0][0] - em * 0.1, c[0][1] + j(b)];
+      var last = [c[0][0] + Math.min(em * 0.5, (x1 - x0) * 0.3), c[0][1] + j(b)];
+      out.push({ d: 'M' + pt(first) + edge(first, c[1]) + edge(c[1], c[2]) + edge(c[2], c[3]) +
+                    edge(c[3], c[0]) + edge(c[0], last), w: sw });
+      return out;
+    }
+
+    // bracket: one on each side, drawn together
+    var arm = Math.min(em * 0.38, u.w * 0.25);
+    var t = u.y - em * 0.12;
+    var bt = u.y + u.h + em * 0.12;
+    var l = u.x - em * 0.22;
+    var rr = u.x + u.w + em * 0.22;
+    var g = em * 0.04;
+    out.push({ d: 'M' + pt([l + arm, t + j(g)]) + 'L' + pt([l + j(g), t + j(g)]) +
+                  'L' + pt([l + j(g), bt + j(g)]) + 'L' + pt([l + arm, bt + j(g)]), w: sw });
+    out.push({ d: 'M' + pt([rr - arm, t + j(g)]) + 'L' + pt([rr + j(g), t + j(g)]) +
+                  'L' + pt([rr + j(g), bt + j(g)]) + 'L' + pt([rr - arm, bt + j(g)]), w: sw });
+    return out;
+  }
+
+  /* ---- drawing ---- */
+  function overlay(item) {
+    if (!item.svg) {
+      var svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('class', 'an-svg');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      item.el.appendChild(svg);
+      item.svg = svg;
+    }
+    return item.svg;
+  }
+
+  // (Re)computes the paths; false when the text is not rendered (hidden part).
+  function layout(item) {
+    var svg = overlay(item);
+    var ls = lines(item);
+    if (!ls.length) return false;
+    var list = shapes(item.type, ls, random(item.seed));
+    var paths = svg.querySelectorAll('path');
+    for (var i = paths.length - 1; i >= list.length; i--) svg.removeChild(paths[i]);
+    var together = item.type === 'bracket';
+    var each = together ? 0.6 : Math.max(0.3, 0.8 / list.length);
+    list.forEach(function (s, k) {
+      var p = paths[k];
+      if (!p) {
+        p = document.createElementNS(NS, 'path');
+        p.setAttribute('pathLength', '1');
+        svg.appendChild(p);
+      }
+      p.setAttribute('d', s.d);
+      p.setAttribute('stroke-width', String(r1(s.w)));
+      p.style.setProperty('--an-dur', each + 's');
+      p.style.setProperty('--an-delay', (together ? 0 : k * each) + 's');
+    });
+    return true;
+  }
+
+  function draw(item, animated) {
+    if (item.drawn) return;
+    if (!layout(item)) return; // retried at the next layout change
+    item.drawn = true;
+    var el = item.el;
+    if (!animated) {
+      el.classList.add('is-drawn');
+      return;
+    }
+    el.classList.add('an-pending');
+    item.svg.getBoundingClientRect(); // commit the hidden dash before the transition
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        el.classList.remove('an-pending');
+        el.classList.add('is-drawn');
+      });
+    });
+  }
+
+  // Draw once the text itself has entered (reveal.js), then a short beat.
+  function drawWhenRead(item) {
+    if (item.waiting || item.drawn) return;
+    item.waiting = true;
+    var host = root.classList.contains('rv-on') ? item.el.closest('[data-reveal]') : null;
+    var tries = 0;
+    (function wait() {
+      if (host && !host.classList.contains('is-in') && tries++ < 50) {
+        window.setTimeout(wait, 100);
+        return;
+      }
+      window.setTimeout(function () {
+        item.waiting = false;
+        draw(item, true);
+      }, host ? 450 : 200);
+    })();
+  }
+
+  var queued = false;
+  function relayout() {
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(function () {
+      queued = false;
+      items.forEach(function (item) {
+        if (item.drawn) layout(item);
+        else if (!animate) draw(item, false);
+      });
+    });
+  }
+
+  if (animate) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        io.unobserve(entry.target);
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].el === entry.target) drawWhenRead(items[i]);
+        }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.75 });
+    items.forEach(function (item) { io.observe(item.el); });
+  } else {
+    items.forEach(function (item) { draw(item, false); });
+  }
+
+  if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(root);
+  else window.addEventListener('resize', relayout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  document.addEventListener('landing:revealed', relayout);
+  document.addEventListener('transitionend', function (e) {
+    if (e.propertyName === 'transform' && e.target.querySelector && e.target.querySelector('.is-drawn')) relayout();
+  }, true);
+})();
+</script>
+<script>
 /* ---- tracking.js ---- */
 /* ==========================================================================
    tracking.js · measurement relay of a landing page (GA4 / GTM dataLayer)
@@ -2630,17 +3551,26 @@ textarea.field__input {
                       slug), optin (true when an input[data-optin] box is
                       ticked, false otherwise)
      begin_checkout   submit of a form[data-track="begin_checkout"] (the
-                      conversion ticket). value, currency, formula
+                      conversion ticket). value, currency, formula, and
+                      items (GA4 array) when the form carries
+                      data-checkout-items (JSON, written by bundle-receipt)
      form_demo_submit sent INSTEAD of the form's own event when its action
                       is still a {{MARKER}} (or the form carries data-demo,
                       written by forms.js, which then sends nothing): a
                       demonstration submission never counts as a lead or a
                       checkout. form_event (the event it replaces),
                       form_id, and the parameters of that event
-     select_content   choice gate: content_type, content_id
+     select_content   choice gate (content_type, content_id); also pushed
+                      through window.landingTrack by sections: recommender
+                      (content_type = its param, content_id = the offer,
+                      answers = "question:answer,…"), work-wall filter
+                      (content_type "filtre"), demonstrator request
+     viewer_open      viewer.js opened: content_type, content_id, pages
      faq_open         a details[data-track="faq_open"] opened: question
      <any name>       any other data-track value on a link or button: pushed
-                      on click under that name
+                      on click under that name; a section may also call
+                      window.landingTrack(name, params) (demonstrator:
+                      its track_event, demo_calculate by default)
    Extra parameters: every data-track-<name>="value" attribute on the tracked
    element is sent as <name>: value (dashes become underscores). A form
    exposes its current formula through a checked radio input[name="formule"]
@@ -2768,6 +3698,17 @@ textarea.field__input {
     if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
       data.value = Number(formula.getAttribute('data-price'));
     }
+    // GA4 items of the checkout, as JSON written by the section (bundle-receipt:
+    // the articles ticked, or the pack). Malformed or empty: no items.
+    if (name === 'begin_checkout') {
+      var rawItems = form.getAttribute('data-checkout-items');
+      if (rawItems) {
+        try {
+          var list = JSON.parse(rawItems);
+          if (Array.isArray(list) && list.length) data.items = list;
+        } catch (err) { /* not JSON: leave items out */ }
+      }
+    }
     if (isDemo(form)) {
       data.form_event = name;
       if (!data.form_id) data.form_id = form.id || '';
@@ -2814,6 +3755,131 @@ textarea.field__input {
 })();
 </script>
 <script>
+/* ---- section : topbar ---- */
+(function () {
+  /* principe : Headroom.js (Nick Williams), MIT ; réécrit sans dépendance. */
+  var root = document.documentElement;
+  var small = window.matchMedia('(max-width: 768px)');
+  document.querySelectorAll('.s-topbar').forEach(function (bar) {
+    var cta = bar.querySelector('.s-topbar__cta');
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+
+    /* ---- 1. Hide while reading down, come back when going up ---- */
+    var hidden = false;
+    var lastY = window.scrollY;
+    var ticking = false;
+    var DELTA = 8;
+    var tracks = [];
+
+    function collect() { tracks = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-track]')); }
+    collect();
+    document.addEventListener('landing:revealed', collect);
+
+    function setHidden(on) {
+      if (on === hidden) return;
+      hidden = on;
+      bar.toggleAttribute('data-hidden', on);
+      bar.inert = on;
+    }
+
+    // A pinned stage sits right under the bar (scroll.js, top: --topbar-h):
+    // the bar stays while one is stuck, so no gap opens above it.
+    function pinnedStage() {
+      if (!root.classList.contains('sc-pin')) return false;
+      var top = bar.offsetHeight + 1;
+      var vh = window.innerHeight;
+      return tracks.some(function (t) {
+        var r = t.getBoundingClientRect();
+        return r.top <= top && r.bottom >= vh - 1;
+      });
+    }
+
+    function keyboardInside() {
+      var a = document.activeElement;
+      if (!a || !bar.contains(a)) return false;
+      try { return a.matches(':focus-visible'); } catch (e) { return true; }
+    }
+
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      bar.toggleAttribute('data-scrolled', y > 2);
+      if (y <= bar.offsetHeight * 2 || pinnedStage() || keyboardInside()) {
+        setHidden(false);
+        lastY = y;
+        return;
+      }
+      var dy = y - lastY;
+      if (Math.abs(dy) < DELTA) return;
+      setHidden(dy > 0);
+      lastY = y;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+
+    // Going back up the page with the keyboard brings the bar back before the
+    // focus moves, so Shift+Tab can reach it.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' && e.shiftKey) setHidden(false);
+    }, true);
+
+    update();
+
+    /* ---- 2. The button steps aside ---- */
+    if (!cta) return;
+    var guardOff = false;
+    var stickyOn = root.getAttribute('data-sticky-bar') === 'on';
+    function applyCta() {
+      var off = guardOff || (small.matches && stickyOn);
+      bar.toggleAttribute('data-cta-off', off);
+      cta.inert = off;
+    }
+    // Small screens: the mobile bar (sticky-bar) carries the button while it
+    // is visible; never the same button twice on screen.
+    document.addEventListener('landing:sticky-bar', function (e) {
+      stickyOn = !!(e.detail && e.detail.visible);
+      applyCta();
+    });
+    if (small.addEventListener) small.addEventListener('change', applyCta);
+
+    // Opt-in (slot cta_after_hero: data-cta-after-hero on the bar, off by
+    // default): hidden while the hero's button, the conversion block (the
+    // anchor of the button) or the final CTA is on screen.
+    var guards = [];
+    if (bar.hasAttribute('data-cta-after-hero') && 'IntersectionObserver' in window) {
+      var href = cta.getAttribute('href') || '';
+      guards = [
+        document.querySelector('main [data-cta-position="hero"]'),
+        document.querySelector('main [data-cta-position="final"]')
+      ];
+      if (href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+      guards = guards.filter(function (g, i, list) { return g && list.indexOf(g) === i; });
+    }
+    if (guards.length) {
+      var onScreen = new Map();
+      var below = bar.offsetHeight;
+      var measure = function () { guardOff = guards.some(function (g) { return onScreen.get(g); }); applyCta(); };
+      // First state measured at once: no flash of the button on load.
+      guards.forEach(function (g) {
+        var r = g.getBoundingClientRect();
+        onScreen.set(g, r.width > 0 && r.bottom > below && r.top < window.innerHeight);
+      });
+      measure();
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { onScreen.set(e.target, e.isIntersecting); });
+        measure();
+      }, { rootMargin: '-' + below + 'px 0px 0px 0px' });
+      guards.forEach(function (g) { io.observe(g); });
+    } else {
+      applyCta();
+    }
+  });
+})();
 /* ---- section : hero ---- */
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

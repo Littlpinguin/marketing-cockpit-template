@@ -531,6 +531,25 @@ def test_defauts_de_structure(tmp_path):
 
 
 @CHROMIUM
+def test_nom_accessible_ignore_ce_qui_n_est_pas_expose(tmp_path):
+    """Inerte (barre cachée au défilement), aria-hidden ou visibility: hidden : hors des aides techniques."""
+    corps = """
+    <section><h2>Des contrôles hors d'atteinte</h2>
+      <div inert><a class="lien-inerte" href="#offre"><svg width="20" height="20"></svg></a></div>
+      <div aria-hidden="true"><button class="bouton-masque" type="button"></button></div>
+      <p><button class="bouton-invisible" type="button" style="visibility: hidden"></button></p>
+    </section>"""
+    script = "document.querySelector('.lien-inerte').parentElement.inert = true;"
+    _, donnees = rapport(ecrire(tmp_path, corps=corps, script=script), "--viewports", "1440x900")
+    assert "nom-accessible" not in tous(donnees)
+    # le même bouton, exposé, reste une erreur
+    corps_expose = corps + '<section><h2>Exposé</h2><p><button class="bouton-nu" type="button"></button></p></section>'
+    _, donnees = rapport(ecrire(tmp_path, corps=corps_expose, nom="b.html"), "--viewports", "1440x900")
+    noms = [c["message"] for c in donnees["page"] if c["type"] == "nom-accessible"]
+    assert len(noms) == 1 and "bouton-nu" in noms[0]
+
+
+@CHROMIUM
 def test_debordement_et_petits_textes_sur_mobile(tmp_path):
     corps = """<section><div style="width: 640px; height: 20px; background: #1E40AF"></div>
       <p style="font-size: 14px">Ce paragraphe de démonstration compte bien plus de douze mots pour être lu comme du texte courant.</p>

@@ -2,7 +2,7 @@
 
 **Your marketing department, running inside Claude Code, on a brand your agents can read, apply and check.**
 
-54 production skills · 20 specialist agents · 120 slide layouts · 20 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+54 production skills · 20 specialist agents · 120 slide layouts · 44 landing sections · 16 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
@@ -49,7 +49,7 @@ Want to build yours step by step, without a technical background? The Brand Brai
 
 ## See it before you install it
 
-Everything below ships in the template and opens in a browser with zero build step. The demo brand ("Meridian Conseil") is 100% fictional; the wizard reskins everything with *your* tokens.
+Everything below ships in the template and opens in a browser with zero build step. The demo brands ("Meridian Conseil" across the demos, plus one invented brand per landing template) are 100% fictional; the wizard reskins everything with *your* tokens.
 
 ![Cover layout: full-screen slide from the Meridian demo catalogue](docs/launch/screenshots/deck-slide-cover.jpg)
 
@@ -59,10 +59,10 @@ Everything below ships in the template and opens in a browser with zero build st
 
 *Three of the 120 slide layouts, captured in full-screen presentation mode from the self-documenting catalogue (each slide carries its own usage note). 8 families: opening, editorial, dataviz, diagrams, tables, proof, closing, photography. The `slides` skill picks one layout per narrative beat, then rebuilds it with your brand tokens.*
 
-| Landing pages (10 templates) | Interactive lead magnets (10 templates) |
+| Landing pages (6 templates, 44 sections) | Interactive lead magnets (10 templates) |
 |---|---|
-| ![B2B demo landing page](docs/launch/screenshots/landing-demo-b2b.jpg) | ![ROI calculator lead magnet](docs/launch/screenshots/lead-magnet-roi.jpg) |
-| ![Webinar landing page, dark premium](docs/launch/screenshots/landing-webinar.jpg) | ![Waitlist landing page, night premium](docs/launch/screenshots/landing-waitlist.jpg) |
+| ![B2B demo landing page with a product dashboard in the hero](docs/screenshots/landing-demo-b2b.jpg) | ![ROI calculator lead magnet](docs/launch/screenshots/lead-magnet-roi.jpg) |
+| ![Event landing page with an editorial headline and a line of facts](docs/screenshots/landing-evenement.jpg) | ![Service landing page with a small image inside the headline](docs/screenshots/landing-prestation.jpg) |
 
 ![Client reporting dashboard](docs/launch/screenshots/dashboard.png)
 *The reporting module: a static, brand-styled dashboard deployed on the client's own site (plain FTP, access code, monthly JSON snapshots, written analysis). No SaaS subscription.*
@@ -227,7 +227,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 **Working assets, not lorem ipsum:**
 
 - **120 slide layouts** in 8 families (`_examples/deck-catalogue/catalogue.html`, indexed by narrative beat in `LAYOUTS.md`): a self-documenting HTML deck with keyboard nav, grouped overview, fullscreen mode, PDF export with per-character gradient-text rasterization, and automated Playwright QA (engine parity, overflow, ≥18px content and ≥12px labels, brand fonts, contrast AA). The slides engine is vendored from [slides-agent](https://github.com/Littlpinguin/slides-agent) by `scripts/sync-slides-engine.py`; `new-deck.py` starts each deck with your brand tokens.
-- **10 landing page templates** (`05-web-content/templates/landing-pages/`), one per conversion goal (B2B demo, SaaS trial, lead magnet, webinar, pricing, competitor comparison, long-form sales, local one-pager, waitlist, service). Single-file, responsive, GA4/UTM conventions wired.
+- **6 landing page templates** (`05-web-content/templates/landing-pages/`), one per archetype (training cohort, long-form online sale, lead magnet, B2B demo, service on quote, event), each a short YAML spec assembled from a **library of 44 landing sections** (`05-web-content/templates/sections/`, all browsable with their usage notes in `catalogue.html`): pinned scroll stories, choice gate and offer recommender, calculator, bundle receipt, review wall, filterable work wall with a document viewer, chapters, margin notes, hand-drawn annotations. One command assembles a single-file, responsive page; another runs the Playwright QA (overflow, type floors, contrast, CTA destinations, tracking). GA4/UTM conventions wired, and a form still pointing to a placeholder endpoint is never counted as a lead.
 - **10 interactive lead magnets** (`05-web-content/templates/lead-magnets/`): ROI calculator, diagnostic score, grader, quiz, budget estimator… all with an email capture gate and nurturing segmentation baked in.
 - **A client reporting dashboard** (`11-reporting/`): static HTML + monthly JSON snapshots + written analysis, deployed on the client's own site by FTP behind an access code. A demo with 4 months of fictional data (all sources, embedded, opens on double-click) lives in `11-reporting/dashboard/demo/index.html`.
 - **Brand doctrine templates** ([`_templates/brand/`](_templates/brand/)): voice, style guide, messaging framework, personas, design tokens, anti-AI writing doctrine, rejection corpus, AI disclosure policy, rights register. The wizard fills them; their method and default rules stay generic.
@@ -251,7 +251,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 Honest answers, because you'll figure them out anyway:
 
 - **vs. a chat session (ChatGPT, Claude.ai, …):** a chat has no filesystem. This repo *is* the memory: brand brain, editorial calendar with statuses, per-channel archives, inventory. The brand gate is a hook and a linter, not a system prompt you hope survives the context window. Deliverables are versioned files (HTML decks, landing pages, dashboards), not text to copy-paste.
-- **vs. a prompt pack or a "mega-prompt":** prompts don't ship 120 QA'd slide layouts, 20 working page templates, a brand linter, a dry-run connector layer, or a wizard that regenerates role docs based on the tools you actually use.
+- **vs. a prompt pack or a "mega-prompt":** prompts don't ship 120 QA'd slide layouts, a 44-section landing library, 16 working page templates, a brand linter, a dry-run connector layer, or a wizard that regenerates role docs based on the tools you actually use.
 - **vs. an agency:** this is an operational framework, not outcomes-as-a-service. It needs your inputs, your validation, and someone who can tell good marketing from bad. It makes a competent operator much faster; it doesn't replace judgment.
 
 **What it is *not*:** not an autopilot (human validation is a designed-in step, sending and scheduling stay manual or go through dry-run gates), not a social scheduler (that's Postiz, optional), and not magic on an empty brand: see ["What good requires"](#what-good-requires).

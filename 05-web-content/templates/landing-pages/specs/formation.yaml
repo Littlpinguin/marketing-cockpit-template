@@ -42,9 +42,16 @@
 #
 # Récit : une objection par section, dans l'ordre de la pensée du dirigeant.
 #   hero        De quoi s'agit-il, pour qui, jusqu'à quand : le mémoire relu
-#   preuves     Est-ce sérieux : quatre faits de l'offre, aucun chiffre gonflé
+#   essentiel   Quand, comment, combien : six faits pratiques collés au hero
+#               (facts-grid, titre lu par les lecteurs d'écran seulement ;
+#               l'effectif suit l'état de l'offre)
 #   probleme    Pourquoi maintenant : quatre scènes vécues (seul épinglage)
+#   lettre      Qui est derrière, pourquoi lui faire confiance : la lettre
+#               signée de l'ancienne acheteuse, qui répond au problème
+#               (letter, sans signature tracée : personnage fictif)
 #   programme   Qu'y a-t-il dedans : cinq mardis datés, un spécimen relu (rail)
+#   parole      Qu'en dit quelqu'un qui l'a vécu : une phrase en respiration,
+#               une annotation à main levée (quote-interlude)
 #   kit         Qu'est-ce que j'emporte : quatre outils (bande sombre)
 #   formateurs  Avec qui : l'acheteuse et le chargé d'affaires
 #   avis        D'autres l'ont-ils fait : trois résultats signés (fictifs)
@@ -54,8 +61,8 @@
 #   mentions    Qui vend, à quelles conditions
 #   final       Je passe à l'action (bande sombre)
 # Un épinglage et un rail ; deux bandes sombres, jamais d'affilée ; une seule
-# conversion (#offre) pour tous les boutons ; le seul accent fort est le
-# bouton du billet.
+# conversion (#offre) pour tous les boutons, lien de la lettre compris ; le
+# seul accent fort est le bouton du billet.
 # ============================================================================
 output: 05-web-content/templates/landing-pages/formation.html
 title: "Répondre aux marchés publics en cinq ateliers · Ferlane Formation"
@@ -129,15 +136,42 @@ sections:
           <span class="obj-chip s-hero__chip"><i></i>Atelier 5 · relecture croisée</span>
         </div>
 
-  - use: proof-band
-    id: preuves
+  - use: facts-grid
+    id: essentiel
     slots:
-      title: "La cohorte en chiffres"
-      facts:
-        - {value: "5", unit: "", label: "ateliers de trois heures, en visio", source: ""}
-        - {value: "8", unit: "", label: "entreprises au plus par cohorte", source: ""}
-        - {value: "1", unit: "", label: "offre réelle, du dossier au dépôt", source: ""}
-        - {value: "6", unit: "mois", label: "d’accès au groupe de la cohorte", source: ""}
+      title: 'La cohorte<br><span class="hl">en pratique</span>'
+      title_hidden: true
+      intro: ""
+      items:
+        - icon: calendar
+          label: "Quand"
+          value: "Du 6 avril<br>au 4 mai 2027"
+          note: "Cinq mardis, de 9 h à 12 h"
+        - icon: screen
+          label: "Format"
+          value: "En visio, en petit groupe"
+          note: "Ateliers enregistrés"
+        - icon: people
+          label: "Effectif"
+          value: "8 entreprises au plus"
+          note: ""
+          value_waitlist: "Complet, liste d’attente ouverte"
+          value_closed: "Inscriptions closes"
+        - icon: hourglass
+          label: "Entre deux ateliers"
+          value: "2 h de travail"
+          note: "Sur votre propre offre"
+        - icon: price
+          label: "Prix"
+          value: "Dès 1 450 € HT"
+          note: "Prise en charge OPCO possible"
+        - icon: list
+          label: "Prérequis"
+          value: "Vos références des trois dernières années"
+          note: "Même en vrac"
+      cta_label: ""
+      cta_href: "#offre"
+      primary: false
 
   - use: problem-pinned
     id: probleme
@@ -172,6 +206,56 @@ sections:
           visual: |-
             <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Pièces à déposer</b><span class="obj-stamp obj-push">11 h 58</span></div><div class="obj-rule"></div><div class="obj-check"><span class="is-done">Mémoire technique</span><span class="is-done">Bordereau des prix</span><span>Attestation d’assurance</span><span>Signature électronique</span></div></div>
 
+  - use: letter
+    id: lettre
+    slots:
+      title: 'Ce que je lisais<br><span class="hl">de l’autre côté du guichet</span>'
+      salutation: "Madame, Monsieur,"
+      paragraphs:
+        - text: >-
+            Pendant neuf ans, j’ai ouvert les offres des entreprises qui
+            répondaient aux marchés de ma collectivité. Beaucoup venaient de très
+            bonnes entreprises, et beaucoup perdaient avant même qu’on parle de prix.
+          ink: false
+          pull: ""
+        - text: >-
+            La raison tenait souvent en une ligne du rapport d’analyse :
+            méthodologie générale, aucun planning daté. Le mémoire racontait
+            l’entreprise au lieu de répondre aux critères que nous avions écrits.
+          ink: false
+          pull: ""
+        - text: >-
+            Un mémoire qui gagne suit la grille de l’acheteur, critère après
+            critère, avec une preuve pour chacun. Cela s’apprend en quelques
+            matinées, sur votre propre dossier.
+          ink: true
+          pull: "Un mémoire qui gagne suit la grille de l’acheteur, critère après critère"
+        - text: >-
+            C’est ce que nous faisons pendant les cinq ateliers. Je relis chaque
+            mémoire comme je le faisais au service des achats, avec la même
+            grille, avant que vous ne le déposiez.
+          ink: false
+          pull: ""
+        - text: >-
+            Nous prenons huit entreprises par cohorte, pour que chaque relecture
+            soit faite à la main et rendue avant votre date limite.
+          ink: false
+          pull: ""
+      closing: "Bien à vous,"
+      name: "Hélène Marchetti"
+      role: "Ancienne acheteuse publique, formatrice"
+      initials: "HM"
+      portrait: null
+      place_date: "Rennes, le 8 janvier 2027"
+      note: "Personnage et lettre fictifs, à remplacer"
+      signature: null              # jamais de signature dessinée pour une vraie personne sans son accord
+      ps: >-
+        Le premier atelier part d’un dossier de consultation récent de votre
+        secteur. Si vous en avez un sous la main, gardez-le pour le 6 avril.
+      cta_label: "Voir les dates et le prix"
+      cta_href: "#offre"
+      primary: true
+
   - use: program
     id: programme
     slots:
@@ -204,6 +288,16 @@ sections:
         <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Critère 2 sur 4</b><span class="obj-stamp obj-push">Relu</span></div><div class="obj-rule"></div><div class="obj-grid" style="--cols:3"><span class="is-head">Sous-critère</span><span class="is-head">Poids</span><span class="is-head">Votre preuve</span><span>Organisation</span><span>15 %</span><span>Organigramme</span><span>Méthode</span><span>25 %</span><span>Fiche par saison</span><span class="is-warn">Planning</span><span class="is-warn">10 %</span><span class="is-warn">À dater</span><span>Matériel</span><span>10 %</span><span>Liste et photos</span></div><div class="obj-rule"></div><div class="obj-lines"><i style="--w:92%"></i><i style="--w:70%"></i></div><p class="obj-small" style="margin-top:10px">Note de relecture : <span class="obj-highlight">un planning sans dates ne rapporte aucun point</span></p></div>
       specimen_badge: "Spécimen"
       specimen_caption: "Une page de mémoire relue pendant l’atelier 3, avec des données d’exemple."
+
+  - use: quote-interlude
+    id: parole
+    slots:
+      title: "Ce qu’en dit un participant"
+      quote: 'Au dépôt suivant, le rapport d’analyse citait <mark data-annotate="underline">notre planning daté</mark> comme point fort.'
+      name: "Karim B."
+      role: "Gérant, entreprise de nettoyage, 11 salariés (avis fictif)"
+      context: "Cohorte d’automne 2026"
+      dark: false
 
   - use: showcase-dark
     id: kit
@@ -371,7 +465,7 @@ sections:
           a: >-
             Environ deux heures par semaine. Les exercices portent sur votre
             propre offre : ce temps avance votre dossier.
-        - q: "Que se passe-t-il si je manque un atelier ?"
+        - q: "Que se passe‑t‑il si je manque un atelier ?"
           a: >-
             Chaque atelier est enregistré et la vidéo arrive le jour même. Vos
             questions passent par le groupe d’échange.

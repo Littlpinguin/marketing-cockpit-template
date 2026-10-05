@@ -21,7 +21,7 @@
     "focus_mark": {"type": "text", "doc": "Annotation à main levée sur la valeur mise en avant (moteur annotate) : circle, underline, box, ou vide pour aucune. Compte dans les deux annotations de la page.", "example": "circle"},
     "reading": {"type": "text", "doc": "Phrase de lecture facultative, au corps courant (« Lecture : … »). Vide : rien.", "example": "Lecture : sur 100 tonnes de CO₂e émises par une PME de négoce type, 54 viennent du transport des marchandises."},
     "source": {"type": "text", "doc": "Source du chiffre, moins de 12 mots : étude, auteur, année. Un exemple porte « données fictives ».", "example": "Source : 40 bilans de PME de négoce, 2026 (données fictives)"},
-    "poster": {"type": "text", "doc": "Chiffre géant facultatif (2 à 4 caractères), en dégradé de la marque, coupé par le bas de la section sur grand écran. Décoratif : il répète un chiffre déjà écrit dans le titre ou les barres. Vide : rien.", "example": "×3"}
+    "poster": {"type": "text", "doc": "Facultatif, aucun par défaut. Chiffre géant de 2 à 4 caractères en dégradé de la marque, sous le titre et aligné sur lui, coupé par le bas de la section dès 1101 px (les deux tiers du chiffre au moins restent visibles ; masqué sur un écran plus étroit). Décoratif : il répète un chiffre déjà écrit dans le titre ou les barres, jamais une information nouvelle.", "example": "×3", "default": null}
   }
 }
 </script>
@@ -47,10 +47,14 @@
 }
 
 /* V10 : un chiffre en affiche, coupé par le bord de la section. Static (a
-   gradient clipped to text is lost on a transformed element). */
+   gradient clipped to text is lost on a transformed element). The box
+   ends 0.17em under the section's edge: about a fifth of the digits is
+   cut, the rest reads whole. The negative inline margin lines the ink of
+   the first glyph up with the title (side bearing of a 12rem glyph). */
 .s-chart__poster {
   align-self: flex-start;
   margin-top: auto;
+  margin-inline-start: -0.05em;
   margin-bottom: calc(-1 * var(--section-gap) - 0.17em);
   padding-top: 32px;
   font-size: clamp(8rem, 3rem + 10vw, 15rem);

@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="La matinale flotte électrique, le 3 juin 2027">
 <meta property="og:description" content="À Bordeaux et en direct, gratuit, replay sous 48 heures pour tous les inscrits.">
-<meta name="generator" content="assemble-landing.py · sha256:10ea85e264d686b208d6cc72b13e5effa3ae63d1634c56f2abd4dd56b3222833">
+<meta name="generator" content="assemble-landing.py · sha256:9c4158bb568ca7ce36bf066d7b24448c15e2a8c9b9badd99d2da725440a4f4dd">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1188,6 +1188,292 @@ textarea.field__input {
     scroll-behavior: auto !important;
   }
 }
+
+/* === notes en marge : bloc réservé (chapters, notes, jauge) === */
+
+/* ---------- 7. Margin notes: the source of a figure, in the margin ----------
+   principe : Tufte CSS (Dave Liepmann et contributeurs), MIT. The note is
+   written inside the sentence it documents and floats into the right
+   margin, aligned with the line of its call; the checkbox toggle of Tufte
+   CSS (badly announced by screen readers) is not taken.
+   Markup, inside a paragraph or a list item, right after the figure or at
+   the end of the sentence (phrasing content only, links allowed):
+     <span class="note"><span class="note__body" role="note">Source…</span></span>
+   The call (in the text) and the number (in front of the note) are drawn
+   by one page-wide counter, hidden from assistive tech (alt text ""):
+   the note itself is read in place, announced as a note.
+   - From 1101 px, inside a .wrap--notes: the text column keeps a measure
+     of --note-measure and the note sits beside it, at running-text size
+     (a note is often 12 words or more: never in small type).
+   - Elsewhere (narrow screens, or a section without .wrap--notes): the
+     note opens as a numbered block right under the line of its call.
+   No script, nothing moves, identical in reduced motion. */
+:root {
+  --note-w: 20rem;
+  --note-gap: 2.5rem;
+  --note-measure: 44rem;
+}
+
+body {
+  counter-reset: landing-note;
+}
+
+.note {
+  counter-increment: landing-note;
+}
+
+.note::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  position: relative;
+  top: -0.5em;
+  margin-inline: 0.12em 0.18em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: max(12px, 0.7em);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.note__body {
+  display: block;
+  margin-block: 0.5em 0.75em;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: start;
+  text-transform: none;
+  text-wrap: pretty;
+}
+
+.note__body::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  margin-inline-end: 0.6em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+@media (min-width: 1101px) {
+  /* The column leaves room: the text keeps its measure on the left, the
+     notes run beside it. Text blocks that carry their own max-width
+     (intro, lede) take the full column so that every note lines up. */
+  .wrap--notes {
+    padding-inline-end: max(calc(var(--note-w) + var(--note-gap)), calc(var(--wrap) - var(--note-measure)));
+  }
+
+  .wrap--notes .section-head,
+  .wrap--notes .section-intro,
+  .wrap--notes .lede {
+    max-width: none;
+  }
+
+  .wrap--notes .note__body {
+    float: right;
+    clear: right;
+    width: var(--note-w);
+    margin-block: 0.15em 0.9em;
+    margin-inline: 0 calc(-1 * (var(--note-w) + var(--note-gap)));
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    line-height: var(--lh-body);
+  }
+}
+
+/* ---------- 8. Narrative gauge (journey, program: field gauge) ----------
+   Where the reader is, in the unit of the story (« Semaine 3 sur 6 »).
+   Each step carries its label (HTML of a phrase, the value in <b>).
+   Decorative double of the step's moment and title: always in a container
+   marked aria-hidden="true" data-qa-decor, never the only carrier of an
+   information.
+   - .gauge--step: the label of one step, before its moment, in the list.
+     Shown wherever the scroll theatre does not run (small screen, reduced
+     motion, short screen, no script); the section hides it under .sc-pin.
+   - .gauge--live: one label in the left margin, read bottom to top like
+     the spine of a book, holding one .gauge__label per step. Hidden by
+     default; under .sc-pin the section shows it and reveals the label of
+     the current step (data-active or data-reached, written by scroll.js),
+     matched by rank in CSS: no script of its own. */
+.gauge {
+  display: none;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.gauge b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.gauge--step {
+  display: inline;
+  color: var(--ink);
+}
+
+.gauge--step::after {
+  content: "·";
+  content: "·" / "";
+  margin-inline: 0.6em;
+  color: var(--muted);
+}
+
+.gauge--live {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.gauge--live .gauge__label {
+  display: none;
+}
+
+.gauge--live b {
+  margin-inline: 0.2em;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* The hairline that carries the label, as on an altimeter. */
+.gauge--live::after {
+  content: "";
+  display: inline-block;
+  inline-size: 56px;
+  block-size: 1px;
+  margin-inline-start: 16px;
+  vertical-align: middle;
+  background: var(--line-strong);
+}
+
+/* === fin notes en marge === */
+
+/* === annotations à main levée : bloc réservé (annotate.js) === */
+/* Hand-drawn annotations: <mark data-annotate="underline | highlight |
+   strike | circle | box | bracket">. principe : Rough Notation, MIT (see
+   annotate.js). Without the engine (no JavaScript, or a page that does not
+   load annotate.js): a sober emphasis in the highlight colour, never the
+   browser's yellow <mark>. With it (html.an-on): the drawn stroke replaces
+   that emphasis. Two per page at most. */
+mark:where([data-annotate]) {
+  background: none;
+  color: inherit;
+}
+
+[data-annotate] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--hl);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+[data-annotate="strike"] {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.07em;
+}
+
+/* A highlighted word is read in ink: muted text on a tint would fall under
+   4.5:1. */
+[data-annotate="highlight"] {
+  text-decoration-line: none;
+  background-color: var(--tint);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* A circle or a frame never breaks across two lines (1 to 3 words), and
+   keeps the neighbouring words out of its stroke (set with or without the
+   engine, so that nothing shifts when it starts). */
+[data-annotate="circle"],
+[data-annotate="box"] {
+  margin-inline: 0.22em;
+  white-space: nowrap;
+}
+
+[data-annotate="bracket"] {
+  margin-inline: 0.3em;
+}
+
+/* Engine running: the element hosts its stroke (stacking context, so that
+   the highlighter passes under the letters and over any card). */
+.an-on [data-annotate] {
+  position: relative;
+  z-index: 0;
+  text-decoration-line: none;
+  background-color: transparent;
+}
+
+/* max-width: none, or the base svg rule (max-width: 100%) collapses the
+   overlay to 0 px when the phrase wraps (the containing block of a split
+   inline has no width), and a 0 px SVG is not painted. */
+.an-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 1px;
+  max-width: none;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.an-svg path {
+  fill: none;
+  stroke: var(--hl);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-annotate="highlight"] > .an-svg {
+  z-index: -1;
+}
+
+[data-annotate="highlight"] > .an-svg path {
+  stroke-linecap: butt;
+  stroke-opacity: 0.2;
+}
+
+.band-dark [data-annotate="highlight"] > .an-svg path {
+  stroke-opacity: 0.34;
+}
+
+/* Drawn once: the dash runs from hidden to whole (pathLength="1"). */
+[data-annotate].an-pending > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+[data-annotate].is-drawn > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--an-dur, 0.8s) var(--ease) var(--an-delay, 0s);
+}
+
+@media (forced-colors: active) {
+  .an-svg path {
+    stroke: CanvasText;
+  }
+}
+/* === fin annotations === */
 /* ---- section : topbar ---- */
 .s-topbar {
   position: sticky;
@@ -1196,6 +1482,21 @@ textarea.field__input {
   height: var(--topbar-h);
   border-bottom: 1px solid var(--line);
   background: var(--brand-light);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+/* Scrolled: the bar lifts off the page (M10, without blur). */
+.s-topbar[data-scrolled] {
+  box-shadow: 0 12px 28px -24px var(--brand-shadow);
+}
+
+/* Hidden while reading down: off screen, and inert (script), so that neither
+   the logo nor the button can take the focus or reach a screen reader. */
+.s-topbar[data-hidden] {
+  transform: translateY(calc(-100% - 16px));
+  box-shadow: none;
 }
 
 .s-topbar__inner {
@@ -1231,42 +1532,103 @@ textarea.field__input {
   min-height: 44px;
   padding: 8px 22px;
   font-size: 0.9375rem;
-}
-/* ---- section : hero ---- */
-.s-hero {
-  padding-block: clamp(40px, 1.5rem + 5vw, 104px) clamp(64px, 2.5rem + 5vw, 120px);
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
 }
 
-.s-hero__grid {
+/* The button steps aside (hero button, conversion block or final CTA on
+   screen; on a small screen, the mobile bar shown): transparent AND inert
+   (script), never just transparent. */
+.s-topbar[data-cta-off] .s-topbar__cta.btn {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-topbar,
+  .s-topbar__cta.btn {
+    transition: none;
+  }
+
+  .s-topbar[data-cta-off] .s-topbar__cta.btn {
+    transform: none;
+  }
+}
+/* ---- section : hero-editorial ---- */
+/* Editorial opening: the title is the poster. A 12-column grid on wide
+   screens, the title across it, a brand rule drawn under it, then the lede
+   and the action side by side, then a line of practical facts. */
+.s-hedit {
+  padding-block: clamp(40px, 1.5rem + 5vw, 104px) clamp(56px, 2rem + 5vw, 112px);
+}
+
+.s-hedit__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: clamp(48px, 2rem + 5vw, 112px);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
 }
 
-.s-hero__title {
-  font-size: var(--t-h1);
-  line-height: 1.02;
+.s-hedit__title {
+  font-size: clamp(2.75rem, 0.6rem + 7.3vw, 7rem);
+  line-height: 0.98;
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
   text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
-.s-hero__lede {
-  max-width: 30em;
-  margin-top: clamp(20px, 1rem + 1vw, 28px);
+/* Optical alignment: the title box starts at its cap height and ends on its
+   baseline, so the rule sits at a true distance from the letters. */
+@supports (text-box: trim-both cap alphabetic) {
+  .s-hedit__title {
+    text-box: trim-both cap alphabetic;
+  }
+}
+
+.s-hedit__in {
+  display: inline-block;
+}
+
+.s-hedit__rule {
+  display: block;
+  height: 4px;
+  margin-block: clamp(28px, 1rem + 2.6vw, 60px) clamp(24px, 1rem + 1.6vw, 44px);
+  border-radius: 4px;
+  background: var(--gradient);
+  transform-origin: 0 50%;
+}
+
+.rv-on .s-hedit__rule[data-reveal] {
+  opacity: 1;
+  transform: scaleX(0);
+  transition: transform 1.2s var(--ease) 0.15s;
+}
+
+.rv-on .s-hedit__rule[data-reveal].is-in {
+  transform: none;
+}
+
+.s-hedit__lede {
+  max-width: 32em;
   color: var(--muted);
 }
 
-.s-hero__actions {
+.s-hedit__actions {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  margin-top: clamp(24px, 1rem + 1vw, 32px);
+}
+
+.s-hedit__buttons {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 18px 28px;
-  margin-top: clamp(28px, 1.4rem + 1.4vw, 40px);
+  gap: 12px 28px;
 }
 
-.s-hero__deadline {
+.s-hedit__deadline {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1277,7 +1639,7 @@ textarea.field__input {
   line-height: 1.4;
 }
 
-.s-hero__deadline::before {
+.s-hedit__deadline::before {
   content: "";
   flex: none;
   width: 8px;
@@ -1287,58 +1649,88 @@ textarea.field__input {
   box-shadow: 0 0 0 4px var(--tint-accent);
 }
 
-.s-hero__visual {
-  position: relative;
-  justify-self: end;
-  width: 100%;
-  max-width: 500px;
+.s-hedit__proof {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
 }
 
-.s-hero__img {
-  width: 100%;
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-lift);
+.s-hedit__proof svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--hl);
+  transform: translateY(3px);
 }
 
-.s-hero__doc .obj-sheet {
-  padding: clamp(18px, 0.8rem + 1vw, 28px);
+/* Facts: a colophon under the action, one hairline above, labels in the
+   utility face. */
+.s-hedit__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px var(--gutter);
+  margin-top: clamp(40px, 1.6rem + 3vw, 80px);
+  padding-top: clamp(18px, 0.8rem + 0.8vw, 26px);
+  border-top: 1px solid var(--line);
 }
 
-.s-hero__doc .obj-kpi {
-  margin-top: 4px;
+.s-hedit__fact {
+  display: grid;
+  align-content: start;
+  gap: 4px;
 }
 
-.s-hero__chip {
-  bottom: -18px;
-  left: 28px;
+.s-hedit__fact dd {
+  font-weight: 600;
+  line-height: var(--lh-snug);
+  text-wrap: balance;
 }
 
-/* Rotating word: every word in the same grid cell, the widest sets the box. */
-.s-hero__rot {
-  display: inline-grid;
+.s-hedit__object {
+  max-width: 520px;
+  margin-top: clamp(32px, 1.4rem + 2vw, 56px);
 }
 
-.s-hero__rot > span {
-  grid-area: 1 / 1;
-  opacity: 0;
-  transform: translateY(0.25em);
-  transition:
-    opacity 0.5s var(--ease),
-    transform 0.5s var(--ease);
-}
-
-.s-hero__rot > span.is-on {
-  opacity: 1;
-  transform: none;
-}
-
-@media (max-width: 1100px) {
-  .s-hero__grid {
-    grid-template-columns: minmax(0, 1fr);
+@media (min-width: 900px) {
+  .s-hedit__facts {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
   }
 
-  .s-hero__visual {
-    justify-self: start;
+  .s-hedit__in {
+    margin-inline-start: 16.666%;
+  }
+}
+
+@media (min-width: 1101px) {
+  .s-hedit__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .s-hedit__title,
+  .s-hedit__rule,
+  .s-hedit__facts {
+    grid-column: 1 / -1;
+  }
+
+  .s-hedit__lede {
+    grid-column: 1 / span 6;
+  }
+
+  .s-hedit__actions {
+    grid-column: 8 / -1;
+    margin-top: 0;
+  }
+
+  .s-hedit__object {
+    grid-column: 7 / -1;
+    justify-self: end;
+    width: 100%;
   }
 }
 /* ---- section : outcomes ---- */
@@ -1540,6 +1932,59 @@ textarea.field__input {
   .s-program__text {
     grid-column: 2;
   }
+}
+/* Narrative gauge (optional field gauge of each module; the .gauge
+   component lives in base.css). With motion on a large screen, a track as
+   tall as the list, in the left margin, holds one label centred in the
+   viewport: the label of the last module reached by the reading line
+   (data-reached, written by scroll.js on the rail), matched by rank
+   without a script (twelve modules at most). Elsewhere: each module shows
+   its own label before its date. */
+.s-program__run {
+  position: relative;
+}
+
+.s-program__track {
+  display: none;
+}
+
+.sc-pin .s-program__item .gauge--step {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+  .sc-pin .s-program__track {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: calc(100% + 20px);
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .sc-pin .s-program__gauge {
+    display: block;
+    position: sticky;
+    top: 50vh;
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.s-program__run:not(:has([data-reached="true"])) .s-program__gauge .gauge__label:first-child,
+.s-program__run:has(.s-program__item:last-child[data-reached="true"]) .s-program__gauge .gauge__label:last-child,
+.s-program__run:has(.s-program__item:nth-child(1)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(1),
+.s-program__run:has(.s-program__item:nth-child(2)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(2),
+.s-program__run:has(.s-program__item:nth-child(3)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(3),
+.s-program__run:has(.s-program__item:nth-child(4)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(4),
+.s-program__run:has(.s-program__item:nth-child(5)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(5),
+.s-program__run:has(.s-program__item:nth-child(6)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(6),
+.s-program__run:has(.s-program__item:nth-child(7)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(7),
+.s-program__run:has(.s-program__item:nth-child(8)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(8),
+.s-program__run:has(.s-program__item:nth-child(9)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(9),
+.s-program__run:has(.s-program__item:nth-child(10)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(10),
+.s-program__run:has(.s-program__item:nth-child(11)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(11),
+.s-program__run:has(.s-program__item:nth-child(12)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(12) {
+  display: inline;
 }
 /* ---- section : people ---- */
 .s-people__grid {
@@ -2586,42 +3031,27 @@ textarea.field__input {
 </header>
 <!-- /section:topbar -->
 <main id="contenu">
-<!-- section:hero -->
-<section id="hero" class="s-hero section" aria-labelledby="hero-titre" data-section="hero">
-  <div class="wrap s-hero__grid">
-    <div class="s-hero__text">
-      <h1 id="hero-titre" class="s-hero__title">Passer vos tournées<br><span class="hl">à l’électrique</span></h1>
-      <p class="s-hero__lede lede">Une matinée à Bordeaux et en direct pour les responsables de flotte, avec trois retours d’expérience chiffrés.</p>
-      <div class="s-hero__actions">
+<!-- section:hero-editorial -->
+<section id="hero-editorial" class="s-hedit section" aria-labelledby="hero-editorial-titre" data-section="hero-editorial">
+  <div class="wrap s-hedit__grid">
+    <h1 id="hero-editorial-titre" class="s-hedit__title">Passer vos tournées<br><span class="hl s-hedit__in">à l’électrique</span></h1>
+    <span class="s-hedit__rule" aria-hidden="true" data-reveal></span>
+    <p class="s-hedit__lede lede">Une matinée à Bordeaux et en direct pour les responsables de flotte, avec trois retours d’expérience chiffrés.</p>
+    <div class="s-hedit__actions">
+      <div class="s-hedit__buttons">
         <a class="btn btn--primary" href="#inscription" data-track="cta_click" data-cta-position="hero" data-cta="primaire">M’inscrire<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span>Jeudi 3 juin 2027, de 8 h 30 à 13 h</span><span aria-hidden="true">·</span><span>Gratuit, sur place ou en ligne</span></p>
+        
       </div>
+      <p class="s-hedit__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au mercredi 2 juin 2027</span><span aria-hidden="true">·</span><span>120 places sur place</span></p>
+      
     </div>
-    <div class="s-hero__visual" data-reveal="right">
-      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
-  <div class="obj-stack">
-    <div class="obj-sheet">
-      <div class="obj-head"><span class="obj-mark"></span><b>La matinale flotte électrique</b><span class="obj-stamp obj-push">Badge</span></div>
-      <div class="obj-rule"></div>
-      <p class="obj-kpi">3 juin<small>2027</small></p>
-      <p class="obj-small" style="margin-top:8px">Halle Lucine, Bordeaux · accueil à 8 h 30</p>
-      <div class="obj-rule"></div>
-      <div class="obj-mail">
-        <div class="obj-head"><b>9 h 00</b><span>L’autonomie réelle en tournée</span></div>
-        <div class="obj-head"><b>9 h 40</b><span>Recharger au dépôt</span></div>
-        <div class="obj-head"><b>10 h 45</b><span>Quarante utilitaires en dix-huit mois</span></div>
-        <div class="obj-head"><b>11 h 30</b><span>Table ronde avec vos questions</span></div>
-      </div>
-      <div class="obj-rule"></div>
-      <div class="obj-mail__from"><span class="obj-avatar">VN</span><span><b>Votre nom</b><br>Votre entreprise</span><span class="obj-chip" style="position:static;margin-left:auto"><i></i>Sur place</span></div>
-    </div>
-  </div>
-  <span class="obj-chip s-hero__chip"><i></i>En direct dès 9 h</span>
-</div>
-    </div>
+    <dl class="s-hedit__facts">
+      <div class="s-hedit__fact"><dt class="label">Quand</dt><dd>Jeudi 3 juin 2027, de 8 h 30 à 13 h</dd></div><div class="s-hedit__fact"><dt class="label">Où</dt><dd>Halle Lucine à Bordeaux, et en direct</dd></div><div class="s-hedit__fact"><dt class="label">Programme</dt><dd>Trois retours d’expérience, une table ronde</dd></div><div class="s-hedit__fact"><dt class="label">Prix</dt><dd>Gratuit, replay sous 48 heures</dd></div>
+    </dl>
+    
   </div>
 </section>
-<!-- /section:hero -->
+<!-- /section:hero-editorial -->
 <!-- section:rapporter -->
 <section id="rapporter" class="s-outcomes section" aria-labelledby="rapporter-titre" data-section="outcomes">
   <div class="wrap">
@@ -2657,39 +3087,42 @@ textarea.field__input {
         <h2 id="programme-titre" class="section-title">La matinée<br><span class="hl">heure par heure</span></h2>
         <p class="section-intro">Accueil et café dès 8 h 30. Le direct démarre à 9 h, avec une pause de 10 h 15 à 10 h 45.</p>
       </div>
-      <ol class="s-program__list" role="list" data-rail>
-        <li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">9 h 00</p>
-          <h3 class="s-program__title">L’autonomie réelle en tournée</h3>
-          <p class="s-program__duration">35 min</p>
-          <p class="s-program__text">Ce que 2 400 tournées enregistrées en 2026 disent de l’autonomie selon la saison et la charge.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">9 h 40</p>
-          <h3 class="s-program__title">Recharger au dépôt</h3>
-          <p class="s-program__duration">35 min</p>
-          <p class="s-program__text">Puissance raccordée, abonnement et horaires de charge : dimensionner sans payer la pointe.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">10 h 45</p>
-          <h3 class="s-program__title">Quarante utilitaires en dix-huit mois</h3>
-          <p class="s-program__duration">40 min</p>
-          <p class="s-program__text">Le retour d’expérience d’un transporteur régional, chiffres et erreurs compris.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">11 h 30</p>
-          <h3 class="s-program__title">Table ronde avec vos questions</h3>
-          <p class="s-program__duration">45 min</p>
-          <p class="s-program__text">Trois responsables de flotte répondent à la salle et aux questions écrites du direct.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">12 h 15</p>
-          <h3 class="s-program__title">Déjeuner avec les intervenants</h3>
-          <p class="s-program__duration">45 min</p>
-          <p class="s-program__text">Sur place seulement, pour poursuivre les échanges. Le direct s’arrête à 12 h 15.</p>
-        </li>
-      </ol>
+      <div class="s-program__run">
+        <ol class="s-program__list" role="list" data-rail>
+          <li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">9 h 00</p>
+            <h3 class="s-program__title">L’autonomie réelle en tournée</h3>
+            <p class="s-program__duration">35 min</p>
+            <p class="s-program__text">Ce que 2 400 tournées enregistrées en 2026 disent de l’autonomie selon la saison et la charge.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">9 h 40</p>
+            <h3 class="s-program__title">Recharger au dépôt</h3>
+            <p class="s-program__duration">35 min</p>
+            <p class="s-program__text">Puissance raccordée, abonnement et horaires de charge : dimensionner sans payer la pointe.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">10 h 45</p>
+            <h3 class="s-program__title">Quarante utilitaires en dix-huit mois</h3>
+            <p class="s-program__duration">40 min</p>
+            <p class="s-program__text">Le retour d’expérience d’un transporteur régional, chiffres et erreurs compris.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">11 h 30</p>
+            <h3 class="s-program__title">Table ronde avec vos questions</h3>
+            <p class="s-program__duration">45 min</p>
+            <p class="s-program__text">Trois responsables de flotte répondent à la salle et aux questions écrites du direct.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">12 h 15</p>
+            <h3 class="s-program__title">Déjeuner avec les intervenants</h3>
+            <p class="s-program__duration">45 min</p>
+            <p class="s-program__text">Sur place seulement, pour poursuivre les échanges. Le direct s’arrête à 12 h 15.</p>
+          </li>
+        </ol>
+        
+      </div>
     </div>
     <figure class="s-program__specimen">
       <div class="s-program__figure">
@@ -3576,17 +4009,26 @@ textarea.field__input {
                       slug), optin (true when an input[data-optin] box is
                       ticked, false otherwise)
      begin_checkout   submit of a form[data-track="begin_checkout"] (the
-                      conversion ticket). value, currency, formula
+                      conversion ticket). value, currency, formula, and
+                      items (GA4 array) when the form carries
+                      data-checkout-items (JSON, written by bundle-receipt)
      form_demo_submit sent INSTEAD of the form's own event when its action
                       is still a {{MARKER}} (or the form carries data-demo,
                       written by forms.js, which then sends nothing): a
                       demonstration submission never counts as a lead or a
                       checkout. form_event (the event it replaces),
                       form_id, and the parameters of that event
-     select_content   choice gate: content_type, content_id
+     select_content   choice gate (content_type, content_id); also pushed
+                      through window.landingTrack by sections: recommender
+                      (content_type = its param, content_id = the offer,
+                      answers = "question:answer,…"), work-wall filter
+                      (content_type "filtre"), demonstrator request
+     viewer_open      viewer.js opened: content_type, content_id, pages
      faq_open         a details[data-track="faq_open"] opened: question
      <any name>       any other data-track value on a link or button: pushed
-                      on click under that name
+                      on click under that name; a section may also call
+                      window.landingTrack(name, params) (demonstrator:
+                      its track_event, demo_calculate by default)
    Extra parameters: every data-track-<name>="value" attribute on the tracked
    element is sent as <name>: value (dashes become underscores). A form
    exposes its current formula through a checked radio input[name="formule"]
@@ -3714,6 +4156,17 @@ textarea.field__input {
     if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
       data.value = Number(formula.getAttribute('data-price'));
     }
+    // GA4 items of the checkout, as JSON written by the section (bundle-receipt:
+    // the articles ticked, or the pack). Malformed or empty: no items.
+    if (name === 'begin_checkout') {
+      var rawItems = form.getAttribute('data-checkout-items');
+      if (rawItems) {
+        try {
+          var list = JSON.parse(rawItems);
+          if (Array.isArray(list) && list.length) data.items = list;
+        } catch (err) { /* not JSON: leave items out */ }
+      }
+    }
     if (isDemo(form)) {
       data.form_event = name;
       if (!data.form_id) data.form_id = form.id || '';
@@ -3760,41 +4213,129 @@ textarea.field__input {
 })();
 </script>
 <script>
-/* ---- section : hero ---- */
+/* ---- section : topbar ---- */
 (function () {
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.querySelectorAll('.s-hero [data-rotate]').forEach(function (el) {
-    var words = el.getAttribute('data-rotate').split('|').map(function (w) { return w.trim(); }).filter(Boolean);
-    if (words.length < 2) return;
-    var stable = (el.textContent || '').trim() || words[0];
-    el.textContent = '';
-    var sr = document.createElement('span');
-    sr.className = 'sr-only';
-    sr.textContent = stable;
-    var box = document.createElement('span');
-    box.className = 's-hero__rot';
-    box.setAttribute('aria-hidden', 'true');
-    words.forEach(function (w, i) {
-      var s = document.createElement('span');
-      s.textContent = w;
-      if (i === 0) s.className = 'is-on';
-      box.appendChild(s);
-    });
-    el.appendChild(sr);
-    el.appendChild(box);
-    if (reduce) return;
-    // Three rounds at most, and only while the hero is on screen.
-    var i = 0, steps = 0, max = words.length * 3, onScreen = true;
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }).observe(el);
+  /* principe : Headroom.js (Nick Williams), MIT ; réécrit sans dépendance. */
+  var root = document.documentElement;
+  var small = window.matchMedia('(max-width: 768px)');
+  document.querySelectorAll('.s-topbar').forEach(function (bar) {
+    var cta = bar.querySelector('.s-topbar__cta');
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+
+    /* ---- 1. Hide while reading down, come back when going up ---- */
+    var hidden = false;
+    var lastY = window.scrollY;
+    var ticking = false;
+    var DELTA = 8;
+    var tracks = [];
+
+    function collect() { tracks = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-track]')); }
+    collect();
+    document.addEventListener('landing:revealed', collect);
+
+    function setHidden(on) {
+      if (on === hidden) return;
+      hidden = on;
+      bar.toggleAttribute('data-hidden', on);
+      bar.inert = on;
     }
-    var timer = window.setInterval(function () {
-      if (!onScreen) return;
-      box.children[i].className = '';
-      i = (i + 1) % words.length;
-      box.children[i].className = 'is-on';
-      if (++steps >= max) window.clearInterval(timer);
-    }, 2600);
+
+    // A pinned stage sits right under the bar (scroll.js, top: --topbar-h):
+    // the bar stays while one is stuck, so no gap opens above it.
+    function pinnedStage() {
+      if (!root.classList.contains('sc-pin')) return false;
+      var top = bar.offsetHeight + 1;
+      var vh = window.innerHeight;
+      return tracks.some(function (t) {
+        var r = t.getBoundingClientRect();
+        return r.top <= top && r.bottom >= vh - 1;
+      });
+    }
+
+    function keyboardInside() {
+      var a = document.activeElement;
+      if (!a || !bar.contains(a)) return false;
+      try { return a.matches(':focus-visible'); } catch (e) { return true; }
+    }
+
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      bar.toggleAttribute('data-scrolled', y > 2);
+      if (y <= bar.offsetHeight * 2 || pinnedStage() || keyboardInside()) {
+        setHidden(false);
+        lastY = y;
+        return;
+      }
+      var dy = y - lastY;
+      if (Math.abs(dy) < DELTA) return;
+      setHidden(dy > 0);
+      lastY = y;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+
+    // Going back up the page with the keyboard brings the bar back before the
+    // focus moves, so Shift+Tab can reach it.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' && e.shiftKey) setHidden(false);
+    }, true);
+
+    update();
+
+    /* ---- 2. The button steps aside ---- */
+    if (!cta) return;
+    var guardOff = false;
+    var stickyOn = root.getAttribute('data-sticky-bar') === 'on';
+    function applyCta() {
+      var off = guardOff || (small.matches && stickyOn);
+      bar.toggleAttribute('data-cta-off', off);
+      cta.inert = off;
+    }
+    // Small screens: the mobile bar (sticky-bar) carries the button while it
+    // is visible; never the same button twice on screen.
+    document.addEventListener('landing:sticky-bar', function (e) {
+      stickyOn = !!(e.detail && e.detail.visible);
+      applyCta();
+    });
+    if (small.addEventListener) small.addEventListener('change', applyCta);
+
+    // Opt-in (slot cta_after_hero: data-cta-after-hero on the bar, off by
+    // default): hidden while the hero's button, the conversion block (the
+    // anchor of the button) or the final CTA is on screen.
+    var guards = [];
+    if (bar.hasAttribute('data-cta-after-hero') && 'IntersectionObserver' in window) {
+      var href = cta.getAttribute('href') || '';
+      guards = [
+        document.querySelector('main [data-cta-position="hero"]'),
+        document.querySelector('main [data-cta-position="final"]')
+      ];
+      if (href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+      guards = guards.filter(function (g, i, list) { return g && list.indexOf(g) === i; });
+    }
+    if (guards.length) {
+      var onScreen = new Map();
+      var below = bar.offsetHeight;
+      var measure = function () { guardOff = guards.some(function (g) { return onScreen.get(g); }); applyCta(); };
+      // First state measured at once: no flash of the button on load.
+      guards.forEach(function (g) {
+        var r = g.getBoundingClientRect();
+        onScreen.set(g, r.width > 0 && r.bottom > below && r.top < window.innerHeight);
+      });
+      measure();
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { onScreen.set(e.target, e.isIntersecting); });
+        measure();
+      }, { rootMargin: '-' + below + 'px 0px 0px 0px' });
+      guards.forEach(function (g) { io.observe(g); });
+    } else {
+      applyCta();
+    }
   });
 })();
 /* ---- section : event-registration ---- */
@@ -3851,13 +4392,21 @@ textarea.field__input {
     guards = guards.filter(Boolean);
     var onScreen = new Map();
     var heroPassed = !hero;
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+    var root = document.documentElement;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
         else onScreen.set(e.target, e.isIntersecting);
       });
       var blocked = guards.some(function (g) { return onScreen.get(g); });
-      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+      var visible = heroPassed && !blocked;
+      if (visible === bar.hasAttribute('data-visible') && root.hasAttribute('data-sticky-bar')) return;
+      bar.toggleAttribute('data-visible', visible);
+      // The top bar drops its own button on small screens while this one shows.
+      root.setAttribute('data-sticky-bar', visible ? 'on' : 'off');
+      document.dispatchEvent(new CustomEvent('landing:sticky-bar', { detail: { visible: visible } }));
     });
     if (hero) io.observe(hero);
     guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });

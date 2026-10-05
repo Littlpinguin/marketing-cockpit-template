@@ -33,7 +33,13 @@
 #   probleme        Pourquoi maintenant : quatre scènes dans les mots du terrain (épinglé)
 #   changements     Qu'est-ce que ça change : respiration entre deux épinglages
 #   parcours        Est-ce que ça marche chez moi : un camion de bout en bout (épinglé)
+#   estimation      Combien ça me ferait gagner : le calculateur d'attente évitée,
+#                   hypothèse et source sous le résultat (demonstrator, mode
+#                   calculator ; son bouton mène au formulaire sans compter
+#                   comme CTA primaire)
 #   securite        Ma DSI va-t-elle bloquer : hébergement, accès, connecteurs (bande sombre)
+#   donnees         Suis-je enfermé chez vous : ce que vous possédez, ce qui s'y
+#                   branche, les preuves de sortie (ownership-diagram)
 #   avis            D'autres l'ont-ils fait : trois avis, chacun avec un résultat, près du formulaire
 #   ensuite         Que se passe-t-il pendant et après la démo
 #   demo            Je demande la démo : cinq champs, dont un qui qualifie le volume
@@ -250,6 +256,49 @@ sections:
             <div class="obj-window__body"><div class="obj-chart"><i style="--v:.7"></i><i style="--v:.55"></i><i style="--v:.6"></i><i class="is-hl" style="--v:.42"></i><i style="--v:.4"></i></div>
             <div class="obj-rule"></div><div class="obj-head"><span>Moyenne de la semaine</span><b class="obj-push">38 min</b></div></div></div>
 
+  - use: demonstrator
+    id: estimation
+    slots:
+      title: >-
+        L’attente évitée<br><span class="hl">sur vos quais</span>
+      intro: >-
+        Indiquez votre volume de réception. L’estimation se calcule ici, avec
+        son hypothèse et sa source sous le résultat.
+      mode: calculator
+      dark: false
+      replay: null
+      calculator:
+        legend: "Vos réceptions aujourd’hui"
+        inputs:
+          - {name: camions, label: "Camions reçus par jour", hint: "Toutes livraisons confondues. Entre 1 et 400.", value: 40, min: 1, max: 400, step: 1}
+          - {name: attente, label: "Attente moyenne d’un camion", slider: true, unit: "min", value: 45, min: 10, max: 120, step: 5}
+          - name: jours
+            label: "Jours de réception"
+            choices:
+              - {label: "5 jours sur 7", value: 22, selected: true}
+              - {label: "6 jours sur 7", value: 26}
+              - {label: "7 jours sur 7", value: 30}
+        lines:
+          - {key: total, label: "Camions reçus par mois", expr: "camions * jours", unit: "camions", decimals: 0, example: "880"}
+          - {key: attente_totale, label: "Attente cumulée aujourd’hui", expr: "total * attente / 60", unit: "h", decimals: 0, example: "660"}
+        result: {label: "Attente évitée chaque mois", expr: "attente_totale * part_evitee", unit: "heures", decimals: 0, example: "495", announce: "Estimation : {value} heures d’attente évitées chaque mois"}
+        coefficients:
+          - key: part_evitee
+            value: 0.75
+            display: "75 %"
+            label: "de l’attente évitée par la réservation de créneaux."
+            source: "Chiffre d’exemple : passage de 45 à 11 minutes d’attente au quai sur les sites d’exemple de la bande de preuves, à remplacer par les mesures de vos pilotes."
+        sources_label: "Hypothèse et source"
+        invalid_text: "Saisissez un nombre de camions entre 1 et 400 pour voir l’estimation."
+        noscript: "Exemple calculé pour les valeurs ci-dessus."
+      cta_label: "Demander une démo"
+      cta_href: "#demo"
+      primary: false
+      position: "estimation"
+      cta_note: "La démo rejoue une semaine de vos propres réceptions."
+      track_type: "estimation"
+      track_event: "demo_calculate"
+
   - use: showcase-dark
     id: securite
     slots:
@@ -271,6 +320,34 @@ sections:
         - tab: "Journal"
           title: "Chaque action tracée"
           text: "Qui a déplacé quel rendez-vous, et à quelle heure : le journal se consulte et s’exporte."
+
+  - use: ownership-diagram
+    id: donnees
+    slots:
+      title: 'Vos données de quai<br><span class="hl">restent les vôtres</span>'
+      intro: >-
+        L’historique des réceptions et le carnet des transporteurs vous
+        appartiennent. Si vous quittez Calquai, ils repartent avec vous, dans
+        des formats que votre WMS sait lire.
+      owned_title: "Vos données de réception"
+      owned:
+        - {name: "L’historique des rendez-vous, quai par quai", format: "CSV · API"}
+        - {name: "Les heures d’arrivée et de mise à quai horodatées", format: "CSV"}
+        - {name: "Le carnet des transporteurs et leurs contacts", format: "CSV · XLSX"}
+        - {name: "Le journal des actions de vos équipes", format: "CSV"}
+      tools_title: "Ce qui s’y branche"
+      tools:
+        - {name: "Calquai", note: "Planifie les créneaux et affecte les quais", state: "current", tag: "Aujourd’hui"}
+        - {name: "Un autre logiciel de quai", note: "Importe l’historique et le carnet des transporteurs", state: "alt", tag: ""}
+        - {name: "Votre outil de pilotage", note: "Lit les temps à quai par l’API ou l’export du jour", state: "alt", tag: ""}
+        - {name: "Votre WMS", note: "Garde les réceptions, avec ou sans Calquai", state: "alt", tag: ""}
+      caption: >-
+        Les données restent dans des formats ouverts : Calquai s’y branche
+        aujourd’hui, un autre outil pourra s’y brancher demain.
+      proofs:
+        - {term: "Export", text: "Export complet en CSV à tout moment depuis l’administration, et une API documentée pour le reste."}
+        - {term: "Préavis", text: "Abonnement résiliable chaque mois, avec trente jours de préavis et sans frais de sortie."}
+        - {term: "Passation", text: "À la résiliation, un export complet vous est remis sous cinq jours ouvrés, puis vos données sont effacées sous trente jours."}
 
   - use: testimonials
     id: avis

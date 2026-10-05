@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Un potager qui donne de mai à octobre">
 <meta property="og:description" content="Le plan de votre carré dessiné pour vous et une lettre chaque lundi pour savoir quoi faire au jardin.">
-<meta name="generator" content="assemble-landing.py · sha256:f71c19dd1b269582a68917fa30771356c7d633dcc83914b927579985b580cf44">
+<meta name="generator" content="assemble-landing.py · sha256:0ea18a2e40bfc537ab9fc8204f29a1c8c2adfafa5ef240becb63f4ffa20d7ef1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1187,6 +1187,292 @@ textarea.field__input {
     scroll-behavior: auto !important;
   }
 }
+
+/* === notes en marge : bloc réservé (chapters, notes, jauge) === */
+
+/* ---------- 7. Margin notes: the source of a figure, in the margin ----------
+   principe : Tufte CSS (Dave Liepmann et contributeurs), MIT. The note is
+   written inside the sentence it documents and floats into the right
+   margin, aligned with the line of its call; the checkbox toggle of Tufte
+   CSS (badly announced by screen readers) is not taken.
+   Markup, inside a paragraph or a list item, right after the figure or at
+   the end of the sentence (phrasing content only, links allowed):
+     <span class="note"><span class="note__body" role="note">Source…</span></span>
+   The call (in the text) and the number (in front of the note) are drawn
+   by one page-wide counter, hidden from assistive tech (alt text ""):
+   the note itself is read in place, announced as a note.
+   - From 1101 px, inside a .wrap--notes: the text column keeps a measure
+     of --note-measure and the note sits beside it, at running-text size
+     (a note is often 12 words or more: never in small type).
+   - Elsewhere (narrow screens, or a section without .wrap--notes): the
+     note opens as a numbered block right under the line of its call.
+   No script, nothing moves, identical in reduced motion. */
+:root {
+  --note-w: 20rem;
+  --note-gap: 2.5rem;
+  --note-measure: 44rem;
+}
+
+body {
+  counter-reset: landing-note;
+}
+
+.note {
+  counter-increment: landing-note;
+}
+
+.note::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  position: relative;
+  top: -0.5em;
+  margin-inline: 0.12em 0.18em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: max(12px, 0.7em);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.note__body {
+  display: block;
+  margin-block: 0.5em 0.75em;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: start;
+  text-transform: none;
+  text-wrap: pretty;
+}
+
+.note__body::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  margin-inline-end: 0.6em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+@media (min-width: 1101px) {
+  /* The column leaves room: the text keeps its measure on the left, the
+     notes run beside it. Text blocks that carry their own max-width
+     (intro, lede) take the full column so that every note lines up. */
+  .wrap--notes {
+    padding-inline-end: max(calc(var(--note-w) + var(--note-gap)), calc(var(--wrap) - var(--note-measure)));
+  }
+
+  .wrap--notes .section-head,
+  .wrap--notes .section-intro,
+  .wrap--notes .lede {
+    max-width: none;
+  }
+
+  .wrap--notes .note__body {
+    float: right;
+    clear: right;
+    width: var(--note-w);
+    margin-block: 0.15em 0.9em;
+    margin-inline: 0 calc(-1 * (var(--note-w) + var(--note-gap)));
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    line-height: var(--lh-body);
+  }
+}
+
+/* ---------- 8. Narrative gauge (journey, program: field gauge) ----------
+   Where the reader is, in the unit of the story (« Semaine 3 sur 6 »).
+   Each step carries its label (HTML of a phrase, the value in <b>).
+   Decorative double of the step's moment and title: always in a container
+   marked aria-hidden="true" data-qa-decor, never the only carrier of an
+   information.
+   - .gauge--step: the label of one step, before its moment, in the list.
+     Shown wherever the scroll theatre does not run (small screen, reduced
+     motion, short screen, no script); the section hides it under .sc-pin.
+   - .gauge--live: one label in the left margin, read bottom to top like
+     the spine of a book, holding one .gauge__label per step. Hidden by
+     default; under .sc-pin the section shows it and reveals the label of
+     the current step (data-active or data-reached, written by scroll.js),
+     matched by rank in CSS: no script of its own. */
+.gauge {
+  display: none;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.gauge b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.gauge--step {
+  display: inline;
+  color: var(--ink);
+}
+
+.gauge--step::after {
+  content: "·";
+  content: "·" / "";
+  margin-inline: 0.6em;
+  color: var(--muted);
+}
+
+.gauge--live {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.gauge--live .gauge__label {
+  display: none;
+}
+
+.gauge--live b {
+  margin-inline: 0.2em;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* The hairline that carries the label, as on an altimeter. */
+.gauge--live::after {
+  content: "";
+  display: inline-block;
+  inline-size: 56px;
+  block-size: 1px;
+  margin-inline-start: 16px;
+  vertical-align: middle;
+  background: var(--line-strong);
+}
+
+/* === fin notes en marge === */
+
+/* === annotations à main levée : bloc réservé (annotate.js) === */
+/* Hand-drawn annotations: <mark data-annotate="underline | highlight |
+   strike | circle | box | bracket">. principe : Rough Notation, MIT (see
+   annotate.js). Without the engine (no JavaScript, or a page that does not
+   load annotate.js): a sober emphasis in the highlight colour, never the
+   browser's yellow <mark>. With it (html.an-on): the drawn stroke replaces
+   that emphasis. Two per page at most. */
+mark:where([data-annotate]) {
+  background: none;
+  color: inherit;
+}
+
+[data-annotate] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--hl);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+[data-annotate="strike"] {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.07em;
+}
+
+/* A highlighted word is read in ink: muted text on a tint would fall under
+   4.5:1. */
+[data-annotate="highlight"] {
+  text-decoration-line: none;
+  background-color: var(--tint);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* A circle or a frame never breaks across two lines (1 to 3 words), and
+   keeps the neighbouring words out of its stroke (set with or without the
+   engine, so that nothing shifts when it starts). */
+[data-annotate="circle"],
+[data-annotate="box"] {
+  margin-inline: 0.22em;
+  white-space: nowrap;
+}
+
+[data-annotate="bracket"] {
+  margin-inline: 0.3em;
+}
+
+/* Engine running: the element hosts its stroke (stacking context, so that
+   the highlighter passes under the letters and over any card). */
+.an-on [data-annotate] {
+  position: relative;
+  z-index: 0;
+  text-decoration-line: none;
+  background-color: transparent;
+}
+
+/* max-width: none, or the base svg rule (max-width: 100%) collapses the
+   overlay to 0 px when the phrase wraps (the containing block of a split
+   inline has no width), and a 0 px SVG is not painted. */
+.an-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 1px;
+  max-width: none;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.an-svg path {
+  fill: none;
+  stroke: var(--hl);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-annotate="highlight"] > .an-svg {
+  z-index: -1;
+}
+
+[data-annotate="highlight"] > .an-svg path {
+  stroke-linecap: butt;
+  stroke-opacity: 0.2;
+}
+
+.band-dark [data-annotate="highlight"] > .an-svg path {
+  stroke-opacity: 0.34;
+}
+
+/* Drawn once: the dash runs from hidden to whole (pathLength="1"). */
+[data-annotate].an-pending > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+[data-annotate].is-drawn > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--an-dur, 0.8s) var(--ease) var(--an-delay, 0s);
+}
+
+@media (forced-colors: active) {
+  .an-svg path {
+    stroke: CanvasText;
+  }
+}
+/* === fin annotations === */
 /* ---- section : topbar ---- */
 .s-topbar {
   position: sticky;
@@ -1195,6 +1481,21 @@ textarea.field__input {
   height: var(--topbar-h);
   border-bottom: 1px solid var(--line);
   background: var(--brand-light);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+/* Scrolled: the bar lifts off the page (M10, without blur). */
+.s-topbar[data-scrolled] {
+  box-shadow: 0 12px 28px -24px var(--brand-shadow);
+}
+
+/* Hidden while reading down: off screen, and inert (script), so that neither
+   the logo nor the button can take the focus or reach a screen reader. */
+.s-topbar[data-hidden] {
+  transform: translateY(calc(-100% - 16px));
+  box-shadow: none;
 }
 
 .s-topbar__inner {
@@ -1230,6 +1531,28 @@ textarea.field__input {
   min-height: 44px;
   padding: 8px 22px;
   font-size: 0.9375rem;
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+/* The button steps aside (hero button, conversion block or final CTA on
+   screen; on a small screen, the mobile bar shown): transparent AND inert
+   (script), never just transparent. */
+.s-topbar[data-cta-off] .s-topbar__cta.btn {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-topbar,
+  .s-topbar__cta.btn {
+    transition: none;
+  }
+
+  .s-topbar[data-cta-off] .s-topbar__cta.btn {
+    transform: none;
+  }
 }
 /* ---- section : hero ---- */
 .s-hero {
@@ -1338,6 +1661,510 @@ textarea.field__input {
 
   .s-hero__visual {
     justify-self: start;
+  }
+}
+/* ---- section : chapters ---- */
+/* ---------- In-flow table of contents (always there, works without script) ---------- */
+.s-chapters__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-chapters__grid > .section-head {
+  margin-bottom: 0;
+}
+
+.s-chapters__list {
+  counter-reset: s-chapters;
+  border-top: 1px solid var(--line);
+}
+
+.s-chapters__item {
+  counter-increment: s-chapters;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-chapters__link {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) 20px;
+  gap: 0 16px;
+  align-items: baseline;
+  min-height: 64px;
+  padding: 18px 4px 18px 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.s-chapters__n {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.s-chapters__n::before {
+  content: counter(s-chapters, decimal-leading-zero);
+  content: counter(s-chapters, decimal-leading-zero) / "";
+}
+
+.s-chapters__label {
+  display: block;
+  font-size: var(--t-h3);
+  font-weight: 800;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.015em;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color var(--dur-fast) var(--ease);
+}
+
+.s-chapters__desc {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-chapters__arrow {
+  align-self: center;
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.s-chapters__link:hover .s-chapters__label {
+  text-decoration-color: currentColor;
+}
+
+.s-chapters__link:hover .s-chapters__arrow {
+  color: var(--ink);
+  transform: translateY(3px);
+}
+
+/* The chapter being read, when the reader comes back up to the list. */
+.s-chapters__link[aria-current="true"] .s-chapters__n {
+  color: var(--hl);
+}
+
+.s-chapters__link[aria-current="true"] .s-chapters__label {
+  text-decoration-color: var(--hl);
+}
+
+@media (max-width: 1100px) {
+  .s-chapters__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .s-chapters__grid > .section-head {
+    margin-bottom: var(--head-gap);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-chapters__link {
+    grid-template-columns: 2.25rem minmax(0, 1fr) 20px;
+    gap: 0 12px;
+    padding-block: 14px;
+  }
+}
+
+/* ---------- The table of contents that follows the reading ----------
+   Shown by the script only (hidden attribute in the markup), once the
+   in-flow list has scrolled away. From 1101 px: a rail of marks in the
+   left page margin; below: a slim bar under the top bar that opens the
+   list. One element, two layouts. */
+.s-chapters__float {
+  position: fixed;
+  z-index: 55;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    visibility 0s linear var(--dur-fast);
+}
+
+.s-chapters__float[data-visible] {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+.s-chapters__rail {
+  counter-reset: s-chapters-rail;
+}
+
+.s-chapters__rail > li {
+  counter-increment: s-chapters-rail;
+}
+
+.s-chapters__rlink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.s-chapters__rn {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.s-chapters__rn::before {
+  content: counter(s-chapters-rail, decimal-leading-zero);
+  content: counter(s-chapters-rail, decimal-leading-zero) / "";
+}
+
+.s-chapters__rlink[aria-current="true"] .s-chapters__rn {
+  color: var(--ink);
+}
+
+/* Mark of a chapter: a hairline; read (passed) chapters are inked; the
+   current one is longer and fills with the reading of the chapter. */
+.s-chapters__tick {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 14px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--line-strong);
+}
+
+.s-chapters__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+.s-chapters__rail > [data-passed] .s-chapters__fill,
+.s-chapters__rlink[aria-current="true"] .s-chapters__fill {
+  transform: none;
+}
+
+.s-chapters__rlink[aria-current="true"] .s-chapters__tick {
+  width: 28px;
+}
+
+.s-chapters__meter {
+  display: none;
+}
+
+@keyframes s-chapters-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Reading progress inside a chapter, tied to the scroll by the browser
+   (view timelines named by the script on the chapter sections): from the
+   top of the chapter crossing 40 % of the screen to its end crossing it.
+   Without support, the current mark is simply full. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .s-chapters__float[data-progress-on] .s-chapters__fill,
+    .s-chapters__float[data-progress-on] .s-chapters__meter {
+      animation: s-chapters-fill linear both;
+      animation-range: cover 60vh cover calc(100% - 40vh);
+    }
+  }
+}
+
+/* Narrow: the slim bar under the top bar, and its list. */
+@media (max-width: 1100px) {
+  .s-chapters__float {
+    top: var(--topbar-h);
+    right: 0;
+    left: 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 14px 28px -24px var(--brand-shadow);
+  }
+
+  /* The top bar steps aside while reading down: the chapter bar takes its
+     place, and comes back down with it. */
+  :root:has(.s-topbar[data-hidden]) .s-chapters__float {
+    transform: translateY(calc(-1 * var(--topbar-h)));
+  }
+
+  .s-chapters__float {
+    transition:
+      opacity var(--dur-fast) var(--ease),
+      transform 0.3s var(--ease),
+      visibility 0s linear var(--dur-fast);
+  }
+
+  .s-chapters__float[data-visible] {
+    transition:
+      opacity var(--dur-fast) var(--ease),
+      transform 0.3s var(--ease);
+  }
+
+  .s-chapters__toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+    padding: 0 calc((100% - var(--wrap)) / 2);
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font-size: 1rem;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .s-chapters__count {
+    flex: none;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .s-chapters__now {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .s-chapters__chev {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    transition: transform var(--dur-fast) var(--ease);
+  }
+
+  .s-chapters__float[data-open] .s-chapters__chev {
+    transform: rotate(180deg);
+  }
+
+  .s-chapters__meter {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    display: block;
+    height: 2px;
+    background: var(--gradient);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+  }
+
+  .s-chapters__float:not([data-open]) .s-chapters__rail {
+    display: none;
+  }
+
+  .s-chapters__rail {
+    max-height: calc(100vh - var(--topbar-h) - 64px);
+    overflow-y: auto;
+    padding: 4px 0 12px;
+    border-top: 1px solid var(--line);
+    overscroll-behavior: contain;
+  }
+
+  .s-chapters__rlink {
+    gap: 14px;
+    min-height: 48px;
+    padding: 0 calc((100% - var(--wrap)) / 2);
+  }
+
+  .s-chapters__rn {
+    flex: none;
+    width: 2.25rem;
+  }
+
+  .s-chapters__rlink .s-chapters__tick {
+    display: none;
+  }
+
+  .s-chapters__rlabel {
+    font-weight: 600;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__rn {
+    color: var(--hl);
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__rlabel {
+    font-weight: 800;
+  }
+
+  /* Focus and anchors land below the bar, never under it. */
+  :root:has(.s-chapters__float[data-visible]) {
+    scroll-padding-top: calc(var(--topbar-h) + 64px);
+  }
+}
+
+/* Wide: the rail in the left page margin. Up to 1439 px the margin is
+   48 px: marks only, against the edge of the screen. From 1440 px (100 px
+   of margin) the rail moves beside the text column and shows the numbers,
+   and from 1700 px the titles. Before that, a title shows on hover and
+   focus, as a label beside its mark (Escape hides it). */
+@media (min-width: 1101px) {
+  .s-chapters__float {
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+  }
+
+  .s-chapters__toggle {
+    display: none;
+  }
+
+  .s-chapters__rail {
+    display: grid;
+    justify-items: start;
+  }
+
+  .s-chapters__rlink {
+    gap: 10px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+
+  .s-chapters__tick {
+    width: 10px;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__tick {
+    width: 20px;
+  }
+
+  .s-chapters__rn {
+    display: none;
+  }
+
+  .s-chapters__rlabel {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 12px);
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    font-size: var(--t-small);
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-4px, -50%);
+    transition:
+      opacity var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+
+  /* A bridge, so that the pointer can travel from the mark to its label. */
+  .s-chapters__rlabel::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: 100%;
+    bottom: -1px;
+    width: 14px;
+  }
+
+  .s-chapters__rlink:hover .s-chapters__rlabel,
+  .s-chapters__rlink:focus-visible .s-chapters__rlabel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, -50%);
+  }
+
+  .s-chapters__float[data-quiet] .s-chapters__rlabel {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .s-chapters__rlink:focus-visible {
+    outline-offset: 4px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .s-chapters__float {
+    right: calc((100% + var(--wrap)) / 2 + 20px);
+    left: auto;
+  }
+
+  .s-chapters__rail {
+    justify-items: end;
+  }
+
+  .s-chapters__rlink {
+    flex-direction: row-reverse;
+    min-width: 32px;
+  }
+
+  .s-chapters__tick {
+    width: 14px;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__tick {
+    width: 28px;
+  }
+
+  .s-chapters__rn {
+    display: block;
+  }
+}
+
+@media (min-width: 1700px) {
+  .s-chapters__rlabel {
+    position: static;
+    max-width: calc((100vw - var(--wrap)) / 2 - 110px);
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--muted);
+    font-weight: 500;
+    white-space: normal;
+    text-align: end;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .s-chapters__rlabel::before {
+    content: none;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__rlabel {
+    color: var(--ink);
+    font-weight: 700;
   }
 }
 /* ---- section : proof-band ---- */
@@ -1978,6 +2805,33 @@ textarea.field__input {
   opacity: 1;
   transform: none;
 }
+/* Narrative gauge (optional field gauge of each step; the .gauge component
+   lives in base.css). Pinned: one label in the left margin of the stage
+   shows the label of the active step (data-active, written by scroll.js),
+   matched by rank without a script (six steps at most). Elsewhere: each
+   step shows its own label before its moment. */
+.sc-pin .s-journey__step .gauge--step {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+  .sc-pin .s-journey__gauge {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: calc((100% + var(--wrap)) / 2 + 20px);
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.s-journey__track:has(.s-journey__step:nth-child(1)[data-active]) .s-journey__gauge .gauge__label:nth-child(1),
+.s-journey__track:has(.s-journey__step:nth-child(2)[data-active]) .s-journey__gauge .gauge__label:nth-child(2),
+.s-journey__track:has(.s-journey__step:nth-child(3)[data-active]) .s-journey__gauge .gauge__label:nth-child(3),
+.s-journey__track:has(.s-journey__step:nth-child(4)[data-active]) .s-journey__gauge .gauge__label:nth-child(4),
+.s-journey__track:has(.s-journey__step:nth-child(5)[data-active]) .s-journey__gauge .gauge__label:nth-child(5),
+.s-journey__track:has(.s-journey__step:nth-child(6)[data-active]) .s-journey__gauge .gauge__label:nth-child(6) {
+  display: inline;
+}
 /* ---- section : outcomes ---- */
 .s-outcomes__row {
   display: grid;
@@ -2025,63 +2879,156 @@ textarea.field__input {
   color: var(--muted);
   text-wrap: pretty;
 }
-/* ---- section : testimonials ---- */
-.s-testi__grid {
+/* ---- section : wall ---- */
+.s-wall__layout {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
-  align-items: start;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
 }
 
-.s-testi__card {
+/* No summary and no pull quote: the wall takes the whole width. */
+.s-wall__layout:not(:has(.s-wall__aside > *)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.s-wall__layout:not(:has(.s-wall__aside > *)) .s-wall__aside {
+  display: none;
+}
+
+.s-wall__layout:not(:has(.s-wall__aside > *)) .s-wall__list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+}
+
+.s-wall__aside {
+  display: grid;
+  align-content: start;
+  align-self: start;
+  gap: clamp(28px, 1rem + 1.6vw, 44px);
+}
+
+/* The left column stays on screen while the wall scrolls, on screens tall
+   enough to hold it whole (no pinning: it costs nothing to the page budget). */
+@media (min-width: 1101px) and (min-height: 760px) {
+  .s-wall__aside {
+    position: sticky;
+    top: calc(var(--topbar-h) + 40px);
+  }
+}
+
+.s-wall__summary {
+  display: grid;
+  gap: 6px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-strong);
+}
+
+.s-wall__score {
+  font-size: clamp(2.25rem, 1.6rem + 2vw, 3.25rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-wall__source {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-wall__pull {
+  position: relative;
   display: grid;
   gap: 18px;
-  padding: clamp(22px, 1rem + 1.2vw, 32px);
+  padding-left: 24px;
 }
 
-.s-testi__card:nth-child(2) {
-  margin-top: clamp(0px, 3vw, 40px);
-}
-
-.s-testi__result {
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-  font-size: 1.25rem;
-  line-height: 1.3;
-  font-weight: 800;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
-}
-
-.s-testi__result::before {
+.s-wall__pull::before {
   content: "";
-  display: block;
-  width: 40px;
-  height: 3px;
-  margin-bottom: 14px;
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 3px;
   border-radius: 3px;
-  background: var(--gradient);
+  background: var(--gradient-v);
 }
 
-.s-testi__quote p {
+.s-wall__pull blockquote p {
+  font-size: clamp(1.375rem, 1.1rem + 0.9vw, 1.75rem);
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.015em;
   text-wrap: pretty;
 }
 
-.s-testi__quote p::before {
+/* Cards keep their own height (align-items: start): a long review or a
+   video never leaves a hollow card next to it. */
+.s-wall__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(14px, 0.5rem + 1vw, 24px);
+}
+
+/* Masonry only where the browser lays it out natively: reading and tab
+   order stay the DOM order (never CSS columns, never a script that moves
+   cards between columns). */
+@supports (grid-template-rows: masonry) {
+  .s-wall__list {
+    grid-template-rows: masonry;
+  }
+}
+
+.s-wall__item {
+  min-width: 0;
+  border-radius: var(--radius-card);
+}
+
+.s-wall__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(20px, 0.9rem + 0.9vw, 28px);
+}
+
+.s-wall__result {
+  color: var(--hl);
+  font-size: 1.125rem;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.s-wall__quote p {
+  text-wrap: pretty;
+}
+
+.s-wall__quote p::before {
   content: "«\00a0";
 }
 
-.s-testi__quote p::after {
+.s-wall__quote p::after {
   content: "\00a0»";
 }
 
-.s-testi__who {
+.s-wall__who {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 
-.s-testi__avatar {
+.s-wall__pull .s-wall__who {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.s-wall__avatar {
   display: grid;
   flex: none;
   place-items: center;
@@ -2094,27 +3041,235 @@ textarea.field__input {
   font-weight: 800;
 }
 
-.s-testi__name {
+.s-wall__name {
   display: block;
   font-weight: 700;
   line-height: 1.3;
 }
 
-.s-testi__role {
+.s-wall__role {
   display: block;
   color: var(--muted);
   font-size: var(--t-small);
   line-height: 1.4;
 }
 
+/* Video: a compact row (thumbnail, label, duration) under the quote, opened
+   by the viewer engine; a plain link to the file without JavaScript. Without
+   a poster, a composition in the brand colours: the initials on the left and
+   the play disc in the bottom right corner, never on top of each other. */
+.s-wall__video {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 -8px;
+  padding: 8px;
+  border-radius: calc(var(--radius-card) - 4px);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.s-wall__video:hover {
+  background: var(--surface-2);
+}
+
+.s-wall__thumb {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center start;
+  padding-left: 14px;
+  width: clamp(112px, 34%, 148px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--tint);
+}
+
+.s-wall__thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-wall__mark {
+  color: var(--hl);
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.s-wall__play {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__play svg {
+  width: 12px;
+  height: 12px;
+  margin-left: 2px;
+}
+
+.s-wall__video:hover .s-wall__play {
+  transform: scale(1.1);
+}
+
+.s-wall__video-label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.s-wall__video-text {
+  font-weight: 700;
+  line-height: 1.3;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.3em;
+}
+
+.s-wall__video:hover .s-wall__video-text {
+  text-decoration-color: currentColor;
+}
+
+.s-wall__duration {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.s-wall__transcript summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.s-wall__transcript summary::-webkit-details-marker {
+  display: none;
+}
+
+.s-wall__transcript summary::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-left: 2px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__transcript[open] summary::before {
+  transform: rotate(45deg);
+}
+
+.s-wall__transcript p {
+  padding-bottom: 6px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* The fold: a rule across the column, the button in its middle. */
+.s-wall__fold {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: clamp(24px, 1rem + 1vw, 36px);
+}
+
+.s-wall__fold::before,
+.s-wall__fold::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.s-wall__more {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 24px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-cta);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__more:hover {
+  border-color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.s-wall__more svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__more[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .s-wall__item.is-new {
+    animation: s-wall-in 0.5s var(--ease) both;
+    animation-delay: calc(var(--k, 0) * 60ms);
+  }
+}
+
+@keyframes s-wall-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+
 @media (max-width: 1100px) {
-  .s-testi__grid {
+  .s-wall__layout {
     grid-template-columns: minmax(0, 1fr);
-    max-width: 680px;
   }
 
-  .s-testi__card:nth-child(2) {
-    margin-top: 0;
+  .s-wall__aside {
+    max-width: 40rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-wall__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-wall__fold {
+    gap: 12px;
   }
 }
 /* ---- section : comparison ---- */
@@ -2297,175 +3452,337 @@ textarea.field__input {
     grid-template-columns: minmax(0, 1fr);
   }
 }
-/* ---- section : offer-ticket ---- */
-.s-offer__ticket {
-  --notch: 22px;
-  position: relative;
+/* ---- section : bundle-receipt ---- */
+/* Two columns: the items, then the receipt (sticky on wide screens). The
+   grid keeps the default stretch so the receipt's column runs the full
+   height and the sticky ticket can travel. */
+.s-receipt__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
-  max-width: 1100px;
-  margin-inline: auto;
-  border: 1px solid var(--line);
-  border-radius: calc(var(--radius-card) + 8px);
-  background: var(--surface);
-  box-shadow: var(--shadow-lift);
-  transform: perspective(1600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform 0.6s var(--ease);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(32px, 1rem + 4vw, 80px);
 }
 
-.s-offer__ticket::before {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: -1px;
-  left: 32px;
-  right: 32px;
-  height: 5px;
-  border-radius: 0 0 5px 5px;
-  background: var(--gradient);
-}
-
-.s-offer__main {
-  display: grid;
-  align-content: start;
-  gap: 18px;
-  padding: clamp(28px, 1rem + 2.6vw, 52px);
-}
-
-.s-offer__top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-}
-
-.s-offer__name {
-  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
-  line-height: 1.2;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.s-offer__meta {
-  color: var(--muted);
-}
-
-.s-offer__formulas {
-  margin: 4px 0 0;
+/* ---- The items ---- */
+.s-receipt__menu {
+  min-inline-size: 0;
+  margin: 0;
   padding: 0;
   border: 0;
 }
 
-.s-offer__legend {
-  margin-bottom: 10px;
+.s-receipt__legend {
+  margin-bottom: 14px;
   padding: 0;
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: var(--t-label);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
-.s-offer__seg {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
+.s-receipt__items {
+  border-top: 1px solid var(--line);
 }
 
-.s-offer__opt {
-  position: relative;
+.s-receipt__items > li {
+  border-bottom: 1px solid var(--line);
+}
+
+.s-receipt__item {
   display: grid;
-  gap: 2px;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "box name price"
+    "box text text";
+  align-items: baseline;
+  gap: 4px 16px;
   min-height: 64px;
-  padding: 12px 44px 12px 16px;
-  border: 1.5px solid var(--line-strong);
+  margin-block: 6px;
+  padding: 14px 14px;
   border-radius: 12px;
-  background: var(--surface);
-  cursor: pointer;
   transition:
-    border-color var(--dur-fast) var(--ease),
-    background-color var(--dur-fast) var(--ease);
+    background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
 }
 
-.s-offer__opt:has(:checked) {
-  border-color: var(--brand-primary);
-  background: var(--tint);
-  box-shadow: inset 0 0 0 1px var(--brand-primary);
+.s-receipt[data-ready] .s-receipt__item {
+  cursor: pointer;
 }
 
-.s-offer__opt:has(:checked)::after {
-  content: "";
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 20px;
-  height: 20px;
-  background-color: var(--hl);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+.s-receipt[data-ready] .s-receipt__item:hover {
+  background: var(--surface-2);
 }
 
-.s-offer__opt:has(:focus-visible) {
+/* A ticked item lifts onto the paper of the receipt (white surface: the
+   muted description keeps its 4.5:1). */
+.s-receipt[data-ready] .s-receipt__item:has(:checked) {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.s-receipt__item:has(:focus-visible) {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
 
-.s-offer__opt-label {
-  font-weight: 700;
+/* The box is drawn (the real checkbox is visually hidden but focusable). */
+.s-receipt__box {
+  position: relative;
+  grid-area: box;
+  align-self: start;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border: 2px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
 }
 
-.s-offer__opt-price {
+.s-receipt[data-ready] .s-receipt__item:has(:checked) .s-receipt__box {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.s-receipt[data-ready] .s-receipt__item:has(:checked) .s-receipt__box::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background-color: var(--paper);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Without JavaScript the boxes do nothing: the list reads as a price list. */
+.s-receipt:not([data-ready]) .s-receipt__check,
+.s-receipt:not([data-ready]) .s-receipt__box {
+  display: none;
+}
+
+.s-receipt:not([data-ready]) .s-receipt__item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name price"
+    "text text";
+}
+
+.s-receipt__name {
+  grid-area: name;
+  font-weight: 700;
+  line-height: var(--lh-snug);
+}
+
+.s-receipt__text {
+  grid-area: text;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-receipt__price,
+.s-receipt__amount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.s-receipt__price {
+  grid-area: price;
+  justify-self: end;
+}
+
+/* ---- The receipt ---- */
+.s-receipt__aside {
+  min-width: 0;
+}
+
+.s-receipt__ticket {
+  position: sticky;
+  top: calc(var(--topbar-h) + 24px);
+  filter: drop-shadow(0 1px 1px var(--brand-shadow-soft)) drop-shadow(0 22px 24px var(--brand-shadow-soft));
+}
+
+/* Paper with a perforated top and bottom edge: half holes cut by a mask
+   (alpha only, so the mask colour is irrelevant), the shadow follows them
+   through the drop-shadow of the parent. */
+.s-receipt__paper {
+  --hole: 6px;
+  --pitch: 20px;
+  display: grid;
+  gap: 18px;
+  padding: calc(var(--hole) + 22px) clamp(20px, 0.8rem + 1.2vw, 32px) calc(var(--hole) + 26px);
+  border-inline: 1px solid var(--line);
+  background: var(--surface);
+  -webkit-mask:
+    radial-gradient(circle at 50% 0, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) top / var(--pitch) 51% round no-repeat,
+    radial-gradient(circle at 50% 100%, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) bottom / var(--pitch) 51% round no-repeat;
+  mask:
+    radial-gradient(circle at 50% 0, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) top / var(--pitch) 51% round no-repeat,
+    radial-gradient(circle at 50% 100%, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) bottom / var(--pitch) 51% round no-repeat;
+}
+
+.s-receipt__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px dashed var(--line-strong);
+}
+
+.s-receipt__title {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.s-receipt__note {
+  flex-basis: 100%;
   color: var(--muted);
   font-size: var(--t-small);
 }
 
-.s-offer__pricebox {
+.s-receipt__lines {
   display: grid;
-  gap: 6px;
-  padding-top: 6px;
+  gap: 10px;
 }
 
-.s-offer__price {
+.s-receipt__line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.s-receipt__line-name {
+  min-width: 0;
+  text-wrap: pretty;
+}
+
+/* Dotted leader between the name and its amount. */
+.s-receipt__leader {
+  flex: 1 1 16px;
+  min-width: 16px;
+  border-bottom: 2px dotted var(--line-strong);
+  transform: translateY(-0.3em);
+}
+
+/* A line that joins the ticket is printed in: it slides down from the line
+   above. Reduced motion: base.css turns every animation off. */
+.s-receipt__line.is-new {
+  animation: s-receipt-print 0.32s var(--ease) both;
+  animation-delay: calc(var(--k, 0) * 60ms);
+}
+
+@keyframes s-receipt-print {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+.s-receipt__empty {
+  color: var(--muted);
+}
+
+.s-receipt__sums {
+  display: grid;
+  gap: 6px;
+  padding-top: 16px;
+  border-top: 2px dashed var(--line-strong);
+}
+
+.s-receipt__full,
+.s-receipt__total {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
+  justify-content: space-between;
   gap: 4px 12px;
-  font-size: clamp(2.5rem, 2rem + 1.8vw, 3.5rem);
-  line-height: 1;
+}
+
+.s-receipt__full {
+  color: var(--muted);
+}
+
+.s-receipt__full s {
+  text-decoration-thickness: 2px;
+}
+
+.s-receipt__total > :first-child {
   font-weight: 800;
-  letter-spacing: -0.045em;
-  font-variant-numeric: tabular-nums;
 }
 
-.s-offer__unit {
-  color: var(--muted);
-  font-size: var(--t-body);
-  font-weight: 500;
-  letter-spacing: 0;
+.s-receipt__amount--total {
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.s-offer__note {
-  color: var(--muted);
-  text-wrap: pretty;
-}
-
-.s-offer__discount {
-  padding: 12px 16px;
+/* The pack: quiet below its price, tinted once the selection reaches it,
+   outlined in ink once chosen. Never the accent of the conversion button. */
+.s-receipt__pack {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--line);
   border-radius: 12px;
-  background: var(--tint-accent);
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.s-receipt__pack[data-state="better"],
+.s-receipt__pack[data-state="same"] {
+  border-color: var(--hl);
+  background: var(--tint);
+}
+
+.s-receipt__pack[data-state="chosen"] {
+  border-color: var(--ink);
+}
+
+.s-receipt__pack-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-weight: 800;
+}
+
+.s-receipt__pack-msg {
   text-wrap: pretty;
 }
 
-.s-offer__action {
+.s-receipt__pack[data-state="better"] .s-receipt__pack-msg,
+.s-receipt__pack[data-state="same"] .s-receipt__pack-msg {
+  color: var(--hl);
+  font-weight: 700;
+}
+
+.s-receipt__switch {
+  min-height: 48px;
+}
+
+/* Closed offer: nothing left to switch to. */
+html[data-offer-state="closed"] .s-receipt__switch {
+  display: none;
+}
+
+.s-receipt__undo {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.s-receipt__form {
   display: grid;
   gap: 12px;
-  margin-top: 4px;
 }
 
-/* Closed: the button stays, visibly unavailable, its label readable at
-   4.5:1 (muted ink on the tinted surface, never an opacity). */
-.s-offer__cta[disabled] {
+/* Closed or empty: the button stays, visibly unavailable, its label
+   readable at 4.5:1 (muted ink on the tinted surface, never an opacity). */
+.s-receipt__cta[disabled] {
   --btn-bg: var(--surface-2);
   --btn-ink: var(--muted);
   --btn-border: var(--line-strong);
@@ -2475,201 +3792,72 @@ textarea.field__input {
   transform: none;
 }
 
-/* The way out of a closed offer: a real button, same size as the main one. */
-.s-offer__notify {
+.s-receipt__notify {
   min-height: 56px;
 }
 
-/* Single formula: a horizontal ticket. Price and action side by side, then
-   the stub below with its two columns, so no column is left half empty. */
-.s-offer__ticket--single {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-/* Rows without gaps: the action spans spare rows that must stay at zero
-   height; the left column keeps its rhythm by margins. */
-.s-offer__ticket--single .s-offer__main {
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: 0 clamp(32px, 1rem + 3vw, 64px);
-}
-
-.s-offer__ticket--single .s-offer__main > * {
-  grid-column: 1;
-}
-
-.s-offer__ticket--single .s-offer__main > * + :not(.s-offer__action) {
-  margin-top: 18px;
-}
-
-.s-offer__ticket--single .s-offer__main > .s-offer__action {
-  grid-column: 2;
-  grid-row: 1 / span 8;
-  align-self: center;
-}
-
-.s-offer__ticket--single .s-offer__stub {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px clamp(32px, 1rem + 3vw, 64px);
-  border-left: 0;
-  border-top: 2px dashed var(--line-strong);
-  border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
-}
-
-.s-offer__ticket--single .s-offer__prereq {
-  grid-column: 1 / -1;
-}
-
-.s-offer__ticket--single .s-offer__stub::before,
-.s-offer__ticket--single .s-offer__stub::after {
-  top: calc(var(--notch) / -2 - 1px);
-  bottom: auto;
-}
-
-.s-offer__ticket--single .s-offer__stub::before {
-  left: calc(var(--notch) / -2);
-}
-
-.s-offer__ticket--single .s-offer__stub::after {
-  left: auto;
-  right: calc(var(--notch) / -2);
-}
-
-.s-offer__deadline {
+.s-receipt__deadline {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 4px 10px;
+  gap: 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
+  text-align: center;
 }
 
-.s-offer__deadline::before {
+.s-receipt__deadline::before {
   content: "";
+  flex: none;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--brand-accent);
-  box-shadow: 0 0 0 4px var(--tint-accent);
+  background: var(--hl);
 }
 
-.s-offer__stub {
-  position: relative;
-  display: grid;
-  align-content: start;
-  gap: 28px;
-  padding: clamp(28px, 1rem + 2.6vw, 52px);
-  border-left: 2px dashed var(--line-strong);
-  border-radius: 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px) 0;
-  background: var(--surface-2);
-}
-
-.s-offer__stub::before,
-.s-offer__stub::after {
-  content: "";
-  position: absolute;
-  left: calc(var(--notch) / -2 - 1px);
-  width: var(--notch);
-  height: var(--notch);
-  border-radius: 50%;
-  background: var(--paper);
-  box-shadow: inset 0 0 0 1px var(--line);
-}
-
-.s-offer__stub::before {
-  top: calc(var(--notch) / -2);
-}
-
-.s-offer__stub::after {
-  bottom: calc(var(--notch) / -2);
-}
-
-.s-offer__col-title {
-  margin-bottom: 14px;
-  font-size: 1.125rem;
-  font-weight: 800;
-}
-
-.s-offer__steps {
-  display: grid;
-  gap: 12px;
-  counter-reset: suite;
-}
-
-.s-offer__steps > li {
-  position: relative;
-  padding-left: 38px;
-  counter-increment: suite;
-}
-
-.s-offer__steps > li::before {
-  content: counter(suite);
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--brand-dark);
-  color: var(--brand-light);
-  font-size: 0.8125rem;
-  font-weight: 700;
-}
-
-.s-offer__prereq {
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-
-.s-offer__conditions {
+.s-receipt__conditions {
   max-width: 62ch;
-  margin: clamp(24px, 1rem + 1vw, 36px) auto 0;
+  margin-top: clamp(24px, 1rem + 1vw, 36px);
   color: var(--muted);
-  text-align: center;
   text-wrap: pretty;
 }
 
-@media (max-width: 900px) {
-  .s-offer__ticket {
+@media (max-width: 1100px) {
+  .s-receipt__grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .s-offer__ticket--single .s-offer__main {
-    grid-template-columns: minmax(0, 1fr);
+  .s-receipt__ticket {
+    position: static;
+    max-width: 560px;
+  }
+}
+
+/* A short screen: a stuck receipt would hide its own button. */
+@media (max-height: 759px) {
+  .s-receipt__ticket {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-receipt__item {
+    column-gap: 12px;
+    padding-inline: 10px;
   }
 
-  .s-offer__ticket--single .s-offer__main > .s-offer__action {
-    grid-column: 1;
-    grid-row: auto;
-    margin-top: 18px;
+  .s-receipt__paper {
+    padding-inline: 16px;
   }
 
-  .s-offer__ticket--single .s-offer__stub {
-    grid-template-columns: minmax(0, 1fr);
+  .s-receipt__pack {
+    padding-inline: 14px;
   }
 
-  .s-offer__stub {
-    border-left: 0;
-    border-top: 2px dashed var(--line-strong);
-    border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
-  }
-
-  .s-offer__stub::before,
-  .s-offer__stub::after {
-    top: calc(var(--notch) / -2 - 1px);
-    bottom: auto;
-  }
-
-  .s-offer__stub::before {
-    left: calc(var(--notch) / -2);
-  }
-
-  .s-offer__stub::after {
-    left: auto;
-    right: calc(var(--notch) / -2);
+  .s-receipt__switch,
+  .s-receipt__cta {
+    padding-inline: 16px;
   }
 }
 /* ---- section : guarantee ---- */
@@ -3117,6 +4305,30 @@ textarea.field__input {
   </div>
 </section>
 <!-- /section:hero -->
+<!-- section:sommaire -->
+<nav id="sommaire" class="s-chapters section" aria-labelledby="sommaire-titre" data-section="chapters" data-chapters>
+  <div class="wrap s-chapters__grid">
+    <div class="section-head">
+      <h2 id="sommaire-titre" class="section-title">Au sommaire<br><span class="hl">de la saison 2027</span></h2>
+      <p class="section-intro">Sept parties, des déconvenues d’un premier potager jusqu’à la commande. Le prix et la garantie sont dans la sixième.</p>
+    </div>
+    <ol class="s-chapters__list" role="list">
+      <li class="s-chapters__item"><a class="s-chapters__link" href="#probleme"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">Le constat</span><span class="s-chapters__desc">Les quatre déconvenues d’un premier potager</span></span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li><li class="s-chapters__item"><a class="s-chapters__link" href="#kit"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">Le contenu</span><span class="s-chapters__desc">Le plan, 32 lettres, 30 fiches et le calendrier</span></span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li><li class="s-chapters__item"><a class="s-chapters__link" href="#parcours"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">La saison</span><span class="s-chapters__desc">Cinq temps, de février à octobre</span></span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li><li class="s-chapters__item"><a class="s-chapters__link" href="#avis"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">Les avis</span><span class="s-chapters__desc">Trois jardiniers, trois carrés occupés jusqu’en octobre</span></span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li><li class="s-chapters__item"><a class="s-chapters__link" href="#comparatif"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">Les options</span><span class="s-chapters__desc">Un livre, une application ou la saison</span></span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li><li class="s-chapters__item"><a class="s-chapters__link" href="#offre"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">Prix et garantie</span><span class="s-chapters__desc">69 € pour la saison, soixante jours pour juger</span></span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li><li class="s-chapters__item"><a class="s-chapters__link" href="#questions"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">Questions</span><span class="s-chapters__desc">Climat, petit carré, temps à y passer</span></span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li>
+    </ol>
+  </div>
+</nav>
+<nav id="sommaire-suivi" class="s-chapters__float" aria-label="Chapitres de la page" data-chapters-float data-bar data-progress hidden>
+  <button class="s-chapters__toggle" type="button" aria-expanded="false" aria-controls="sommaire-liste">
+    <span class="s-chapters__count" data-count="Chapitre {n} sur {total}"></span>
+    <span class="s-chapters__now"></span>
+    <svg class="s-chapters__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    <span class="s-chapters__meter" aria-hidden="true"></span>
+  </button>
+  <ol id="sommaire-liste" class="s-chapters__rail" role="list">
+    <li><a class="s-chapters__rlink" href="#probleme"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">Le constat</span></a></li><li><a class="s-chapters__rlink" href="#kit"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">Le contenu</span></a></li><li><a class="s-chapters__rlink" href="#parcours"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">La saison</span></a></li><li><a class="s-chapters__rlink" href="#avis"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">Les avis</span></a></li><li><a class="s-chapters__rlink" href="#comparatif"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">Les options</span></a></li><li><a class="s-chapters__rlink" href="#offre"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">Prix et garantie</span></a></li><li><a class="s-chapters__rlink" href="#questions"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">Questions</span></a></li>
+  </ol>
+</nav>
+<!-- /section:sommaire -->
 <!-- section:preuves -->
 <section id="preuves" class="s-proof section" aria-labelledby="preuves-titre" data-section="proof-band">
   <div class="wrap">
@@ -3242,7 +4454,7 @@ textarea.field__input {
             <li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
-                <p class="s-journey__when">Février</p>
+                <p class="s-journey__when"><span class="gauge gauge--step" aria-hidden="true" data-qa-decor>Lettre <b>1</b> sur 32</span>Février</p>
                 <h3 class="s-journey__title">Recevoir son plan</h3>
                 <div class="s-journey__body"><div>
                   <p class="s-journey__text">Vous donnez vos mesures, votre exposition et vos légumes préférés. Le plan arrive sous cinq jours.</p>
@@ -3253,7 +4465,7 @@ textarea.field__input {
             </li><li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
-                <p class="s-journey__when">Mars</p>
+                <p class="s-journey__when"><span class="gauge gauge--step" aria-hidden="true" data-qa-decor>Lettre <b>2</b> sur 32</span>Mars</p>
                 <h3 class="s-journey__title">Les premiers semis à l’abri</h3>
                 <div class="s-journey__body"><div>
                   <p class="s-journey__text">Tomates et basilic démarrent sur un rebord de fenêtre pendant que le carré se prépare.</p>
@@ -3264,7 +4476,7 @@ textarea.field__input {
             </li><li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
-                <p class="s-journey__when">Avril</p>
+                <p class="s-journey__when"><span class="gauge gauge--step" aria-hidden="true" data-qa-decor>Lettre <b>7</b> sur 32</span>Avril</p>
                 <h3 class="s-journey__title">Semer en décalé</h3>
                 <div class="s-journey__body"><div>
                   <p class="s-journey__text">Salades et radis partent par petites lignes toutes les deux semaines, jamais tout le même jour.</p>
@@ -3275,7 +4487,7 @@ textarea.field__input {
             </li><li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
-                <p class="s-journey__when">Mai à juillet</p>
+                <p class="s-journey__when"><span class="gauge gauge--step" aria-hidden="true" data-qa-decor>Lettre <b>11</b> sur 32</span>Mai à juillet</p>
                 <h3 class="s-journey__title">Planter et pailler</h3>
                 <div class="s-journey__body"><div>
                   <p class="s-journey__text">Les plants passent dehors après les dernières gelées. Le paillage garde l’eau, les pièges retiennent les limaces.</p>
@@ -3286,7 +4498,7 @@ textarea.field__input {
             </li><li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
-                <p class="s-journey__when">Août et septembre</p>
+                <p class="s-journey__when"><span class="gauge gauge--step" aria-hidden="true" data-qa-decor>Lettre <b>24</b> sur 32</span>Août et septembre</p>
                 <h3 class="s-journey__title">La deuxième saison</h3>
                 <div class="s-journey__body"><div>
                   <p class="s-journey__text">Les cases libérées reçoivent mâche, épinards et radis d’hiver pour récolter jusqu’en octobre.</p>
@@ -3296,6 +4508,7 @@ textarea.field__input {
               <div class="s-journey__inline" aria-hidden="true" data-qa-decor><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Plan du carré · septembre</b></div><div class="obj-rule"></div> <div class="obj-grid" style="--cols:4"><span>Tomate</span><span>Tomate</span><span>Basilic</span><span>Persil</span> <span class="is-warn">Mâche</span><span class="is-warn">Mâche</span><span class="is-warn">Épinard</span><span class="is-warn">Radis noir</span> <span>Carotte</span><span>Carotte</span><span>Poireau</span><span class="is-warn">Épinard</span></div> <div class="obj-rule"></div><p class="obj-small">Cases semées en août : 5 sur 16</p></div></div>
             </li>
           </ol>
+          <p class="gauge gauge--live s-journey__gauge" aria-hidden="true" data-qa-decor><span class="gauge__label">Lettre <b>1</b> sur 32</span><span class="gauge__label">Lettre <b>2</b> sur 32</span><span class="gauge__label">Lettre <b>7</b> sur 32</span><span class="gauge__label">Lettre <b>11</b> sur 32</span><span class="gauge__label">Lettre <b>24</b> sur 32</span></p>
         </div>
         <div class="s-journey__scenes" aria-hidden="true" data-qa-decor>
           <div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Questionnaire · 5 minutes</b></div><div class="obj-rule"></div> <div class="obj-check"><span class="is-done">Mesures : 1,20 m × 1,20 m</span><span class="is-done">Exposition : plein sud</span><span class="is-done">Code postal : 35000</span><span class="is-done">Légumes aimés : tomates, salades, haricots</span><span>Envoyer</span></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Rebord de fenêtre · mars</b></div><div class="obj-rule"></div> <div class="obj-check"><span class="is-done">Tomate cerise · 4 godets</span><span class="is-done">Tomate ronde · 2 godets</span><span class="is-done">Basilic · 2 godets</span><span>Persil · le 22 mars</span></div> <div class="obj-rule"></div><p class="obj-small">Lever des semis attendu sous 8 à 10 jours</p></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Laitues · semis en décalé</b></div><div class="obj-rule"></div> <div class="obj-grid" style="--cols:3"><span class="is-head">Ligne</span><span class="is-head">Semée</span><span class="is-head">Récoltée</span> <span>Laitue 1</span><span>5 avril</span><span>mi-mai</span><span>Laitue 2</span><span>19 avril</span><span>fin mai</span> <span>Laitue 3</span><span>3 mai</span><span>mi-juin</span><span>Laitue 4</span><span>17 mai</span><span>fin juin</span></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Lettre du lundi 17 mai</b><span class="obj-push">n° 13</span></div><div class="obj-rule"></div> <p class="obj-title">Cette semaine au carré</p> <div class="obj-check"><span class="is-done">Planter les tomates après le 15 mai</span><span class="is-done">Pailler toutes les cases</span><span>Poser deux pièges à limaces</span><span>Semer la ligne de laitues n° 4</span></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Plan du carré · septembre</b></div><div class="obj-rule"></div> <div class="obj-grid" style="--cols:4"><span>Tomate</span><span>Tomate</span><span>Basilic</span><span>Persil</span> <span class="is-warn">Mâche</span><span class="is-warn">Mâche</span><span class="is-warn">Épinard</span><span class="is-warn">Radis noir</span> <span>Carotte</span><span>Carotte</span><span>Poireau</span><span class="is-warn">Épinard</span></div> <div class="obj-rule"></div><p class="obj-small">Cases semées en août : 5 sur 16</p></div></div>
@@ -3338,25 +4551,127 @@ textarea.field__input {
 </section>
 <!-- /section:resultats -->
 <!-- section:avis -->
-<section id="avis" class="s-testi section" aria-labelledby="avis-titre" data-section="testimonials">
+<section id="avis" class="s-wall section" aria-labelledby="avis-titre" data-section="wall">
   <div class="wrap">
     <div class="section-head">
-      <h2 id="avis-titre" class="section-title">Ils ont récolté <span class="hl">jusqu’en octobre</span></h2>
+      <h2 id="avis-titre" class="section-title">Ils ont jardiné<br><span class="hl">la saison 2026</span></h2>
+      <p class="section-intro">Des avis envoyés à la fin de la saison 2026, ici fictifs. Sur une vraie page, chacun se publie avec l’accord de son auteur.</p>
     </div>
-    <div class="s-testi__grid" data-reveal-group>
-      <figure class="s-testi__card card" data-reveal>
-        <p class="s-testi__result">Des salades chaque semaine de mai à septembre</p>
-        <blockquote class="s-testi__quote"><p>L’an dernier, j’avais trente laitues en même temps. Cette année, la lettre du lundi me disait quand semer la ligne suivante.</p></blockquote>
-        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">AL</span><span><span class="s-testi__name">Amandine L.</span><span class="s-testi__role">Première saison, jardin de ville (avis fictif)</span></span></figcaption>
-      </figure><figure class="s-testi__card card" data-reveal>
-        <p class="s-testi__result">Les tomates plantées au bon moment</p>
-        <blockquote class="s-testi__quote"><p>Je plantais toujours trop tôt et je perdais tout au premier coup de froid. Le calendrier m’a fait attendre deux semaines de plus.</p></blockquote>
-        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">GP</span><span><span class="s-testi__name">Gérard P.</span><span class="s-testi__role">Retraité, quatre carrés en Auvergne (avis fictif)</span></span></figcaption>
-      </figure><figure class="s-testi__card card" data-reveal>
-        <p class="s-testi__result">Un carré occupé jusqu’en octobre</p>
-        <blockquote class="s-testi__quote"><p>Je n’avais jamais pensé à la deuxième saison. En octobre, on mangeait encore nos radis noirs et nos épinards.</p></blockquote>
-        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">ID</span><span><span class="s-testi__name">Inès D.</span><span class="s-testi__role">Jardin partagé dans le Nord (avis fictif)</span></span></figcaption>
-      </figure>
+    <div class="s-wall__layout">
+      <div class="s-wall__aside">
+        <p class="s-wall__summary"><span class="s-wall__score">4,7 sur 5</span><span class="s-wall__detail">note moyenne donnée par 212 jardiniers en fin de saison</span><span class="s-wall__source">Questionnaire de fin de saison 2026 (chiffres fictifs)</span></p>
+        <figure class="s-wall__pull">
+          <blockquote><p>En octobre, le carré donnait encore. Je n’avais jamais tenu un potager aussi longtemps.</p></blockquote>
+          <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">BV</span><span><span class="s-wall__name">Bertrand V.</span><span class="s-wall__role">Première saison, jardin en Touraine (avis fictif)</span></span></figcaption>
+        </figure>
+      </div>
+      <div class="s-wall__main">
+        <ul class="s-wall__list" id="avis-avis" role="list" data-wall-fold="6" data-reveal-group>
+          <li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Des salades chaque semaine de mai à septembre</p>
+              <blockquote class="s-wall__quote"><p>L’an dernier, j’avais trente laitues en même temps. Cette année, la lettre du lundi me disait quand semer la ligne suivante.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">AL</span><span><span class="s-wall__name">Amandine L.</span><span class="s-wall__role">Première saison, jardin de ville (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Les tomates plantées au bon moment</p>
+              <blockquote class="s-wall__quote"><p>Je plantais toujours trop tôt et je perdais tout au premier coup de froid. Le calendrier m’a fait attendre deux semaines de plus.</p></blockquote>
+              <a class="s-wall__video" href="https://www.example.com/videos/saison-gerard.mp4" data-viewer="video" data-viewer-group="avis-videos" data-viewer-title="Gérard P." data-viewer-caption="Retraité, quatre carrés en Auvergne (avis fictif)" data-viewer-captions="https://www.example.com/videos/saison-gerard.vtt">
+                <span class="s-wall__thumb" aria-hidden="true" data-qa-decor><span class="s-wall__mark">GP</span><span class="s-wall__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M7 4.5v15l12.5-7.5z"/></svg></span></span>
+                <span class="s-wall__video-label"><span class="s-wall__video-text">Voir le témoignage<span class="sr-only"> : Gérard P.</span></span><span class="s-wall__duration">1 min 32</span></span>
+              </a>
+              <details class="s-wall__transcript"><summary>Lire la transcription</summary><p>Je jardine depuis longtemps, mais toujours en rangs. Le carré, c’était nouveau. Le plan m’a dit quoi mettre dans chaque case, et surtout quand. Les tomates sont parties deux semaines plus tard que d’habitude, et pour la première fois je n’ai rien perdu en mai.</p></details>
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">GP</span><span><span class="s-wall__name">Gérard P.</span><span class="s-wall__role">Retraité, quatre carrés en Auvergne (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Un carré occupé jusqu’en octobre</p>
+              <blockquote class="s-wall__quote"><p>Je n’avais jamais pensé à la deuxième saison. En octobre, on mangeait encore nos radis noirs et nos épinards.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">ID</span><span><span class="s-wall__name">Inès D.</span><span class="s-wall__role">Jardin partagé dans le Nord (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              
+              <blockquote class="s-wall__quote"><p>Dix minutes le lundi matin avec mon café, et je savais ce que j’avais à faire dans la semaine. Je n’ai jamais eu besoin de chercher ailleurs.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">RS</span><span><span class="s-wall__name">Romain S.</span><span class="s-wall__role">Deux carrés, maison en Bretagne (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Plus de limaces sur les salades</p>
+              <blockquote class="s-wall__quote"><p>La fiche sur les protections m’a fait poser les planches avant la pluie. Les années précédentes, je découvrais les dégâts le lendemain.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">CM</span><span><span class="s-wall__name">Chantal M.</span><span class="s-wall__role">Jardin familial en Gironde (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Un carré pensé pour les enfants</p>
+              <blockquote class="s-wall__quote"><p>Le plan a mis les fraises et les radis du côté où les enfants passent. Ils allaient voir chaque matin si quelque chose avait poussé.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">JB</span><span><span class="s-wall__name">Julie B.</span><span class="s-wall__role">Mère de deux enfants, jardin en ville (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              
+              <blockquote class="s-wall__quote"><p>Le groupe d’entraide m’a sauvé en juin, quand mes courgettes jaunissaient. Une réponse en une heure, photo à l’appui.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">HT</span><span><span class="s-wall__name">Hervé T.</span><span class="s-wall__role">Première saison, Alsace (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Le calendrier collé dans l’abri</p>
+              <blockquote class="s-wall__quote"><p>Le calendrier imprimé est resté punaisé dans l’abri toute l’année. Je cochais les semis au crayon, et je l’ai gardé pour la saison prochaine.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">MF</span><span><span class="s-wall__name">Martine F.</span><span class="s-wall__role">Retraitée, potager en Normandie (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              
+              <blockquote class="s-wall__quote"><p>J’avais peur que le plan ne tienne pas compte de l’ombre du noisetier. Il en tenait compte, et les salades sont allées de ce côté.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">LG</span><span><span class="s-wall__name">Laurent G.</span><span class="s-wall__role">Carré à mi-ombre, Isère (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Trois paniers de haricots en août</p>
+              <blockquote class="s-wall__quote"><p>Je n’en avais jamais récolté autant sur si peu de place. Le semis en deux fois, conseillé dans la lettre de mai, a tout changé.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">NK</span><span><span class="s-wall__name">Nadia K.</span><span class="s-wall__role">Deuxième saison, Lyon (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              
+              <blockquote class="s-wall__quote"><p>Les lettres sont courtes et on sent qu’elles sont écrites par quelqu’un qui jardine vraiment. Pas de jargon, des gestes.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">PC</span><span><span class="s-wall__name">Pierre-Yves C.</span><span class="s-wall__role">Jardin ouvrier, Lille (avis fictif)</span></span></figcaption>
+            </figure>
+          </li><li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              <p class="s-wall__result">Une saison réussie malgré un mois de juin pluvieux</p>
+              <blockquote class="s-wall__quote"><p>Quand il a plu trois semaines, la lettre a changé le programme et proposé de semer sous voile. Le carré est reparti en juillet.</p></blockquote>
+              
+              
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">SR</span><span><span class="s-wall__name">Sylvie R.</span><span class="s-wall__role">Carré surélevé, Vosges (avis fictif)</span></span></figcaption>
+            </figure>
+          </li>
+        </ul>
+        <div class="s-wall__fold" hidden>
+          <button type="button" class="s-wall__more" aria-expanded="false" aria-controls="avis-avis" data-more="Lire les {n} autres avis" data-less="Replier les avis"><span data-wall-label>Lire les {n} autres avis</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -3401,47 +4716,54 @@ textarea.field__input {
 </section>
 <!-- /section:pour-qui -->
 <!-- section:offre -->
-<section id="offre" class="s-offer section" aria-labelledby="offre-titre" data-section="offer-ticket">
+<section id="offre" class="s-receipt section" aria-labelledby="offre-titre" data-section="bundle-receipt" data-amount-format="{n} € TTC" data-saving-text="La saison complète coûte {saving} de moins que votre sélection" data-same-text="La saison complète coûte le même prix que votre sélection" data-chosen-text="Saison complète retenue : {saving} de moins qu’à l’unité" data-announce-text="Total de votre sélection : {total}" data-cta-carte="Commander ma sélection" data-cta-pack="Réserver ma saison" data-carte-value="a-l-unite">
   <div class="wrap">
-    <div class="section-head section-head--center">
-      <h2 id="offre-titre" class="section-title">Votre place <span class="hl">dans la saison 2027</span></h2>
-      <p class="section-intro">Un seul paiement pour toute la saison, plan et calendrier compris.</p>
+    <div class="section-head">
+      <h2 id="offre-titre" class="section-title">Juste le plan<br><span class="hl">ou toute la saison</span></h2>
+      <p class="section-intro">Le plan, les lettres et les fiches existent aussi à l’unité. Cochez ce qui vous manque : le ticket vous dit quand la saison complète revient moins cher.</p>
     </div>
-    <div data-reveal="scale">
-    <form class="s-offer__ticket s-offer__ticket--single" id="offre-billet" action="{{URL_CHECKOUT}}" method="get" data-track="begin_checkout" data-track-currency="EUR" data-offer-action-waitlist="{{URL_LISTE_ATTENTE}}">
-      <div class="s-offer__main">
-        <div class="s-offer__top">
-          <p class="s-offer__name">La Saison du Carré 2027</p>
-          <p class="badge badge--accent" data-offer-show="waitlist" hidden>Saison 2027 close</p>
-          <p class="badge" data-offer-show="closed" hidden>Inscriptions closes</p>
-        </div>
-        <p class="s-offer__meta">Plan livré sous cinq jours · une lettre chaque lundi du 22 février au 27 septembre 2027</p>
-        <input type="hidden" name="formule" value="saison-2027" data-price="69">
-        <div class="s-offer__pricebox">
-          <p class="s-offer__price"><span data-offer-price>69 €</span><span class="s-offer__unit">TTC pour la saison</span></p>
-          <p class="s-offer__note" aria-live="polite" data-offer-note>Paiement unique. Calendrier imprimé et livraison compris.</p>
-        </div>
-        
-        <div class="s-offer__action">
-          <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre" data-cta="primaire" data-offer-text-waitlist="Être prévenu de la saison 2028" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>Réserver ma saison</button>
-          <a class="btn btn--secondary btn--block s-offer__notify" href="{{URL_LISTE_ATTENTE}}" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>Être prévenu de la saison 2028</a>
-          <p class="s-offer__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 10 février 2027</span><span aria-hidden="true">·</span><span>300 plans par saison</span></p>
+    <div class="s-receipt__grid">
+      <fieldset class="s-receipt__menu">
+        <legend class="s-receipt__legend label">À l’unité</legend>
+        <ul class="s-receipt__items" role="list" data-reveal-group>
+          <li data-reveal><label class="s-receipt__item"><input class="s-receipt__check sr-only" type="checkbox" value="plan" data-price="39" data-name="Le plan de votre carré" aria-labelledby="offre-plan-nom offre-plan-prix" aria-describedby="offre-plan-texte" checked><span class="s-receipt__box" aria-hidden="true"></span><span class="s-receipt__name" id="offre-plan-nom">Le plan de votre carré</span><span class="s-receipt__price" id="offre-plan-prix">39 € TTC</span><span class="s-receipt__text" id="offre-plan-texte">Dessiné à partir de vos mesures, livré sous cinq jours.</span></label></li><li data-reveal><label class="s-receipt__item"><input class="s-receipt__check sr-only" type="checkbox" value="lettres" data-price="29" data-name="Les 32 lettres du lundi" aria-labelledby="offre-lettres-nom offre-lettres-prix" aria-describedby="offre-lettres-texte"><span class="s-receipt__box" aria-hidden="true"></span><span class="s-receipt__name" id="offre-lettres-nom">Les 32 lettres du lundi</span><span class="s-receipt__price" id="offre-lettres-prix">29 € TTC</span><span class="s-receipt__text" id="offre-lettres-texte">De février à septembre, quoi faire au carré cette semaine-là.</span></label></li><li data-reveal><label class="s-receipt__item"><input class="s-receipt__check sr-only" type="checkbox" value="fiches" data-price="12" data-name="Les 30 fiches de culture" aria-labelledby="offre-fiches-nom offre-fiches-prix" aria-describedby="offre-fiches-texte"><span class="s-receipt__box" aria-hidden="true"></span><span class="s-receipt__name" id="offre-fiches-nom">Les 30 fiches de culture</span><span class="s-receipt__price" id="offre-fiches-prix">12 € TTC</span><span class="s-receipt__text" id="offre-fiches-texte">Semis, arrosage, bons voisins et ravageurs, à télécharger.</span></label></li><li data-reveal><label class="s-receipt__item"><input class="s-receipt__check sr-only" type="checkbox" value="calendrier" data-price="9" data-name="Le calendrier imprimé" aria-labelledby="offre-calendrier-nom offre-calendrier-prix" aria-describedby="offre-calendrier-texte"><span class="s-receipt__box" aria-hidden="true"></span><span class="s-receipt__name" id="offre-calendrier-nom">Le calendrier imprimé</span><span class="s-receipt__price" id="offre-calendrier-prix">9 € TTC</span><span class="s-receipt__text" id="offre-calendrier-texte">Format A3, livré chez vous en février.</span></label></li>
+        </ul>
+      </fieldset>
+      <div class="s-receipt__aside" data-reveal>
+        <div class="s-receipt__ticket">
+          <div class="s-receipt__paper">
+            <div class="s-receipt__head">
+              <h3 class="s-receipt__title">Votre sélection</h3>
+              <p class="badge badge--accent" data-offer-show="waitlist" hidden>Saison 2027 close</p><p class="badge" data-offer-show="closed" hidden>Inscriptions closes</p>
+              <p class="s-receipt__note">Prix TTC, livraison comprise</p>
+            </div>
+            <ul class="s-receipt__lines" role="list">
+              <li class="s-receipt__line" data-line="plan"><span class="s-receipt__line-name">Le plan de votre carré</span><span class="s-receipt__leader" aria-hidden="true"></span><span class="s-receipt__amount">39 € TTC</span></li><li class="s-receipt__line" data-line="lettres"><span class="s-receipt__line-name">Les 32 lettres du lundi</span><span class="s-receipt__leader" aria-hidden="true"></span><span class="s-receipt__amount">29 € TTC</span></li><li class="s-receipt__line" data-line="fiches"><span class="s-receipt__line-name">Les 30 fiches de culture</span><span class="s-receipt__leader" aria-hidden="true"></span><span class="s-receipt__amount">12 € TTC</span></li><li class="s-receipt__line" data-line="calendrier"><span class="s-receipt__line-name">Le calendrier imprimé</span><span class="s-receipt__leader" aria-hidden="true"></span><span class="s-receipt__amount">9 € TTC</span></li>
+            </ul>
+            <p class="s-receipt__empty" data-receipt-empty hidden>Cochez un élément pour l’ajouter au ticket.</p>
+            <div class="s-receipt__sums">
+              <p class="s-receipt__full" data-receipt-full hidden><span>À l’unité</span><s class="s-receipt__amount" data-receipt-full-amount></s></p>
+              <p class="s-receipt__total" data-receipt-total hidden><span>Total</span><span class="s-receipt__amount s-receipt__amount--total" data-receipt-total-amount></span></p>
+            </div>
+            <div class="s-receipt__pack" data-receipt-pack data-state="static" data-pack-value="saison-2027" data-pack-price="69">
+              <p class="s-receipt__pack-head"><span>La Saison du Carré 2027</span><span class="s-receipt__amount">69 € TTC</span></p>
+              <p class="s-receipt__pack-msg" data-receipt-msg>Les quatre éléments, plus le groupe d’entraide de la saison.</p>
+              <button type="button" class="btn btn--secondary btn--block s-receipt__switch" data-receipt-switch hidden>Passer à la saison complète</button>
+              <button type="button" class="link-arrow s-receipt__undo" data-receipt-undo hidden>Revenir à ma sélection</button>
+            </div>
+            <form class="s-receipt__form" id="offre-commande" action="{{URL_CHECKOUT}}" method="get" data-track="begin_checkout" data-track-currency="EUR" data-track-item-ids="saison-2027" data-offer-action-waitlist="{{URL_LISTE_ATTENTE}}">
+              <input type="hidden" name="formule" value="saison-2027" data-price="69" data-receipt-formula>
+              <input type="hidden" name="articles" value="" disabled data-receipt-articles>
+              <button type="submit" class="btn btn--primary btn--block s-receipt__cta" data-cta-position="ticket" data-cta="primaire" data-offer-text-waitlist="Être prévenu de la saison 2028" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>Réserver ma saison</button>
+              <a class="btn btn--secondary btn--block s-receipt__notify" href="{{URL_LISTE_ATTENTE}}" data-track="cta_click" data-cta-position="ticket-alerte" data-offer-show="closed" hidden>Être prévenu de la saison 2028</a>
+              <p class="s-receipt__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 10 février 2027</span></p>
+            </form>
+          </div>
         </div>
       </div>
-      <div class="s-offer__stub">
-        <div>
-          <h3 class="s-offer__col-title">Compris</h3>
-          <ul class="list-check" role="list"><li>Le plan de votre carré, dessiné à partir de vos mesures</li><li>32 lettres du lundi, de février à septembre</li><li>30 fiches de culture à télécharger</li><li>Le calendrier de semis imprimé en A3, livré chez vous</li><li>Le groupe d’entraide de la saison</li></ul>
-        </div>
-        <div>
-          <h3 class="s-offer__col-title">La suite</h3>
-          <ol class="s-offer__steps" role="list"><li>Confirmation et facture par email dans l’heure</li><li>Un questionnaire de cinq minutes sur votre carré et vos goûts</li><li>Votre plan par email sous cinq jours, le calendrier par la poste</li></ol>
-        </div>
-        <p class="s-offer__prereq"><strong>À prévoir</strong> Un carré ou un coin de terre d’au moins un mètre de côté, au soleil six heures par jour.</p>
-      </div>
-    </form>
     </div>
-    <p class="s-offer__conditions">Paiement par carte à la commande. Les conditions de vente précisent votre droit de rétractation.</p>
+    <p class="sr-only" role="status" data-receipt-status></p>
+    <p class="s-receipt__conditions">Paiement par carte à la commande. Confirmation et questionnaire par email dans l’heure, plan sous cinq jours. Les conditions de vente précisent votre droit de rétractation.</p>
   </div>
 </section>
 <!-- /section:offre -->
@@ -3464,7 +4786,7 @@ textarea.field__input {
         <p class="section-intro">Si les lettres ne vous servent pas, écrivez-nous dans les soixante jours qui suivent la première. Vous êtes remboursé en entier et vous gardez le calendrier.</p>
       </div>
       <dl class="s-guarantee__terms" data-reveal-group>
-        <div class="s-guarantee__row" data-reveal><dt>Échéance</dt><dd>Le vendredi 23 avril 2027 à minuit, soixante jours après la première lettre.</dd></div><div class="s-guarantee__row" data-reveal><dt>Comment</dt><dd>Un email à bonjour@example.com suffit, sans justification. Le remboursement arrive sous sept jours, sur la carte utilisée pour la commande.</dd></div>
+        <div class="s-guarantee__row" data-reveal><dt>Échéance</dt><dd>Le vendredi 23 avril 2027 à minuit, soixante jours après la première lettre.</dd></div><div class="s-guarantee__row" data-reveal><dt>Comment</dt><dd>Un email à bonjour@example.com suffit, sans justification. Le remboursement arrive sous sept jours, sur la carte utilisée pour la commande.</dd></div><div class="s-guarantee__row" data-reveal><dt>À l’unité</dt><dd>Un élément commandé seul se rembourse de la même façon, dans les soixante jours qui suivent sa livraison.</dd></div>
       </dl>
     </div>
   </div>
@@ -3921,6 +5243,458 @@ textarea.field__input {
 })();
 </script>
 <script>
+/* ---- viewer.js ---- */
+/* ==========================================================================
+   viewer.js · the shared viewer (lightbox) of a landing page
+   --------------------------------------------------------------------------
+   One native <dialog>, built on the first opening and reused by every
+   section: an image, a video, an embed, or HTML content held in a
+   <template>, alone or as pages to flip through (« 2 / 6 »).
+
+   Triggers (a link or a button):
+     [data-viewer]               opens the viewer on click. Value: "" (type
+                                 guessed from the source), "image", "video",
+                                 "iframe" (embedded player) or "html".
+     href / [data-viewer-src]    the source. "#id" points to a <template> (or
+                                 any element) whose content is shown; its
+                                 [data-viewer-page] children become pages.
+                                 A link stays a plain link to the media
+                                 without JavaScript: give it a real href.
+     [data-viewer-pages]         image pages: a pattern with {n} plus
+                                 [data-viewer-count], or a space-separated
+                                 list of URLs.
+     [data-viewer-group]         triggers sharing a group are flipped through
+                                 together, in page order (hidden ones are
+                                 skipped).
+     [data-viewer-title]         dialog title (default: the trigger's text).
+     [data-viewer-caption]       caption under the media.
+     [data-viewer-alt]           alternative text of an image (default: the
+                                 title, plus the page number).
+     [data-viewer-poster], [data-viewer-captions] (.vtt),
+     [data-viewer-captions-lang] video poster and captions track. The .vtt
+                                 file must come from the page's origin, or
+                                 be served with CORS and the trigger carry
+                                 [data-viewer-crossorigin] (the video is then
+                                 requested with CORS too).
+     [data-viewer-id]            identifier sent with the viewer_open event.
+     [data-viewer-js]            a trigger with no destination without script
+                                 (button, inline HTML): carries `hidden` in
+                                 the markup; the engine shows it.
+   Pages inside a <template>:
+     <div data-viewer-page data-viewer-caption="…">HTML of the page</div>
+     <div data-viewer-page data-viewer-src="page-2.webp" data-viewer-alt="…"
+          data-viewer-caption="…"></div>         (an image page)
+
+   Behaviour: showModal() (the rest of the page becomes inert), labelled
+   title, caption as description, close button, Escape, click on the empty
+   stage, arrows (and Home / End) within a sequence, swipe on touch screens,
+   page scroll locked, video paused and removed on close, focus given back to
+   the trigger. Previous / next never wrap: they are marked aria-disabled at
+   the ends (still focusable). The page number reaches screen readers through
+   a polite status, written once the flipping settles. A video starts on
+   opening, except under prefers-reduced-motion (the visitor presses play).
+   Fade and zoom on opening only when motion is allowed.
+
+   Styles: injected once, in a <style data-viewer-style>, on the first
+   opening (no CSS file for an engine; no colour written here, the dialog
+   takes the dark band palette of base.css). Labels follow <html lang>:
+   French, otherwise English.
+
+   Events: `landing:viewer` on document (detail: { open, type, id, pages }),
+   and viewer_open through the measurement relay (tracking.js) when loaded.
+   API: window.landingViewer.open(trigger), window.landingViewer.close().
+   Without JavaScript, or without <dialog>: nothing is intercepted, links go
+   to their media. Principle of the paged viewer: jessem.fr proof viewer,
+   rewritten on <dialog>.
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingViewer) return;
+  window.__landingViewer = true;
+
+  var doc = document;
+  var root = doc.documentElement;
+  var supported = typeof window.HTMLDialogElement === 'function'
+    && typeof window.HTMLDialogElement.prototype.showModal === 'function';
+  if (!supported) return;
+
+  var motion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+  var LABELS = {
+    fr: { close: 'Fermer', prev: 'Précédent', next: 'Suivant', of: 'sur', page: 'page',
+          error: 'Ce média n’a pas pu être chargé.', file: 'Ouvrir le fichier', captions: 'Sous-titres' },
+    en: { close: 'Close', prev: 'Previous', next: 'Next', of: 'of', page: 'page',
+          error: 'This media could not be loaded.', file: 'Open the file', captions: 'Captions' }
+  };
+  var lang = (root.getAttribute('lang') || 'fr').slice(0, 2).toLowerCase();
+  var L = LABELS[lang] || LABELS.en;
+  var VIDEO = /\.(mp4|webm|m4v|mov|ogv)(\?|#|$)/i;
+
+  // A trigger that only works with script is shown now that it will work.
+  doc.querySelectorAll('[data-viewer-js][hidden]').forEach(function (el) { el.hidden = false; });
+
+  var CSS = [
+    'html.lv-lock{overflow:hidden;scrollbar-gutter:stable}',
+    '.lv{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--font-display)}',
+    '.lv::backdrop{background:transparent}',
+    '.lv [hidden]{display:none!important}',
+    '.lv__frame{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(10px,0.4rem + 1vw,20px);height:100%;padding:clamp(12px,0.4rem + 1vw,24px) clamp(16px,0.4rem + 2.4vw,48px)}',
+    '.lv__bar{display:flex;align-items:center;gap:16px}',
+    '.lv__title{flex:1;min-width:0;font-size:1.125rem;line-height:1.3;font-weight:700;letter-spacing:-0.01em;text-wrap:balance}',
+    '.lv__icon{display:inline-grid;flex:none;place-items:center;width:48px;height:48px;padding:0;border:1.5px solid var(--line-strong);border-radius:50%;background:transparent;color:var(--ink);cursor:pointer;transition:border-color var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease)}',
+    '.lv__icon:hover{border-color:var(--ink)}',
+    '.lv__icon[aria-disabled="true"]{opacity:0.35;cursor:default}',
+    '.lv__icon[aria-disabled="true"]:hover{border-color:var(--line-strong)}',
+    '.lv__icon svg{width:22px;height:22px}',
+    '.lv__stage{position:relative;display:grid;grid-template:minmax(0,1fr) / minmax(0,1fr);place-items:center;min-height:0;touch-action:pan-y pinch-zoom}',
+    '.lv__media{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;border-radius:calc(var(--radius-card) / 2);background:var(--surface)}',
+    '.lv__embed{display:block;width:min(100%,calc((100dvh - 230px) * 16 / 9));aspect-ratio:16 / 9;border:0;border-radius:calc(var(--radius-card) / 2);background:var(--surface)}',
+    '.lv__page{--ink:var(--brand-dark);--paper:var(--brand-white);--surface:var(--brand-white);--surface-2:var(--brand-surface-2);--muted:var(--brand-muted);--hl:var(--brand-primary-text);--line:var(--brand-line);--line-strong:var(--brand-field-border);--focus:var(--brand-dark);width:min(100%,760px);max-height:100%;overflow:auto;padding:clamp(16px,0.6rem + 1.6vw,36px);border-radius:var(--radius-card);background:var(--paper);color:var(--ink);overscroll-behavior:contain}',
+    '.lv__error{display:grid;justify-items:center;gap:12px;max-width:32rem;text-align:center}',
+    '.lv__error a{color:var(--ink);font-weight:600}',
+    '.lv__foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px 32px;min-height:48px}',
+    '.lv__caption{max-width:62ch;color:var(--muted);font-size:var(--t-body);line-height:1.5;text-wrap:pretty}',
+    '.lv__nav{display:flex;align-items:center;gap:12px}',
+    '.lv__count{min-width:5.5em;font-family:var(--font-mono);font-size:var(--t-label);letter-spacing:0.06em;text-align:center;font-variant-numeric:tabular-nums}',
+    '.lv .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}',
+    '@media (max-width:640px){.lv__foot{grid-template-columns:minmax(0,1fr)}.lv__nav{justify-content:space-between}}',
+    '@media (prefers-reduced-motion:no-preference){.lv[open]{animation:lv-fade .22s var(--ease)}.lv__slide{animation:lv-in .34s var(--ease)}}',
+    '@keyframes lv-fade{from{opacity:0}}',
+    '@keyframes lv-in{from{opacity:0;transform:scale(0.965)}}'
+  ].join('\n');
+
+  var ICON = {
+    close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    prev: '<path d="M19 12H5"/><path d="m11 6-6 6 6 6"/>',
+    next: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'
+  };
+  function icon(name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
+      + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + ICON[name] + '</svg>';
+  }
+
+  var dialog = null;
+  var els = {};
+  var state = null;
+  var statusTimer = 0;
+  var swipe = null;
+
+  function build() {
+    var style = doc.createElement('style');
+    style.setAttribute('data-viewer-style', '');
+    style.textContent = CSS;
+    doc.head.appendChild(style);
+
+    dialog = doc.createElement('dialog');
+    dialog.className = 'lv band-dark';
+    dialog.setAttribute('aria-labelledby', 'landing-viewer-title');
+    dialog.setAttribute('aria-describedby', 'landing-viewer-caption');
+    dialog.innerHTML =
+      '<div class="lv__frame">'
+      + '<div class="lv__bar"><h2 class="lv__title" id="landing-viewer-title"></h2>'
+      + '<button type="button" class="lv__icon" data-lv="close" aria-label="' + L.close + '">' + icon('close') + '</button></div>'
+      + '<div class="lv__stage" data-lv="stage"></div>'
+      + '<div class="lv__foot"><p class="lv__caption" id="landing-viewer-caption" data-lv="caption"></p>'
+      + '<div class="lv__nav" data-lv="nav">'
+      + '<button type="button" class="lv__icon" data-lv="prev" aria-label="' + L.prev + '">' + icon('prev') + '</button>'
+      + '<p class="lv__count"><span aria-hidden="true" data-lv="count"></span><span class="sr-only" data-lv="count-sr"></span></p>'
+      + '<button type="button" class="lv__icon" data-lv="next" aria-label="' + L.next + '">' + icon('next') + '</button>'
+      + '</div></div>'
+      + '<p class="sr-only" role="status" data-lv="status"></p>'
+      + '</div>';
+    doc.body.appendChild(dialog);
+    ['close', 'stage', 'caption', 'nav', 'prev', 'next', 'count', 'count-sr', 'status'].forEach(function (k) {
+      els[k] = dialog.querySelector('[data-lv="' + k + '"]');
+    });
+    els.title = dialog.querySelector('.lv__title');
+
+    els.close.addEventListener('click', close);
+    els.prev.addEventListener('click', function () { go(state ? state.index - 1 : 0); });
+    els.next.addEventListener('click', function () { go(state ? state.index + 1 : 0); });
+    dialog.addEventListener('close', cleanup);
+    dialog.addEventListener('keydown', onKey);
+    dialog.addEventListener('click', function (e) {
+      if (e.target === dialog || e.target === els.stage) close();
+    });
+    els.stage.addEventListener('pointerdown', function (e) {
+      swipe = (e.pointerType === 'mouse' || !e.isPrimary) ? null : { x: e.clientX, y: e.clientY };
+    });
+    els.stage.addEventListener('pointerup', function (e) {
+      if (!swipe || !state) return;
+      var dx = e.clientX - swipe.x;
+      var dy = e.clientY - swipe.y;
+      swipe = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(state.index + (dx < 0 ? 1 : -1));
+    });
+    els.stage.addEventListener('pointercancel', function () { swipe = null; });
+  }
+
+  /* ---- what a trigger shows ---- */
+  function label(el) {
+    return (el.getAttribute('data-viewer-title') || el.getAttribute('aria-label') || el.textContent || '')
+      .replace(/\s+/g, ' ').trim();
+  }
+
+  function pagesOf(trigger) {
+    var title = label(trigger);
+    var caption = trigger.getAttribute('data-viewer-caption') || '';
+    var kind = (trigger.getAttribute('data-viewer') || '').toLowerCase();
+    var pattern = trigger.getAttribute('data-viewer-pages');
+    var out = [];
+    if (pattern) {
+      var list = [];
+      if (pattern.indexOf('{n}') !== -1) {
+        var count = parseInt(trigger.getAttribute('data-viewer-count'), 10) || 1;
+        for (var i = 1; i <= count; i++) list.push(pattern.split('{n}').join(String(i)));
+      } else {
+        list = pattern.trim().split(/\s+/);
+      }
+      list.forEach(function (src) {
+        out.push({ type: 'image', src: src, alt: trigger.getAttribute('data-viewer-alt') || '' });
+      });
+    } else {
+      var src = trigger.getAttribute('data-viewer-src') || trigger.getAttribute('href') || '';
+      if (src.charAt(0) === '#' && src.length > 1) {
+        var source = doc.getElementById(src.slice(1));
+        if (source) {
+          var content = source.content || source;
+          var pages = content.querySelectorAll('[data-viewer-page]');
+          if (pages.length) {
+            Array.prototype.forEach.call(pages, function (p) {
+              var psrc = p.getAttribute('data-viewer-src');
+              out.push(psrc
+                ? { type: 'image', src: psrc, alt: p.getAttribute('data-viewer-alt') || '', caption: p.getAttribute('data-viewer-caption') }
+                : { type: 'html', node: p, caption: p.getAttribute('data-viewer-caption') });
+            });
+          } else {
+            out.push({ type: 'html', node: content });
+          }
+        }
+      } else if (src && src.charAt(0) !== '#') {
+        var type = (kind === 'video' || kind === 'image' || kind === 'iframe') ? kind : (VIDEO.test(src) ? 'video' : 'image');
+        out.push({ type: type, src: src, alt: trigger.getAttribute('data-viewer-alt') || '',
+                   poster: trigger.getAttribute('data-viewer-poster') || '',
+                   captions: trigger.getAttribute('data-viewer-captions') || '',
+                   captionsLang: trigger.getAttribute('data-viewer-captions-lang') || lang,
+                   cors: trigger.hasAttribute('data-viewer-crossorigin') });
+      }
+    }
+    out.forEach(function (p) {
+      p.trigger = trigger;
+      p.title = title;
+      if (!p.caption) p.caption = caption;
+    });
+    return out;
+  }
+
+  function rendered(el) {
+    return !el.closest('[hidden]') && el.getClientRects().length > 0;
+  }
+
+  function sequence(trigger) {
+    var group = trigger.getAttribute('data-viewer-group');
+    var triggers = [trigger];
+    if (group) {
+      triggers = Array.prototype.filter.call(doc.querySelectorAll('[data-viewer-group]'), function (t) {
+        return t.getAttribute('data-viewer-group') === group && (t === trigger || rendered(t));
+      });
+    }
+    var slides = [];
+    var start = 0;
+    triggers.forEach(function (t) {
+      if (t === trigger) start = slides.length;
+      slides = slides.concat(pagesOf(t));
+    });
+    return { slides: slides, index: start };
+  }
+
+  /* ---- drawing a slide ---- */
+  function failed(s) {
+    var box = doc.createElement('div');
+    box.className = 'lv__error lv__slide';
+    var p = doc.createElement('p');
+    p.textContent = L.error;
+    box.appendChild(p);
+    if (s.src) {
+      var a = doc.createElement('a');
+      a.href = s.src;
+      a.textContent = L.file;
+      box.appendChild(a);
+    }
+    return box;
+  }
+
+  function slide(s, n, total) {
+    var el;
+    if (s.type === 'image') {
+      el = doc.createElement('img');
+      el.className = 'lv__media lv__slide';
+      el.decoding = 'async';
+      el.alt = s.alt || (total > 1 ? s.title + ', ' + L.page + ' ' + n + ' ' + L.of + ' ' + total : s.title);
+      el.addEventListener('error', function () { if (el.isConnected) el.replaceWith(failed(s)); });
+      el.src = s.src;
+    } else if (s.type === 'video') {
+      el = doc.createElement('video');
+      el.className = 'lv__media lv__slide';
+      el.controls = true;
+      el.playsInline = true;
+      el.preload = 'metadata';
+      if (s.poster) el.poster = s.poster;
+      if (s.cors) el.crossOrigin = 'anonymous';
+      if (s.captions) {
+        var track = doc.createElement('track');
+        track.kind = 'captions';
+        track.src = s.captions;
+        track.srclang = s.captionsLang;
+        track.label = L.captions;
+        track.default = true;
+        el.appendChild(track);
+      }
+      el.addEventListener('error', function () { if (el.isConnected) el.replaceWith(failed(s)); });
+      el.src = s.src;
+    } else if (s.type === 'iframe') {
+      el = doc.createElement('iframe');
+      el.className = 'lv__embed lv__slide';
+      el.title = s.title;
+      el.allow = 'autoplay; fullscreen; picture-in-picture';
+      el.setAttribute('allowfullscreen', '');
+      el.src = s.src;
+    } else {
+      el = doc.createElement('div');
+      el.className = 'lv__page lv__slide';
+      var copy = s.node.cloneNode(true);
+      if (copy.nodeType === 11) {
+        el.appendChild(copy);
+      } else {
+        while (copy.firstChild) el.appendChild(copy.firstChild);
+      }
+      el.querySelectorAll('[id]').forEach(function (x) { x.removeAttribute('id'); });
+    }
+    return el;
+  }
+
+  function stopMedia() {
+    if (!els.stage) return;
+    els.stage.querySelectorAll('video, audio').forEach(function (m) { try { m.pause(); } catch (e) { /* gone */ } });
+  }
+
+  function preload(s) {
+    if (s && s.type === 'image' && !s.preloaded) {
+      s.preloaded = true;
+      var img = new Image();
+      img.decoding = 'async';
+      img.src = s.src;
+    }
+  }
+
+  function render(announce) {
+    var s = state.slides[state.index];
+    var total = state.slides.length;
+    var n = state.index + 1;
+    stopMedia();
+    var el = slide(s, n, total);
+    els.stage.replaceChildren(el);
+    if (s.type === 'html') {
+      // A page taller than the stage scrolls: make it reachable by keyboard.
+      window.requestAnimationFrame(function () {
+        if (el.isConnected && el.scrollHeight > el.clientHeight + 1) {
+          el.tabIndex = 0;
+          el.setAttribute('role', 'region');
+          el.setAttribute('aria-label', s.title);
+        }
+      });
+    }
+    if (s.type === 'video' && !motion.matches) {
+      var play = el.play && el.play();
+      if (play && play.catch) play.catch(function () { /* blocked: controls stay */ });
+    }
+    els.title.textContent = s.title;
+    els.caption.textContent = s.caption || '';
+    els.nav.hidden = total < 2;
+    els.count.textContent = n + ' / ' + total;
+    els['count-sr'].textContent = n + ' ' + L.of + ' ' + total;
+    els.prev.setAttribute('aria-disabled', n === 1 ? 'true' : 'false');
+    els.next.setAttribute('aria-disabled', n === total ? 'true' : 'false');
+    preload(state.slides[state.index + 1]);
+    window.clearTimeout(statusTimer);
+    if (announce) {
+      statusTimer = window.setTimeout(function () {
+        if (state) els.status.textContent = n + ' ' + L.of + ' ' + total + (s.caption ? '. ' + s.caption : '');
+      }, 400);
+    }
+  }
+
+  function go(i) {
+    if (!state || i < 0 || i >= state.slides.length || i === state.index) return;
+    state.index = i;
+    render(true);
+  }
+
+  function onKey(e) {
+    if (!state) return;
+    var t = e.target;
+    if (t && (/^(VIDEO|AUDIO|INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
+    var last = state.slides.length - 1;
+    var to = { ArrowRight: state.index + 1, ArrowLeft: state.index - 1, Home: 0, End: last }[e.key];
+    if (to === undefined || last < 1) return;
+    e.preventDefault();
+    go(Math.max(0, Math.min(last, to)));
+  }
+
+  function emit(open, s) {
+    var detail = { open: open, type: s ? s.type : '', id: s ? (s.trigger.getAttribute('data-viewer-id') || s.title) : '',
+                   pages: state ? state.slides.length : 0 };
+    doc.dispatchEvent(new CustomEvent('landing:viewer', { detail: detail }));
+    if (open && typeof window.landingTrack === 'function') {
+      window.landingTrack('viewer_open', { content_type: detail.type, content_id: detail.id, pages: detail.pages });
+    }
+  }
+
+  function open(trigger) {
+    if (!trigger) return false;
+    var seq = sequence(trigger);
+    if (!seq.slides.length) return false;
+    if (!dialog) build();
+    // Already open (API call from a section): swap the content, keep the opener.
+    var opener = (dialog.open && state) ? state.opener : trigger;
+    state = { slides: seq.slides, index: seq.index, opener: opener };
+    els.status.textContent = '';
+    render(false);
+    if (!dialog.open) {
+      root.classList.add('lv-lock');
+      dialog.showModal();
+    }
+    els.close.focus();
+    emit(true, state.slides[state.index]);
+    return true;
+  }
+
+  function close() {
+    if (dialog && dialog.open) dialog.close();
+  }
+
+  function cleanup() {
+    window.clearTimeout(statusTimer);
+    stopMedia();
+    if (els.stage) els.stage.replaceChildren();
+    root.classList.remove('lv-lock');
+    var opener = state && state.opener;
+    var last = state && state.slides[state.index];
+    emit(false, last);
+    state = null;
+    if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+  }
+
+  doc.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var trigger = e.target.closest ? e.target.closest('[data-viewer]') : null;
+    if (!trigger || (dialog && dialog.contains(trigger))) return;
+    if (open(trigger)) e.preventDefault();
+  });
+
+  window.landingViewer = { open: open, close: close };
+})();
+</script>
+<script>
 /* ---- tracking.js ---- */
 /* ==========================================================================
    tracking.js · measurement relay of a landing page (GA4 / GTM dataLayer)
@@ -3953,17 +5727,26 @@ textarea.field__input {
                       slug), optin (true when an input[data-optin] box is
                       ticked, false otherwise)
      begin_checkout   submit of a form[data-track="begin_checkout"] (the
-                      conversion ticket). value, currency, formula
+                      conversion ticket). value, currency, formula, and
+                      items (GA4 array) when the form carries
+                      data-checkout-items (JSON, written by bundle-receipt)
      form_demo_submit sent INSTEAD of the form's own event when its action
                       is still a {{MARKER}} (or the form carries data-demo,
                       written by forms.js, which then sends nothing): a
                       demonstration submission never counts as a lead or a
                       checkout. form_event (the event it replaces),
                       form_id, and the parameters of that event
-     select_content   choice gate: content_type, content_id
+     select_content   choice gate (content_type, content_id); also pushed
+                      through window.landingTrack by sections: recommender
+                      (content_type = its param, content_id = the offer,
+                      answers = "question:answer,…"), work-wall filter
+                      (content_type "filtre"), demonstrator request
+     viewer_open      viewer.js opened: content_type, content_id, pages
      faq_open         a details[data-track="faq_open"] opened: question
      <any name>       any other data-track value on a link or button: pushed
-                      on click under that name
+                      on click under that name; a section may also call
+                      window.landingTrack(name, params) (demonstrator:
+                      its track_event, demo_calculate by default)
    Extra parameters: every data-track-<name>="value" attribute on the tracked
    element is sent as <name>: value (dashes become underscores). A form
    exposes its current formula through a checked radio input[name="formule"]
@@ -4091,6 +5874,17 @@ textarea.field__input {
     if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
       data.value = Number(formula.getAttribute('data-price'));
     }
+    // GA4 items of the checkout, as JSON written by the section (bundle-receipt:
+    // the articles ticked, or the pack). Malformed or empty: no items.
+    if (name === 'begin_checkout') {
+      var rawItems = form.getAttribute('data-checkout-items');
+      if (rawItems) {
+        try {
+          var list = JSON.parse(rawItems);
+          if (Array.isArray(list) && list.length) data.items = list;
+        } catch (err) { /* not JSON: leave items out */ }
+      }
+    }
     if (isDemo(form)) {
       data.form_event = name;
       if (!data.form_id) data.form_id = form.id || '';
@@ -4137,6 +5931,131 @@ textarea.field__input {
 })();
 </script>
 <script>
+/* ---- section : topbar ---- */
+(function () {
+  /* principe : Headroom.js (Nick Williams), MIT ; réécrit sans dépendance. */
+  var root = document.documentElement;
+  var small = window.matchMedia('(max-width: 768px)');
+  document.querySelectorAll('.s-topbar').forEach(function (bar) {
+    var cta = bar.querySelector('.s-topbar__cta');
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+
+    /* ---- 1. Hide while reading down, come back when going up ---- */
+    var hidden = false;
+    var lastY = window.scrollY;
+    var ticking = false;
+    var DELTA = 8;
+    var tracks = [];
+
+    function collect() { tracks = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-track]')); }
+    collect();
+    document.addEventListener('landing:revealed', collect);
+
+    function setHidden(on) {
+      if (on === hidden) return;
+      hidden = on;
+      bar.toggleAttribute('data-hidden', on);
+      bar.inert = on;
+    }
+
+    // A pinned stage sits right under the bar (scroll.js, top: --topbar-h):
+    // the bar stays while one is stuck, so no gap opens above it.
+    function pinnedStage() {
+      if (!root.classList.contains('sc-pin')) return false;
+      var top = bar.offsetHeight + 1;
+      var vh = window.innerHeight;
+      return tracks.some(function (t) {
+        var r = t.getBoundingClientRect();
+        return r.top <= top && r.bottom >= vh - 1;
+      });
+    }
+
+    function keyboardInside() {
+      var a = document.activeElement;
+      if (!a || !bar.contains(a)) return false;
+      try { return a.matches(':focus-visible'); } catch (e) { return true; }
+    }
+
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      bar.toggleAttribute('data-scrolled', y > 2);
+      if (y <= bar.offsetHeight * 2 || pinnedStage() || keyboardInside()) {
+        setHidden(false);
+        lastY = y;
+        return;
+      }
+      var dy = y - lastY;
+      if (Math.abs(dy) < DELTA) return;
+      setHidden(dy > 0);
+      lastY = y;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+
+    // Going back up the page with the keyboard brings the bar back before the
+    // focus moves, so Shift+Tab can reach it.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' && e.shiftKey) setHidden(false);
+    }, true);
+
+    update();
+
+    /* ---- 2. The button steps aside ---- */
+    if (!cta) return;
+    var guardOff = false;
+    var stickyOn = root.getAttribute('data-sticky-bar') === 'on';
+    function applyCta() {
+      var off = guardOff || (small.matches && stickyOn);
+      bar.toggleAttribute('data-cta-off', off);
+      cta.inert = off;
+    }
+    // Small screens: the mobile bar (sticky-bar) carries the button while it
+    // is visible; never the same button twice on screen.
+    document.addEventListener('landing:sticky-bar', function (e) {
+      stickyOn = !!(e.detail && e.detail.visible);
+      applyCta();
+    });
+    if (small.addEventListener) small.addEventListener('change', applyCta);
+
+    // Opt-in (slot cta_after_hero: data-cta-after-hero on the bar, off by
+    // default): hidden while the hero's button, the conversion block (the
+    // anchor of the button) or the final CTA is on screen.
+    var guards = [];
+    if (bar.hasAttribute('data-cta-after-hero') && 'IntersectionObserver' in window) {
+      var href = cta.getAttribute('href') || '';
+      guards = [
+        document.querySelector('main [data-cta-position="hero"]'),
+        document.querySelector('main [data-cta-position="final"]')
+      ];
+      if (href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+      guards = guards.filter(function (g, i, list) { return g && list.indexOf(g) === i; });
+    }
+    if (guards.length) {
+      var onScreen = new Map();
+      var below = bar.offsetHeight;
+      var measure = function () { guardOff = guards.some(function (g) { return onScreen.get(g); }); applyCta(); };
+      // First state measured at once: no flash of the button on load.
+      guards.forEach(function (g) {
+        var r = g.getBoundingClientRect();
+        onScreen.set(g, r.width > 0 && r.bottom > below && r.top < window.innerHeight);
+      });
+      measure();
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { onScreen.set(e.target, e.isIntersecting); });
+        measure();
+      }, { rootMargin: '-' + below + 'px 0px 0px 0px' });
+      guards.forEach(function (g) { io.observe(g); });
+    } else {
+      applyCta();
+    }
+  });
+})();
 /* ---- section : hero ---- */
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -4174,6 +6093,242 @@ textarea.field__input {
     }, 2600);
   });
 })();
+/* ---- section : chapters ---- */
+/* Table of contents that follows the reading.
+   principe : scrollspy par IntersectionObserver, sans écouteur de
+   défilement ; aria-current posé par le script, parce que :target-current
+   colore sans rien dire aux technologies d'assistance.
+   - The current chapter is the last listed section whose top has passed a
+     reading line at 40 % of the screen (the last one in view at the very
+     bottom of the page). It is computed only when an observer reports a
+     crossing, never on every scroll frame.
+   - The following table of contents (rail or bar) shows once the in-flow
+     list has gone above the screen. The rail yields the margin to a dark
+     band and to a section that carries a narrative gauge.
+   - Reading progress per chapter: view timelines named on the chapter
+     sections, where supported and motion is allowed. */
+(function () {
+  'use strict';
+  if (window.__landingChapters || !('IntersectionObserver' in window)) return;
+  window.__landingChapters = true;
+
+  var root = document.documentElement;
+  var LINE = 0.4;
+  var mqWide = window.matchMedia('(min-width: 1101px)');
+  var mqMotion = window.matchMedia('(prefers-reduced-motion: no-preference)');
+
+  function topbar() {
+    return parseFloat(getComputedStyle(root).getPropertyValue('--topbar-h')) || 0;
+  }
+
+  function hiddenTarget(el) {
+    return !el || !!el.closest('[hidden]');
+  }
+
+  function setup(toc) {
+    var float = document.getElementById(toc.id + '-suivi');
+    var chapters = Array.prototype.map.call(toc.querySelectorAll('.s-chapters__link'), function (a, i) {
+      var id = (a.getAttribute('href') || '').slice(1);
+      try { id = decodeURIComponent(id); } catch (e) {}
+      var rlink = float ? float.querySelectorAll('.s-chapters__rlink')[i] : null;
+      var label = a.querySelector('.s-chapters__label');
+      return {
+        id: id,
+        target: document.getElementById(id),
+        links: rlink ? [a, rlink] : [a],
+        item: rlink ? rlink.parentElement : null,
+        fill: rlink ? rlink.querySelector('.s-chapters__fill') : null,
+        label: (label || a).textContent.trim()
+      };
+    });
+    if (!chapters.length) return;
+
+    var current = -2;
+    var tocPassed = false;
+    var open = false;
+    var zones = new Map();
+    var frame = 0;
+    var toggle = float && float.querySelector('.s-chapters__toggle');
+    var count = float && float.querySelector('.s-chapters__count');
+    var now = float && float.querySelector('.s-chapters__now');
+    var meter = float && float.querySelector('.s-chapters__meter');
+    var names = [];
+    var progressOn = false;
+
+    function setCurrent(i) {
+      if (i === current) return;
+      current = i;
+      chapters.forEach(function (c, j) {
+        c.links.forEach(function (a) {
+          if (j === i) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+        });
+        if (c.item) c.item.toggleAttribute('data-passed', i >= 0 && j < i);
+      });
+      if (count) {
+        count.textContent = (count.getAttribute('data-count') || '')
+          .replace('{n}', String(i + 1)).replace('{total}', String(chapters.length));
+      }
+      if (now) now.textContent = i >= 0 ? chapters[i].label : '';
+      if (meter && progressOn) meter.style.animationTimeline = i >= 0 && names[i] ? names[i] : 'none';
+    }
+
+    function render() {
+      if (!float) return;
+      var show = tocPassed && current >= 0;
+      if (mqWide.matches) {
+        // A dark band always; a live gauge only while it shows (scroll theatre).
+        var pinOn = root.classList.contains('sc-pin');
+        var blocked = false;
+        zones.forEach(function (z) { if (z.on && (z.kind === 'dark' || pinOn)) blocked = true; });
+        show = show && window.innerHeight >= 600 && !blocked;
+      } else {
+        show = show && float.hasAttribute('data-bar');
+      }
+      // Never hide what holds the focus, nor the open list.
+      if (!show && (open || float.contains(document.activeElement)) && tocPassed && current >= 0) show = true;
+      float.toggleAttribute('data-visible', show);
+      if (!show && open) setOpen(false);
+    }
+
+    function compute() {
+      frame = 0;
+      var vh = window.innerHeight;
+      var line = vh * LINE;
+      var cur = -1;
+      chapters.forEach(function (c, i) {
+        if (hiddenTarget(c.target)) return;
+        if (c.target.getBoundingClientRect().top <= line) cur = i;
+      });
+      if (window.scrollY + vh >= root.scrollHeight - 2) {
+        chapters.forEach(function (c, i) {
+          if (!hiddenTarget(c.target) && c.target.getBoundingClientRect().top < vh) cur = Math.max(cur, i);
+        });
+      }
+      setCurrent(cur);
+      tocPassed = toc.getBoundingClientRect().bottom <= topbar() + 1;
+      render();
+    }
+
+    function schedule() {
+      if (!frame) frame = window.requestAnimationFrame(compute);
+    }
+
+    // While the list is open (and only then), scrolling the page on by more
+    // than a line closes it: it never stays over the text being read.
+    var openedAt = 0;
+    function onScrollWhileOpen() {
+      if (Math.abs(window.scrollY - openedAt) > 48) setOpen(false);
+    }
+
+    function setOpen(v) {
+      if (v === open) return;
+      open = v;
+      if (!toggle) return;
+      toggle.setAttribute('aria-expanded', v ? 'true' : 'false');
+      float.toggleAttribute('data-open', v);
+      if (v) {
+        openedAt = window.scrollY;
+        window.addEventListener('scroll', onScrollWhileOpen, { passive: true });
+      } else {
+        window.removeEventListener('scroll', onScrollWhileOpen);
+      }
+    }
+
+    // Crossings of the reading line, entries and exits of the screen.
+    var ioLine = new IntersectionObserver(schedule, { rootMargin: '-40% 0px -60% 0px' });
+    var ioView = new IntersectionObserver(schedule);
+    var ioToc = new IntersectionObserver(schedule, { rootMargin: '-' + Math.round(topbar()) + 'px 0px 0px 0px' });
+    function watch() {
+      chapters.forEach(function (c) {
+        c.target = document.getElementById(c.id);
+        if (c.target) { ioLine.observe(c.target); ioView.observe(c.target); }
+      });
+    }
+    watch();
+    ioToc.observe(toc);
+    var end = document.querySelector('.s-footer, body > footer');
+    if (end) ioView.observe(end);
+
+    // The rail gives way to dark bands and to narrative gauges (both use
+    // the page margin or paint it).
+    if (float) {
+      var ioZone = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var z = zones.get(e.target);
+          if (z) z.on = e.isIntersecting;
+        });
+        render();
+      }, { rootMargin: '-25% 0px -25% 0px' });
+      var addZone = function (el, kind) {
+        if (!el || zones.has(el)) return;
+        zones.set(el, { on: false, kind: kind });
+        ioZone.observe(el);
+      };
+      document.querySelectorAll('section.band-dark, .section.band-dark').forEach(function (el) { addZone(el, 'dark'); });
+      document.querySelectorAll('.gauge--live, [data-gauge]').forEach(function (g) {
+        addZone(g.closest('section') || g, 'gauge');
+      });
+    }
+
+    // Reading progress per chapter (view timelines), motion allowed only.
+    if (float && float.hasAttribute('data-progress') && mqMotion.matches && window.CSS && CSS.supports &&
+        CSS.supports('animation-timeline: view()')) {
+      var base = '--' + (toc.id || 'chapters').replace(/[^A-Za-z0-9_-]/g, '') + '-ch';
+      chapters.forEach(function (c, i) {
+        if (!c.target) return;
+        var taken = getComputedStyle(c.target).getPropertyValue('view-timeline-name').trim();
+        if (taken && taken !== 'none') return;
+        names[i] = base + i;
+        c.target.style.setProperty('view-timeline-name', names[i]);
+        if (c.fill) c.fill.style.animationTimeline = names[i];
+      });
+      var used = names.filter(Boolean);
+      if (used.length) {
+        var scope = getComputedStyle(document.body).getPropertyValue('timeline-scope').trim();
+        document.body.style.setProperty('timeline-scope', (scope && scope !== 'none' ? scope + ', ' : '') + used.join(', '));
+        float.setAttribute('data-progress-on', '');
+        progressOn = true;
+      }
+    }
+
+    if (float) {
+      if (toggle) toggle.addEventListener('click', function () { setOpen(!open); render(); });
+      float.addEventListener('click', function (e) {
+        if (open && e.target.closest('.s-chapters__rlink')) setOpen(false);
+      });
+      float.addEventListener('focusout', function (e) {
+        if (open && !float.contains(e.relatedTarget)) setOpen(false);
+        window.requestAnimationFrame(render);
+      });
+      float.addEventListener('focusin', function () { float.removeAttribute('data-quiet'); });
+      float.addEventListener('pointerleave', function () { float.removeAttribute('data-quiet'); });
+      document.addEventListener('click', function (e) {
+        if (open && !float.contains(e.target)) setOpen(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape' && e.key !== 'Esc') return;
+        if (open) { setOpen(false); if (toggle) toggle.focus(); return; }
+        // Escape dismisses a title shown on hover or focus (WCAG 1.4.13).
+        if (float.matches(':hover') || float.contains(document.activeElement)) float.setAttribute('data-quiet', '');
+      });
+      float.hidden = false;
+    }
+
+    [mqWide, mqMotion].forEach(function (mq) {
+      if (mq.addEventListener) mq.addEventListener('change', schedule); else mq.addListener(schedule);
+    });
+    window.addEventListener('resize', schedule);
+    document.addEventListener('landing:revealed', function () { watch(); schedule(); });
+    schedule();
+  }
+
+  function start() {
+    document.querySelectorAll('[data-chapters]').forEach(setup);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
 /* ---- section : pivot ---- */
 (function () {
   if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
@@ -4206,6 +6361,50 @@ textarea.field__input {
     });
   });
 })();
+/* ---- section : wall ---- */
+(function () {
+  // Fold: without JavaScript every review is visible. The script hides the
+  // ones after fold_after (real `hidden`, out of the keyboard and the
+  // accessibility tree), shows the button that says how many remain, and
+  // moves the focus to the first review it reveals.
+  document.querySelectorAll('.s-wall').forEach(function (wall) {
+    var list = wall.querySelector('.s-wall__list');
+    var fold = wall.querySelector('.s-wall__fold');
+    var button = fold && fold.querySelector('.s-wall__more');
+    var text = button && button.querySelector('[data-wall-label]');
+    if (!list || !button || !text) return;
+    var items = Array.prototype.slice.call(list.children);
+    var keep = parseInt(list.getAttribute('data-wall-fold'), 10);
+    if (!(keep > 0) || items.length - keep < 2) return;
+    var extra = items.slice(keep);
+    var more = (button.getAttribute('data-more') || '')
+      .split('{n}').join(String(extra.length))
+      .split('{total}').join(String(items.length));
+    var less = button.getAttribute('data-less') || '';
+
+    function set(open, byHand) {
+      extra.forEach(function (li, k) {
+        li.hidden = !open;
+        li.classList.toggle('is-new', open && byHand);
+        li.style.setProperty('--k', String(Math.min(k, 8)));
+      });
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      text.textContent = open ? less : more;
+      if (open && byHand) {
+        extra[0].setAttribute('tabindex', '-1');
+        extra[0].focus();
+      }
+      fold.hidden = open && !less;
+      if (!open && byHand) button.focus();
+    }
+
+    set(false, false);
+    fold.hidden = false;
+    button.addEventListener('click', function () {
+      set(button.getAttribute('aria-expanded') !== 'true', true);
+    });
+  });
+})();
 /* ---- section : comparison ---- */
 (function () {
   document.querySelectorAll('.s-compare').forEach(function (section) {
@@ -4219,39 +6418,185 @@ textarea.field__input {
     if ('ResizeObserver' in window) new ResizeObserver(measure).observe(region);
   });
 })();
-/* ---- section : offer-ticket ---- */
+/* ---- section : bundle-receipt ---- */
 (function () {
-  var tilt = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 901px)');
-  var MAX = 3;
-  document.querySelectorAll('.s-offer__ticket').forEach(function (ticket) {
-    var price = ticket.querySelector('[data-offer-price]');
-    var note = ticket.querySelector('[data-offer-note]');
-    var radios = ticket.querySelectorAll('input[name="formule"][type="radio"]');
-    function sync() {
-      var on = ticket.querySelector('input[name="formule"]:checked');
-      if (!on) return;
-      if (price) price.textContent = on.getAttribute('data-price-label') || price.textContent;
-      if (note) note.textContent = on.getAttribute('data-note') || '';
+  /* Principle: an itemised receipt as a price anchor that fills as items
+     are ticked, then offers the bundle once the selection reaches its
+     price. Written for this library, no third-party code. */
+  var motion = window.matchMedia('(prefers-reduced-motion: no-preference)');
+  var lang = document.documentElement.lang || 'fr';
+  var grouping = null;
+  try { grouping = new Intl.NumberFormat(lang, { maximumFractionDigits: 2 }); } catch (e) { grouping = null; }
+
+  function sentence(s) { return /[.!?…]$/.test(s) ? s : s + '.'; }
+  function offerState() { return document.documentElement.getAttribute('data-offer-state') || 'open'; }
+
+  document.querySelectorAll('.s-receipt').forEach(function (section) {
+    function txt(name) { return section.getAttribute('data-' + name) || ''; }
+    function money(n) {
+      var v = grouping ? grouping.format(n) : String(n);
+      return (txt('amount-format') || '{n}').replace('{n}', v);
     }
-    radios.forEach(function (r) { r.addEventListener('change', sync); });
-    // The choice gate sets the formula.
-    document.addEventListener('landing:choice', function (e) {
-      var match = ticket.querySelector('input[name="formule"][value="' + (e.detail && e.detail.value) + '"]');
-      if (match && !match.checked) { match.checked = true; sync(); }
+    function price(input) { return Number(input.getAttribute('data-price')) || 0; }
+
+    var checks = Array.prototype.slice.call(section.querySelectorAll('.s-receipt__check'));
+    var lines = {};
+    section.querySelectorAll('[data-line]').forEach(function (li) { lines[li.getAttribute('data-line')] = li; });
+    var empty = section.querySelector('[data-receipt-empty]');
+    var fullRow = section.querySelector('[data-receipt-full]');
+    var fullAmount = section.querySelector('[data-receipt-full-amount]');
+    var totalRow = section.querySelector('[data-receipt-total]');
+    var totalAmount = section.querySelector('[data-receipt-total-amount]');
+    var pack = section.querySelector('[data-receipt-pack]');
+    var msg = pack && pack.querySelector('[data-receipt-msg]');
+    var packText = msg ? msg.textContent : '';
+    var packPrice = pack ? Number(pack.getAttribute('data-pack-price')) || 0 : 0;
+    var packValue = pack ? pack.getAttribute('data-pack-value') || '' : '';
+    var switchBtn = pack && pack.querySelector('[data-receipt-switch]');
+    var undoBtn = pack && pack.querySelector('[data-receipt-undo]');
+    var form = section.querySelector('.s-receipt__form');
+    var formula = form && form.querySelector('[data-receipt-formula]');
+    var articles = form && form.querySelector('[data-receipt-articles]');
+    var cta = form && form.querySelector('.s-receipt__cta');
+    var status = section.querySelector('[data-receipt-status]');
+    if (!checks.length || !form || !formula || !cta) return;
+
+    var full = checks.reduce(function (s, c) { return s + price(c); }, 0);
+    var mode = 'carte';
+    var before = null;
+    var shown = null;
+    var raf = 0;
+    var timer = 0;
+    var spoken = '';
+
+    function selected() { return checks.filter(function (c) { return c.checked; }); }
+
+    // The total glides to its value (motion allowed only); never announced
+    // while it moves: the status line below speaks once, after the change.
+    function setTotal(value, animate) {
+      if (raf) window.cancelAnimationFrame(raf);
+      raf = 0;
+      if (!animate || !motion.matches || shown === null || shown === value) {
+        shown = value;
+        totalAmount.textContent = money(value);
+        return;
+      }
+      var from = shown;
+      var start = null;
+      var DURATION = 320;
+      function frame(t) {
+        if (start === null) start = t;
+        var k = Math.min(1, (t - start) / DURATION);
+        var eased = 1 - Math.pow(1 - k, 3);
+        totalAmount.textContent = money(Math.round(from + (value - from) * eased));
+        if (k < 1) { raf = window.requestAnimationFrame(frame); } else { raf = 0; shown = value; totalAmount.textContent = money(value); }
+      }
+      shown = value;
+      raf = window.requestAnimationFrame(frame);
+    }
+
+    function syncCta() {
+      var state = offerState();
+      var isPack = mode === 'pack';
+      if (state === 'open') cta.textContent = isPack ? txt('cta-pack') : txt('cta-carte');
+      cta.disabled = state === 'closed' || (!isPack && selected().length === 0);
+    }
+
+    function render(animate, speak) {
+      var sel = selected();
+      var ids = sel.map(function (c) { return c.value; });
+      var total = sel.reduce(function (s, c) { return s + price(c); }, 0);
+      var isPack = mode === 'pack';
+
+      var k = 0;
+      checks.forEach(function (c) {
+        var li = lines[c.value];
+        if (!li) return;
+        var on = isPack || c.checked;
+        if (on && li.hidden && animate && motion.matches) {
+          li.classList.remove('is-new');
+          void li.offsetWidth;
+          li.style.setProperty('--k', String(k++));
+          li.classList.add('is-new');
+        }
+        li.hidden = !on;
+      });
+      empty.hidden = isPack || sel.length > 0;
+      fullRow.hidden = !isPack;
+      fullAmount.textContent = money(full);
+      totalRow.hidden = !isPack && sel.length === 0;
+      setTotal(isPack ? packPrice : total, animate);
+
+      var state = 'below';
+      if (isPack) state = 'chosen';
+      else if (pack && sel.length && total > packPrice) state = 'better';
+      else if (pack && sel.length && total === packPrice) state = 'same';
+      var line = packText;
+      if (state === 'chosen') line = sentence(txt('chosen-text').replace('{saving}', money(full - packPrice)));
+      else if (state === 'better') line = sentence(txt('saving-text').replace('{saving}', money(total - packPrice)));
+      else if (state === 'same') line = sentence(txt('same-text'));
+      if (pack) {
+        pack.setAttribute('data-state', state);
+        msg.textContent = line;
+        if (switchBtn) switchBtn.hidden = isPack;
+        if (undoBtn) undoBtn.hidden = !isPack;
+      }
+
+      formula.value = isPack ? packValue : txt('carte-value');
+      formula.setAttribute('data-price', String(isPack ? packPrice : total));
+      if (articles) {
+        articles.disabled = isPack;
+        articles.value = isPack ? '' : ids.join(',');
+      }
+      form.setAttribute('data-track-item-ids', isPack ? packValue : ids.join(','));
+      // GA4 items, as JSON: read by tracking.js once it learns data-checkout-items
+      // (patch described with the fragment); item_ids is sent today.
+      form.setAttribute('data-checkout-items', JSON.stringify(isPack
+        ? [{ item_id: packValue, item_name: pack ? pack.querySelector('.s-receipt__pack-head span').textContent : '', price: packPrice, quantity: 1 }]
+        : sel.map(function (c) { return { item_id: c.value, item_name: c.getAttribute('data-name') || '', price: price(c), quantity: 1 }; })));
+      syncCta();
+
+      if (!speak || !status) return;
+      var say = isPack ? line : sentence(txt('announce-text').replace('{total}', money(total)));
+      if (!isPack && (state === 'better' || state === 'same')) say += ' ' + line;
+      if (!isPack && sel.length === 0) say = empty.textContent;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(function () {
+        if (say === spoken) return;
+        spoken = say;
+        status.textContent = say;
+      }, 700);
+    }
+
+    checks.forEach(function (c) {
+      c.addEventListener('change', function () {
+        if (mode === 'pack' && !c.checked) { mode = 'carte'; before = null; }
+        render(true, true);
+      });
     });
-    // Pointer tilt: physical object, fine pointer, motion allowed, 3 degrees at most.
-    ticket.addEventListener('pointermove', function (e) {
-      if (!tilt.matches || e.pointerType !== 'mouse') return;
-      var r = ticket.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width - 0.5;
-      var y = (e.clientY - r.top) / r.height - 0.5;
-      ticket.style.setProperty('--ry', (x * MAX * 2).toFixed(2) + 'deg');
-      ticket.style.setProperty('--rx', (-y * MAX * 2).toFixed(2) + 'deg');
+
+    if (switchBtn) switchBtn.addEventListener('click', function () {
+      before = selected().map(function (c) { return c.value; });
+      checks.forEach(function (c) { c.checked = true; });
+      mode = 'pack';
+      render(true, true);
+      if (undoBtn) undoBtn.focus();
     });
-    ticket.addEventListener('pointerleave', function () {
-      ticket.style.removeProperty('--rx');
-      ticket.style.removeProperty('--ry');
+
+    if (undoBtn) undoBtn.addEventListener('click', function () {
+      var keep = before || [];
+      checks.forEach(function (c) { c.checked = keep.indexOf(c.value) !== -1; });
+      mode = 'carte';
+      before = null;
+      render(true, true);
+      if (switchBtn) switchBtn.focus();
     });
+
+    // offer.js decides the state (it may run after this script).
+    document.addEventListener('landing:offer', syncCta);
+
+    render(false, false);
+    section.setAttribute('data-ready', '');
   });
 })();
 /* ---- section : faq ---- */
@@ -4284,13 +6629,21 @@ textarea.field__input {
     guards = guards.filter(Boolean);
     var onScreen = new Map();
     var heroPassed = !hero;
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+    var root = document.documentElement;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
         else onScreen.set(e.target, e.isIntersecting);
       });
       var blocked = guards.some(function (g) { return onScreen.get(g); });
-      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+      var visible = heroPassed && !blocked;
+      if (visible === bar.hasAttribute('data-visible') && root.hasAttribute('data-sticky-bar')) return;
+      bar.toggleAttribute('data-visible', visible);
+      // The top bar drops its own button on small screens while this one shows.
+      root.setAttribute('data-sticky-bar', visible ? 'on' : 'off');
+      document.dispatchEvent(new CustomEvent('landing:sticky-bar', { detail: { visible: visible } }));
     });
     if (hero) io.observe(hero);
     guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });

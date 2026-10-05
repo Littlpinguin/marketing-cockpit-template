@@ -307,8 +307,72 @@ def test_assemblage_structure_de_page():
 def test_avertissement_pour_chaque_slot_non_rempli():
     resultat = al.assembler({"title": "T", "sections": [{"use": "hero", "slots": {"title": "Mon titre"}}]})
     manquants = [a for a in resultat.avertissements if "non rempli" in a]
-    assert len(manquants) == len(BIBLIOTHEQUE["hero"].slots) - 1
+    obligatoires = [n for n, s in BIBLIOTHEQUE["hero"].slots.items() if "default" not in s]
+    assert len(manquants) == len(obligatoires) - 1
     assert not any("« title »" in a for a in manquants)
+
+
+# --------------------------------------------------------------------------
+# Slots facultatifs (clé « default »)
+# --------------------------------------------------------------------------
+
+def _fragment_option(tmp_path: Path) -> Path:
+    meta = {"id": "demo", "name": "Démo", "slots": {
+        "title": {"type": "text", "doc": "titre", "example": "Titre d’exemple"},
+        "badge": {"type": "text", "doc": "facultatif", "example": "Badge d’exemple", "default": None},
+        "wide": {"type": "bool", "doc": "facultatif", "example": True, "default": False}}}
+    corps = ('<!-- section:{{id}} -->\n<section id="{{id}}" class="s-demo section"{{#wide}} data-wide{{/wide}} '
+             'aria-labelledby="{{id}}-titre"><h2 id="{{id}}-titre">{{title}}</h2>'
+             '{{#badge}}<p class="badge">{{badge}}</p>{{/badge}}</section>\n<!-- /section:{{id}} -->')
+    return ecrire(tmp_path / "lib", "demo", fragment(meta=meta, corps=corps))
+
+
+def test_slot_facultatif_prend_son_defaut_sans_avertissement(tmp_path):
+    lib = _fragment_option(tmp_path).parent
+    r = al.assembler({"title": "T", "sections": [{"use": "demo", "slots": {"title": "Vrai titre"}}]}, library=lib)
+    assert r.avertissements == []
+    assert "Badge d’exemple" not in r.html and "data-wide" not in r.html and "Vrai titre" in r.html
+
+
+def test_slot_facultatif_montre_son_exemple_en_samples_et_sa_valeur_si_rempli(tmp_path):
+    lib = _fragment_option(tmp_path).parent
+    r = al.assembler({"title": "T", "samples": True, "sections": [{"use": "demo"}]}, library=lib)
+    assert r.avertissements == [] and "Badge d’exemple" in r.html and "data-wide" in r.html
+    r = al.assembler({"title": "T", "sections": [{"use": "demo", "slots": {
+        "title": "Vrai titre", "badge": "Complet", "wide": True}}]}, library=lib)
+    assert r.avertissements == [] and ">Complet<" in r.html and "data-wide" in r.html
+
+
+def test_slot_obligatoire_toujours_signale(tmp_path):
+    lib = _fragment_option(tmp_path).parent
+    r = al.assembler({"title": "T", "sections": [{"use": "demo"}]}, library=lib)
+    assert r.avertissements == ["demo (demo) : slot « title » non rempli, texte d'exemple utilisé"]
+
+
+def test_slot_facultatif_strict_et_describe(tmp_path):
+    lib = _fragment_option(tmp_path).parent
+    spec = ecrire_spec(tmp_path, {"title": "T", "sections": [{"use": "demo", "slots": {"title": "Vrai"}}]})
+    r = run(str(spec), "-o", str(tmp_path / "index.html"), "--library", str(lib), "--strict")
+    assert r.returncode == 0, r.stderr
+    r = run("--describe", "demo", "--library", str(lib))
+    assert "    badge (text, facultatif, défaut : null)" in r.stdout
+    assert "    wide (bool, facultatif, défaut : false)" in r.stdout
+
+
+def test_options_de_la_bibliotheque_sans_avertissement():
+    """topbar.cta_after_hero et evidence-chart.poster : facultatifs, éteints par défaut."""
+    assert BIBLIOTHEQUE["topbar"].slots["cta_after_hero"]["default"] is False
+    assert BIBLIOTHEQUE["evidence-chart"].slots["poster"]["default"] is None
+    slots_topbar = {k: v["example"] for k, v in BIBLIOTHEQUE["topbar"].slots.items() if "default" not in v}
+    slots_chart = {k: v["example"] for k, v in BIBLIOTHEQUE["evidence-chart"].slots.items() if "default" not in v}
+    r = al.assembler({"title": "T", "sections": [{"use": "topbar", "slots": slots_topbar},
+                                                 {"use": "evidence-chart", "slots": slots_chart}]})
+    assert r.avertissements == []
+    entete = re.search(r'<header id="topbar"[^>]*>', r.html).group(0)
+    assert "data-cta-after-hero" not in entete
+    assert 'class="s-chart__poster"' not in r.html
+    r = al.assembler({"title": "T", "sections": [{"use": "topbar", "slots": {**slots_topbar, "cta_after_hero": True}}]})
+    assert "data-cta-after-hero" in re.search(r'<header id="topbar"[^>]*>', r.html).group(0)
 
 
 @pytest.mark.parametrize("slots", [
@@ -537,6 +601,47 @@ def test_cli_list_et_describe():
     assert run("--describe", "inconnu").returncode == 2
 
 
+def _bibliotheque_maison(dossier: Path, titre: str) -> Path:
+    meta = {"id": "maison", "name": "Maison", "slots": {"title": {"type": "text", "doc": "titre", "example": titre}}}
+    corps = ('<!-- section:{{id}} -->\n<section id="{{id}}" class="s-demo section" aria-labelledby="{{id}}-titre">'
+             '<h2 id="{{id}}-titre">{{title}}</h2></section>\n<!-- /section:{{id}} -->')
+    ecrire(dossier, "maison", fragment(nom="maison", meta=meta, corps=corps))
+    return dossier
+
+
+def test_cli_library_de_la_spec_lue_depuis_son_dossier(tmp_path):
+    """« library » de la spec, relative au dossier de la spec, sert quand --library est absent."""
+    _bibliotheque_maison(tmp_path / "lib", "Fragment de la spec")
+    (tmp_path / "specs").mkdir()
+    spec = ecrire_spec(tmp_path / "specs", {"title": "T", "samples": True, "library": "../lib",
+                                            "sections": [{"use": "maison"}]})
+    sortie = tmp_path / "index.html"
+    r = run(str(spec), "-o", str(sortie))
+    assert r.returncode == 0, r.stderr
+    assert "Fragment de la spec" in sortie.read_text(encoding="utf-8")
+
+
+def test_cli_library_en_option_prime_sur_la_spec(tmp_path):
+    _bibliotheque_maison(tmp_path / "lib", "Fragment de la spec")
+    _bibliotheque_maison(tmp_path / "autre", "Fragment de l’option")
+    spec = ecrire_spec(tmp_path, {"title": "T", "samples": True, "library": "lib", "sections": [{"use": "maison"}]})
+    sortie = tmp_path / "index.html"
+    r = run(str(spec), "-o", str(sortie), "--library", str(tmp_path / "autre"))
+    assert r.returncode == 0, r.stderr
+    texte = sortie.read_text(encoding="utf-8")
+    assert "Fragment de l’option" in texte and "Fragment de la spec" not in texte
+
+
+def test_cli_sans_library_la_bibliotheque_par_defaut(tmp_path):
+    spec = ecrire_spec(tmp_path, {"title": "T", "samples": True, "sections": [{"use": "maison"}]})
+    r = run(str(spec), "-o", str(tmp_path / "index.html"))
+    assert r.returncode == 2 and "maison.html" in r.stderr      # absent de la bibliothèque livrée
+    spec = ecrire_spec(tmp_path, {"title": "T", "samples": True, "library": "absente",
+                                  "sections": [{"use": "maison"}]})
+    r = run(str(spec), "-o", str(tmp_path / "index.html"))
+    assert r.returncode == 2 and "dossier de fragments introuvable" in r.stderr
+
+
 def test_empreinte():
     html = al.assembler(spec_minimale()).html
     assert al.empreinte_valide(html) is True
@@ -664,6 +769,31 @@ def test_begin_checkout_formule_unique(chromium, tmp_path):
     evt = page.evaluate("window.dataLayer.filter(e => e.event === 'begin_checkout').pop()")
     assert evt["value"] == 69 and evt["formula"] == "saison" and evt["currency"] == "EUR"
     assert evt["utm_source"] == "lettre" and evt["utm_campaign"] == "printemps"
+    contexte.close()
+
+
+def test_begin_checkout_porte_les_articles_du_ticket(chromium, tmp_path):
+    """bundle-receipt écrit data-checkout-items : begin_checkout porte items (GA4), articles cochés ou pack."""
+    url = _page(tmp_path, [{"use": "bundle-receipt", "id": "carte", "samples": True, "slots": {
+        "action": "https://shop.example.com/checkout", "action_waitlist": "https://shop.example.com/waitlist"}}])
+    contexte, envoyees = _contexte_coupe(chromium)
+    page = contexte.new_page()
+    page.goto(url)
+    page.wait_for_timeout(300)
+    page.evaluate("document.addEventListener('submit', e => e.preventDefault(), true)")
+    page.evaluate("document.querySelectorAll('#carte .s-receipt__check:checked').forEach(c => c.click())")
+    cases = page.evaluate("Array.from(document.querySelectorAll('#carte .s-receipt__check')).slice(0, 2)"
+                          ".map(c => { c.click(); return { id: c.value, price: Number(c.dataset.price) }; })")
+    page.evaluate("document.querySelector('#carte-commande').requestSubmit()")
+    evt = page.evaluate("window.dataLayer.filter(e => e.event === 'begin_checkout').pop()")
+    assert [i["item_id"] for i in evt["items"]] == [c["id"] for c in cases]
+    assert [i["price"] for i in evt["items"]] == [c["price"] for c in cases]
+    assert all(i["quantity"] == 1 and i["item_name"] for i in evt["items"])
+    # attribut illisible : pas d'items, l'événement part quand même
+    page.evaluate("document.querySelector('#carte-commande').setAttribute('data-checkout-items', 'pas du json')")
+    page.evaluate("document.querySelector('#carte-commande').requestSubmit()")
+    evt = page.evaluate("window.dataLayer.filter(e => e.event === 'begin_checkout').pop()")
+    assert "items" not in evt
     contexte.close()
 
 

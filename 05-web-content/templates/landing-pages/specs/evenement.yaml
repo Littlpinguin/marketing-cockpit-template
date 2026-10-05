@@ -52,7 +52,9 @@
 # mode gtm et gtm. Marquer generate_lead comme conversion clé côté GA4.
 #
 # Récit : une objection par section, dans l'ordre de la pensée du visiteur.
-#   hero          Quoi, quand, où, pour qui : le badge de la matinale
+#   hero          Quoi, quand, où, combien : le titre fait l'affiche, puis
+#                 la ligne de faits (hero-editorial, sans objet ; pas de
+#                 fiche pratique en plus, elle doublerait cette ligne)
 #   rapporter     Est-ce que ça vaut ma matinée : ce qu'on rapporte au dépôt
 #   programme     Qu'y a-t-il exactement : l'horaire, un spécimen (rail)
 #   intervenants  Qui parle, et sont-ils crédibles
@@ -101,40 +103,32 @@ sections:
       cta_href: "#inscription"
       primary: true
 
-  - use: hero
+  - use: hero-editorial
     slots:
-      title: 'Passer vos tournées<br><span class="hl">à l’électrique</span>'
+      level: 1
+      title: 'Passer vos tournées<br><span class="hl s-hedit__in">à l’électrique</span>'
+      rule: true
       lede: >-
         Une matinée à Bordeaux et en direct pour les responsables de flotte,
         avec trois retours d’expérience chiffrés.
       cta_label: "M’inscrire"
       cta_href: "#inscription"
       primary: true
-      deadline: "Jeudi 3 juin 2027, de 8 h 30 à 13 h"
-      countdown: null
-      detail: "Gratuit, sur place ou en ligne"
-      image: null
-      object: |-
-        <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
-          <div class="obj-stack">
-            <div class="obj-sheet">
-              <div class="obj-head"><span class="obj-mark"></span><b>La matinale flotte électrique</b><span class="obj-stamp obj-push">Badge</span></div>
-              <div class="obj-rule"></div>
-              <p class="obj-kpi">3 juin<small>2027</small></p>
-              <p class="obj-small" style="margin-top:8px">Halle Lucine, Bordeaux · accueil à 8 h 30</p>
-              <div class="obj-rule"></div>
-              <div class="obj-mail">
-                <div class="obj-head"><b>9 h 00</b><span>L’autonomie réelle en tournée</span></div>
-                <div class="obj-head"><b>9 h 40</b><span>Recharger au dépôt</span></div>
-                <div class="obj-head"><b>10 h 45</b><span>Quarante utilitaires en dix-huit mois</span></div>
-                <div class="obj-head"><b>11 h 30</b><span>Table ronde avec vos questions</span></div>
-              </div>
-              <div class="obj-rule"></div>
-              <div class="obj-mail__from"><span class="obj-avatar">VN</span><span><b>Votre nom</b><br>Votre entreprise</span><span class="obj-chip" style="position:static;margin-left:auto"><i></i>Sur place</span></div>
-            </div>
-          </div>
-          <span class="obj-chip s-hero__chip"><i></i>En direct dès 9 h</span>
-        </div>
+      secondary_label: ""
+      secondary_href: ""
+      deadline: "Inscriptions jusqu’au mercredi 2 juin 2027"
+      countdown:
+        many: "Inscriptions closes dans {n} jours"
+        one: "Inscriptions closes demain"
+        zero: "Inscriptions closes ce soir"
+      detail: "120 places sur place"
+      proof: ""
+      facts:
+        - {label: "Quand", value: "Jeudi 3 juin 2027, de 8 h 30 à 13 h"}
+        - {label: "Où", value: "Halle Lucine à Bordeaux, et en direct"}
+        - {label: "Programme", value: "Trois retours d’expérience, une table ronde"}
+        - {label: "Prix", value: "Gratuit, replay sous 48 heures"}
+      object: ""
 
   - use: outcomes
     id: rapporter

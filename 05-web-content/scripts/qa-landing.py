@@ -26,7 +26,8 @@ Page (une fois) :
   titres-ordre       niveau de titre sauté (h2 puis h4)                       erreur
   image-alt          `<img>` sans attribut alt (décoratif : alt="") ou
                      `role="img"` sans nom ; alt en nom de fichier             erreur / avert.
-  nom-accessible     lien ou bouton sans nom accessible                        erreur
+  nom-accessible     lien ou bouton exposé aux aides techniques (ni inerte,
+                     ni aria-hidden, ni masqué) sans nom accessible           erreur
   champ-sans-label   champ de formulaire sans label (le placeholder n'en
                      est pas un)                                              erreur
   cta-absent         aucun CTA repéré                                         erreur
@@ -65,7 +66,8 @@ Par taille d'écran :
   cta-pli            écran mobile : aucun CTA primaire visible sans défiler   erreur
   mot-orphelin       titre, accroche ou bouton dont la dernière ligne tient
                      en un seul mot                                           avertissement
-  troncature         plus de textes que le collecteur n'en relève              avertissement
+  troncature         plus de textes que le collecteur n'en relève (3000 par
+                     écran, --max-textes) : les autres ne sont pas audités    avertissement
 
 Mouvement réduit (une fois, à la plus large des tailles) :
   mouvement-reduit-masque     un texte reste masqué (opacité nulle ou
@@ -173,7 +175,7 @@ MOTS_TEXTE_COURANT = 12          # à partir de 12 mots, un texte se lit comme d
 CIBLE_MIN_PX = 24.0              # WCAG 2.5.8 (AA)
 CIBLE_CONFORT_PX = 44.0          # WCAG 2.5.5 (AAA), guides iOS / Android ; exigé pour un CTA
 MAX_PAR_TYPE = 8
-MAX_TEXTES = 1500
+MAX_TEXTES = 3000                # textes relevés par écran ; au-delà : avertissement troncature
 ATTENTE_MS = 1200
 OBSERVATION_MS = 1200            # mouvement réduit : temps d'observation entre deux relevés
 CLIC_MS = 400                    # suivi : attente après le clic d'un CTA
@@ -539,8 +541,11 @@ const rolesImg = Array.from(document.querySelectorAll('[role="img"]'))
   .filter(el => !dansAriaHidden(el) && !nomAccessible(el)).map(el => ({ nom: nom(el) }));
 const SANS_NOM = 'a[href], button, [role="button"], [role="link"], summary, '
   + 'input[type="submit"], input[type="button"], input[type="reset"], input[type="image"]';
+// Seulement ce qui est exposé aux aides techniques : ni aria-hidden, ni inerte
+// (barre du haut cachée au défilement, bouton retiré), ni masqué, ni hors rendu.
 const sansNom = Array.from(document.querySelectorAll(SANS_NOM))
-  .filter(el => !dansAriaHidden(el) && rendu(el) && !nomAccessible(el))
+  .filter(el => !dansAriaHidden(el) && !el.closest('[inert]') && rendu(el)
+    && getComputedStyle(el).visibility !== 'hidden' && !nomAccessible(el))
   .map(el => ({ nom: nom(el), href: el.getAttribute('href') || '' }));
 const CHAMPS = 'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]), select, textarea';
 const champs = Array.from(document.querySelectorAll(CHAMPS)).filter(el => !dansAriaHidden(el)).map(el => {
@@ -1394,7 +1399,8 @@ def collecteur_vue() -> str:
     return COLLECTEUR_VUE.replace("__COLLECTE_TEXTES__", qa_common.JS_TEXTES.strip())
 
 
-def passe_vue(navigateur, url: str, viewport: dict, attente: int, capture: Path | None) -> dict:
+def passe_vue(navigateur, url: str, viewport: dict, attente: int, capture: Path | None,
+              max_textes: int = MAX_TEXTES) -> dict:
     """Une taille d'écran : pli, défilement complet, état final."""
     contexte = navigateur.new_context(viewport=viewport, reduced_motion="no-preference")
     try:
@@ -1406,7 +1412,7 @@ def passe_vue(navigateur, url: str, viewport: dict, attente: int, capture: Path 
         page.add_style_tag(content=SETTLE_CSS)
         page.evaluate(DEFILER, [0.7, 60, 400])
         page.wait_for_timeout(300)
-        releve = page.evaluate(collecteur_vue(), [MAX_TEXTES, est_mobile(viewport)])
+        releve = page.evaluate(collecteur_vue(), [max_textes, est_mobile(viewport)])
         releve["pli"] = pli
         releve["page"] = page.evaluate(COLLECTEUR_PAGE)
         releve["masques"] = page.evaluate(COLLECTEUR_MASQUES)
@@ -1590,6 +1596,9 @@ def construire_parseur() -> argparse.ArgumentParser:
     parseur.add_argument("--max-par-type", type=int, default=MAX_PAR_TYPE, metavar="N",
                          help=f"constats listés par type et par bloc (défaut : {MAX_PAR_TYPE}, 0 = tout). "
                               "Les totaux sont toujours calculés avant plafond")
+    parseur.add_argument("--max-textes", type=int, default=MAX_TEXTES, metavar="N",
+                         help=f"textes relevés par taille d'écran (défaut : {MAX_TEXTES}) ; au-delà, "
+                              "avertissement troncature : ils ne sont pas audités")
     parseur.add_argument("--format", choices=("text", "json"), default="text",
                          help="forme de la sortie (défaut : text)")
     parseur.add_argument("--captures", metavar="DOSSIER",
@@ -1632,7 +1641,8 @@ def executer(args: argparse.Namespace) -> int:
         navigateur = playwright.chromium.launch()
         try:
             for viewport in viewports:
-                releves.append((viewport, passe_vue(navigateur, url, viewport, args.attente, capture)))
+                releves.append((viewport, passe_vue(navigateur, url, viewport, args.attente, capture,
+                                                    args.max_textes)))
             mouvement = passe_mouvement(navigateur, url, large, args.attente)
 
             releve_large = next(r for v, r in releves if v is large)

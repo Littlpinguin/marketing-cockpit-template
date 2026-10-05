@@ -29,6 +29,7 @@ free notes). Keys (only `title` and `sections` are required):
     tracking: {mode: datalayer | gtm | gtag | off, ga4: G-…, gtm: GTM-…, utm: true}
     offer: {state: open | waitlist | closed, closes_at: ISO date, after_close: waitlist}
     samples: false                    # true: sample copy is intended, no warning
+    library: ../sections              # other folder of fragments, from the spec's folder
     annotate: false                   # true: catalogue notes before each section
     intro: {title, text}              # catalogue intro (annotate only)
     sections:
@@ -37,9 +38,9 @@ free notes). Keys (only `title` and `sections` are required):
         gated: false                  # true: hidden until the choice gate opens it
         slots: {title: "…", primary: true, items: [{…}, …]}
       - use: _placeholder             # provisional section, for a bespoke one to come
-        id: demonstrateur
-      - file: sections/05-demonstrateur.html   # bespoke fragment, path from the spec
-        id: demonstrateur                       # (inserted as is between its markers)
+        id: avant-apres
+      - file: sections/05-avant-apres.html     # bespoke fragment, path from the spec
+        id: avant-apres                         # (inserted as is between its markers)
 
 Fragments: see 05-web-content/templates/sections/README.md. Slots use a
 Mustache subset in lowercase: {{name}} (escaped), {{{name}}} (raw HTML),
@@ -50,7 +51,13 @@ repository's install-time placeholders: they are never touched.
 
 A slot the spec does not fill takes the fragment's sample value and is
 reported (fictional copy must never ship); `samples: true` silences that for
-a demo, `--strict` turns every warning into a failure.
+a demo, `--strict` turns every warning into a failure. An optional slot
+declares a `default` beside its `example`: left unfilled, it takes the
+default silently (the example still shows in samples mode, for the
+catalogue).
+
+`library` (spec key) points to another folder of fragments, read from the
+spec's folder; --library on the command line wins over it.
 
 YAML 1.1 reads the bare keys yes / no / on / off as booleans: a spec whose
 mapping has a boolean key is refused with a clear message (quote the key, or
@@ -374,6 +381,15 @@ def chemin_depuis_racine(valeur: str | Path) -> Path:
     return p if p.is_absolute() else (RACINE / p)
 
 
+def library_de_spec(spec: dict, spec_dir: Path | None) -> Path:
+    """The spec's `library` (read from the spec's folder), or the default library."""
+    valeur = spec.get("library")
+    if not valeur:
+        return LIBRARY_DEFAUT
+    p = Path(valeur)
+    return p if p.is_absolute() else ((spec_dir or RACINE) / p).resolve()
+
+
 def dans_pilotage(chemin: Path) -> bool:
     return "pilotage" in chemin.resolve().parts or "pilotage" in Path(os.path.abspath(chemin)).parts
 
@@ -413,6 +429,8 @@ def valeurs_slots(fragment: Fragment, instance: dict, origine: str, samples: boo
         if nom in fournis:
             _verifier_type(nom, spec, fournis[nom], origine, avert)
             contexte[nom] = fournis[nom]
+        elif "default" in spec and not samples:
+            contexte[nom] = spec["default"]          # optional slot: its default, no warning
         else:
             contexte[nom] = spec["example"]
             if not samples:
@@ -527,7 +545,9 @@ def fragment_de_fichier(instance: dict, i: int, spec_dir: Path | None, avert: li
 def assembler(spec: dict, *, spec_dir: Path | None = None, library: Path | None = None,
               assets: Path | None = None, sortie: Path | None = None) -> Resultat:
     avert: list[str] = []
-    library = library or chemin_depuis_racine(spec.get("library", LIBRARY_DEFAUT))
+    library = library or library_de_spec(spec, spec_dir)      # --library > spec « library » > défaut
+    if not library.is_dir():
+        raise ErreurAssemblage(f"dossier de fragments introuvable : {library}")
     assets = assets or ASSETS_DEFAUT
     samples_page = bool(spec.get("samples", False))
     annotate = bool(spec.get("annotate", False))
@@ -729,7 +749,9 @@ def decrire(fragment: Fragment) -> str:
             lignes.append(f"  {titre} : {meta[cle]}")
     lignes.append("  slots :")
     for nom, spec in fragment.slots.items():
-        lignes.append(f"    {nom} ({spec.get('type', 'text')}) : {spec['doc']}")
+        facultatif = f", facultatif, défaut : {json.dumps(spec['default'], ensure_ascii=False)}" \
+            if "default" in spec else ""
+        lignes.append(f"    {nom} ({spec.get('type', 'text')}{facultatif}) : {spec['doc']}")
         for champ, doc in (spec.get("fields") or {}).items():
             lignes.append(f"      .{champ} : {doc}")
     return "\n".join(lignes)
@@ -740,7 +762,8 @@ def construire_parseur() -> argparse.ArgumentParser:
                                             "(05-web-content/templates/sections/).")
     p.add_argument("spec", nargs="?", help="spec de la page (.json, .yaml, .yml, .md à front matter)")
     p.add_argument("-o", "--output", help="fichier de sortie (prime sur « output » de la spec)")
-    p.add_argument("--library", help="dossier des fragments (défaut : 05-web-content/templates/sections)")
+    p.add_argument("--library", help="dossier des fragments ; prime sur « library » de la spec "
+                                     "(défaut : 05-web-content/templates/sections)")
     p.add_argument("--check", action="store_true", help="ne rien écrire ; sortir 1 si la sortie diffère")
     p.add_argument("--strict", action="store_true", help="tout avertissement fait échouer (sortie 1, rien d'écrit)")
     p.add_argument("--force", action="store_true", help="écraser une page modifiée à la main depuis son assemblage")
@@ -752,8 +775,9 @@ def construire_parseur() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = construire_parseur().parse_args(argv)
     try:
-        library = Path(args.library).resolve() if args.library else LIBRARY_DEFAUT
+        library_cli = Path(args.library).resolve() if args.library else None
         if args.list or args.describe:
+            library = library_cli or LIBRARY_DEFAUT
             frags = bibliotheque(library)
             if args.describe:
                 chemin = library / f"{args.describe}.html"
@@ -768,8 +792,8 @@ def main(argv: list[str] | None = None) -> int:
             raise ErreurAssemblage("spec manquante (ou --list / --describe)")
         chemin_spec = Path(args.spec).resolve()
         spec = lire_spec(chemin_spec)
-        if args.library:
-            spec["library"] = str(library)
+        # --library > « library » de la spec (lu depuis le dossier de la spec) > défaut
+        library = library_cli or library_de_spec(spec, chemin_spec.parent)
         cible = args.output or spec.get("output")
         if not cible:
             raise ErreurAssemblage("aucune sortie : « output » dans la spec ou -o")

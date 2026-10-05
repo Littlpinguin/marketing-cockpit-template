@@ -6,7 +6,7 @@
 <title>Calquai · Vos réceptions planifiées la veille</title>
 <meta name="description" content="Les transporteurs réservent leur créneau, Calquai affecte le quai. Démo de 30 minutes sur vos propres flux de réception.">
 <meta name="robots" content="noindex, nofollow">
-<meta name="generator" content="assemble-landing.py · sha256:cfd68f59735ca1412fd5631a827f701acd9e7826211845119bcb998941147071">
+<meta name="generator" content="assemble-landing.py · sha256:f364afaeda387095320b00118f64f73df1b02985d5ac873477124cbcd47385a8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1185,6 +1185,292 @@ textarea.field__input {
     scroll-behavior: auto !important;
   }
 }
+
+/* === notes en marge : bloc réservé (chapters, notes, jauge) === */
+
+/* ---------- 7. Margin notes: the source of a figure, in the margin ----------
+   principe : Tufte CSS (Dave Liepmann et contributeurs), MIT. The note is
+   written inside the sentence it documents and floats into the right
+   margin, aligned with the line of its call; the checkbox toggle of Tufte
+   CSS (badly announced by screen readers) is not taken.
+   Markup, inside a paragraph or a list item, right after the figure or at
+   the end of the sentence (phrasing content only, links allowed):
+     <span class="note"><span class="note__body" role="note">Source…</span></span>
+   The call (in the text) and the number (in front of the note) are drawn
+   by one page-wide counter, hidden from assistive tech (alt text ""):
+   the note itself is read in place, announced as a note.
+   - From 1101 px, inside a .wrap--notes: the text column keeps a measure
+     of --note-measure and the note sits beside it, at running-text size
+     (a note is often 12 words or more: never in small type).
+   - Elsewhere (narrow screens, or a section without .wrap--notes): the
+     note opens as a numbered block right under the line of its call.
+   No script, nothing moves, identical in reduced motion. */
+:root {
+  --note-w: 20rem;
+  --note-gap: 2.5rem;
+  --note-measure: 44rem;
+}
+
+body {
+  counter-reset: landing-note;
+}
+
+.note {
+  counter-increment: landing-note;
+}
+
+.note::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  position: relative;
+  top: -0.5em;
+  margin-inline: 0.12em 0.18em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: max(12px, 0.7em);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.note__body {
+  display: block;
+  margin-block: 0.5em 0.75em;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: start;
+  text-transform: none;
+  text-wrap: pretty;
+}
+
+.note__body::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  margin-inline-end: 0.6em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+@media (min-width: 1101px) {
+  /* The column leaves room: the text keeps its measure on the left, the
+     notes run beside it. Text blocks that carry their own max-width
+     (intro, lede) take the full column so that every note lines up. */
+  .wrap--notes {
+    padding-inline-end: max(calc(var(--note-w) + var(--note-gap)), calc(var(--wrap) - var(--note-measure)));
+  }
+
+  .wrap--notes .section-head,
+  .wrap--notes .section-intro,
+  .wrap--notes .lede {
+    max-width: none;
+  }
+
+  .wrap--notes .note__body {
+    float: right;
+    clear: right;
+    width: var(--note-w);
+    margin-block: 0.15em 0.9em;
+    margin-inline: 0 calc(-1 * (var(--note-w) + var(--note-gap)));
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    line-height: var(--lh-body);
+  }
+}
+
+/* ---------- 8. Narrative gauge (journey, program: field gauge) ----------
+   Where the reader is, in the unit of the story (« Semaine 3 sur 6 »).
+   Each step carries its label (HTML of a phrase, the value in <b>).
+   Decorative double of the step's moment and title: always in a container
+   marked aria-hidden="true" data-qa-decor, never the only carrier of an
+   information.
+   - .gauge--step: the label of one step, before its moment, in the list.
+     Shown wherever the scroll theatre does not run (small screen, reduced
+     motion, short screen, no script); the section hides it under .sc-pin.
+   - .gauge--live: one label in the left margin, read bottom to top like
+     the spine of a book, holding one .gauge__label per step. Hidden by
+     default; under .sc-pin the section shows it and reveals the label of
+     the current step (data-active or data-reached, written by scroll.js),
+     matched by rank in CSS: no script of its own. */
+.gauge {
+  display: none;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.gauge b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.gauge--step {
+  display: inline;
+  color: var(--ink);
+}
+
+.gauge--step::after {
+  content: "·";
+  content: "·" / "";
+  margin-inline: 0.6em;
+  color: var(--muted);
+}
+
+.gauge--live {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.gauge--live .gauge__label {
+  display: none;
+}
+
+.gauge--live b {
+  margin-inline: 0.2em;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* The hairline that carries the label, as on an altimeter. */
+.gauge--live::after {
+  content: "";
+  display: inline-block;
+  inline-size: 56px;
+  block-size: 1px;
+  margin-inline-start: 16px;
+  vertical-align: middle;
+  background: var(--line-strong);
+}
+
+/* === fin notes en marge === */
+
+/* === annotations à main levée : bloc réservé (annotate.js) === */
+/* Hand-drawn annotations: <mark data-annotate="underline | highlight |
+   strike | circle | box | bracket">. principe : Rough Notation, MIT (see
+   annotate.js). Without the engine (no JavaScript, or a page that does not
+   load annotate.js): a sober emphasis in the highlight colour, never the
+   browser's yellow <mark>. With it (html.an-on): the drawn stroke replaces
+   that emphasis. Two per page at most. */
+mark:where([data-annotate]) {
+  background: none;
+  color: inherit;
+}
+
+[data-annotate] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--hl);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+[data-annotate="strike"] {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.07em;
+}
+
+/* A highlighted word is read in ink: muted text on a tint would fall under
+   4.5:1. */
+[data-annotate="highlight"] {
+  text-decoration-line: none;
+  background-color: var(--tint);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* A circle or a frame never breaks across two lines (1 to 3 words), and
+   keeps the neighbouring words out of its stroke (set with or without the
+   engine, so that nothing shifts when it starts). */
+[data-annotate="circle"],
+[data-annotate="box"] {
+  margin-inline: 0.22em;
+  white-space: nowrap;
+}
+
+[data-annotate="bracket"] {
+  margin-inline: 0.3em;
+}
+
+/* Engine running: the element hosts its stroke (stacking context, so that
+   the highlighter passes under the letters and over any card). */
+.an-on [data-annotate] {
+  position: relative;
+  z-index: 0;
+  text-decoration-line: none;
+  background-color: transparent;
+}
+
+/* max-width: none, or the base svg rule (max-width: 100%) collapses the
+   overlay to 0 px when the phrase wraps (the containing block of a split
+   inline has no width), and a 0 px SVG is not painted. */
+.an-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 1px;
+  max-width: none;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.an-svg path {
+  fill: none;
+  stroke: var(--hl);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-annotate="highlight"] > .an-svg {
+  z-index: -1;
+}
+
+[data-annotate="highlight"] > .an-svg path {
+  stroke-linecap: butt;
+  stroke-opacity: 0.2;
+}
+
+.band-dark [data-annotate="highlight"] > .an-svg path {
+  stroke-opacity: 0.34;
+}
+
+/* Drawn once: the dash runs from hidden to whole (pathLength="1"). */
+[data-annotate].an-pending > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+[data-annotate].is-drawn > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--an-dur, 0.8s) var(--ease) var(--an-delay, 0s);
+}
+
+@media (forced-colors: active) {
+  .an-svg path {
+    stroke: CanvasText;
+  }
+}
+/* === fin annotations === */
 /* ---- section : topbar ---- */
 .s-topbar {
   position: sticky;
@@ -1193,6 +1479,21 @@ textarea.field__input {
   height: var(--topbar-h);
   border-bottom: 1px solid var(--line);
   background: var(--brand-light);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+/* Scrolled: the bar lifts off the page (M10, without blur). */
+.s-topbar[data-scrolled] {
+  box-shadow: 0 12px 28px -24px var(--brand-shadow);
+}
+
+/* Hidden while reading down: off screen, and inert (script), so that neither
+   the logo nor the button can take the focus or reach a screen reader. */
+.s-topbar[data-hidden] {
+  transform: translateY(calc(-100% - 16px));
+  box-shadow: none;
 }
 
 .s-topbar__inner {
@@ -1228,6 +1529,28 @@ textarea.field__input {
   min-height: 44px;
   padding: 8px 22px;
   font-size: 0.9375rem;
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+/* The button steps aside (hero button, conversion block or final CTA on
+   screen; on a small screen, the mobile bar shown): transparent AND inert
+   (script), never just transparent. */
+.s-topbar[data-cta-off] .s-topbar__cta.btn {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-topbar,
+  .s-topbar__cta.btn {
+    transition: none;
+  }
+
+  .s-topbar[data-cta-off] .s-topbar__cta.btn {
+    transform: none;
+  }
 }
 /* ---- section : hero ---- */
 .s-hero {
@@ -1830,6 +2153,645 @@ textarea.field__input {
   opacity: 1;
   transform: none;
 }
+/* Narrative gauge (optional field gauge of each step; the .gauge component
+   lives in base.css). Pinned: one label in the left margin of the stage
+   shows the label of the active step (data-active, written by scroll.js),
+   matched by rank without a script (six steps at most). Elsewhere: each
+   step shows its own label before its moment. */
+.sc-pin .s-journey__step .gauge--step {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+  .sc-pin .s-journey__gauge {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: calc((100% + var(--wrap)) / 2 + 20px);
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.s-journey__track:has(.s-journey__step:nth-child(1)[data-active]) .s-journey__gauge .gauge__label:nth-child(1),
+.s-journey__track:has(.s-journey__step:nth-child(2)[data-active]) .s-journey__gauge .gauge__label:nth-child(2),
+.s-journey__track:has(.s-journey__step:nth-child(3)[data-active]) .s-journey__gauge .gauge__label:nth-child(3),
+.s-journey__track:has(.s-journey__step:nth-child(4)[data-active]) .s-journey__gauge .gauge__label:nth-child(4),
+.s-journey__track:has(.s-journey__step:nth-child(5)[data-active]) .s-journey__gauge .gauge__label:nth-child(5),
+.s-journey__track:has(.s-journey__step:nth-child(6)[data-active]) .s-journey__gauge .gauge__label:nth-child(6) {
+  display: inline;
+}
+/* ---- section : demonstrator ---- */
+/* Two modes, one block each. The browser keeps the chosen one (script);
+   without script, CSS hides the other. */
+.s-demo[data-demo-mode="replay"] [data-demo-block="calculator"],
+.s-demo[data-demo-mode="calculator"] [data-demo-block="replay"] {
+  display: none;
+}
+
+/* The result reads as paper in both bands. */
+.band-dark .s-demo__paper {
+  --ink: var(--brand-dark);
+  --paper: var(--brand-light);
+  --surface: var(--brand-white);
+  --surface-2: var(--brand-surface-2);
+  --muted: var(--brand-muted);
+  --hl: var(--brand-primary-text);
+  --tint: var(--brand-primary-soft);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-field-border);
+  --focus: var(--brand-dark);
+  color: var(--ink);
+}
+
+.s-demo__paper {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) - 2px);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+}
+
+/* The signature gradient as the top edge of the result. */
+.s-demo__paper::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gradient);
+}
+
+/* ---------- Replay ---------- */
+.s-demo__console {
+  position: relative;
+  display: grid;
+  gap: clamp(20px, 0.9rem + 1vw, 28px);
+  padding: clamp(14px, 0.4rem + 1.8vw, 40px);
+  background: var(--surface-2);
+}
+
+.s-demo__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.s-demo__bar svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.s-demo__panel {
+  display: grid;
+  gap: 20px;
+}
+
+.s-demo__ask {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+}
+
+.s-demo__console:not(.is-live) .s-demo__ask {
+  max-width: 46rem;
+}
+
+/* The request field: the typed copy, and a hidden full copy that sizes it,
+   share one cell, so nothing below moves while it types. */
+.s-demo__field {
+  display: grid;
+  padding: 16px 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  background: var(--paper);
+  font-size: var(--t-lead);
+  line-height: 1.45;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.s-demo__field > * {
+  grid-area: 1 / 1;
+}
+
+.s-demo__ghost {
+  visibility: hidden;
+}
+
+.s-demo__caret {
+  display: none;
+  width: 2px;
+  height: 1.15em;
+  margin-left: 2px;
+  vertical-align: -0.2em;
+  background: var(--ink);
+}
+
+.s-demo__panel.is-typing .s-demo__caret {
+  display: inline-block;
+}
+
+.s-demo__sheet {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: clamp(16px, 0.6rem + 1.4vw, 32px);
+}
+
+.s-demo__doc-head {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-demo__doc-title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-demo__doc-meta {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-demo__rows {
+  display: grid;
+  counter-reset: s-demo-row;
+}
+
+.s-demo__row {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 4px 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  counter-increment: s-demo-row;
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
+}
+
+.s-demo__row::before {
+  content: counter(s-demo-row, decimal-leading-zero);
+  grid-row: 1 / span 3;
+  padding-top: 0.35em;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+.s-demo__row > * {
+  grid-column: 2;
+}
+
+.s-demo__ans {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+
+.s-demo__q {
+  font-weight: 700;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.s-demo__a {
+  text-wrap: pretty;
+}
+
+.s-demo__row--todo .s-demo__a {
+  color: var(--muted);
+}
+
+.s-demo__src {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.s-demo__done {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 14px;
+  font-weight: 600;
+  text-wrap: pretty;
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
+}
+
+.s-demo__done svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 0.15em;
+  color: var(--hl);
+}
+
+/* Composing (script, motion allowed): lines enter one by one. */
+.s-demo__panel.is-composing .s-demo__row:not(.is-on),
+.s-demo__panel.is-composing .s-demo__done:not(.is-on) {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+}
+
+.s-demo__ctrl,
+.s-demo__chips {
+  display: none;
+}
+
+.s-demo__ctrl {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.s-demo__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.s-demo__btn:hover {
+  border-color: var(--ink);
+}
+
+.s-demo__btn svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.s-demo__btn[aria-disabled="true"] {
+  border-style: dashed;
+  color: var(--muted);
+  cursor: default;
+}
+
+.s-demo__btn[aria-disabled="true"]:hover {
+  border-color: var(--line-strong);
+}
+
+.s-demo__ico-play,
+.s-demo__console.is-paused .s-demo__ico-pause {
+  display: none;
+}
+
+.s-demo__console.is-paused .s-demo__ico-play {
+  display: block;
+}
+
+.s-demo__chips {
+  gap: 12px;
+  align-content: start;
+}
+
+.s-demo__chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.s-demo__chip {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.s-demo__chip:hover {
+  border-color: var(--ink);
+}
+
+.s-demo__chip[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Visible timer before the next request (cycle only): the advance is
+   predictable, and it stops with the Pause button. */
+.s-demo__chip::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: 6px;
+  left: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.s-demo__console.is-timing .s-demo__chip[aria-pressed="true"]::after {
+  animation: s-demo-hold var(--hold, 6s) linear forwards;
+}
+
+.s-demo__console.is-paused .s-demo__chip::after,
+.s-demo__console.is-away .s-demo__chip::after {
+  animation-play-state: paused;
+}
+
+@keyframes s-demo-hold {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Live console (script): one request at a time. On wide screens the panels
+   stack in the same cells, so the console keeps the height of its tallest
+   example while the cycle runs. */
+.s-demo__console.is-live {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "bar" "ask" "ctrl" "chips" "sheet";
+}
+
+.s-demo__console.is-live .s-demo__panel {
+  display: contents;
+}
+
+.s-demo__console.is-live .s-demo__panel.is-off {
+  visibility: hidden;
+}
+
+/* Narrow screens: no cycle (the visitor scrolls), so the console takes the
+   height of the chosen example; it only changes on a click. */
+@media (max-width: 899px) {
+  .s-demo__console.is-live .s-demo__panel.is-off {
+    display: none;
+  }
+}
+
+.s-demo__console.is-live .s-demo__bar {
+  grid-area: bar;
+}
+
+.s-demo__console.is-live .s-demo__ask {
+  grid-area: ask;
+}
+
+.s-demo__console.is-live .s-demo__sheet {
+  grid-area: sheet;
+}
+
+.s-demo__console.is-live .s-demo__ctrl {
+  display: flex;
+  grid-area: ctrl;
+}
+
+.s-demo__console.is-live .s-demo__chips {
+  display: grid;
+  grid-area: chips;
+}
+
+/* Wide: the request and the other requests side by side, the controls on
+   the console bar, the result across the whole width below. */
+@media (min-width: 900px) {
+  .s-demo__console.is-live {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas:
+      "bar ctrl"
+      "ask chips"
+      "sheet sheet";
+    column-gap: clamp(24px, 1rem + 2vw, 48px);
+  }
+
+  .s-demo__console.is-live .s-demo__ctrl {
+    align-self: center;
+    justify-self: end;
+  }
+}
+
+@media (min-width: 1100px) {
+  .s-demo__row {
+    grid-template-columns: 1.75rem minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.55fr);
+    align-items: start;
+    gap: 4px 20px;
+  }
+
+  .s-demo__row::before {
+    grid-row: auto;
+  }
+
+  .s-demo__row > * {
+    grid-column: auto;
+  }
+
+  .s-demo__src {
+    padding-top: 0.3em;
+  }
+}
+
+/* ---------- Calculator ---------- */
+.s-demo__calc {
+  display: grid;
+  gap: clamp(20px, 1rem + 2vw, 40px);
+}
+
+.s-demo__form {
+  padding: clamp(20px, 0.8rem + 1.6vw, 36px);
+}
+
+.s-demo__fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-demo__legend {
+  padding: 0;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-demo__inputs {
+  display: grid;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.s-demo__number {
+  max-width: 12rem;
+}
+
+.s-demo__range-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.s-demo__val {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.s-demo__range {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+/* No script: the example values stay readable, not greyed. */
+.s-demo__fields:disabled .field__input {
+  opacity: 1;
+  -webkit-text-fill-color: currentColor;
+}
+
+.s-demo__result {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(22px, 1rem + 1.6vw, 40px);
+}
+
+.s-demo__total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  color: var(--hl);
+  font-size: var(--t-number);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-demo__total-unit {
+  color: var(--ink);
+  font-size: var(--t-lead);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.s-demo__lines {
+  border-top: 1px solid var(--line);
+}
+
+.s-demo__lines > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-demo__lines dt {
+  flex: 1 1 8rem;
+}
+
+.s-demo__lines dd {
+  margin-left: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.s-demo__invalid {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.s-demo__sources {
+  display: grid;
+  gap: 10px;
+}
+
+.s-demo__sources-title {
+  font-weight: 700;
+}
+
+.s-demo__sources ul {
+  display: grid;
+  gap: 10px;
+}
+
+.s-demo__sources li {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-demo__sources b {
+  color: var(--ink);
+}
+
+.s-demo__noscript {
+  color: var(--muted);
+}
+
+@media (min-width: 900px) {
+  .s-demo__calc {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+}
+
+/* ---------- Action under the result ---------- */
+.s-demo__action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  margin-top: clamp(24px, 1rem + 1.5vw, 40px);
+}
+
+.s-demo__note {
+  max-width: 34em;
+  color: var(--muted);
+  text-wrap: pretty;
+}
 /* ---- section : showcase-dark ---- */
 .s-showcase__grid {
   display: grid;
@@ -1940,6 +2902,360 @@ textarea.field__input {
 
   .s-showcase__sheet {
     padding: 12px 14px;
+  }
+}
+/* ---- section : ownership-diagram ---- */
+/* Text column (head, then the proofs) and the diagram beside it. The DOM
+   keeps head, diagram, proofs: the stacked order on a narrow screen. */
+.s-own__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+  grid-template-areas:
+    "head figure"
+    "proofs figure";
+  grid-template-rows: auto 1fr;
+  gap: 0 clamp(40px, 1rem + 5vw, 96px);
+}
+
+.s-own__head {
+  grid-area: head;
+  margin-bottom: clamp(24px, 1rem + 1vw, 36px);
+}
+
+.s-own__figure {
+  grid-area: figure;
+  align-self: center;
+  margin: 0;
+}
+
+.s-own__proofs {
+  grid-area: proofs;
+  align-self: start;
+  border-top: 1px solid var(--line);
+}
+
+.s-own__proof {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 0.32fr) minmax(0, 1fr);
+  gap: 4px 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-own__proof dt {
+  font-weight: 700;
+}
+
+.s-own__proof dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- The diagram: the owned block, a link, then a spine that every tool
+   plugs into. Lines are borders and pseudo-elements: any number of tools,
+   any card height, nothing to measure. ---- */
+.s-own__diagram {
+  --link: clamp(28px, 0.6rem + 2.4vw, 52px);
+  --elbow: 34px;
+  --wire: 2px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--link) minmax(0, 1.1fr);
+  grid-template-areas:
+    ". . ttl"
+    "core link list";
+  align-items: center;
+  row-gap: 10px;
+}
+
+.s-own__core {
+  grid-area: core;
+  padding: clamp(20px, 0.9rem + 1vw, 28px);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lift);
+}
+
+.s-own__core-title,
+.s-own__tools-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.125rem;
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-own__core-title svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+
+/* Owned items as a file tree: a trunk, a tick per item, the format in mono. */
+.s-own__owned {
+  margin: 16px 0 0 10px;
+  border-left: 1.5px solid var(--line-strong);
+}
+
+.s-own__owned > li {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 8px 0 8px 22px;
+}
+
+.s-own__owned > li::before {
+  content: "";
+  position: absolute;
+  top: calc(8px + 0.8em);
+  left: 0;
+  width: 14px;
+  border-top: 1.5px solid var(--line-strong);
+}
+
+.s-own__file {
+  line-height: var(--lh-snug);
+  text-wrap: pretty;
+}
+
+.s-own__format {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.s-own__link {
+  grid-area: link;
+  height: var(--wire);
+  background: var(--ink);
+  transform-origin: 0 50%;
+}
+
+.s-own__tools-title {
+  grid-area: ttl;
+  padding-left: var(--elbow);
+}
+
+.s-own__tools {
+  grid-area: list;
+}
+
+.s-own__tool {
+  position: relative;
+  padding: 7px 0 7px var(--elbow);
+}
+
+/* The spine: one segment per tool, from the first card's middle to the last's. */
+.s-own__tool::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-left: var(--wire) solid var(--ink);
+}
+
+.s-own__tool:first-child::before {
+  top: 50%;
+}
+
+.s-own__tool:last-child::before {
+  bottom: 50%;
+}
+
+.s-own__tool:only-child::before {
+  content: none;
+}
+
+/* The stub from the spine to the card: solid for the tool in place,
+   dashed for the ones that could take its place. */
+.s-own__tool::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - var(--wire) / 2);
+  left: 0;
+  width: var(--elbow);
+  border-top: var(--wire) dashed var(--line-strong);
+  transform-origin: 0 50%;
+}
+
+.s-own__tool[data-state="current"]::after {
+  border-top-style: solid;
+  border-top-color: var(--ink);
+}
+
+.s-own__card {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: calc(var(--radius-card) - 4px);
+  background: var(--surface);
+}
+
+.s-own__tool[data-state="current"] .s-own__card {
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow);
+}
+
+/* The plug: a hollow socket for a possible tool, filled for the one in place. */
+.s-own__card::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border: var(--wire) solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.s-own__tool[data-state="current"] .s-own__card::before {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.s-own__tool-name {
+  font-weight: 700;
+  line-height: var(--lh-snug);
+}
+
+.s-own__tool-note {
+  color: var(--muted);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.s-own__tag {
+  justify-self: start;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-own__caption {
+  max-width: 46ch;
+  margin-top: 22px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Drawn once, when the diagram enters (reveal.js sets .is-in). Only when the
+   engine runs with motion allowed (html.rv-on): otherwise the wires are
+   simply there. Transform and opacity only. */
+.rv-on .s-own__figure .s-own__link {
+  transform: scaleX(0);
+  transition: transform 0.4s var(--ease) 0.2s;
+}
+
+.rv-on .s-own__figure .s-own__tool::before {
+  opacity: 0;
+  transition: opacity 0.3s var(--ease) 0.5s;
+}
+
+.rv-on .s-own__figure .s-own__tool::after {
+  transform: scaleX(0);
+  transition: transform 0.35s var(--ease) calc(0.62s + var(--i, 0) * 0.1s);
+}
+
+.rv-on .s-own__figure .s-own__card {
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+  transition:
+    opacity 0.45s var(--ease) calc(0.8s + var(--i, 0) * 0.1s),
+    transform 0.45s var(--ease) calc(0.8s + var(--i, 0) * 0.1s);
+}
+
+.rv-on .s-own__figure.is-in .s-own__link,
+.rv-on .s-own__figure.is-in .s-own__tool::after,
+.rv-on .s-own__figure.is-in .s-own__card {
+  transform: none;
+}
+
+.rv-on .s-own__figure.is-in .s-own__tool::before,
+.rv-on .s-own__figure.is-in .s-own__card {
+  opacity: 1;
+}
+
+@media (max-width: 1100px) {
+  .s-own__grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "figure"
+      "proofs";
+    grid-template-rows: none;
+  }
+
+  .s-own__figure {
+    max-width: 760px;
+    margin-bottom: clamp(32px, 1rem + 2vw, 48px);
+  }
+}
+
+/* Narrow screens: the owned block on top, the link drops down to the spine,
+   which runs past the tools title to the last card. */
+@media (max-width: 640px) {
+  .s-own__diagram {
+    --elbow: 28px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "core"
+      "link"
+      "ttl"
+      "list";
+    row-gap: 0;
+  }
+
+  .s-own__link {
+    justify-self: start;
+    width: var(--wire);
+    height: 28px;
+    margin-left: 24px;
+    transform-origin: 50% 0;
+  }
+
+  .rv-on .s-own__figure .s-own__link {
+    transform: scaleY(0);
+  }
+
+  .s-own__tools-title,
+  .s-own__tools {
+    margin-left: 24px;
+  }
+
+  .s-own__tools-title {
+    position: relative;
+    padding-block: 6px 12px;
+  }
+
+  .s-own__tools-title::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-left: var(--wire) solid var(--ink);
+  }
+
+  .s-own__tool:first-child::before {
+    top: 0;
+  }
+
+  .s-own__tool:only-child::before {
+    content: "";
+    bottom: 50%;
+  }
+
+  .s-own__proof {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 /* ---- section : testimonials ---- */
@@ -2696,6 +4012,7 @@ textarea.field__input {
               <div class="s-journey__inline" aria-hidden="true" data-qa-decor><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Temps à quai · semaine 41</span></div> <div class="obj-window__body"><div class="obj-chart"><i style="--v:.7"></i><i style="--v:.55"></i><i style="--v:.6"></i><i class="is-hl" style="--v:.42"></i><i style="--v:.4"></i></div> <div class="obj-rule"></div><div class="obj-head"><span>Moyenne de la semaine</span><b class="obj-push">38 min</b></div></div></div></div>
             </li>
           </ol>
+          
         </div>
         <div class="s-journey__scenes" aria-hidden="true" data-qa-decor>
           <div class="s-journey__scene" data-step-visual><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Réserver un créneau · commande 48213</span></div> <div class="obj-window__body"><div class="obj-grid" style="--cols:4"> <span class="is-head">6 h 30</span><span class="is-head">7 h 00</span><span class="is-head">7 h 30</span><span class="is-head">8 h 30</span> <span>Complet</span><span>Complet</span><span>Complet</span><span class="is-warn">Choisi</span> </div><div class="obj-rule"></div> <div class="obj-check"><span class="is-done">18 palettes déclarées</span><span class="is-done">Marchandise fraîche</span><span>Plaque à confirmer le jour J</span></div></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Affectation · mercredi</span></div> <div class="obj-window__body"><div class="obj-bars"> <div class="obj-bar" style="--v:.74"><span>Quai 1</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>6 RDV</b></div> <div class="obj-bar" style="--v:.62"><span>Quai 2</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>5 RDV</b></div> <div class="obj-bar is-hl" style="--v:.86"><span>Quai 3</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>7 RDV</b></div> <div class="obj-bar" style="--v:.6"><span>Quai 4</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>5 RDV</b></div> </div><div class="obj-rule"></div><p class="obj-small">23 rendez-vous, aucun quai en double</p></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Borne d’accueil</b><span class="obj-stamp obj-push">Arrivé</span></div> <div class="obj-rule"></div><p class="obj-kpi">Quai 3<small>8 h 30</small></p> <p class="obj-small">Plaque GH-418 · arrivée à 8 h 27</p><div class="obj-rule"></div> <div class="obj-lines"><i style="--w:88%"></i><i style="--w:60%"></i></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Temps à quai · semaine 41</span></div> <div class="obj-window__body"><div class="obj-chart"><i style="--v:.7"></i><i style="--v:.55"></i><i style="--v:.6"></i><i class="is-hl" style="--v:.42"></i><i style="--v:.4"></i></div> <div class="obj-rule"></div><div class="obj-head"><span>Moyenne de la semaine</span><b class="obj-push">38 min</b></div></div></div></div>
@@ -2705,6 +4022,64 @@ textarea.field__input {
   </div>
 </section>
 <!-- /section:parcours -->
+<!-- section:estimation -->
+<section id="estimation" class="s-demo section" aria-labelledby="estimation-titre" data-section="demonstrator" data-demo-mode="calculator">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="estimation-titre" class="section-title">L’attente évitée<br><span class="hl">sur vos quais</span></h2>
+      <p class="section-intro">Indiquez votre volume de réception. L’estimation se calcule ici, avec son hypothèse et sa source sous le résultat.</p>
+    </div>
+    
+    <div class="s-demo__calc" data-demo-block="calculator" data-announce="Estimation : {value} heures d’attente évitées chaque mois" data-invalid-text="Saisissez un nombre de camions entre 1 et 400 pour voir l’estimation." data-demo-event="demo_calculate" data-demo-type="estimation">
+      <div class="s-demo__form card">
+        <fieldset class="s-demo__fields" disabled data-demo-fields>
+          <legend class="s-demo__legend">Vos réceptions aujourd’hui</legend>
+          <div class="s-demo__inputs">
+            <div class="field">
+              
+              
+              <label class="field__label" for="estimation-camions">Camions reçus par jour</label>
+              <input class="field__input s-demo__number" type="number" inputmode="numeric" id="estimation-camions" name="camions" value="40" min="1" max="400" step="1" data-demo-input aria-describedby="estimation-camions-aide">
+              <p class="field__hint" id="estimation-camions-aide">Toutes livraisons confondues. Entre 1 et 400.</p>
+            </div><div class="field">
+              
+              <div class="s-demo__range-head"><label class="field__label" for="estimation-attente">Attente moyenne d’un camion</label><span class="s-demo__val" aria-hidden="true" data-demo-show="attente">45&nbsp;min</span></div>
+              <input class="s-demo__range" type="range" id="estimation-attente" name="attente" value="45" min="10" max="120" step="5" data-unit="min" data-demo-input>
+              
+              
+            </div><div class="field">
+              <label class="field__label" for="estimation-jours">Jours de réception</label>
+              <div class="field__select"><select class="field__input" id="estimation-jours" name="jours" data-demo-input><option value="22" selected>5 jours sur 7</option><option value="26">6 jours sur 7</option><option value="30">7 jours sur 7</option></select></div>
+              
+              
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="s-demo__result s-demo__paper">
+        <p class="label">Attente évitée chaque mois</p>
+        <p class="s-demo__total"><span data-demo-total data-demo-expr="attente_totale * part_evitee" data-decimals="0">495</span><span class="s-demo__total-unit">heures</span></p>
+        <p class="s-demo__invalid" data-demo-invalid hidden>Saisissez un nombre de camions entre 1 et 400 pour voir l’estimation.</p>
+        <dl class="s-demo__lines">
+          <div><dt>Camions reçus par mois</dt><dd><span data-demo-line data-key="total" data-demo-expr="camions * jours" data-decimals="0">880</span>&nbsp;camions</dd></div><div><dt>Attente cumulée aujourd’hui</dt><dd><span data-demo-line data-key="attente_totale" data-demo-expr="total * attente / 60" data-decimals="0">660</span>&nbsp;h</dd></div>
+        </dl>
+        <div class="s-demo__sources">
+          <p class="s-demo__sources-title">Hypothèse et source</p>
+          <ul role="list">
+            <li data-demo-coef="part_evitee" data-value="0.75"><b>75 %</b> de l’attente évitée par la réservation de créneaux. Chiffre d’exemple : passage de 45 à 11 minutes d’attente au quai sur les sites d’exemple de la bande de preuves, à remplacer par les mesures de vos pilotes.</li>
+          </ul>
+        </div>
+        <noscript><p class="s-demo__noscript">Exemple calculé pour les valeurs ci-dessus.</p></noscript>
+      </div>
+      <p class="sr-only" role="status" aria-live="polite" data-demo-live></p>
+    </div>
+    <div class="s-demo__action">
+      <a class="btn btn--secondary" href="#demo" data-track="cta_click" data-cta-position="estimation">Demander une démo<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      <p class="s-demo__note">La démo rejoue une semaine de vos propres réceptions.</p>
+    </div>
+  </div>
+</section>
+<!-- /section:estimation -->
 <!-- section:securite -->
 <section id="securite" class="s-showcase section band-dark" aria-labelledby="securite-titre" data-section="showcase-dark">
   <div class="wrap">
@@ -2725,6 +4100,35 @@ textarea.field__input {
   </div>
 </section>
 <!-- /section:securite -->
+<!-- section:donnees -->
+<section id="donnees" class="s-own section" aria-labelledby="donnees-titre" data-section="ownership-diagram">
+  <div class="wrap s-own__grid">
+    <div class="section-head s-own__head">
+      <h2 id="donnees-titre" class="section-title">Vos données de quai<br><span class="hl">restent les vôtres</span></h2>
+      <p class="section-intro">L’historique des réceptions et le carnet des transporteurs vous appartiennent. Si vous quittez Calquai, ils repartent avec vous, dans des formats que votre WMS sait lire.</p>
+    </div>
+    <figure class="s-own__figure" data-reveal="fade">
+      <div class="s-own__diagram">
+        <div class="s-own__core band-dark">
+          <h3 class="s-own__core-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 7.5V18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9.5a2 2 0 0 0-2-2h-7.2L9.6 5H5a2 2 0 0 0-2 2.5Z"/></svg>Vos données de réception</h3>
+          <ul class="s-own__owned" role="list">
+            <li><span class="s-own__file">L’historique des rendez-vous, quai par quai</span><span class="s-own__format">CSV · API</span></li><li><span class="s-own__file">Les heures d’arrivée et de mise à quai horodatées</span><span class="s-own__format">CSV</span></li><li><span class="s-own__file">Le carnet des transporteurs et leurs contacts</span><span class="s-own__format">CSV · XLSX</span></li><li><span class="s-own__file">Le journal des actions de vos équipes</span><span class="s-own__format">CSV</span></li>
+          </ul>
+        </div>
+        <span class="s-own__link" aria-hidden="true"></span>
+        <h3 class="s-own__tools-title">Ce qui s’y branche</h3>
+        <ul class="s-own__tools" role="list">
+          <li class="s-own__tool" data-state="current" style="--i:0"><div class="s-own__card"><span class="s-own__tag">Aujourd’hui</span><span class="s-own__tool-name">Calquai</span><span class="s-own__tool-note">Planifie les créneaux et affecte les quais</span></div></li><li class="s-own__tool" data-state="alt" style="--i:1"><div class="s-own__card"><span class="s-own__tool-name">Un autre logiciel de quai</span><span class="s-own__tool-note">Importe l’historique et le carnet des transporteurs</span></div></li><li class="s-own__tool" data-state="alt" style="--i:2"><div class="s-own__card"><span class="s-own__tool-name">Votre outil de pilotage</span><span class="s-own__tool-note">Lit les temps à quai par l’API ou l’export du jour</span></div></li><li class="s-own__tool" data-state="alt" style="--i:3"><div class="s-own__card"><span class="s-own__tool-name">Votre WMS</span><span class="s-own__tool-note">Garde les réceptions, avec ou sans Calquai</span></div></li>
+        </ul>
+      </div>
+      <figcaption class="s-own__caption">Les données restent dans des formats ouverts : Calquai s’y branche aujourd’hui, un autre outil pourra s’y brancher demain.</figcaption>
+    </figure>
+    <dl class="s-own__proofs" data-reveal-group>
+      <div class="s-own__proof" data-reveal><dt>Export</dt><dd>Export complet en CSV à tout moment depuis l’administration, et une API documentée pour le reste.</dd></div><div class="s-own__proof" data-reveal><dt>Préavis</dt><dd>Abonnement résiliable chaque mois, avec trente jours de préavis et sans frais de sortie.</dd></div><div class="s-own__proof" data-reveal><dt>Passation</dt><dd>À la résiliation, un export complet vous est remis sous cinq jours ouvrés, puis vos données sont effacées sous trente jours.</dd></div>
+    </dl>
+  </div>
+</section>
+<!-- /section:donnees -->
 <!-- section:avis -->
 <section id="avis" class="s-testi section" aria-labelledby="avis-titre" data-section="testimonials">
   <div class="wrap">
@@ -3390,17 +4794,26 @@ textarea.field__input {
                       slug), optin (true when an input[data-optin] box is
                       ticked, false otherwise)
      begin_checkout   submit of a form[data-track="begin_checkout"] (the
-                      conversion ticket). value, currency, formula
+                      conversion ticket). value, currency, formula, and
+                      items (GA4 array) when the form carries
+                      data-checkout-items (JSON, written by bundle-receipt)
      form_demo_submit sent INSTEAD of the form's own event when its action
                       is still a {{MARKER}} (or the form carries data-demo,
                       written by forms.js, which then sends nothing): a
                       demonstration submission never counts as a lead or a
                       checkout. form_event (the event it replaces),
                       form_id, and the parameters of that event
-     select_content   choice gate: content_type, content_id
+     select_content   choice gate (content_type, content_id); also pushed
+                      through window.landingTrack by sections: recommender
+                      (content_type = its param, content_id = the offer,
+                      answers = "question:answer,…"), work-wall filter
+                      (content_type "filtre"), demonstrator request
+     viewer_open      viewer.js opened: content_type, content_id, pages
      faq_open         a details[data-track="faq_open"] opened: question
      <any name>       any other data-track value on a link or button: pushed
-                      on click under that name
+                      on click under that name; a section may also call
+                      window.landingTrack(name, params) (demonstrator:
+                      its track_event, demo_calculate by default)
    Extra parameters: every data-track-<name>="value" attribute on the tracked
    element is sent as <name>: value (dashes become underscores). A form
    exposes its current formula through a checked radio input[name="formule"]
@@ -3528,6 +4941,17 @@ textarea.field__input {
     if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
       data.value = Number(formula.getAttribute('data-price'));
     }
+    // GA4 items of the checkout, as JSON written by the section (bundle-receipt:
+    // the articles ticked, or the pack). Malformed or empty: no items.
+    if (name === 'begin_checkout') {
+      var rawItems = form.getAttribute('data-checkout-items');
+      if (rawItems) {
+        try {
+          var list = JSON.parse(rawItems);
+          if (Array.isArray(list) && list.length) data.items = list;
+        } catch (err) { /* not JSON: leave items out */ }
+      }
+    }
     if (isDemo(form)) {
       data.form_event = name;
       if (!data.form_id) data.form_id = form.id || '';
@@ -3574,6 +4998,131 @@ textarea.field__input {
 })();
 </script>
 <script>
+/* ---- section : topbar ---- */
+(function () {
+  /* principe : Headroom.js (Nick Williams), MIT ; réécrit sans dépendance. */
+  var root = document.documentElement;
+  var small = window.matchMedia('(max-width: 768px)');
+  document.querySelectorAll('.s-topbar').forEach(function (bar) {
+    var cta = bar.querySelector('.s-topbar__cta');
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+
+    /* ---- 1. Hide while reading down, come back when going up ---- */
+    var hidden = false;
+    var lastY = window.scrollY;
+    var ticking = false;
+    var DELTA = 8;
+    var tracks = [];
+
+    function collect() { tracks = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-track]')); }
+    collect();
+    document.addEventListener('landing:revealed', collect);
+
+    function setHidden(on) {
+      if (on === hidden) return;
+      hidden = on;
+      bar.toggleAttribute('data-hidden', on);
+      bar.inert = on;
+    }
+
+    // A pinned stage sits right under the bar (scroll.js, top: --topbar-h):
+    // the bar stays while one is stuck, so no gap opens above it.
+    function pinnedStage() {
+      if (!root.classList.contains('sc-pin')) return false;
+      var top = bar.offsetHeight + 1;
+      var vh = window.innerHeight;
+      return tracks.some(function (t) {
+        var r = t.getBoundingClientRect();
+        return r.top <= top && r.bottom >= vh - 1;
+      });
+    }
+
+    function keyboardInside() {
+      var a = document.activeElement;
+      if (!a || !bar.contains(a)) return false;
+      try { return a.matches(':focus-visible'); } catch (e) { return true; }
+    }
+
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      bar.toggleAttribute('data-scrolled', y > 2);
+      if (y <= bar.offsetHeight * 2 || pinnedStage() || keyboardInside()) {
+        setHidden(false);
+        lastY = y;
+        return;
+      }
+      var dy = y - lastY;
+      if (Math.abs(dy) < DELTA) return;
+      setHidden(dy > 0);
+      lastY = y;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+
+    // Going back up the page with the keyboard brings the bar back before the
+    // focus moves, so Shift+Tab can reach it.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' && e.shiftKey) setHidden(false);
+    }, true);
+
+    update();
+
+    /* ---- 2. The button steps aside ---- */
+    if (!cta) return;
+    var guardOff = false;
+    var stickyOn = root.getAttribute('data-sticky-bar') === 'on';
+    function applyCta() {
+      var off = guardOff || (small.matches && stickyOn);
+      bar.toggleAttribute('data-cta-off', off);
+      cta.inert = off;
+    }
+    // Small screens: the mobile bar (sticky-bar) carries the button while it
+    // is visible; never the same button twice on screen.
+    document.addEventListener('landing:sticky-bar', function (e) {
+      stickyOn = !!(e.detail && e.detail.visible);
+      applyCta();
+    });
+    if (small.addEventListener) small.addEventListener('change', applyCta);
+
+    // Opt-in (slot cta_after_hero: data-cta-after-hero on the bar, off by
+    // default): hidden while the hero's button, the conversion block (the
+    // anchor of the button) or the final CTA is on screen.
+    var guards = [];
+    if (bar.hasAttribute('data-cta-after-hero') && 'IntersectionObserver' in window) {
+      var href = cta.getAttribute('href') || '';
+      guards = [
+        document.querySelector('main [data-cta-position="hero"]'),
+        document.querySelector('main [data-cta-position="final"]')
+      ];
+      if (href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+      guards = guards.filter(function (g, i, list) { return g && list.indexOf(g) === i; });
+    }
+    if (guards.length) {
+      var onScreen = new Map();
+      var below = bar.offsetHeight;
+      var measure = function () { guardOff = guards.some(function (g) { return onScreen.get(g); }); applyCta(); };
+      // First state measured at once: no flash of the button on load.
+      guards.forEach(function (g) {
+        var r = g.getBoundingClientRect();
+        onScreen.set(g, r.width > 0 && r.bottom > below && r.top < window.innerHeight);
+      });
+      measure();
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { onScreen.set(e.target, e.isIntersecting); });
+        measure();
+      }, { rootMargin: '-' + below + 'px 0px 0px 0px' });
+      guards.forEach(function (g) { io.observe(g); });
+    } else {
+      applyCta();
+    }
+  });
+})();
 /* ---- section : hero ---- */
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -3609,6 +5158,361 @@ textarea.field__input {
       box.children[i].className = 'is-on';
       if (++steps >= max) window.clearInterval(timer);
     }, 2600);
+  });
+})();
+/* ---- section : demonstrator ---- */
+/* Demonstrator: a scripted replay (a request types itself, the result composes
+   line by line) or a calculator (values in, estimate and breakdown out).
+   Principle of the request / result console: the maintainer's workshop page,
+   rewritten (pause, replay, no announced typing, no endless cycle). */
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var lang = document.documentElement.getAttribute('lang') || 'fr';
+  var each = function (list, fn) { Array.prototype.forEach.call(list, fn); };
+  var num = function (v, d) { var n = parseFloat(v); return isFinite(n) && n >= 0 ? n : d; };
+
+  // Polite live region: emptied first, so that the same sentence is read again.
+  function say(live, text) {
+    if (!live || !text) return;
+    live.textContent = '';
+    window.setTimeout(function () { live.textContent = text; }, 80);
+  }
+
+  /* ---------- Replay ---------- */
+  function initReplay(box) {
+    var panels = Array.prototype.slice.call(box.querySelectorAll('[data-demo-panel]'));
+    if (!panels.length) return;
+    var chips = Array.prototype.slice.call(box.querySelectorAll('[data-demo-pick]'));
+    var ctrl = box.querySelector('[data-demo-ctrl]');
+    var toggle = box.querySelector('[data-demo-toggle]');
+    var toggleText = box.querySelector('[data-demo-toggle-text]');
+    var again = box.querySelector('[data-demo-again]');
+    var live = box.querySelector('[data-demo-live]');
+    var motion = !reduce && 'IntersectionObserver' in window;
+    var typeMs = num(box.getAttribute('data-type-ms'), 28);
+    var rowMs = num(box.getAttribute('data-row-ms'), 380);
+    var holdMs = Math.max(4000, num(box.getAttribute('data-hold-ms'), 6000));
+    // The one-round cycle runs on wide screens only (see the CSS).
+    var auto = box.getAttribute('data-cycle') === 'true' && window.matchMedia('(min-width: 900px)').matches;
+    var current = 0, steps = [], at = 0, timer = null, due = 0, left = 0, gen = 0;
+    var running = false, userPaused = false, inView = false;
+
+    panels.forEach(function (p) {
+      var typed = p.querySelector('[data-demo-typed]');
+      p.__full = typed ? Array.from(typed.textContent) : [];
+    });
+    box.classList.add('is-live');
+
+    function show(i) {
+      current = i;
+      panels.forEach(function (p, k) { p.classList.toggle('is-off', k !== i); });
+      chips.forEach(function (c, k) { c.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+    }
+    function settle(p) {
+      p.classList.remove('is-composing', 'is-typing');
+      var typed = p.querySelector('[data-demo-typed]');
+      if (typed) typed.textContent = p.__full.join('');
+      each(p.querySelectorAll('[data-demo-row], [data-demo-done]'), function (r) { r.classList.add('is-on'); });
+    }
+    function arm(p) {
+      p.classList.add('is-composing');
+      p.classList.remove('is-typing');
+      var typed = p.querySelector('[data-demo-typed]');
+      if (typed) typed.textContent = '';
+      each(p.querySelectorAll('[data-demo-row], [data-demo-done]'), function (r) { r.classList.remove('is-on'); });
+    }
+    function setToggle(state) {
+      box.classList.toggle('is-paused', state === 'paused');
+      if (!toggle) return;
+      toggle.setAttribute('aria-disabled', state === 'done' ? 'true' : 'false');
+      if (toggleText) toggleText.textContent = toggle.getAttribute(state === 'paused' ? 'data-resume' : 'data-pause');
+    }
+    function finish() {
+      running = false;
+      box.classList.remove('is-timing');
+      setToggle('done');
+    }
+    function schedule() {
+      window.clearTimeout(timer);
+      timer = null;
+      if (!running || userPaused || !inView) return;
+      if (at >= steps.length) { finish(); return; }
+      var step = steps[at], wait = left || step.d, g = gen;
+      left = 0;
+      due = Date.now() + wait;
+      timer = window.setTimeout(function () {
+        timer = null;
+        at += 1;
+        step.f();
+        if (g === gen) schedule();
+      }, wait);
+    }
+    function halt() {
+      if (!timer) return;
+      window.clearTimeout(timer);
+      timer = null;
+      left = Math.max(0, due - Date.now());
+    }
+    function typeStep(el, chars, k) {
+      return { d: Math.round(typeMs * (0.65 + Math.random() * 0.7)), f: function () { el.textContent = chars.slice(0, k).join(''); } };
+    }
+    function play(i, byVisitor) {
+      gen += 1;
+      halt();
+      left = 0;
+      at = 0;
+      box.classList.remove('is-timing');
+      show(i);
+      var p = panels[i];
+      if (!motion) {
+        settle(p);
+        if (byVisitor) say(live, p.getAttribute('data-status'));
+        return;
+      }
+      arm(p);
+      var typed = p.querySelector('[data-demo-typed]');
+      steps = [{ d: 500, f: function () { p.classList.add('is-typing'); } }];
+      for (var k = 1; typed && k <= p.__full.length; k++) steps.push(typeStep(typed, p.__full, k));
+      steps.push({ d: 420, f: function () { p.classList.remove('is-typing'); } });
+      each(p.querySelectorAll('[data-demo-row]'), function (r) {
+        steps.push({ d: rowMs, f: function () { r.classList.add('is-on'); } });
+      });
+      steps.push({ d: rowMs, f: function () {
+        var done = p.querySelector('[data-demo-done]');
+        if (done) done.classList.add('is-on');
+        p.classList.remove('is-composing');
+        // The result is announced once, when the visitor asked for it.
+        if (byVisitor) say(live, p.getAttribute('data-status'));
+        if (auto && i < panels.length - 1) {
+          box.style.setProperty('--hold', holdMs + 'ms');
+          box.classList.add('is-timing');
+          steps.push({ d: holdMs, f: function () {
+            box.classList.remove('is-timing');
+            if (auto) play(i + 1, false);
+          } });
+        }
+      } });
+      running = true;
+      userPaused = false;
+      setToggle('play');
+      schedule();
+    }
+    // The visitor takes the console in hand: the one-round cycle stops.
+    function stopCycle() {
+      if (!auto) return;
+      auto = false;
+      if (box.classList.contains('is-timing')) {
+        halt();
+        left = 0;
+        finish();
+      }
+    }
+
+    chips.forEach(function (chip, k) {
+      chip.addEventListener('click', function () {
+        stopCycle();
+        play(k, true);
+      });
+    });
+
+    if (!motion) {
+      if (ctrl) ctrl.hidden = true;
+      show(0);
+      return;
+    }
+
+    if (toggle) toggle.addEventListener('click', function () {
+      if (toggle.getAttribute('aria-disabled') === 'true') return;
+      if (userPaused) {
+        userPaused = false;
+        setToggle('play');
+        schedule();
+      } else {
+        userPaused = true;
+        halt();
+        setToggle('paused');
+      }
+    });
+    if (again) again.addEventListener('click', function () {
+      stopCycle();
+      play(current, true);
+    });
+    chips.forEach(function (chip) { chip.addEventListener('focus', stopCycle); });
+
+    play(0, false);
+    // Starts, and goes on, only while the console is on screen.
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        inView = entry.isIntersecting && entry.intersectionRatio >= 0.19;
+        box.classList.toggle('is-away', !inView);
+        if (inView) schedule(); else halt();
+      });
+    }, { threshold: [0, 0.2] }).observe(box);
+  }
+
+  /* ---------- Calculator ---------- */
+  // Arithmetic only: numbers, names, + - * / and parentheses (no eval).
+  function compile(source) {
+    var src = String(source || '');
+    var tokens = src.match(/\d+(?:\.\d+)?|[A-Za-z_][A-Za-z0-9_]*|[-+*\/()]/g) || [];
+    if (!tokens.length || tokens.join('') !== src.replace(/\s+/g, '')) return null;
+    var i = 0;
+    function bin(op, a, b) {
+      if (op === '+') return function (s) { return a(s) + b(s); };
+      if (op === '-') return function (s) { return a(s) - b(s); };
+      if (op === '*') return function (s) { return a(s) * b(s); };
+      return function (s) { return a(s) / b(s); };
+    }
+    function atom() {
+      var t = tokens[i++];
+      if (t === '(') {
+        var inner = sum();
+        if (tokens[i++] !== ')') throw new Error('parenthèse');
+        return inner;
+      }
+      if (t === '-') {
+        var neg = atom();
+        return function (s) { return -neg(s); };
+      }
+      if (t !== undefined && /^\d/.test(t)) {
+        var n = parseFloat(t);
+        return function () { return n; };
+      }
+      if (t !== undefined && /^[A-Za-z_]/.test(t)) {
+        return function (s) { return Object.prototype.hasOwnProperty.call(s, t) ? s[t] : NaN; };
+      }
+      throw new Error('terme');
+    }
+    function product() {
+      var left = atom();
+      while (tokens[i] === '*' || tokens[i] === '/') { var op = tokens[i++]; left = bin(op, left, atom()); }
+      return left;
+    }
+    function sum() {
+      var left = product();
+      while (tokens[i] === '+' || tokens[i] === '-') { var op = tokens[i++]; left = bin(op, left, product()); }
+      return left;
+    }
+    try {
+      var fn = sum();
+      return i === tokens.length ? fn : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function initCalc(section, box) {
+    var fields = box.querySelector('[data-demo-fields]');
+    var inputs = Array.prototype.slice.call(box.querySelectorAll('[data-demo-input]'));
+    var lines = Array.prototype.slice.call(box.querySelectorAll('[data-demo-line]'));
+    var total = box.querySelector('[data-demo-total]');
+    var outs = total ? lines.concat([total]) : lines;
+    var invalid = box.querySelector('[data-demo-invalid]');
+    var live = box.querySelector('[data-demo-live]');
+    var coefs = {};
+    each(box.querySelectorAll('[data-demo-coef]'), function (li) {
+      var key = li.getAttribute('data-demo-coef');
+      var v = parseFloat(li.getAttribute('data-value'));
+      if (key && isFinite(v)) coefs[key] = v;
+    });
+    outs.forEach(function (el) {
+      el.__fn = compile(el.getAttribute('data-demo-expr'));
+      if (!el.__fn) console.warn('[demonstrator] #' + section.id + ' : formule illisible « ' + el.getAttribute('data-demo-expr') + ' »');
+    });
+    function format(v, decimals) {
+      try {
+        return new Intl.NumberFormat(lang, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(v);
+      } catch (e) {
+        return v.toFixed(decimals);
+      }
+    }
+    function decimalsOf(step) {
+      var m = String(step || '').match(/\.(\d+)/);
+      return m ? m[1].length : 0;
+    }
+    function read(input) {
+      var v = input.tagName === 'SELECT' ? parseFloat(input.value) : parseFloat(input.value.replace(',', '.'));
+      var min = parseFloat(input.getAttribute('min')), max = parseFloat(input.getAttribute('max'));
+      if (!isFinite(v) || (isFinite(min) && v < min) || (isFinite(max) && v > max)) return NaN;
+      return v;
+    }
+    function compute() {
+      var scope = {}, ok = true;
+      Object.keys(coefs).forEach(function (k) { scope[k] = coefs[k]; });
+      inputs.forEach(function (input) {
+        var v = read(input);
+        if (input.type === 'number') {
+          if (isFinite(v)) input.removeAttribute('aria-invalid'); else input.setAttribute('aria-invalid', 'true');
+        }
+        if (input.type === 'range' && isFinite(v)) {
+          var unit = input.getAttribute('data-unit');
+          var text = format(v, decimalsOf(input.getAttribute('step'))) + (unit ? ' ' + unit : '');
+          input.setAttribute('aria-valuetext', text);
+          var shown = box.querySelector('[data-demo-show="' + input.name + '"]');
+          if (shown) shown.textContent = text;
+        }
+        if (!isFinite(v)) ok = false;
+        scope[input.name] = v;
+      });
+      outs.forEach(function (el) {
+        var v = ok && el.__fn ? el.__fn(scope) : NaN;
+        var key = el.getAttribute('data-key');
+        if (key) scope[key] = v;
+        el.textContent = isFinite(v) ? format(v, parseInt(el.getAttribute('data-decimals'), 10) || 0) : '–';
+        if (!isFinite(v)) ok = false;
+      });
+      if (invalid) invalid.hidden = ok;
+      return ok && total ? total.textContent : null;
+    }
+
+    // The static example (shown without script) must match the formula.
+    var squash = function (s) { return String(s || '').replace(/\s+/g, ''); };
+    var before = outs.map(function (el) { return squash(el.textContent); });
+    if (fields) fields.disabled = false;
+    compute();
+    outs.forEach(function (el, k) {
+      if (before[k] !== squash(el.textContent)) {
+        console.warn('[demonstrator] #' + section.id + ' : exemple « ' + before[k] + ' » au lieu de « ' + squash(el.textContent) + ' » (slot example à corriger)');
+      }
+    });
+
+    var pending = null, said = '', tracked = false;
+    function changed() {
+      var result = compute();
+      window.clearTimeout(pending);
+      // One announcement after the visitor stops, never one per step.
+      pending = window.setTimeout(function () {
+        var text = result === null
+          ? (box.getAttribute('data-invalid-text') || '')
+          : (box.getAttribute('data-announce') || '{value}').replace('{value}', result);
+        if (text && text !== said) {
+          said = text;
+          say(live, text);
+        }
+        var name = box.getAttribute('data-demo-event');
+        if (!tracked && result !== null && name && typeof window.landingTrack === 'function') {
+          tracked = true;
+          window.landingTrack(name, { content_type: box.getAttribute('data-demo-type') || 'demonstrateur', content_id: section.id });
+        }
+      }, 700);
+    }
+    inputs.forEach(function (input) {
+      input.addEventListener('input', changed);
+      input.addEventListener('change', changed);
+    });
+  }
+
+  document.querySelectorAll('.s-demo').forEach(function (section) {
+    var mode = section.getAttribute('data-demo-mode');
+    if (mode === 'replay' || mode === 'calculator') {
+      each(section.querySelectorAll('[data-demo-block]'), function (block) {
+        if (block.getAttribute('data-demo-block') !== mode) block.parentNode.removeChild(block);
+      });
+    }
+    var replay = section.querySelector('[data-demo-block="replay"]');
+    var calc = section.querySelector('[data-demo-block="calculator"]');
+    if (replay) initReplay(replay);
+    if (calc) initCalc(section, calc);
   });
 })();
 /* ---- section : showcase-dark ---- */
@@ -3655,13 +5559,21 @@ textarea.field__input {
     guards = guards.filter(Boolean);
     var onScreen = new Map();
     var heroPassed = !hero;
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+    var root = document.documentElement;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
         else onScreen.set(e.target, e.isIntersecting);
       });
       var blocked = guards.some(function (g) { return onScreen.get(g); });
-      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+      var visible = heroPassed && !blocked;
+      if (visible === bar.hasAttribute('data-visible') && root.hasAttribute('data-sticky-bar')) return;
+      bar.toggleAttribute('data-visible', visible);
+      // The top bar drops its own button on small screens while this one shows.
+      root.setAttribute('data-sticky-bar', visible ? 'on' : 'off');
+      document.dispatchEvent(new CustomEvent('landing:sticky-bar', { detail: { visible: visible } }));
     });
     if (hero) io.observe(hero);
     guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });
