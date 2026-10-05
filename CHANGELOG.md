@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+**Fixed.** `01-brand/checklist-pre-composition.md`, `01-brand/design-anti-generique.md` and the in-place v2 `01-brand/personas.md` were never versioned (caught by the `01-brand/*.md` ignore rule), although 28 skills load the first two at step 0 and `/brand-discover` edits the third in place. They now ship with the template.
+
 **Fixed.** SessionStart hook brand snapshot, generalized from a client deployment: the tone line now comes from the `Voice position` section of `01-brand/voice.md` (the broad `voice`/`ton` keywords matched the file's H1 and surfaced its intro sentence instead of the brand's voice), and the mission line from the `Central message` of `01-brand/messaging-framework.md`, which no keyword matched before. Inside a section, a blockquoted value is preferred over the filling instruction above it, and the search stops at the next heading.
 
 **Changed.** `.gitignore` ignores every `.env.*` variant (`.env.production`, `.env.backup`…) except `.env.example`, plus `Thumbs.db`. Role `05-web-content` (live `CLAUDE.md` + `_templates/role-claudemd/`): a deployment ends with a check of the live page (HTTP 200, `robots` tag matching the brief, browser rendering identical to the validated local version). Role `07-events` (same two files): facts taken from automatic meeting transcripts are cross-checked before reuse, and published event comms missing from the local channel archives are pulled back from the calendar tool so anti-repetition reads what actually went out.

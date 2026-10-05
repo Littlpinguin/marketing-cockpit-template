@@ -29,6 +29,11 @@ _bootstrap/inputs/*
 # Content produced during operation (per-project, not part of the template)
 01-brand/*.md
 !01-brand/CLAUDE.md
+# Generic doctrine loaded at step 0 by most skills, and the in-place v2 personas file
+# edited by /brand-discover: they must ship with the template.
+!01-brand/checklist-pre-composition.md
+!01-brand/design-anti-generique.md
+!01-brand/personas.md
 01-brand/assets/*
 !01-brand/assets/.gitkeep
 
