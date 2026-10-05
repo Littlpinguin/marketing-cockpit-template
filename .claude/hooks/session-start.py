@@ -30,17 +30,31 @@ def truncate(text: str, limit: int = MAX_LINE) -> str:
 
 
 def extract_after_heading(content: str, keywords) -> str:
-    """Première ligne de texte non vide sous un titre contenant un des mots-clés."""
+    """Texte de la section dont le titre contient un des mots-clés.
+
+    La recherche s'arrête au titre suivant. Une ligne en citation (`> …`) est
+    préférée : les gabarits de marque y placent la valeur, la phrase qui la
+    précède n'est qu'une consigne de remplissage. À défaut, première ligne non vide.
+    """
     lines = content.splitlines()
     for i, line in enumerate(lines):
         if not line.lstrip().startswith("#"):
             continue
         title = line.lower()
-        if any(k in title for k in keywords):
-            for follow in lines[i + 1 : i + 8]:
-                cleaned = follow.strip().strip(">-*• ").strip()
-                if cleaned and not cleaned.startswith("#") and "{{" not in cleaned:
-                    return truncate(cleaned)
+        if not any(k in title for k in keywords):
+            continue
+        first = ""
+        for follow in lines[i + 1 : i + 8]:
+            if follow.lstrip().startswith("#"):
+                break
+            cleaned = follow.strip().strip(">-*• ").strip()
+            if not cleaned or "{{" in cleaned:
+                continue
+            if follow.lstrip().startswith(">"):
+                return truncate(cleaned)
+            first = first or cleaned
+        if first:
+            return truncate(first)
     return ""
 
 
@@ -60,9 +74,14 @@ def brand_snapshot(root: str):
         lines.append(f"Marque : {company}")
 
     brand_dir = os.path.join(root, "01-brand")
+    # Mots-clés de section précis : un mot-clé large (« voice », « ton ») capte le
+    # titre H1 du fichier (« Voice doctrine — … ») et affiche sa phrase de
+    # présentation au lieu de la position de voix.
     sources = {
-        "Mission": (["mission", "purpose", "raison d"], ["messaging-framework.md", "voice.md"]),
-        "Ton": (["ton", "tone", "voice", "voix"], ["voice.md"]),
+        "Mission": (["central message", "message central", "mission", "purpose", "raison d"],
+                    ["messaging-framework.md", "voice.md"]),
+        "Ton": (["voice position", "position de voix", "registre et ton", "ton de marque", "tone of voice"],
+                ["voice.md"]),
     }
     for label, (keywords, files) in sources.items():
         for name in files:

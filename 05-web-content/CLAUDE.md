@@ -136,6 +136,8 @@ Selon la cible :
 
 Toujours passer toute commande de déploiement par `scripts/dry-run-push.py --target <host>` avant exécution.
 
+Après déploiement, contrôler la page **en ligne** : l'URL publiée répond (200), porte la balise `robots` conforme à l'intention de visibilité du brief, et s'affiche dans un navigateur comme la version validée en local (assets chargés, chemins relatifs résolus). Un déploiement n'est terminé qu'une fois ce contrôle fait.
+
 ## Enregistrement et mesure
 
 - Mettre à jour `deployed.md` : URL, date, responsable, UTM de campagne, métrique de succès attendue.

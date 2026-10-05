@@ -1,5 +1,9 @@
 # Secrets and local state — NEVER commit these
 .env
+# Any variant (.env.production, .env.backup, .env.old…) is a secret file too;
+# only the placeholder reference is versioned.
+.env.*
+!.env.example
 .env.local
 # MCP server config — LOCAL ONLY: it holds real tokens for MCP servers.
 # Versioned reference: .mcp.json.example (structure + placeholders). See SECURITY.md.
@@ -8,6 +12,7 @@
 .claude/settings.local.json
 .claude/projects/
 .DS_Store
+Thumbs.db
 
 # 00-intel — business intelligence memory (confidential, NEVER versioned)
 # Only the CLAUDE.md and folder structure (.gitkeep) are part of the template.
@@ -24,6 +29,11 @@ _bootstrap/inputs/*
 # Content produced during operation (per-project, not part of the template)
 01-brand/*.md
 !01-brand/CLAUDE.md
+# Generic doctrine loaded at step 0 by most skills, and the in-place v2 personas file
+# edited by /brand-discover: they must ship with the template.
+!01-brand/checklist-pre-composition.md
+!01-brand/design-anti-generique.md
+!01-brand/personas.md
 01-brand/assets/*
 !01-brand/assets/.gitkeep
 

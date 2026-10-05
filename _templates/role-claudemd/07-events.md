@@ -45,7 +45,7 @@ Scale down for smaller events (internal, partner, community livestream). Adapt c
 ## Workflow — new event
 
 1. **Brief.** One-page brief: objective, audience, date, speakers, platform, success metric. File at `./<event-slug>/brief.md`.
-2. **Context retrieval.** Read `_sources/transcriptions/internal/` (and `00-intel/` if fed) for recent event discussions; scan `./` for similar past events to adapt their plan.
+2. **Context retrieval.** Read `_sources/transcriptions/internal/` (and `00-intel/` if fed) for recent event discussions; scan `./` for similar past events to adapt their plan. Automatic meeting transcripts garble names, figures, dates and acronyms: check any fact taken from one against a second source before it lands in a brief or a comm.
 3. **Comm plan.** Instantiate the standard plan for this event in `./<event-slug>/comm-plan.md`. Adapt days and channels.
 4. **Content distribution.** For each scheduled comm, draft in the relevant role folder:
    - LinkedIn post → `03-social-media/linkedin/drafts/`
@@ -53,7 +53,7 @@ Scale down for smaller events (internal, partner, community livestream). Adapt c
    - Landing page → `05-web-content/<event-slug>/`
 5. **Event creation on {{EVENTS_PLATFORM_TOOL}}.** Via connector (if ready) or manual. Always dry-run: `python3 scripts/dry-run-push.py --target {{EVENTS_PLATFORM_TOOL}} --file <event-slug>/event-config.yaml`.
 6. **Brand-check every draft.** Each role runs its own brand-check. You audit overall coherence across channels.
-7. **Calendar sync.** Every comm card in {{EDITORIAL_CALENDAR_TOOL}} updated with final drafts and scheduled dates.
+7. **Calendar sync.** Every comm card in {{EDITORIAL_CALENDAR_TOOL}} updated with final drafts and scheduled dates. At each calendar session, any event comm marked as published that has no local archive yet is pulled back into its channel archive (`03-social-media/<channel>/examples/`, `04-email/newsletter/editions/`, `04-email/promos/`), from the published version rather than the local draft: anti-repetition and tone calibration read these archives, so they must reflect what actually went out.
 8. **Post-event.** Replay, recap, NPS, follow-up sequences. File KPIs in `./<event-slug>/retro.md`. Drop recording transcript into `_sources/transcriptions/internal/` if available.
 
 ## Event folder structure
