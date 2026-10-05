@@ -27,6 +27,8 @@ All three share the same brand source of truth (`../01-brand/`) and the same ban
 ├── prompts/                  ← reusable Gemini prompts (hero, carousel, portrait, ...)
 ├── templates/                ← carousel layouts, header layouts, social card bases
 ├── references/               ← private moodboard inspiration
+├── scripts/                  ← visual QA, carousel builder, compose capture, provenance, asset promotion
+├── lib/                      ← compose.css (local brand font + tokens for HTML compositions), README
 ├── presentations/            ← see "Presentations" sub-area below
 │   ├── decks/                ← generated HTML decks
 │   ├── briefs/               ← per-deck briefs
@@ -87,6 +89,20 @@ The skill auto-appends:
    - Decks → reference inline from `./presentations/decks/<deck>.html`
    - Always archive the original in `./outputs/`
 
+### Outillage des visuels (scripts versionnés)
+
+Tout se mesure et se fabrique avec les scripts de `./scripts/`, jamais avec un script jetable. Aucun ne porte de valeur de marque : couleurs, polices et règles du logo se lisent dans `../01-brand/tokens.json`, les assets dans `../01-brand/assets/`.
+
+| Geste | Commande | Ce qu'il fait |
+|---|---|---|
+| QA d'un carrousel, d'une composition ou d'une image | `python3 06-graphic-design/scripts/qa-visuel.py <fichier.html\|png>` | Couleurs contre la palette (ΔE76, portées), police, plancher (28 px en portrait, 18 px sinon, chrome 22 px), contraste WCAG, zone de protection du logo. Sortie `--format json`, code 1 en cas d'erreur : utilisable en gate |
+| Construire un carrousel | `python3 06-graphic-design/scripts/build-carousel.py <slug>` | Spec `outputs/carrousel-<slug>-<date>/carrousel.json` → `index.html` → `exports/<slug>.pdf` (via `export-carousel-pdf.py`, dégradés rastérisés). `--sans-pdf` pour la QA avant export, `--dry-run` pour lister |
+| Capturer une composition HTML | `06-graphic-design/scripts/compose-screenshot.sh <compo.html> <sortie.png> [L] [H]` | Chrome headless, rendu 2× puis redimensionné. La composition linke `lib/compose.css` (police locale + tokens), voir `lib/README.md` |
+| Tracer la provenance d'une image générée | `genmeta.finalize_output()` (module `scripts/genmeta.py`) | Extension réelle, tag PNG `ai:generated_by`, fiche `<image>.gen.json` (modèle, prompt, réglages, sha256) |
+| Promouvoir un asset validé | `python3 06-graphic-design/scripts/promote-asset.py <source> --dest … --droits … --auteur …` | Rangement au nom conforme dans `../01-brand/assets/`, fiche dans `index.md`, champs de droits obligatoires, fiche de génération reportée |
+
+Cycle de vie d'un visuel généré : **staging** (`outputs/`, avec sa fiche `.gen.json`) → **validé** par un humain → **promu** par `promote-asset.py`. Un visuel non promu n'est jamais référencé comme officiel. Les decks gardent leur propre QA (`presentations/scripts/qa.py`, ci-dessous) ; les deux QA partagent `scripts/qa_common.py`. Tests de l'outillage : `python3 -m pytest scripts/tests -q` à la racine du dépôt (les tests qui pilotent Chromium sont sautés proprement si Playwright ou le navigateur manquent).
+
 ---
 
 ## Sub-area 2 — Presentations (HTML decks)
@@ -139,7 +155,7 @@ cd 06-graphic-design/presentations
 python scripts/qa.py decks/<your-deck>.html
 ```
 
-Must return `All slides clean` before delivery.
+Must return `All slides clean` before delivery. Au-delà du débordement et de la zone de sécurité du chrome, le script contrôle la parité du moteur (`docs/engine-parity.md`), le plancher typographique (18 px contenu, 12 px chrome), la police (familles `font.*` de `../01-brand/tokens.json`), le contraste WCAG et les folios ; `--format json` pour l'agent `qa-visuel`.
 
 ---
 
@@ -173,6 +189,9 @@ Follow `01-brand/divulgation-ia.md`, the single reference (what gets disclosed, 
 
 - `image-generation` — brand-compliant AI visuals (primary for sub-area 1)
 - `slides` — editorial HTML decks (primary for sub-area 2)
+- `carousel` — LinkedIn carousels (spec + `scripts/build-carousel.py`, or hand-written HTML)
+- agent `qa-visuel` — measured QA of decks, carousels and visuals with the scripts above, before export
+- agent `brand-guardian` — adversarial brand review of a major deliverable, complements `brand-check`
 - `brand-check` — visual coherence validation when in doubt; **mandatory** before any deck delivery
 - `frontend-design` / `ui-ux-pro-max` — for new slide components or when the brand has no strong visual identity yet
 
