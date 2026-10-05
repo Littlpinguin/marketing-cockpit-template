@@ -74,6 +74,12 @@ _sources/research/**/*
 # Raw workflow backups from scripts/backup-workflows.sh (may contain emails/document IDs)
 10-automatisations/backups/
 
+# Visual production (06-graphic-design): generation sidecars follow their image,
+# carousel PDF exports are rebuilt from their spec (build-carousel.py)
+*.gen.json
+**/carrousels/*/exports/
+06-graphic-design/outputs/carrousel-*/exports/
+
 # Python
 __pycache__/
 *.py[cod]

@@ -1,0 +1,45 @@
+/* ============================================================
+   Base de composition de visuels (méthode « générer → composer »)
+   À linker dans tout HTML de composition rendu par capture Chrome headless
+   (scripts/compose-screenshot.sh). Apporte la police de marque en LOCAL (pas de
+   repli Helvetica à la capture) et les tokens de marque.
+
+   Les url() et @import sont résolus RELATIVEMENT à ce fichier
+   (06-graphic-design/lib/). Aucune valeur de marque n'est écrite ici :
+     - la police vient de 01-brand/assets/fonts/fonts.css (à créer, voir
+       06-graphic-design/lib/README.md) ;
+     - les couleurs, le dégradé et les familles viennent de
+       06-graphic-design/presentations/tokens.css, rempli par /brand-discover.
+   La MISE EN PAGE reste sur mesure pour chaque visuel : ce fichier ne porte que
+   des aides réutilisables.
+   ============================================================ */
+
+/* Police de marque servie en local. font-display:block dans fonts.css => Chrome
+   attend la police au lieu de capturer une police de repli. */
+@import url('../../01-brand/assets/fonts/fonts.css');
+
+/* Tokens de marque (couleurs, dégradé, familles, motif). */
+@import url('../presentations/tokens.css');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-display);-webkit-font-smoothing:antialiased;
+  background:var(--brand-neutral-light);color:var(--brand-neutral-dark)}
+
+/* Aides réutilisables, préfixées compo- pour ne pas heurter les classes d'un visuel */
+.compo-grad-text{background:var(--brand-gradient);-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+
+/* Motif de marque en filigrane (hook --brand-pattern de tokens.css) */
+.compo-motif{position:absolute;inset:0;pointer-events:none;
+  background-image:var(--brand-pattern);background-size:cover;opacity:var(--pattern-opacity)}
+
+/* Halo d'ambiance très diffus, cuit dans un élément de fond (jamais derrière le logo) */
+.compo-halo{position:absolute;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,var(--brand-primary-soft),
+    color-mix(in srgb,var(--brand-secondary) 10%,transparent) 42%,transparent 66%)}
+
+/* Chiffre clé en dégradé (le suffixe +/% se met dans .suf). Un seul par visuel social. */
+.compo-stat{font-family:var(--font-display);font-weight:800;line-height:1;
+  background:var(--brand-gradient);-webkit-background-clip:text;background-clip:text;
+  color:transparent;display:inline-block;padding-bottom:.14em}
+.compo-stat .suf{font-size:.6em}

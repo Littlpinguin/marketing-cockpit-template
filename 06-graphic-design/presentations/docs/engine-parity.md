@@ -35,7 +35,7 @@ n'a pas le moteur complet.
 
 ```bash
 cd 06-graphic-design/presentations
-python scripts/qa.py decks/<deck>.html        # parité moteur + overflow + safe-zone
+python scripts/qa.py decks/<deck>.html        # parité moteur + overflow + safe-zone + typo, police, contraste, folios
 python scripts/qa.py ../../_examples/deck-catalogue/catalogue.html   # le catalogue aussi
 ```
 

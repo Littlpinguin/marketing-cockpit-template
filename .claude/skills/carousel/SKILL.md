@@ -34,10 +34,13 @@ Présentation projetée en réunion (1920×1080, navigation interactive HTML) �
 3. **Brief visuel écrit, validé AVANT construction.** Pour chaque slide : layout, texte, quel bloc porte le gradient (si la marque en a un), et :
    - **3a. Passe catalogue** — parcourir `01-brand/assets/index.md` et **assigner un visuel porteur de sens** à chaque slide (scène, icône, emblème, portrait), avec chemin exact + placement (coin alterné gauche/droite). Si une slide reste sans visuel, le justifier (data brute, manifeste typographique). Une slide « toute en texte » par défaut est un défaut, pas un choix.
    - **3b. Rythme (anti-monotonie)** — planifier la cadence : une **pause visuelle** (gros chiffre ou mot-clé sur fond contrasté, bascule de fond) toutes les 2-3 slides ; varier intensité et compositions. Jamais 8 slides au même gabarit.
-4. **Construction** : HTML standalone dans `06-graphic-design/outputs/carrousel-<slug>-<date>/index.html`, à partir de `06-graphic-design/templates/carousel-base.html` (s'il n'existe pas encore, le créer depuis le carrousel validé le plus récent et le référencer dans `_templates/inventory.md`). Tokens CSS en tête (palette, typo, espacement, fonts locales).
-5. **Export PDF** : `python3 06-graphic-design/scripts/export-carousel-pdf.py <html> <pdf>` (Playwright headless 1080×1350, rastérisation des gradients — voir plus bas). Créer le script à la première utilisation s'il manque.
-6. **Vérification visuelle** : lire le PDF page par page (outil Read). Vérifier contre la checklist anti-patterns. Itérer.
-7. **Brand-check + calendrier** : `brand-check` sur la copy du post + du carrousel ; mettre à jour le statut dans `02-strategy/calendar/calendar.md` (et {{EDITORIAL_CALENDAR_TOOL}} si configuré).
+4. **Construction** : HTML standalone dans `06-graphic-design/outputs/carrousel-<slug>-<date>/index.html`. Deux voies :
+   - **Générateur (recommandé)** : décrire le carrousel dans une spec `06-graphic-design/outputs/carrousel-<slug>-<date>/carrousel.json` (marque : pied, logo, forme de titre, médaillons ; une entrée par slide), en repartant de la spec du carrousel validé le plus récent, puis `python3 06-graphic-design/scripts/build-carousel.py <slug> --sans-pdf`. Le moteur lit les couleurs dans `01-brand/tokens.json` et la police dans `01-brand/assets/fonts/fonts.css` : aucune valeur de marque dans la spec ni dans le script. Types de slides, paramètres et rôles de couleur : docstring du script.
+   - **À la main**, pour une composition que le générateur ne sait pas faire : partir de `06-graphic-design/templates/carousel-base.html` (s'il n'existe pas encore, le créer depuis le carrousel validé le plus récent et le référencer dans `_templates/inventory.md`). Tokens CSS en tête (palette, typo, espacement, fonts locales).
+5. **QA mesurée** (agent `qa-visuel`, ou directement) : `python3 06-graphic-design/scripts/qa-visuel.py <index.html>` (couleurs contre la palette, police, plancher 28 px et chrome 22 px, contraste, zone de protection du logo) puis `python3 06-graphic-design/presentations/scripts/qa.py <index.html> --viewport 1080x1350 --frame 1080x1350 --min-font 28 --no-engine-check --sans-folio` (débordements). Corriger jusqu'à zéro erreur.
+6. **Export PDF** : `python3 06-graphic-design/scripts/build-carousel.py <slug>` (le générateur enchaîne l'export), ou `python3 06-graphic-design/scripts/export-carousel-pdf.py <html> <pdf>` pour un HTML écrit à la main (Playwright headless 1080×1350, rastérisation des dégradés — voir plus bas).
+7. **Vérification visuelle** : lire le PDF page par page (outil Read). Vérifier contre la checklist anti-patterns. Itérer.
+8. **Brand-check + calendrier** : `brand-check` sur la copy du post + du carrousel ; mettre à jour le statut dans `02-strategy/calendar/calendar.md` (et {{EDITORIAL_CALENDAR_TOOL}} si configuré).
 
 ## Format LinkedIn
 
@@ -88,7 +91,7 @@ Présentation projetée en réunion (1920×1080, navigation interactive HTML) �
 Tokens dérivés de `01-brand/style-guide.md` — jamais de hex en dur hors des tokens :
 
 - Couleurs : `{{BRAND_COLOR_PRIMARY}}` / `{{BRAND_COLOR_ACCENT}}` / `{{BRAND_COLOR_DARK}}` / `{{BRAND_COLOR_LIGHT}}` ; gradient signature : `{{BRAND_GRADIENT}}`.
-- Police : `{{BRAND_FONT_PRIMARY}}`, chargée en **local** (`@font-face` sur les woff2 de `01-brand/assets/fonts/`) — jamais de CDN Google Fonts dans un livrable (Chrome headless capture avant le chargement de la webfont → texte en Helvetica).
+- Police : `{{BRAND_FONT_PRIMARY}}`, chargée en **local** (`01-brand/assets/fonts/fonts.css`, qui déclare les woff2 du même dossier ; installation et licence : `06-graphic-design/lib/README.md`) — jamais de CDN Google Fonts dans un livrable (Chrome headless capture avant le chargement de la webfont → texte en Helvetica).
 - Border-radius : {{BRAND_BORDER_RADIUS}}.
 - Interdits visuels : {{BRAND_BANNED_VISUALS}}, tropes « IA » (dégradé violet→néon, cerveau-circuit, robot), glassmorphism, photos stock.
 
@@ -110,13 +113,13 @@ Chromium rend mal certaines constructions CSS dans son pipeline PDF. Ces règles
 7. **Photos** : copies redimensionnées à **~1800-2400px sur le grand côté, qualité ~92** dans `outputs/.../photos/` — jamais les originaux pleine résolution (PDF trop lourd) ni sous 2000px (flou au zoom : `page.pdf` embarque la résolution source telle quelle). Vérifier avec `pdfimages -list <pdf>`.
 8. **Zone basse ~12% de la slide** : la barre du lecteur PDF mobile LinkedIn la recouvre. Aucun contenu critique (visage, tampon, CTA) dans cette zone ; un élément peut y déborder de façon sacrificielle, pas son point focal.
 
-Recette minimale du script d'export (à créer dans `06-graphic-design/scripts/export-carousel-pdf.py` si absent) : Playwright Chromium headless, viewport 1080×1350, `device_scale_factor=2` ; screenshot de chaque élément `[data-raster]` (ou classe gradient) et remplacement DOM par `<img>` ; puis `page.pdf(width="1080px", height="1350px", print_background=True, prefer_css_page_size=True)` avec `page-break-after` câblé sur chaque `.page`.
+Le script d'export `06-graphic-design/scripts/export-carousel-pdf.py` câble ces règles : Playwright Chromium headless, viewport 1080×1350, `device_scale_factor=3` ; screenshot de chaque élément en dégradé (`.grad`, `.hl`, `.num`, ou `--selecteurs`), jambages compris, et remplacement DOM par `<img>` aux dimensions exactes ; puis `page.pdf(width="1080px", height="1350px", print_background=True, prefer_css_page_size=True)` avec `page-break-after` câblé sur chaque `.slide`.
 
 ## Précision graphique — grille de repère OBLIGATOIRE
 
 Les alignements comptent autant que le contenu. Jamais « à l'œil » :
 
-- **Overlay de grille activable** dans le HTML (lignes horizontales tous les 50px + numéros + axe central vertical) pour MESURER puis positionner ; le retirer pour le livrable final.
+- **Overlay de grille activable** dans le HTML (lignes horizontales tous les 50px + numéros + axe central vertical) pour MESURER puis positionner ; le retirer pour le livrable final. Avec le générateur : `GRID=1 python3 06-graphic-design/scripts/build-carousel.py <slug> --sans-pdf`, puis reconstruire sans `GRID` avant export.
 - Un titre posé dans une forme conteneur doit être **centré dans la masse de la forme** (jamais calé en haut) : mesurer le vide au-dessus et en dessous, égaliser.
 - **Aucun mot orphelin** en fin de bloc (titre, lede, CTA) : contrôler explicitement les sauts de ligne (lignes de titre voulues, lede en liste de lignes, `white-space: nowrap` sur les noms propres).
 - **Aucun mot composé coupé** en fin de ligne : tiret insécable U+2011.
@@ -149,10 +152,10 @@ Même palette pour toutes ; ce qui change = composition, alignement, traitement 
 Chaque carrousel laisse trois traces :
 
 - **Brief** : `06-graphic-design/briefs/<date>-carrousel-<slug>.md` (audience, copy du post, plan de slides + passe catalogue + rythme, validation).
-- **Source + export** : `06-graphic-design/outputs/carrousel-<slug>-<date>/index.html` et `exports/<slug>.pdf`.
+- **Source + export** : `06-graphic-design/outputs/carrousel-<slug>-<date>/` — `carrousel.json` (spec, si générateur), `index.html` et `exports/<slug>.pdf` (non versionné : il se reconstruit depuis la spec).
 - **Calendrier** : statut mis à jour dans `02-strategy/calendar/calendar.md` (+ {{EDITORIAL_CALENDAR_TOOL}} si configuré).
 
-Les assets contextuels générés restent en staging dans `outputs/` ; ils ne migrent vers `01-brand/assets/` (avec fiche `index.md`) qu'après validation humaine.
+Les assets contextuels générés restent en staging dans `outputs/` ; ils ne migrent vers `01-brand/assets/` (avec fiche `index.md`) qu'après validation humaine, par `python3 06-graphic-design/scripts/promote-asset.py` (rangement au nom conforme, fiche du catalogue, champs de droits obligatoires).
 
 ## Personnalisation par marque
 

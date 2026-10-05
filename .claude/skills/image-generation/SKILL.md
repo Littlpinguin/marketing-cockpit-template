@@ -117,28 +117,47 @@ Pour tout objet/picto qui doit ressembler aux illustrations de la marque, **part
 2. img2img avec ce PNG en entrée + prompt qui demande de **n'emprunter QUE le style** : « Using the EXACT illustration style of the reference image ({{BRAND_ILLUSTRATION_STYLE}}), draw a single <OBJET>. Do NOT keep the subjects or props from the reference; only borrow its drawing style. Color it with the brand palette (hex...). Center it with generous negative space on a plain background. No text, no logo, no people. »
 3. Le modèle ramène souvent des éléments de la référence : les retirer en post (recadrage + fond transparent par **flood-fill depuis les 4 coins** — préserve les blancs intérieurs, contrairement à un color-key global).
 
-### 4. Sauvegarder image + métadonnées
+### 4. Sauvegarder image + métadonnées (provenance)
 
 ```
 06-graphic-design/outputs/
-├── YYYY-MM-DD-<slug>.png            ← image générée (staging)
-└── YYYY-MM-DD-<slug>.json           ← sidecar de métadonnées
+├── YYYY-MM-DD-<slug>.png              ← image générée (staging)
+└── YYYY-MM-DD-<slug>.png.gen.json     ← fiche de génération (sidecar)
 ```
 
-Sidecar :
-```json
-{
-  "slug": "hero-ai-smb-2026-04-15",
-  "generated_at": "2026-04-15T10:30:00Z",
-  "provider": "gemini-direct | magnific-mcp",
-  "model": "gemini-3-pro-image-preview",
-  "user_prompt": "...",
-  "full_prompt_sent": "[BRAND CONSTRAINTS ...][USER REQUEST ...][FORMAT ...]",
-  "format": "16:9",
-  "use": "landing page hero",
-  "brand_guidelines_version": "01-brand/style-guide.md@HEAD"
-}
+Juste après l'écriture des octets renvoyés par le modèle, appeler
+`genmeta.finalize_output(chemin, meta)` (`06-graphic-design/scripts/genmeta.py`, aucune
+dépendance réseau). En un geste, il :
+
+- **remet l'extension d'aplomb** : l'API renvoie parfois du JPEG sous un nom `.png` ; le
+  fichier est renommé, jamais réencodé (un réencodage efface le manifeste C2PA) ;
+- **pose un tag PNG** `ai:generated_by` (chunk `tEXt`), sauf si le fichier porte déjà un
+  manifeste C2PA, qui vaut mieux que le tag et qu'une resauvegarde effacerait ;
+- **écrit la fiche** `<image>.gen.json` en dernier, pour que son sha256 décrive le fichier
+  livré.
+
+```python
+import sys; sys.path.insert(0, "06-graphic-design/scripts")
+import genmeta
+final = genmeta.finalize_output(chemin, {
+    "model": "gemini-3-pro-image-preview",
+    "prompt": full_prompt,                 # le prompt intégral envoyé, préfixe de marque compris
+    "prompt_file": None, "input_images": [],   # images d'entrée d'un img2img
+    "temperature": 0.4, "aspect_ratio": "16:9", "image_size": "2K",
+    "script": "<script ou session de génération>",
+    "provider": "gemini-direct",           # clés libres conservées : provider, use, format…
+    "use": "landing page hero",
+})
+print(final)   # chemin final : l'extension a pu changer
 ```
+
+En mode série, tester l'existence d'une sortie avec `genmeta.existing_variant(chemin)`
+(elle a pu sortir en `.jpg`) avant de relancer une génération facturée. Les fiches
+`*.gen.json` ne sont pas versionnées : elles suivent leur image.
+
+**Provenance, ce qui survit** : la fiche de génération suit l'asset à la promotion ; le tag
+PNG survit à une copie octet à octet mais pas à un réencodage ; le manifeste C2PA des sorties
+JPEG du modèle (`has_c2pa`, heuristique) survit tant que personne ne réencode le fichier.
 
 ### 5. Check de conformité
 
@@ -154,16 +173,28 @@ Avant livraison, inspecter visuellement :
 
 Une sortie validée et réutilisable migre de `06-graphic-design/outputs/` (staging) vers `01-brand/assets/` : catégoriser, nommer selon la convention du catalogue, **ajouter sa fiche dans `01-brand/assets/index.md`** (rôle, palette, quand l'utiliser / ne pas l'utiliser). Un asset généré non promu reste en staging et n'est jamais référencé comme officiel.
 
+Le geste est outillé, et c'est le seul admis :
+
+```bash
+python3 06-graphic-design/scripts/promote-asset.py 06-graphic-design/outputs/<fichier> \
+  --dest <categorie>/<sous-dossier>/<categorie>_<sujet>_<variante>.<ext> \
+  --droits "<licence ou base légale>" --auteur "<qui l'a produit>" \
+  --role "..." --usage "..." [--not "..."] [--copy]
+```
+
+Il refuse un nom non conforme, une catégorie inconnue, un écrasement, et une fiche sans les trois champs de droits (`--source`, `--droits`, `--auteur` ; `--droits "à confirmer"` est une valeur admise et signalée). Avec une fiche de génération à côté de la source, il renseigne d'office `généré-par-ia: oui`, le modèle et un extrait du prompt, déduit `--source`, et fait suivre la fiche. Le catalogue `01-brand/assets/index.md` doit exister (une section `## <categorie>/` par catégorie).
+
 ## Composer un visuel fini (générer → composer)
 
 Pour tout visuel **avec texte, data ou logo** (la majorité des cas) :
 
 1. **Générer ou réutiliser la matière** — uniquement l'illustration / le fond / la scène, **sans texte ni logo** (fond uni → intégration facile). Souvent, aucun besoin de générer : un asset du catalogue suffit.
 2. **Réutiliser les vrais assets** depuis `01-brand/assets/index.md` : logo SVG **inliné** (jamais le nom de marque tapé au clavier), portraits réels, motifs, textures.
-3. **Composer en HTML** avec la police de marque en **local** (`@font-face` sur les woff2 de `01-brand/assets/fonts/`) et les tokens du style-guide. Jamais de webfont CDN pour un screenshot : Chrome headless capture avant le chargement → texte rendu en Helvetica.
+3. **Composer en HTML** en linkant `06-graphic-design/lib/compose.css` : il importe la police de marque en **local** (`01-brand/assets/fonts/fonts.css`, voir `06-graphic-design/lib/README.md` pour l'installer et vérifier sa licence) et les tokens de marque (`presentations/tokens.css`), plus quelques aides `compo-`. Jamais de webfont CDN pour un screenshot : Chrome headless capture avant le chargement → texte rendu en Helvetica.
 4. **Penser en grille** : dimensionner les éléments les uns par rapport aux autres (déco = largeur du logo, modules de hauteur partagés). Préférer une disposition asymétrique/organique au miroir rigide.
-5. **Screenshot** en Chrome headless (rendu 2× → net) aux dimensions cibles, puis redimensionner.
-6. **Livrer** dans le dossier du canal (+ archiver le `.html` source dans `outputs/`).
+5. **QA avant capture** : `python3 06-graphic-design/scripts/qa-visuel.py <compo.html> --viewport <L>x<H>` (couleurs contre `tokens.json`, police, plancher, contraste, zone de protection du logo). Zéro erreur avant de capturer.
+6. **Screenshot** : `06-graphic-design/scripts/compose-screenshot.sh <compo.html> <sortie.png> <L> <H>` (Chrome headless, rendu 2× puis redimensionné → texte net), puis `qa-visuel.py <sortie.png>` sur l'image (couleurs seules : il n'y a plus de DOM).
+7. **Livrer** dans le dossier du canal (+ archiver le `.html` source dans `outputs/`).
 
 ### Checklist qualité (avant de livrer)
 

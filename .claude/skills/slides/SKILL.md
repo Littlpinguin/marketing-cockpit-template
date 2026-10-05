@@ -107,10 +107,15 @@ Carrousel LinkedIn PDF → `carousel`. Infographie statique, post social, banni�
 
 ### Phase 7 — QA Playwright (NON NÉGOCIABLE)
 
-25. Exécuter `python scripts/qa.py decks/<deck>.html` depuis `06-graphic-design/presentations/`. Doit retourner `All slides clean`. Le script vérifie :
+25. Exécuter `python scripts/qa.py decks/<deck>.html` depuis `06-graphic-design/presentations/` (ou dispatcher l'agent `qa-visuel`, qui lit la sortie `--format json`). Doit retourner `All slides clean` (code 0 ; les avertissements ne bloquent pas mais se relisent). Le script vérifie :
     - **Parité moteur** (`docs/engine-parity.md`) : présence mécanique des marqueurs du moteur (`body.presenting`, `nav-peek`, `SLIDE_COUNT`, export PDF, `--brand-pattern`…). Échec = une feature du moteur manque ; la porter depuis `templates/base.html` ou le catalogue, jamais la réécrire.
-    - Aucun élément ne déborde du cadre 1920×1080.
+    - Aucun élément ne déborde du cadre 1920×1080 (géométries ramenées au cadre natif, quel que soit le viewport).
     - Écart contenu bas / chrome bas ≥ 16px sur chaque slide.
+    - **Plancher typographique** : aucun texte de contenu sous 18px (erreur), avertissement sous 24px ; le texte du chrome (folio, signature, méta) garde un plancher de 12px.
+    - **Police** : chaque texte dans une famille de la marque (`font.*` de `01-brand/tokens.json`, à défaut `--font-display` / `--font-body` du deck) ; une monospace n'est admise sans réserve que dans le chrome et sur `code`/`pre`/`kbd`/`.mono`.
+    - **Contraste** WCAG 2.x sur tout texte visible (4,5:1, 3:1 en grand ou en gras) ; les textes en dégradé sont listés à part, à relire à l'œil.
+    - **Folios** présents et croissants (`.nav-num` du moteur, `.tag-folio` du catalogue).
+    - Options utiles : `--lang <code>` (deck bilingue exposant `window.__setLang`, à passer dans chaque langue), `--bleed <sélecteur>` (calque décoratif volontairement débordant, ou `data-bleed` sur le calque), `--attente 2000` (apparitions échelonnées), `--screenshots <dossier>`.
 26. Re-tester à 1366×768 et 1024×600 pour confirmer le scaling responsive. Inspecter visuellement chaque screenshot.
 27. **Insertion / suppression de slide** : aucune renumérotation manuelle — les folios `NN / TOTAL`, le compteur de la nav et l'overview se recalculent depuis `SLIDE_COUNT` (JS). Vérifier seulement que la nouvelle slide porte `data-family`, `data-eyebrow`, `data-heading` et un `.nav-num` vide. `qa.py` détecte le nombre de slides automatiquement.
 
@@ -122,7 +127,7 @@ Carrousel LinkedIn PDF → `carousel`. Infographie statique, post social, banni�
 
 ## Lisibilité typographique (règle de présentation)
 
-Plancher : **aucun texte de contenu sous ~18-20px** sur le cadre 1920×1080 (équivalent 18pt minimum en projection ; corps idéal 20-24pt). Seuls les labels mono du chrome (folio, signature, tag-meta) restent à 12-14px. Captions et notes ≥ 15px.
+Plancher : **aucun texte de contenu sous ~18-20px** sur le cadre 1920×1080 (équivalent 18pt minimum en projection ; corps idéal 20-24pt). Seuls les labels mono du chrome (folio, signature, tag-meta) restent à 12-14px. `scripts/qa.py` mesure ces planchers (18px contenu, 12px chrome, avertissement sous 24px) : un label hors chrome sous 18px y sort en erreur.
 
 **Éviter l'espace vide** sur les slides « titre + contenu » : centrer le **bloc entier** (titre + contenu ensemble), pas titre collé en haut + contenu centré (qui crée un trou au milieu). Pattern : `.plate.vcenter { justify-content: center } .plate.vcenter .body-wrap { flex: 0 0 auto }`.
 
