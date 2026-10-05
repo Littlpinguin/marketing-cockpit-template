@@ -140,6 +140,31 @@ def test_resoudre_fond_sans_opaque_suppose_le_blanc():
     assert qa_common.resoudre_fond(["rgba(0, 0, 0, 0)"]) == (255, 255, 255)
 
 
+# --- Opacité effective d'un texte ---------------------------------------------
+
+def test_opacite_effective_multiplie_jusqu_au_fond_opaque():
+    niveaux = [
+        {"c": "rgba(0, 0, 0, 0)", "i": "none", "o": 0.5},
+        {"c": "rgba(0, 0, 0, 0)", "i": "none", "o": 0.8},
+        {"c": "rgb(248, 250, 252)", "i": "none", "o": 0.1},   # le fond opaque : exclu
+        {"c": "rgba(0, 0, 0, 0)", "i": "none", "o": 0.0},     # au-delà : jamais lu
+    ]
+    assert qa_common.opacite_effective(niveaux) == pytest.approx(0.4)
+
+
+def test_opacite_effective_s_arrete_au_fond_non_uni():
+    niveaux = [
+        {"c": "rgba(0, 0, 0, 0)", "i": "none", "o": 0.5},
+        {"c": "rgba(0, 0, 0, 0)", "i": "linear-gradient(red, blue)", "o": 0.2},
+    ]
+    assert qa_common.opacite_effective(niveaux) == pytest.approx(0.5)
+
+
+def test_opacite_effective_sans_valeur_vaut_un():
+    assert qa_common.opacite_effective([{"c": "rgb(0, 0, 0)", "i": "none"}]) == 1.0
+    assert qa_common.opacite_effective([]) == 1.0
+
+
 # --- Seuil de contraste exigé ------------------------------------------------
 
 @pytest.mark.parametrize(

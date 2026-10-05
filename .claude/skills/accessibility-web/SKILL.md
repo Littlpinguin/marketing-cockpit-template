@@ -86,5 +86,6 @@ Tout constat cite son critère WCAG (ex. « 2.4.7 Focus Visible »), sa localisa
 ## Workflow dans le template
 
 1. **En construction** (skill `landing-page`, dashboard) : appliquer ce référentiel dès l'écriture du HTML — l'accessibilité ne se rattrape pas en QA.
-2. **Avant livraison** : dispatcher l'agent **`a11y-auditor`** (`.claude/agents/a11y-auditor.md`) qui audite le rendu réel (axe-core + vérifications manuelles ciblées) et rend un verdict par sévérité.
-3. **Correction** : corriger les 🔴 et 🟠 avant livraison ; consigner les 🟡 restants dans le fichier de livraison.
+2. **Mesure** (landing pages) : `python3 05-web-content/scripts/qa-landing.py <page.html>` mesure contrastes (opacités composées), titres, alternatives, noms accessibles, labels, cibles tactiles, langue et `prefers-reduced-motion` ; l'agent `landing-reviewer-a11y` part de ces mesures.
+3. **Avant livraison** : dispatcher l'agent **`a11y-auditor`** (`.claude/agents/a11y-auditor.md`) qui audite le rendu réel (axe-core + vérifications manuelles ciblées) et rend un verdict par sévérité.
+4. **Correction** : corriger les 🔴 et 🟠 avant livraison ; consigner les 🟡 restants dans le fichier de livraison.

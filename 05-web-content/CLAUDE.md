@@ -32,7 +32,8 @@ Système complet : `../01-brand/style-guide.md`.
 ├── briefs/<slug>.md              ← briefs de pages et de lead magnets
 ├── landing-pages/<slug>/         ← une landing page par dossier
 │   ├── index.html                ← single-file HTML + CSS + JS inline
-│   └── assets/                   ← images, fonts, données locales
+│   ├── assets/                   ← images, fonts, données locales
+│   └── pilotage/                 ← fabrication (spec, charte de page, fragments, revues), jamais déployée
 ├── lead-magnets/
 │   ├── guides-pdf/<slug>/        ← guide PDF : brief, source HTML/DOCX chartée, PDF final
 │   └── outils-web/<slug>/        ← calculateurs, quiz, diagnostics (index.html autonome)
@@ -40,6 +41,7 @@ Système complet : `../01-brand/style-guide.md`.
 ├── templates/                    ← composants partagés (header, footer) + galerie de templates
 │   ├── landing-pages/            ← 10 modèles de landing pages par objectif (+ README)
 │   └── lead-magnets/             ← 10 modèles d'outils interactifs avec capture (+ README)
+├── scripts/qa-landing.py         ← QA mesurable d'une page (Playwright, 3 tailles d'écran + mouvement réduit)
 └── deployed.md                   ← registre des pages publiées (URL, date, responsable)
 ```
 
@@ -80,7 +82,7 @@ Les deux skills maîtresses de ce dossier sont **`landing-page`** et **`lead-mag
 | 8 | Popups / exit-intent (si demandé) | `cro-popup` | pas de popup — CTA inline uniquement |
 | 9 | Revue éditoriale | `copy-editing` | — |
 | 10 | Visuels | `image-generation` | assets existants de `../01-brand/assets/` |
-| 11 | Revue design / QA visuelle | `design-review` | checklist QA de la skill `landing-page` |
+| 11 | QA mesurable puis revues | `scripts/qa-landing.py`, puis agents `landing-reviewer-design` / `-brand` / `-cro` / `-a11y` (+ `design-review`) | checklist de la skill `landing-page` ; la QA mesurable n'a pas de repli |
 | 12 | Validation finale | `brand-check` | — (**obligatoire**) |
 | 13 | Mesure | `performance-report` (module `reporting`) | noter les métriques dans `deployed.md` |
 
@@ -88,9 +90,11 @@ Les deux skills maîtresses de ce dossier sont **`landing-page`** et **`lead-mag
 
 ## Workflows
 
-### Landing page → skill `landing-page`
+### Landing page → skill `landing-page` (commande `/new-landing`)
 
-Tout est dans `.claude/skills/landing-page/SKILL.md` : brief → structure CRO → copy → design sous tokens → build → tracking → QA responsive + vitesse → brand-check → livraison dans `landing-pages/<slug>/`.
+Tout est dans `.claude/skills/landing-page/SKILL.md`, un playbook en huit phases : doctrine et matière réelle → cadrage en une seule salve de questions → 2 ou 3 directions visuelles, l'humain choisit → spec aux textes définitifs → socle et charte de page posés par le contrôleur avant tout travail parallèle → construction en parallèle, un agent `landing-section-builder` par section, chacun propriétaire d'un fragment → montrer, écouter, appliquer → QA mesurable puis quatre revues parallèles (`landing-reviewer-design`, `-brand`, `-cro`, `-a11y`) et une vague de corrections arbitrée → livraison dans `landing-pages/<slug>/`. L'agent `landing-researcher` prépare l'inspiration en arrière-plan dès le cadrage. Références (charte, sections, pièges, revues, inspiration) et modèles (spec, brief de section, brief de corrections) : `.claude/skills/landing-page/references/` et `templates/`.
+
+Gabarit de données ou page sur mesure : une offre courante ou une série de pages de même forme part d'un modèle de `templates/landing-pages/` ; une offre phare ou un lancement suit tout le playbook. Les deux passent la même QA et les mêmes revues de marque et de conversion.
 
 ### Lead magnet → skill `lead-magnet`
 
@@ -107,7 +111,8 @@ Tout est dans `.claude/skills/lead-magnet/SKILL.md` : typologie → production p
 ## Conventions techniques (toutes pages)
 
 - Tokens de `../01-brand/style-guide.md` déclarés en CSS custom properties dans `:root` (voir bloc de référence dans `sections-library.md`).
-- Mobile-first ; tester à 375px, 600px, 900px, 1280px.
+- Mobile-first ; contrôler à 375, 768 et 1440 px avec la QA mesurable (ci-dessous), et à l'œil aux tailles intermédiaires.
+- **QA mesurable** : `python3 05-web-content/scripts/qa-landing.py <page.html>` rend la page dans Chromium à 375×812, 768×1024 et 1440×900, puis en `prefers-reduced-motion`, et mesure débordement horizontal, planchers typographiques (12 px pour toute étiquette, 16 px minimum pour le texte courant, 18 px recommandés sur bureau), contraste WCAG AA avec opacités composées, titres, alternatives, noms accessibles, champs, cibles tactiles mobiles, CTA (destination, CTA primaire visible sans défiler sur mobile), mouvement réduit, langue et suivi. Zéro erreur avant livraison ; le CTA primaire porte `data-cta="primaire"`.
 - Accessibilité : HTML sémantique, alt text, contrastes AA, navigation clavier, attribut `lang`.
 - `index.html` autonome (CSS + JS inline) — aucun build requis, portabilité totale.
 - JS vanilla, sauf composant qui justifie une dépendance. Chart.js autorisé pour la dataviz.
@@ -146,4 +151,4 @@ Après déploiement, contrôler la page **en ligne** : l'URL publiée répond (2
 
 ## Validation finale
 
-Chaque page passe `brand-check` — copy ET conformité visuelle (couleurs, polices, espacements contre le style guide) — avant tout déploiement.
+Chaque page passe `qa-landing.py` sans erreur, l'agent `a11y-auditor` sans constat bloquant ni majeur, puis `brand-check` (copy ET conformité visuelle : couleurs, polices, espacements contre le style guide) avant tout déploiement. Le dossier `pilotage/` ne se déploie jamais.
