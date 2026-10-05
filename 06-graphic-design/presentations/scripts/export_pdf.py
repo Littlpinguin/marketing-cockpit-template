@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# VENDORED from slides-agent (https://github.com/Littlpinguin/slides-agent), scripts/export_pdf.py,
+# by scripts/sync-slides-engine.py. Do not edit here: change slides-agent,
+# then run python3 scripts/sync-slides-engine.py. Mentions of CLAUDE.md,
+# onboarding and the pexels-photos skill refer to slides-agent.
+# Register: docs/vendored-slides.md
 """
 Render an HTML deck to a clean 1920×1080 PDF (one slide per page)
 using headless Chromium via Playwright.
@@ -7,7 +12,7 @@ Triggers the deck's print mode and gradient-text rasterisation
 hooks before printing — these compensate for Chromium's PDF
 pipeline quirks (gradient-on-text artefacts, animation final state).
 
-Usage: python scripts/export_pdf.py input.html output.pdf
+Usage: python 06-graphic-design/presentations/scripts/export_pdf.py input.html output.pdf
 """
 from __future__ import annotations
 

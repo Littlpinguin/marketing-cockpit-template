@@ -1,56 +1,65 @@
+<!DOCTYPE html>
+<!--
+  VENDORED from slides-agent (https://github.com/Littlpinguin/slides-agent), templates/base.html,
+  by scripts/sync-slides-engine.py. Do not edit here: change slides-agent,
+  then run python3 scripts/sync-slides-engine.py. Mentions of CLAUDE.md,
+  onboarding and the pexels-photos skill refer to slides-agent.
+  Register: docs/vendored-slides.md
+  A deck copied from this starter is yours: 06-graphic-design/scripts/new-deck.py drops this note.
+-->
 <!--
   ============================================================================
-  BASE.HTML — starter deck for the `slides` skill
+  BASE.HTML — the starter deck of slides-agent
   ============================================================================
-  A 4-slide example deck (cover / editorial / data / CTA) that embeds the FULL
-  presentation engine, at parity with _examples/deck-catalogue/catalogue.html:
+  Three example slides (hero / breathing number / decision) carrying the FULL
+  slides engine. The feature list is canonical, see 06-graphic-design/presentations/docs/engine-parity.md:
 
-    · 1920×1080 frame scaled responsive (fit() with nav reserve)
-    · top/bottom chrome with AUTO-NUMBERED folios (SLIDE_COUNT, JS-injected)
-    · triple navigation: keyboard / wheel / touch + drag-bar + overview (O)
-      grouped by families + quick-jump (digits + Enter)
-    · fullscreen presentation mode (F key / ⛶ button): body.presenting hides
-      the nav, nav-peek brings it back within 90px of the screen bottom,
-      fit() drops the nav reserve
-    · PDF export (P key / button) with canvas rasterisation of gradient texts
-      (Chromium print pipeline bug workaround) — maintain GRADIENT_TEXT_SELECTORS
-    · brand-pattern hooks: --brand-pattern / --brand-pattern-light /
-      --corner-motif + .motif / .texture / .corner / .filet-orn classes
-    · descender fix: line-height ≥ 1.1 on text titles, .gradient-text carries
-      the padding/margin compensation (do not reduce it)
+    · 1920×1080 frame scaled to the viewport (fit() with a nav reserve)
+    · top/bottom chrome with AUTO-NUMBERED folios (injected from the slide
+      count): leave the folio spans empty, never hard-code "01 / 03"
+    · triple navigation: keyboard / wheel / touch + drag bar + quick-jump
+      (digits + Enter) + a thumbnail panel (O) grouped by data-family
+    · fullscreen presentation mode (F key / ⛶ button): the nav hides, and
+      peeks back when the pointer comes within 90px of the screen bottom
+    · PDF export (P key / button) with per-character canvas rasterisation of
+      gradient text: keep the list of gradient-text selectors up to date
+    · brand-pattern hooks (.texture / .motif / .corner / .filet-orn) and the
+      optional ambient .aurora, both inert or hidden where they would harm
+    · descender-safe titles: line-height ≥ 1.1 on text titles, .gradient-text
+      carries a .22em / .08em padding-margin compensation (never reduce it)
 
-  The engine feature list is CANONICAL: see docs/engine-parity.md. Any engine
-  evolution must be ported to every artefact (this starter, the deck-catalogue,
-  decks in flight) and scripts/qa.py mechanically checks the engine markers.
+  The :root ships a NEUTRAL EXAMPLE PALETTE so the raw file renders and passes
+  06-graphic-design/presentations/scripts/qa.py as-is. Each brand variable carries, in a comment, the
+  BRAND_* placeholder it maps to: a setup wizard (or onboarding) replaces the
+  VALUES, never the structure. {{DECK_TITLE}} in <title> is plain text.
 
-  The :root ships NEUTRAL WORKING VALUES (sober graphite palette) so the raw
-  starter opens and passes QA as-is; the BRAND_* mapping lives in the comment
-  next to each variable and the wizard replaces the VALUES. Content
-  placeholders ({{DECK_TITLE}}…) are plain text — the slides skill fills them.
-
-  Writing rules: no em dash in visible copy, no full stop on headings.
+  Any engine change is ported to every artefact (this starter, the decks in
+  06-graphic-design/presentations/decks/) and listed in 06-graphic-design/presentations/docs/engine-parity.md in the same commit;
+  06-graphic-design/presentations/scripts/qa.py checks the engine markers mechanically. This comment names
+  no marker on purpose: the markers must come from the code itself.
   ============================================================================
 -->
-<!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{DECK_TITLE}} · {{COMPANY_NAME}}</title>
-<!-- Fonts: load the families declared in tokens.css (BRAND_FONT_PRIMARY /
-     BRAND_FONT_SECONDARY). Prefer local woff2 from 01-brand/assets/fonts/
-     for deliverables; Google Fonts is acceptable for internal decks.
-     The neutral defaults below need no font link (system stack). -->
-<!-- <link href="https://fonts.googleapis.com/css2?family=YOUR+FONT:wght@200..900&display=swap" rel="stylesheet"> -->
+<title>{{DECK_TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Google Fonts: load the families 06-graphic-design/presentations/tokens.css declares
+     (--font-display ← BRAND_FONT_PRIMARY, --font-mono ← BRAND_FONT_SECONDARY).
+     For an offline deck, self-host them instead (06-graphic-design/presentations/docs/hosting.md). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================================
-   BRAND TOKENS — mirror of tokens.css (source: 01-brand/style-guide.md)
+   BRAND TOKENS — mirror of 06-graphic-design/presentations/tokens.css: paste the onboarded
+   06-graphic-design/presentations/tokens.css over this block when you start a deck
    ------------------------------------------------------------
-   Default values are NEUTRAL (graphite) so this file renders and
-   passes scripts/qa.py untouched. The wizard /brand-discover (or
-   pasting the filled tokens.css over this block at deck time)
-   REPLACES each VALUE below with the brand's, guided by this map:
+   The values are a NEUTRAL EXAMPLE PALETTE, so this file renders
+   and passes 06-graphic-design/presentations/scripts/qa.py untouched. Onboarding, or a setup
+   wizard, REPLACES THE VALUES, guided by this map (repeated in a
+   comment next to each variable):
 
      --brand-primary        ← BRAND_COLOR_PRIMARY
      --brand-secondary      ← BRAND_COLOR_ACCENT
@@ -60,49 +69,48 @@
      --font-display         ← BRAND_FONT_PRIMARY
      --font-mono            ← BRAND_FONT_SECONDARY
 
-   NEVER put a literal {{...}} placeholder in a CSS value: an invalid
-   custom property silently disables every rule that consumes it and
-   corrupts the layout. The _deep/_soft variants derive via color-mix()
-   — nothing to adjust after swapping the base colours.
+   NEVER put a literal {{...}} placeholder in a CSS value: an
+   invalid custom property silently disables every rule that
+   consumes it and collapses the layout. Derived values carry their
+   color-mix() formula: recompute them after swapping a base colour.
    ============================================================ */
 :root {
-  --brand-primary: #5D6B7E;       /* ← BRAND_COLOR_PRIMARY (neutral slate) */
-  --brand-primary-deep: color-mix(in srgb, var(--brand-primary), black 12%);
-  --brand-primary-soft: color-mix(in srgb, var(--brand-primary) 12%, transparent);
-  --brand-secondary: #A89F8D;     /* ← BRAND_COLOR_ACCENT (neutral greige) */
-  --brand-secondary-deep: color-mix(in srgb, var(--brand-secondary), black 12%);
-  --brand-secondary-soft: color-mix(in srgb, var(--brand-secondary) 12%, transparent);
-  --brand-neutral-light: #F6F5F2; /* ← BRAND_COLOR_LIGHT (paper) */
-  --brand-neutral-light-soft: color-mix(in srgb, var(--brand-neutral-light), white 35%);
-  --brand-neutral-light-deep: color-mix(in srgb, var(--brand-neutral-light), black 6%);
-  --brand-neutral-dark: #23262B;  /* ← BRAND_COLOR_DARK (charcoal) */
-  --brand-neutral-dark-soft: color-mix(in srgb, var(--brand-neutral-dark), white 14%);
-  --brand-neutral-dark-deep: color-mix(in srgb, var(--brand-neutral-dark), black 18%);
-  --rule: rgba(0, 0, 0, 0.10);
-  --rule-light: rgba(255, 255, 255, 0.18);
-  --brand-gradient: linear-gradient(90deg, #5D6B7E 0%, #A89F8D 100%); /* ← BRAND_GRADIENT */
+  --brand-primary: #1E40AF;                         /* ← BRAND_COLOR_PRIMARY */
+  --brand-primary-deep: #1A389A;                    /* color-mix(in srgb, primary, black 12%) */
+  --brand-primary-soft: rgba(30, 64, 175, 0.12);    /* primary at 12% alpha */
+  --brand-secondary: #F59E0B;                       /* ← BRAND_COLOR_ACCENT */
+  --brand-secondary-deep: #D88B0A;                  /* color-mix(in srgb, secondary, black 12%) */
+  --brand-secondary-soft: rgba(245, 158, 11, 0.12); /* secondary at 12% alpha */
+  --brand-neutral-light: #F8FAFC;                   /* ← BRAND_COLOR_LIGHT */
+  --brand-neutral-light-soft: #FAFCFD;              /* color-mix(in srgb, neutral-light, white 35%) */
+  --brand-neutral-light-deep: #E9EBED;              /* color-mix(in srgb, neutral-light, black 6%) */
+  --brand-neutral-dark: #0F172A;                    /* ← BRAND_COLOR_DARK */
+  --brand-neutral-dark-soft: #313748;               /* color-mix(in srgb, neutral-dark, white 14%) */
+  --brand-neutral-dark-deep: #0C1322;               /* color-mix(in srgb, neutral-dark, black 18%) */
+  --rule: rgba(15, 23, 42, 0.10);                   /* neutral-dark at 10% alpha */
+  --rule-light: rgba(248, 250, 252, 0.18);          /* neutral-light at 18% alpha */
+  --brand-gradient: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); /* ← BRAND_GRADIENT (default: primary → secondary) */
   --brand-gradient-vertical: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  --font-display: system-ui, -apple-system, 'Segoe UI', sans-serif; /* ← BRAND_FONT_PRIMARY (prepend the brand family) */
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace; /* ← BRAND_FONT_SECONDARY (prepend the brand family) */
+  --font-display: 'Inter', system-ui, sans-serif;            /* ← BRAND_FONT_PRIMARY */
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;    /* ← BRAND_FONT_SECONDARY (else a system mono stack) */
   --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   --ease-med:  0.6s cubic-bezier(0.16, 1, 0.3, 1);
   --ease-fast: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --radius-tight: 4px;
   --radius-pill: 999px;
-
-  /* ---- Brand life: pattern hooks (redefine per brand) --------------------
-     Neutral placeholder motifs below (hairline waves + concentric arcs).
-     Replace the data-uris with the REAL brand motif (01-brand/assets/index.md,
-     validated by a human) — never generic decoration.
-     --brand-pattern        watermark for light/tinted backgrounds (ink stroke)
-     --brand-pattern-light  same watermark for dark backgrounds (light stroke)
-     --corner-motif         corner motif for editorial slides                */
-  --brand-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 540'%3E%3Cg fill='none' stroke='%23141414' stroke-width='1.3'%3E%3Cpath d='M0 60 C160 30 320 92 480 66 C640 40 800 86 960 54'/%3E%3Cpath d='M0 150 C170 116 330 176 490 148 C650 120 810 172 960 136'/%3E%3Cpath d='M0 240 C190 198 350 264 510 230 C670 196 830 258 960 216'/%3E%3Cpath d='M0 330 C200 284 360 352 520 314 C680 276 840 346 960 300'/%3E%3Cpath d='M0 420 C190 378 350 440 510 408 C670 376 830 434 960 388'/%3E%3Cpath d='M0 496 C170 464 330 514 490 490 C650 466 810 510 960 478'/%3E%3C/g%3E%3C/svg%3E");
-  --brand-pattern-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 540'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.3'%3E%3Cpath d='M0 60 C160 30 320 92 480 66 C640 40 800 86 960 54'/%3E%3Cpath d='M0 150 C170 116 330 176 490 148 C650 120 810 172 960 136'/%3E%3Cpath d='M0 240 C190 198 350 264 510 230 C670 196 830 258 960 216'/%3E%3Cpath d='M0 330 C200 284 360 352 520 314 C680 276 840 346 960 300'/%3E%3Cpath d='M0 420 C190 378 350 440 510 408 C670 376 830 434 960 388'/%3E%3Cpath d='M0 496 C170 464 330 514 490 490 C650 466 810 510 960 478'/%3E%3C/g%3E%3C/svg%3E");
-  --corner-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%23141414' stroke-width='1.4'%3E%3Ccircle cx='240' cy='0' r='52'/%3E%3Ccircle cx='240' cy='0' r='96'/%3E%3Ccircle cx='240' cy='0' r='140'/%3E%3Ccircle cx='240' cy='0' r='184'/%3E%3Ccircle cx='240' cy='0' r='228'/%3E%3C/g%3E%3C/svg%3E");
-  --pattern-opacity: .05;       /* light/tinted backgrounds */
-  --pattern-opacity-dark: .07;  /* dark backgrounds */
-  --corner-opacity: .09;
+  /* Label register: chrome text and eyebrows (12-13px) hold WCAG AA 4.5:1
+     on every light variant (neutral-light, -soft, -deep) and on neutral-dark */
+  --chrome-opacity: 0.7;
+  --chrome-opacity-dark: 0.7;
+  --label-accent: #1E40AF;      /* primary, darkened until 4.5:1 on neutral-light-deep (already 7.3:1) */
+  --label-accent-dark: #8EA0D7; /* color-mix(in srgb, primary, white 50%): 4.5:1 on neutral-dark and -soft */
+  /* Brand-pattern hooks: inert (none) until the brand provides a motif */
+  --brand-pattern: none;
+  --brand-pattern-light: none;
+  --corner-motif: none;
+  --pattern-opacity: 0.05;
+  --pattern-opacity-dark: 0.07;
+  --corner-opacity: 0.09;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -116,7 +124,16 @@ html, body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'tnum' on;
+}
+
+/* Tabular figures, scoped to numbers read against each other: folios and
+   counters here, and .tnum for a KPI row, a column of values or the
+   numeric cells of a table. Never on the whole page, nor on a whole
+   table: Inter's tnum also widens the hyphen ("no-go" reads "no - go"),
+   and on a lone display number the fixed advance opens gaps between the
+   digits. A negative value takes the minus sign (−), not the hyphen. */
+.nav-num, .nav-counter, .overview-thumb-num, .tnum {
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -139,9 +156,7 @@ html, body {
   top: 50%; left: 50%;
   width: 1920px; height: 1080px;
   background: var(--brand-neutral-light);
-  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.45);
   transform-origin: center center;
-  overflow: hidden;
   /* JS sets: transform: translate(-50%, calc(-50% + yShift)) scale(s) */
   will-change: transform;
 }
@@ -149,6 +164,13 @@ html, body {
 .slide {
   position: absolute; inset: 0;
   padding: 80px 120px 110px; /* never reduce padding-bottom below 110 */
+  /* Each slide is its own stacking context: decorative layers at
+     z-index -1 (brand pattern, aurora) stay above the slide
+     background and under every content layer */
+  isolation: isolate;
+  /* Each slide carries its own background: the print CSS makes the
+     .stage-frame transparent, so a slide without one prints white */
+  background: var(--brand-neutral-light);
   opacity: 0;
   visibility: hidden;
   transition: opacity var(--ease-med), visibility var(--ease-med);
@@ -158,40 +180,129 @@ html, body {
   opacity: 1;
   visibility: visible;
 }
-.slide.tint { background: var(--brand-neutral-light-deep); }
 .slide.dark {
   background: var(--brand-neutral-dark);
   color: var(--brand-neutral-light);
 }
+/* Background variants — brand-agnostic via tokens. Use to alternate texture
+   across the deck without always toggling light <-> dark hard.
+   .cream is the legacy name of .tint, kept for older decks. */
+.slide.soft {
+  background: var(--brand-neutral-light-soft);
+}
+.slide.tint,
+.slide.cream {
+  background: var(--brand-neutral-light-deep);
+}
 
 /* ============================================================
-   BRAND LIFE — watermarks, corner motif, typographic rule
-   One slide never stacks .motif / .texture / .corner (a single
-   ::before is available). The watermark stays under everything
-   (z-index 0, below aurora, content and chrome).
+   BRAND PATTERN — optional decoration hooks
+   Inert until the brand sets --brand-pattern / --brand-pattern-light /
+   --corner-motif in :root (default: none). Opt in per slide:
+     .motif    full-slide watermark on dark slides (--brand-pattern-light)
+     .texture  full-slide watermark on light slides (--brand-pattern)
+     .corner   motif in the top-right corner (--corner-motif)
+     .filet-orn  ornamental rule: hairline · brand mark · hairline
+   A slide carries at most one of .motif / .texture / .corner (they
+   share the slide's ::before). The layer sits under every content
+   layer: the slide's isolation keeps its z-index -1 above the slide
+   background.
    ============================================================ */
 .slide.motif::before, .slide.texture::before, .slide.corner::before {
-  content: ''; position: absolute; z-index: 0; pointer-events: none;
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
 }
-.slide.motif::before  { inset: 0; background: var(--brand-pattern-light) center / cover no-repeat; opacity: var(--pattern-opacity-dark); }
-.slide.texture::before { inset: 0; background: var(--brand-pattern) center / cover no-repeat; opacity: var(--pattern-opacity); }
-.slide.corner::before { top: 0; right: 0; width: 250px; height: 250px; background: var(--corner-motif) top right / contain no-repeat; opacity: var(--corner-opacity); }
-
-.filet-orn { display: flex; align-items: center; gap: 16px; color: var(--brand-primary-deep); }
-.filet-orn::before, .filet-orn::after { content: ''; width: 72px; height: 1px; background: currentColor; opacity: .55; }
-.filet-orn svg { width: 22px; height: 22px; display: block; }
+.slide.motif::before {
+  inset: 0;
+  background: var(--brand-pattern-light) center / cover no-repeat;
+  opacity: var(--pattern-opacity-dark);
+}
+.slide.texture::before {
+  inset: 0;
+  background: var(--brand-pattern) center / cover no-repeat;
+  opacity: var(--pattern-opacity);
+}
+.slide.corner::before {
+  top: 0; right: 0;
+  width: 250px; height: 250px;
+  background: var(--corner-motif) top right / contain no-repeat;
+  opacity: var(--corner-opacity);
+}
+.filet-orn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--brand-primary-deep);
+}
+.filet-orn::before, .filet-orn::after {
+  content: "";
+  width: 72px; height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+.filet-orn svg { width: auto; height: 22px; display: block; }
 .slide.dark .filet-orn { color: var(--brand-secondary); }
 
-/* Ambient aurora — rhythm slides only (cover, breathers, CTA) */
-.aurora { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+/* ============================================================
+   AURORA — optional ambient layer, rhythm slides only
+   Two blurred brand-colour discs under the content of a cover, a
+   breathing slide or a closing slide: <div class="aurora"><i
+   class="a1"></i><i class="a2"></i></div> as the slide's first
+   child. One per slide at most, never on a text-dense slide.
+   06-graphic-design/presentations/scripts/qa.py skips it, the PDF export hides it (blur prints
+   badly), and it sits at z-index -1 under every content layer.
+   ============================================================ */
+.aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
 .aurora i { position: absolute; border-radius: 50%; filter: blur(90px); }
-.aurora .a1 { width: 620px; height: 620px; background: var(--brand-primary); top: -180px; right: -120px; opacity: .18; }
-.aurora .a2 { width: 520px; height: 520px; background: var(--brand-secondary); bottom: -200px; left: -120px; opacity: .12; }
+.aurora .a1 { width: 620px; height: 620px; background: var(--brand-primary); top: -180px; right: -120px; opacity: 0.18; }
+.aurora .a2 { width: 520px; height: 520px; background: var(--brand-secondary); bottom: -200px; left: -120px; opacity: 0.12; }
+
+/* ============================================================
+   SLIDE-BG — full-bleed atmospheric image layer
+   Use for cover, mapview, endpaper-style slides where an
+   atmospheric background image should sit behind the content.
+   ============================================================
+   Z-INDEX DISCIPLINE (do not violate):
+     0  → .slide-bg (image + dark gradient overlay)
+     2  → slide content (titles, body, CTAs) — must opt-in via
+          position: relative + z-index: 2
+     5  → .chrome (always above content via .chrome's existing z-index: 5)
+   Without this discipline, content disappears behind the image
+   or the chrome ends up under the image.
+   ============================================================ */
+.slide-bg {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none; user-select: none;
+}
+.slide-bg img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+}
+/* Default readability overlay — adjustable per slide via inline style if needed */
+.slide-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 19, 34, 0.35) 0%,
+    rgba(12, 19, 34, 0.55) 70%,
+    rgba(12, 19, 34, 0.80) 100%
+  );
+}
+/* When the slide is light, lighten the overlay so the image stays visible */
+.slide:not(.dark) .slide-bg::after {
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.10) 0%,
+    rgba(248, 250, 252, 0.25) 70%,
+    rgba(248, 250, 252, 0.50) 100%
+  );
+}
 
 /* ============================================================
    CHROME — editorial frame on every slide
-   Folios (.nav-num) are AUTO-NUMBERED by the engine (SLIDE_COUNT):
-   leave the spans empty, never hard-code "01 / 04".
    ============================================================ */
 .chrome {
   position: absolute;
@@ -216,11 +327,11 @@ html, body {
   letter-spacing: 0.08em;
   text-transform: lowercase;
   color: var(--brand-neutral-dark);
-  opacity: 0.62;
+  opacity: var(--chrome-opacity, 0.7);
 }
 .slide.dark .meta-label,
 .slide.dark .signature,
-.slide.dark .nav-num { color: var(--brand-neutral-light); opacity: 0.7; }
+.slide.dark .nav-num { color: var(--brand-neutral-light); opacity: var(--chrome-opacity-dark, 0.7); }
 
 .nav-num strong { font-weight: 700; opacity: 1; }
 
@@ -270,9 +381,10 @@ html, body {
 
 /* ============================================================
    GRADIENT TEXT — descender-safe (do NOT reduce the compensation)
-   background-clip:text only paints inside the inline-block box,
-   whose height = line-height. The ≥ .22em padding/margin pair keeps
-   the descenders of g j p q (and % O 9) inside the painted box.
+   background-clip: text only paints inside the inline-block box,
+   whose height is the line-height. The .22em / .08em padding,
+   cancelled by the same negative margin, keeps the descenders of
+   g j p q (and % O 9) inside the painted box at any size.
    ============================================================ */
 .gradient-text {
   background: var(--brand-gradient);
@@ -295,13 +407,13 @@ html, body {
    Text titles keep line-height ≥ 1.1 (descender rule). Pure
    numerals may go tighter (no descenders).
    ============================================================ */
-h1.display {
+h1.display, h2.display {
   font-size: 96px;
   font-weight: 200;
   line-height: 1.1;
   letter-spacing: -0.025em;
 }
-h1.display strong { font-weight: 700; }
+h1.display strong, h2.display strong { font-weight: 700; }
 
 .eyebrow {
   font-family: var(--font-mono);
@@ -309,39 +421,17 @@ h1.display strong { font-weight: 700; }
   font-weight: 500;
   letter-spacing: 0.10em;
   text-transform: lowercase;
-  color: var(--brand-primary-deep);
-  opacity: 0.85;
+  color: var(--label-accent, var(--brand-primary-deep));
 }
-.slide.dark .eyebrow { color: var(--brand-primary); }
+.slide.dark .eyebrow { color: var(--label-accent-dark, var(--brand-primary)); }
 .lede {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 300;
   line-height: 1.4;
-  max-width: 880px;
+  max-width: 960px;
   color: var(--brand-neutral-dark-soft);
 }
 .slide.dark .lede { color: var(--brand-neutral-light-soft); opacity: 0.8; }
-
-/* ---- Starter components (cards, KPI band) — extend from
-        templates/components.md / the deck-catalogue ---- */
-.cards { display: grid; gap: 28px; margin-top: 46px; }
-.cards.c2 { grid-template-columns: repeat(2, 1fr); }
-.cards.c3 { grid-template-columns: repeat(3, 1fr); }
-.card { background: #fff; border: 1px solid var(--rule); border-radius: 18px; padding: 34px; }
-.slide.dark .card { background: var(--brand-neutral-dark-soft); border-color: var(--rule-light); }
-.card .ix { font-family: var(--font-mono); font-size: 24px; color: var(--brand-secondary-deep); margin-bottom: 14px; }
-.card h3 { font-weight: 700; font-size: 22px; margin-bottom: 10px; line-height: 1.2; }
-.card p { font-size: 18px; line-height: 1.5; color: var(--brand-neutral-dark-soft); }
-.slide.dark .card p { color: var(--brand-neutral-light-soft); }
-
-.kpis { display: flex; gap: 30px; margin-top: 46px; }
-.kpi { flex: 1; border-left: 3px solid; border-image: var(--brand-gradient-vertical) 1; padding: 6px 0 6px 28px; }
-.kpi .n { font-size: 88px; font-weight: 200; line-height: 1; }
-.kpi .l { font-size: 18px; color: var(--brand-neutral-dark-soft); margin-top: 14px; max-width: 300px; line-height: 1.4; }
-.slide.dark .kpi .l { color: var(--brand-neutral-light-soft); }
-
-.url-pill { display: inline-flex; align-items: center; gap: 16px; padding: 18px 34px; border: 1px solid var(--brand-primary); border-radius: var(--radius-pill); background: var(--brand-primary-soft); font-size: 21px; font-weight: 600; color: var(--brand-primary); text-decoration: none; }
-.url-pill::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--brand-gradient); }
 
 /* ============================================================
    NAV RAIL — fixed at bottom of viewport
@@ -355,21 +445,20 @@ h1.display strong { font-weight: 700; }
   align-items: center;
   gap: 18px;
   padding: 10px 18px;
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(12, 19, 34, 0.88); /* --brand-neutral-dark-deep at 88% */
   backdrop-filter: blur(20px);
   border: 1px solid var(--rule-light);
   border-radius: var(--radius-pill);
   z-index: 100;
   font-family: var(--font-mono);
-  color: #fff;
+  color: var(--brand-neutral-light);
   font-size: 12px;
   letter-spacing: 0.06em;
-  transition: opacity .3s ease, transform .3s ease;
 }
 .nav-btn {
   background: transparent;
   border: 1px solid transparent;
-  color: #fff;
+  color: var(--brand-neutral-light);
   font-family: var(--font-mono);
   font-size: 13px;
   cursor: pointer;
@@ -378,9 +467,8 @@ h1.display strong { font-weight: 700; }
   transition: background var(--ease-fast);
 }
 .nav-btn:hover { background: rgba(255,255,255,0.08); }
-.nav-btn.exporting { opacity: .5; pointer-events: none; }
+.nav-btn.exporting { opacity: 0.5; pointer-events: none; }
 .nav-counter { min-width: 60px; text-align: center; opacity: 0.8; }
-.nav-counter strong { opacity: 1; }
 .nav-progress {
   width: 240px;
   height: 4px;
@@ -400,26 +488,34 @@ h1.display strong { font-weight: 700; }
   position: absolute;
   top: 50%; transform: translate(-50%, -50%);
   width: 12px; height: 12px;
-  background: #fff;
+  background: var(--brand-neutral-light);
   border-radius: 50%;
   transition: left var(--ease-fast);
   pointer-events: none;
 }
 
-/* ============================================================
-   FULLSCREEN PRESENTATION MODE — F key / ⛶ button
-   body.presenting hides the nav; nav-peek brings it back when the
-   pointer is within 90px of the screen bottom (see engine JS).
-   ============================================================ */
-body.presenting .nav-rail { opacity: 0; transform: translate(-50%, 16px); pointer-events: none; }
-body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+/* Presentation mode (fullscreen, immersive): slide fills the screen, nav auto-hides
+   and reappears when the cursor approaches the bottom edge. Toggled with the ⛶ button or F. */
+body.presenting .nav-rail {
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+body.presenting.nav-peek .nav-rail {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
 
 /* ============================================================
-   OVERVIEW PANEL — O key / ⊞ button, grouped by slide families
+   OVERVIEW PANEL — O key / ⊞ button, grouped by data-family
+   Built by JS. While it is open, only O and Escape act; a click
+   outside the thumbnails closes it.
    ============================================================ */
 .overview {
   position: fixed; inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(12, 19, 34, 0.95); /* --brand-neutral-dark-deep at 95% */
   backdrop-filter: blur(20px);
   z-index: 200;
   display: none;
@@ -432,15 +528,15 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
   margin: 0 auto 14px;
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--brand-primary);
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: lowercase;
+  color: var(--label-accent-dark, var(--brand-neutral-light));
   display: flex;
   align-items: center;
   gap: 14px;
 }
-.overview-fam::after { content: ''; flex: 1; height: 1px; background: var(--rule-light); }
+.overview-fam::after { content: ""; flex: 1; height: 1px; background: var(--rule-light); }
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -450,7 +546,9 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
 }
 .overview-thumb {
   background: var(--brand-neutral-light);
-  border: 1px solid transparent;
+  color: var(--brand-neutral-dark);
+  font-family: var(--font-display);
+  text-align: left;
   border-radius: var(--radius-tight);
   aspect-ratio: 16/9;
   padding: 14px;
@@ -458,15 +556,13 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  text-align: left;
-  color: var(--brand-neutral-dark);
-  font-family: var(--font-display);
+  border: 1px solid transparent;
   transition: border-color var(--ease-fast), transform var(--ease-fast);
 }
 .overview-thumb:hover { border-color: var(--brand-primary); transform: translateY(-2px); }
 .overview-thumb.current { border-color: var(--brand-secondary); }
-.overview-thumb.dark { background: var(--brand-neutral-dark-soft); color: var(--brand-neutral-light); }
 .overview-thumb.tint { background: var(--brand-neutral-light-deep); }
+.overview-thumb.dark { background: var(--brand-neutral-dark-soft); color: var(--brand-neutral-light); }
 .overview-thumb-num {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -478,9 +574,9 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
   font-size: 10px;
   text-transform: lowercase;
   letter-spacing: 0.08em;
-  color: var(--brand-primary-deep);
+  color: var(--label-accent, var(--brand-primary-deep));
 }
-.overview-thumb.dark .overview-thumb-eyebrow { color: var(--brand-primary); }
+.overview-thumb.dark .overview-thumb-eyebrow { color: var(--label-accent-dark, var(--brand-secondary)); }
 .overview-thumb-heading {
   font-size: 14px;
   font-weight: 500;
@@ -518,7 +614,6 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
     width: 1920px !important;
     height: auto !important;
     background: transparent !important;
-    box-shadow: none !important;
   }
   body.printing-pdf .slide {
     position: relative !important;
@@ -547,12 +642,34 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
   body.printing-pdf .roadmap-phase::before { transform: scale(1) !important; animation: none !important; }
   body.printing-pdf .funnel-bar::before { transform: scaleX(var(--width, 1)) !important; transition: none !important; }
   body.printing-pdf .dot-grid .d.us { animation: none !important; }
-  /* Filter blur and 1px gradient lines render unreliably in PDF */
+  /* Background grids and atmospheric layers render unreliably in
+     Chromium PDF (1px gradient lines render thicker, mask-image
+     radial fades aren't honoured, repeating gradients band).
+     Hide them entirely. Add your own grid class to this list if
+     you invent a new one. */
   body.printing-pdf .aurora,
-  body.printing-pdf .dust-grid { display: none !important; }
-  body.printing-pdf * {
+  body.printing-pdf .dust-grid,
+  body.printing-pdf .graticule,
+  body.printing-pdf .grid-bg,
+  body.printing-pdf .bg-grid,
+  body.printing-pdf .grid-pattern,
+  body.printing-pdf .background-grid,
+  body.printing-pdf .dot-grid-bg,
+  body.printing-pdf .ambient-grid,
+  body.printing-pdf .pattern-bg,
+  body.printing-pdf [data-pdf-hide] { display: none !important; }
+  /* Strip ALL shadows (box, text, drop-shadow filter) — they render
+     unreliably in Chromium PDF (banding, halos, mis-positioned blur).
+     Remove globally, not just on body, so filter chains are reset too. */
+  body.printing-pdf *,
+  body.printing-pdf *::before,
+  body.printing-pdf *::after {
     box-shadow: none !important;
     text-shadow: none !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 }
 </style>
@@ -581,118 +698,96 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
 </svg>
 
 <!-- ============================================================
-     STAGE — 4 example slides (cover / editorial / data / CTA).
-     data-family drives the grouped overview: ouverture, editorial,
-     dataviz, schema, tableau, preuve, conclusion.
-     data-eyebrow + data-heading feed the overview thumbnails.
-     Folios are auto-numbered: leave .nav-num spans EMPTY.
+     STAGE — one <section class="slide"> per slide.
+     data-family groups the overview (keys of the catalogue:
+     ouverture, editorial, dataviz, schema, tableau, preuve,
+     conclusion, photo); data-eyebrow + data-heading feed the
+     thumbnails. Folios are auto-numbered: leave .nav-num empty.
      ============================================================ -->
 <main class="stage">
   <div class="stage-frame" id="stage-frame">
 
     <!-- =====================================================
-         SLIDE 1 — Cover (dark, brand watermark)
+         SLIDE 1 — Hero (template). `texture`: brand watermark,
+         invisible until --brand-pattern is set
          ===================================================== -->
-    <section class="slide dark motif active" data-family="ouverture" data-eyebrow="{{DECK_EYEBROW}}" data-heading="{{DECK_TITLE}}">
-      <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
+    <section class="slide texture active" data-family="ouverture" data-eyebrow="introduction" data-heading="Deck title goes here">
       <div class="chrome">
         <div class="chrome-row top">
-          <span class="meta-label">{{DECK_CONTEXT}}</span>
+          <span class="meta-label">01 · introduction</span>
           <span class="nav-num"></span>
         </div>
         <div class="chrome-row bottom">
-          <span class="signature">{{COMPANY_NAME}} · {{COMPANY_WEBSITE}}</span>
+          <span class="signature">internal document · confidential</span>
           <svg class="brand-mark"><use href="#brand-logo"/></svg>
         </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:32px;position:relative;z-index:3;">
-        <span class="eyebrow reveal">{{DECK_EYEBROW}}</span>
-        <h1 class="display reveal" style="font-size:132px;">
-          {{COVER_HEADLINE_START}}<br>
-          <span class="gradient-text">{{COVER_HEADLINE_ACCENT}}</span>
+      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:32px;">
+        <span class="eyebrow reveal">deck title</span>
+        <h1 class="display reveal">
+          A standalone HTML deck<br>
+          for <span class="gradient-text">the brand</span>.
         </h1>
         <p class="lede reveal">
-          {{COVER_LEDE : one promise, under two lines, in the brand's voice}}
+          Replace this with your hero copy. Keep it under two lines, written in the brand's voice.
         </p>
       </div>
     </section>
 
     <!-- =====================================================
-         SLIDE 2 — Editorial (light, corner motif, 3 cards)
+         SLIDE 2 — Breathing slide (big number). `aurora`:
+         optional ambient layer, rhythm slides only
          ===================================================== -->
-    <section class="slide corner" data-family="editorial" data-eyebrow="{{SLIDE2_EYEBROW}}" data-heading="{{SLIDE2_HEADING}}">
+    <section class="slide dark" data-family="ouverture" data-eyebrow="breathing" data-heading="Big number">
+      <div class="aurora"><i class="a1"></i><i class="a2"></i></div>
       <div class="chrome">
         <div class="chrome-row top">
-          <span class="meta-label">{{SLIDE2_META}}</span>
+          <span class="meta-label">02 · breathing</span>
           <span class="nav-num"></span>
         </div>
         <div class="chrome-row bottom">
-          <span class="signature">{{COMPANY_NAME}} · {{COMPANY_WEBSITE}}</span>
+          <span class="signature">a number worth pausing on</span>
           <svg class="brand-mark"><use href="#brand-logo"/></svg>
         </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;position:relative;z-index:3;">
-        <span class="eyebrow reveal" style="margin-bottom:22px;">{{SLIDE2_EYEBROW}}</span>
-        <h1 class="display reveal" style="font-size:80px;">{{SLIDE2_HEADING_START}} <span class="gradient-text">{{SLIDE2_HEADING_ACCENT}}</span></h1>
-        <div class="cards c3" data-stagger>
-          <div class="card"><div class="ix">01</div><h3>{{CARD1_TITLE}}</h3><p>{{CARD1_BODY : one claim, backed by a number or a named source}}</p></div>
-          <div class="card"><div class="ix">02</div><h3>{{CARD2_TITLE}}</h3><p>{{CARD2_BODY}}</p></div>
-          <div class="card"><div class="ix">03</div><h3>{{CARD3_TITLE}}</h3><p>{{CARD3_BODY}}</p></div>
-        </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:40px;text-align:center;">
+        <span class="gradient-text reveal" style="font-size:340px;font-weight:200;line-height:1;">
+          78<span style="font-size:0.5em;">%</span>
+        </span>
+        <p class="lede reveal" style="text-align:center;color:var(--brand-neutral-light-soft);">
+          A short sentence that gives this number meaning. One line. No more.
+        </p>
       </div>
     </section>
 
     <!-- =====================================================
-         SLIDE 3 — Data (tinted, KPI band)
+         SLIDE 3 — Decision (template). `corner`: corner motif,
+         invisible until --corner-motif is set
          ===================================================== -->
-    <section class="slide tint" data-family="dataviz" data-eyebrow="{{SLIDE3_EYEBROW}}" data-heading="{{SLIDE3_HEADING}}">
+    <section class="slide corner" data-family="conclusion" data-eyebrow="decision" data-heading="Go or no-go?">
       <div class="chrome">
         <div class="chrome-row top">
-          <span class="meta-label">{{SLIDE3_META}}</span>
+          <span class="meta-label">03 · decision</span>
           <span class="nav-num"></span>
         </div>
         <div class="chrome-row bottom">
-          <span class="signature">{{COMPANY_NAME}} · {{COMPANY_WEBSITE}}</span>
+          <span class="signature">awaiting sign-off</span>
           <svg class="brand-mark"><use href="#brand-logo"/></svg>
         </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;position:relative;z-index:3;">
-        <span class="eyebrow reveal" style="margin-bottom:22px;">{{SLIDE3_EYEBROW}}</span>
-        <h1 class="display reveal" style="font-size:80px;">{{SLIDE3_HEADING_START}} <span class="gradient-text">{{SLIDE3_HEADING_ACCENT}}</span></h1>
-        <div class="kpis" data-stagger>
-          <div class="kpi"><div class="n"><span class="gradient-text">{{KPI1_VALUE}}</span></div><div class="l">{{KPI1_LABEL : sourced from 01-brand/messaging-framework.md or _sources/reports/}}</div></div>
-          <div class="kpi"><div class="n"><span class="gradient-text">{{KPI2_VALUE}}</span></div><div class="l">{{KPI2_LABEL}}</div></div>
-          <div class="kpi"><div class="n"><span class="gradient-text">{{KPI3_VALUE}}</span></div><div class="l">{{KPI3_LABEL}}</div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         SLIDE 4 — CTA (dark, brand watermark, next step)
-         ===================================================== -->
-    <section class="slide dark motif" data-family="conclusion" data-eyebrow="{{SLIDE4_EYEBROW}}" data-heading="{{SLIDE4_HEADING}}">
-      <div class="aurora"><i class="a2"></i></div>
-      <div class="chrome">
-        <div class="chrome-row top">
-          <span class="meta-label">{{SLIDE4_META}}</span>
-          <span class="nav-num"></span>
-        </div>
-        <div class="chrome-row bottom">
-          <span class="signature">{{COMPANY_NAME}} · {{COMPANY_WEBSITE}}</span>
-          <svg class="brand-mark"><use href="#brand-logo"/></svg>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:44px;text-align:center;position:relative;z-index:3;">
-        <div class="filet-orn reveal"><svg viewBox="0 0 100 50"><use href="#brand-logo"/></svg></div>
-        <h1 class="display reveal" style="font-size:110px;">
-          {{CTA_HEADLINE_START}} <span class="gradient-text">{{CTA_HEADLINE_ACCENT}}</span>
+      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:48px;">
+        <span class="eyebrow reveal">final question</span>
+        <h1 class="display reveal" style="font-size:180px;font-weight:200;">
+          <span class="gradient-text">Go</span> or no-go?
         </h1>
-        <p class="lede reveal" style="text-align:center;">{{CTA_LEDE : the single decision or next step you are asking for}}</p>
-        <a class="url-pill reveal" href="{{CTA_URL}}">{{CTA_URL_LABEL}}</a>
+        <div class="reveal" style="display:flex;gap:64px;font-size:28px;font-weight:400;color:var(--brand-neutral-dark);">
+          <div><span style="display:block;margin-bottom:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;color:var(--brand-neutral-dark-soft);">budget</span>your number</div>
+          <div><span style="display:block;margin-bottom:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;color:var(--brand-neutral-dark-soft);">timeline</span>your timeline</div>
+          <div><span style="display:block;margin-bottom:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;color:var(--brand-neutral-dark-soft);">owner</span>your name</div>
+        </div>
       </div>
     </section>
 
@@ -704,15 +799,15 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
      ============================================================ -->
 <nav class="nav-rail" id="nav-rail">
   <button class="nav-btn" id="prev-btn" aria-label="Previous">←</button>
-  <span class="nav-counter"><strong id="nav-cur">01</strong> / <span id="nav-tot">01</span></span>
+  <span class="nav-counter" id="nav-counter">01 / 03</span>
   <div class="nav-progress" id="nav-progress" role="slider" aria-label="Slide progress" tabindex="0">
     <div class="nav-progress-fill" id="nav-progress-fill"></div>
     <div class="nav-progress-handle" id="nav-progress-handle"></div>
   </div>
   <button class="nav-btn" id="next-btn" aria-label="Next">→</button>
   <button class="nav-btn" id="overview-btn" aria-label="Overview (O)" title="Overview (O)">⊞</button>
-  <button class="nav-btn" id="fullscreen-btn" aria-label="Fullscreen (F)" title="Fullscreen (F)">⛶</button>
-  <button class="nav-btn" id="pdf-btn" aria-label="Save as PDF (P)" title="Save as PDF (P)">PDF</button>
+  <button class="nav-btn" id="fullscreen-btn" aria-label="Present fullscreen" title="Present fullscreen (F)">⛶</button>
+  <button class="nav-btn" id="pdf-btn" aria-label="Save as PDF" title="Save as PDF (P)">PDF</button>
 </nav>
 
 <!-- ============================================================
@@ -730,42 +825,67 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
   const total = SLIDE_COUNT;
   const frame = document.getElementById('stage-frame');
   const nav = document.getElementById('nav-rail');
-  const counterCur = document.getElementById('nav-cur');
-  const counterTot = document.getElementById('nav-tot');
+  const counter = document.getElementById('nav-counter');
   const progFill = document.getElementById('nav-progress-fill');
   const progHandle = document.getElementById('nav-progress-handle');
   const progBar = document.getElementById('nav-progress');
   const overview = document.getElementById('overview');
+  const pdfBtn = document.getElementById('pdf-btn');
   let current = 0;
-
   const pad = (n) => String(n).padStart(2, '0');
 
   // -----------------------------------------------------------
-  // AUTO FOLIOS — inject "NN / TOTAL" into every .nav-num.
-  // Inserting/removing a slide needs NO manual renumbering.
+  // AUTO FOLIOS — inject "NN / TOTAL" into every .nav-num from DOM
+  // order: inserting or removing a slide needs no renumbering.
   // -----------------------------------------------------------
-  slides.forEach((sl, i) => {
-    const folio = sl.querySelector('.nav-num');
-    if (folio) folio.innerHTML = `<strong>${pad(i + 1)}</strong> / ${pad(SLIDE_COUNT)}`;
+  slides.forEach((s, i) => {
+    const f = s.querySelector('.nav-num');
+    if (f) f.innerHTML = '<strong>' + pad(i + 1) + '</strong> / ' + pad(SLIDE_COUNT);
   });
-  counterTot.textContent = pad(SLIDE_COUNT);
 
   // -----------------------------------------------------------
-  // Responsive fit — transform: scale to viewport.
-  // In fullscreen presentation mode (body.presenting) the nav is
-  // hidden, so fit() drops the nav reserve and the scale cap.
+  // Responsive fit — transform: scale to viewport
   // -----------------------------------------------------------
   function fit() {
+    // In presentation mode the slide fills the whole screen (no nav reserved).
     const presenting = document.body.classList.contains('presenting');
-    const reserve = presenting ? 0 : nav.offsetHeight + 24 + 16;
+    const navOffset = presenting ? 0 : (nav.offsetHeight + 24);
     const w = window.innerWidth;
-    const h = window.innerHeight - reserve;
+    const h = window.innerHeight - (presenting ? 0 : navOffset + 16);
     const scale = Math.min(w / 1920, h / 1080, presenting ? 100 : 1.5);
-    const yShift = -reserve / 2;
+    const yShift = presenting ? 0 : -navOffset / 2;
     frame.style.transform = `translate(-50%, calc(-50% + ${yShift}px)) scale(${scale})`;
   }
   window.addEventListener('resize', fit);
   fit();
+
+  // -----------------------------------------------------------
+  // Presentation mode — fullscreen, immersive (button ⛶ or F)
+  // -----------------------------------------------------------
+  function toggleFullscreen() {
+    const el = document.documentElement;
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      const req = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (req) req.call(el);
+    } else {
+      const ex = document.exitFullscreen || document.webkitExitFullscreen;
+      if (ex) ex.call(document);
+    }
+  }
+  function onFsChange() {
+    const fs = document.fullscreenElement || document.webkitFullscreenElement;
+    document.body.classList.toggle('presenting', !!fs);
+    if (!fs) document.body.classList.remove('nav-peek');
+    fit();
+  }
+  document.addEventListener('fullscreenchange', onFsChange);
+  document.addEventListener('webkitfullscreenchange', onFsChange);
+  window.addEventListener('mousemove', (e) => {
+    if (!document.body.classList.contains('presenting')) return;
+    document.body.classList.toggle('nav-peek', e.clientY > window.innerHeight - 90);
+  });
+  const fsBtn = document.getElementById('fullscreen-btn');
+  if (fsBtn) fsBtn.addEventListener('click', toggleFullscreen);
 
   // -----------------------------------------------------------
   // Navigation
@@ -780,17 +900,22 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
     updateOverview();
   }
   function updateNav() {
-    counterCur.textContent = pad(current + 1);
+    counter.textContent = pad(current + 1) + ' / ' + pad(total);
     const ratio = total === 1 ? 1 : current / (total - 1);
     progFill.style.width = (ratio * 100) + '%';
     progHandle.style.left = (ratio * 100) + '%';
+    progBar.setAttribute('aria-valuenow', String(current + 1));
   }
+  progBar.setAttribute('aria-valuemin', '1');
+  progBar.setAttribute('aria-valuemax', String(total));
+  updateNav();
   document.getElementById('prev-btn').addEventListener('click', () => go(current - 1));
   document.getElementById('next-btn').addEventListener('click', () => go(current + 1));
 
-  // Keyboard — while the overview is open, only O / Escape act
+  // Keyboard — while the overview is open, only O and Escape act
   let numBuffer = '', numTimer = null;
   document.addEventListener('keydown', (e) => {
+    // Skip when typing in an input
     if (e.target.matches('input, textarea, [contenteditable]')) return;
     if (overview.classList.contains('open')) {
       if (['Escape', 'o', 'O'].includes(e.key)) { closeOverview(); e.preventDefault(); }
@@ -808,11 +933,14 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
       case 'End': go(total - 1); e.preventDefault(); break;
       case 'o': case 'O':
         toggleOverview(); e.preventDefault(); break;
-      case 'f': case 'F':
-        toggleFullscreen(); e.preventDefault(); break;
       case 'p': case 'P':
         if (!e.metaKey && !e.ctrlKey) {
           printPdf(); e.preventDefault();
+        }
+        break;
+      case 'f': case 'F':
+        if (!e.metaKey && !e.ctrlKey) {
+          toggleFullscreen(); e.preventDefault();
         }
         break;
       case 'Enter':
@@ -873,50 +1001,28 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
   progBar.addEventListener('touchend', () => { dragging = false; });
 
   // -----------------------------------------------------------
-  // FULLSCREEN PRESENTATION MODE — F key / ⛶ button.
-  // body.presenting hides the nav rail; moving the pointer within
-  // 90px of the screen bottom sets nav-peek and brings it back.
-  // -----------------------------------------------------------
-  function toggleFullscreen() {
-    const el = document.documentElement;
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      const req = el.requestFullscreen || el.webkitRequestFullscreen;
-      if (req) req.call(el);
-    } else {
-      const ex = document.exitFullscreen || document.webkitExitFullscreen;
-      if (ex) ex.call(document);
-    }
-  }
-  function onFsChange() {
-    const fs = document.fullscreenElement || document.webkitFullscreenElement;
-    document.body.classList.toggle('presenting', !!fs);
-    if (!fs) document.body.classList.remove('nav-peek');
-    fit();
-  }
-  document.addEventListener('fullscreenchange', onFsChange);
-  document.addEventListener('webkitfullscreenchange', onFsChange);
-  window.addEventListener('mousemove', (e) => {
-    if (!document.body.classList.contains('presenting')) return;
-    document.body.classList.toggle('nav-peek', e.clientY > window.innerHeight - 90);
-  });
-  document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
-
-  // -----------------------------------------------------------
-  // Overview panel — grouped by data-family
+  // Overview panel — thumbnails grouped by data-family, in this
+  // order (the keys are the catalogue's). A slide without a known
+  // family lands in a last group; a deck without any data-family
+  // gets one flat grid.
   // -----------------------------------------------------------
   const FAMILIES = {
-    ouverture: 'Ouverture & rythme',
-    editorial: 'Éditorial & narration',
-    dataviz: 'Data-visualisation',
-    schema: 'Schémas & processus',
-    tableau: 'Tableaux & offres',
-    preuve: 'Preuve & confiance',
-    conclusion: 'Conclusion',
+    ouverture: 'Opening and navigation',
+    editorial: 'Editorial and rhythm',
+    dataviz: 'Data visualisation',
+    schema: 'Schemas and diagrams',
+    tableau: 'Tables and comparisons',
+    preuve: 'Proof and product',
+    conclusion: 'Offer and closing',
+    photo: 'Photography',
   };
   function makeThumb(sl, i) {
-    const bg = sl.classList.contains('dark') ? 'dark' : (sl.classList.contains('tint') ? 'tint' : '');
     const thumb = document.createElement('button');
-    thumb.className = 'overview-thumb' + (bg ? ` ${bg}` : '');
+    thumb.type = 'button';
+    const tone = sl.classList.contains('dark') ? ' dark'
+      : (sl.classList.contains('tint') || sl.classList.contains('cream')) ? ' tint' : '';
+    thumb.className = 'overview-thumb' + tone;
+    thumb.dataset.index = String(i);
     thumb.innerHTML = `
       <span class="overview-thumb-num">${pad(i + 1)} / ${pad(total)}</span>
       <div>
@@ -928,53 +1034,75 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
   }
   function buildOverview() {
     overview.innerHTML = '';
-    Object.entries(FAMILIES).forEach(([fam, label]) => {
-      const members = slides.map((sl, i) => [sl, i]).filter(([sl]) => (sl.dataset.family || 'ouverture') === fam);
+    const indexed = slides.map((sl, i) => [sl, i]);
+    const groups = [];
+    if (!slides.some(sl => sl.dataset.family)) {
+      groups.push(['', indexed]);
+    } else {
+      Object.entries(FAMILIES).forEach(([fam, label]) => {
+        groups.push([label, indexed.filter(([sl]) => sl.dataset.family === fam)]);
+      });
+      groups.push(['Other slides', indexed.filter(([sl]) => !Object.hasOwn(FAMILIES, sl.dataset.family || ''))]);
+    }
+    groups.forEach(([label, members]) => {
       if (!members.length) return;
-      const h = document.createElement('div');
-      h.className = 'overview-fam';
-      h.textContent = label;
-      overview.appendChild(h);
+      if (label) {
+        const head = document.createElement('div');
+        head.className = 'overview-fam';
+        head.textContent = label;
+        overview.appendChild(head);
+      }
       const grid = document.createElement('div');
       grid.className = 'overview-grid';
-      overview.appendChild(grid);
       members.forEach(([sl, i]) => grid.appendChild(makeThumb(sl, i)));
+      overview.appendChild(grid);
     });
   }
   function updateOverview() {
-    // Thumbs are appended family by family; recover the slide index
-    // from the folio text of each thumbnail.
     overview.querySelectorAll('.overview-thumb').forEach((t) => {
-      const idx = parseInt(t.querySelector('.overview-thumb-num').textContent, 10) - 1;
-      t.classList.toggle('current', idx === current);
+      t.classList.toggle('current', Number(t.dataset.index) === current);
     });
   }
   function openOverview() { overview.classList.add('open'); updateOverview(); }
   function closeOverview() { overview.classList.remove('open'); }
-  function toggleOverview() { overview.classList.contains('open') ? closeOverview() : openOverview(); }
+  function toggleOverview() {
+    if (overview.classList.contains('open')) closeOverview(); else openOverview();
+  }
   document.getElementById('overview-btn').addEventListener('click', toggleOverview);
+  // A click on the backdrop (outside every thumbnail) closes the panel
   overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
   buildOverview();
 
   // -----------------------------------------------------------
   // PRINT MODE — gradient-text canvas rasterisation
-  // -----------------------------------------------------------
+  // ----------------------------------------------------------
   // Chromium has a known bug rendering background-clip:text +
   // linear-gradient inside its PDF pipeline (coloured fringes
-  // around inline-block edges). The fix is to rasterise these
-  // texts to PNG via canvas before window.print(), then restore
-  // them on the afterprint event.
+  // around inline-block edges, or the whole gradient box painted
+  // solid). The fix is to rasterise these texts to PNG via canvas
+  // before window.print(): the text stays in place, invisible, under
+  // an image of the same glyphs, and everything is restored on the
+  // afterprint event.
   // -----------------------------------------------------------
-  // GRADIENT_TEXT_SELECTORS
-  // -----------------------------------------------------------
-  // Every selector that uses `background-clip: text` + `linear-gradient`
-  // MUST be listed here, otherwise the corresponding text will show
-  // coloured fringe artefacts in the PDF (Chromium PDF pipeline bug).
+  // ============================================================
+  // ⚠️  CRITICAL — GRADIENT_TEXT_SELECTORS  ⚠️
+  // ============================================================
+  // EVERY CSS rule that uses `background-clip: text` + a gradient
+  // MUST have its selector listed here. Without it:
+  //   • the text WILL appear blank in the exported PDF
+  //   • there is NO error, NO warning, NO visible failure in dev
+  //   • only the final PDF reveals the missing entry
   //
-  // Append as you add new components. The included examples below
-  // match the components in templates/components.md — uncomment / add
-  // the ones your deck actually uses.
-  // -----------------------------------------------------------
+  // VERIFICATION: search the file for `background-clip: text` and
+  // confirm every matching selector has a corresponding entry below.
+  //
+  //   grep -c 'background-clip: *text' 06-graphic-design/presentations/decks/<deck>.html
+  //   → should match the count of selectors in this array
+  //
+  // The base `.gradient-text` utility is always included.
+  // Add component-scoped selectors below as you build the deck.
+  // Examples (uncomment the ones your deck uses, or add your own):
+  // ============================================================
   const GRADIENT_TEXT_SELECTORS = [
     '.gradient-text',
     // '.hero-num',           // hero
@@ -989,129 +1117,268 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
     // '.decision-q .go',     // decision-stage
   ];
 
+  // Every listed element is rasterised, nested ones included: each draws
+  // only the text it owns (a listed descendant draws its own).
   function rasterizeAllGradients() {
+    const owners = new Set();
     GRADIENT_TEXT_SELECTORS.forEach(sel => {
-      document.querySelectorAll(sel).forEach(rasterizeElement);
+      document.querySelectorAll(sel).forEach(el => owners.add(el));
     });
+    owners.forEach(el => rasterizeElement(el, owners));
   }
 
-  function rasterizeElement(el) {
-    if (el.dataset.rasterized === '1') return;
+  // The text stays where it is, made invisible, so the layout does not
+  // move by a pixel. A PNG of the same glyphs, painted with the same
+  // gradient over the same box, is laid on top of it. Each character is
+  // drawn where the browser placed it, in the font of its own parent:
+  // soft wraps, collapsed spaces, nested spans (a smaller "%"),
+  // letter-spacing and tabular figures all match the screen.
+  function rasterizeElement(el, owners) {
+    if (el.dataset.rasterized === '1' || !el.isConnected) return;
     const cs = getComputedStyle(el);
-    el.dataset.originalHTML = el.innerHTML;
+    // Gradient text only: any other listed element keeps its background
+    if (cs.backgroundClip !== 'text' && cs.webkitBackgroundClip !== 'text') return;
+    const frags = Array.from(el.getClientRects()).filter(r => r.width && r.height);
+    if (!frags.length) return; // not rendered, nothing to print
+    const inline = cs.display === 'inline';
 
-    // Walk childNodes, collecting text runs and forced line breaks
-    const runs = [];
+    // On screen the stage is scaled to the viewport: k brings every
+    // measure back to the element's own CSS pixels.
+    const px = v => parseFloat(v) || 0;
+    const bl = px(cs.borderLeftWidth), bt = px(cs.borderTopWidth);
+    const br = px(cs.borderRightWidth), bb = px(cs.borderBottomWidth);
+    const box = el.getBoundingClientRect();
+    let cssWidth = inline ? 0 : px(cs.width);
+    if (cssWidth && cs.boxSizing !== 'border-box') {
+      cssWidth += px(cs.paddingLeft) + px(cs.paddingRight) + bl + br;
+    }
+    const k = box.width / (cssWidth || el.offsetWidth || box.width) || 1;
+    const local = r => ({ x: (r.left - box.left) / k, y: (r.top - box.top) / k,
+                          w: r.width / k, h: r.height / k });
+
+    // Where the gradient is laid. Block-level: the padding box. Inline:
+    // each line fragment is a slice of one strip laid end to end (the CSS
+    // default), or a box of its own under box-decoration-break: clone.
+    // The canvas is the border box, or the union of the fragments: the
+    // gradient is never painted outside it on screen either.
+    const W = box.width / k, H = box.height / k;
+    let pieces;
+    if (!inline) {
+      pieces = [{ clip: { x: 0, y: 0, w: W, h: H },
+                  area: { x: bl, y: bt, w: W - bl - br, h: H - bt - bb } }];
+    } else {
+      const fr = frags.map(local);
+      const clone = (cs.boxDecorationBreak || cs.webkitBoxDecorationBreak) === 'clone';
+      const stripW = fr.reduce((sum, f) => sum + f.w, 0);
+      const stripH = Math.max(...fr.map(f => f.h));
+      let offset = 0;
+      pieces = fr.map(f => {
+        const area = clone ? f : { x: f.x - offset, y: f.y, w: stripW, h: stripH };
+        offset += f.w;
+        return { clip: f, area };
+      });
+    }
+    const grad = parseGradient(cs.backgroundImage, cs.backgroundColor);
+    const dpr = Math.min(4, (window.devicePixelRatio || 1) * 2);
+    const cvs = document.createElement('canvas');
+    cvs.width = Math.max(1, Math.ceil(W * dpr));
+    cvs.height = Math.max(1, Math.ceil(H * dpr));
+    const ctx = cvs.getContext('2d');
+    pieces.forEach(pc => { pc.fill = makeFill(ctx, grad, pc.area); });
+
+    // Collect the visible characters with their measured boxes
+    const glyphs = [];
+    const range = document.createRange();
+    function collect(textNode) {
+      const ps = getComputedStyle(textNode.parentElement);
+      // A descendant with a fill colour of its own is painted as usual
+      if (!isClear(ps.webkitTextFillColor)) return;
+      const font = [ps.fontStyle, ps.fontVariantCaps === 'small-caps' ? 'small-caps' : '',
+                    ps.fontWeight, ps.fontSize, ps.fontFamily].filter(Boolean).join(' ');
+      const ls = px(ps.letterSpacing);
+      const tt = ps.textTransform;
+      const text = textNode.textContent;
+      for (let i = 0; i < text.length;) {
+        const n = text.codePointAt(i) > 0xFFFF ? 2 : 1;
+        const at = i;
+        let ch = text.slice(i, i + n);
+        i += n;
+        if (/\s/.test(ch)) continue;
+        range.setStart(textNode, at);
+        range.setEnd(textNode, at + n);
+        const r = range.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+        if (tt === 'uppercase') ch = ch.toUpperCase();
+        else if (tt === 'lowercase') ch = ch.toLowerCase();
+        else if (tt === 'capitalize' && (at === 0 || /\s/.test(text[at - 1]))) ch = ch.toUpperCase();
+        glyphs.push({ ch, font, ls, r: local(r) });
+      }
+    }
     (function walk(node) {
       node.childNodes.forEach(child => {
-        if (child.nodeType === 3) {
-          if (child.textContent) runs.push({ type: 'text', node: child });
-        } else if (child.nodeType === 1) {
-          if (child.tagName === 'BR') runs.push({ type: 'br' });
-          else walk(child);
+        if (child.nodeType === 1) {
+          if (!owners || !owners.has(child)) walk(child);
+        } else if (child.nodeType === 3 && child.textContent.trim()) {
+          collect(child);
         }
       });
     })(el);
+    if (!glyphs.length) return;
 
-    // Group runs into visual lines using Range API
-    const lines = [];
-    let curLine = null;
-    runs.forEach(run => {
-      if (run.type === 'br') {
-        if (curLine) { lines.push(curLine); curLine = null; }
-        lines.push({ text: '', top: 0, height: parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2 });
-        return;
-      }
-      const text = run.node.textContent;
-      const range = document.createRange();
-      range.selectNodeContents(run.node);
-      const rects = Array.from(range.getClientRects());
-      if (!rects.length) return;
-      // approximate one line per rect
-      rects.forEach((r, i) => {
-        const slice = i === 0 && rects.length === 1 ? text : text; // fine-grain split is overkill; whole text per line
-        if (!curLine || Math.abs(curLine.top - r.top) > 4) {
-          if (curLine) lines.push(curLine);
-          curLine = { text: '', top: r.top, height: r.height, left: r.left, right: r.right };
-        }
-        curLine.text += slice;
-        curLine.right = r.right;
+    const pieceOf = g => {
+      if (pieces.length === 1) return pieces[0];
+      let best = pieces[0], bestArea = -Infinity;
+      pieces.forEach(pc => {
+        const ox = Math.min(g.r.x + g.r.w, pc.clip.x + pc.clip.w) - Math.max(g.r.x, pc.clip.x);
+        const oy = Math.min(g.r.y + g.r.h, pc.clip.y + pc.clip.h) - Math.max(g.r.y, pc.clip.y);
+        const area = Math.max(0, ox) * Math.max(0, oy) + Math.min(0, oy);
+        if (area > bestArea) { best = pc; bestArea = area; }
       });
+      return best;
+    };
+    ctx.scale(dpr, dpr);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    glyphs.forEach(g => {
+      ctx.font = g.font;
+      const m = ctx.measureText(g.ch);
+      const asc = m.fontBoundingBoxAscent || 0.8, desc = m.fontBoundingBoxDescent || 0.2;
+      // A text box spans the font's ascent + descent: the baseline sits at
+      // the ascent's share of it.
+      const baseline = g.r.y + g.r.h * asc / (asc + desc);
+      // The box is the advance plus letter-spacing. Centring the glyph in
+      // its advance also holds for tabular figures (canvas has no tnum).
+      const x = g.r.x + (g.r.w - g.ls - m.width) / 2;
+      const pc = pieceOf(g);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pc.clip.x, pc.clip.y, pc.clip.w, pc.clip.h);
+      ctx.clip();
+      ctx.fillStyle = pc.fill;
+      ctx.fillText(g.ch, x, baseline);
+      ctx.restore();
     });
-    if (curLine) lines.push(curLine);
-    if (!lines.length) return;
 
-    // Resolve gradient stops from the element's background
-    const grad = parseGradient(cs.backgroundImage);
-
-    // Render each line to a canvas → <img>
-    const fontSize = parseFloat(cs.fontSize);
-    const dpr = (window.devicePixelRatio || 1) * 2;
-    const padX = Math.ceil(fontSize * 0.15);
-    const imgs = lines.map(line => {
-      if (!line.text.trim()) return '<br>';
-      const probe = document.createElement('canvas').getContext('2d');
-      probe.font = `${cs.fontStyle} ${cs.fontVariant} ${cs.fontWeight} ${cs.fontSize} / ${cs.lineHeight} ${cs.fontFamily}`;
-      const measured = probe.measureText(line.text).width;
-      const wDom = (line.right || measured) - (line.left || 0);
-      const w = Math.ceil(Math.max(wDom, measured)) + padX * 2;
-      const h = Math.ceil(parseFloat(cs.lineHeight) || fontSize * 1.2);
-      const cvs = document.createElement('canvas');
-      cvs.width = w * dpr;
-      cvs.height = h * dpr;
-      cvs.style.width = w + 'px';
-      cvs.style.height = h + 'px';
-      const ctx = cvs.getContext('2d');
-      ctx.scale(dpr, dpr);
-      ctx.font = probe.font;
-      ctx.textBaseline = 'alphabetic';
-      const lg = ctx.createLinearGradient(0, 0, w, 0);
-      grad.stops.forEach(s => lg.addColorStop(s.pos, s.color));
-      ctx.fillStyle = lg;
-      const baseline = h * 0.78;
-      ctx.fillText(line.text, padX, baseline);
-      return `<img src="${cvs.toDataURL('image/png')}" style="display:inline-block;vertical-align:baseline;width:${w}px;height:${h}px;">`;
-    });
-    el.innerHTML = imgs.join('');
+    // Absolute children are placed from the padding box (of the first
+    // line fragment when inline): offset the image back to the canvas.
+    const img = document.createElement('img');
+    img.src = cvs.toDataURL('image/png');
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    img.dataset.rasterOverlay = '1';
+    img.style.cssText =
+      `position:absolute;left:${(box.left - frags[0].left) / k - bl}px;` +
+      `top:${(box.top - frags[0].top) / k - bt}px;width:${W}px;height:${H}px;` +
+      'max-width:none;max-height:none;margin:0;padding:0;border:0;display:block;' +
+      'transform:none;opacity:1;pointer-events:none;';
+    // The element still carries its gradient background + background-clip:
+    // text. The PDF pipeline paints that background as a solid box once
+    // nothing is meant to show through, so it goes for the print; the
+    // original inline style comes back in restoreAllRaster().
+    el.dataset.originalStyle = el.getAttribute('style') || '';
+    if (cs.position === 'static') el.style.setProperty('position', 'relative');
+    el.style.setProperty('background', 'none', 'important');
+    el.appendChild(img);
     el.dataset.rasterized = '1';
   }
 
-  function parseGradient(bg) {
-    // Default fallback: brand gradient
+  function isClear(color) {
+    return !color || color === 'transparent' || /^rgba\(.*,\s*0\)$/.test(color);
+  }
+
+  // The first linear-gradient of a computed background-image: its angle
+  // (deg, rad, turn, grad, `to` a side or a corner) and its colour stops.
+  // No linear gradient (none, radial, conic): the background colour if
+  // there is one, else the brand gradient.
+  function parseGradient(bg, bgColor) {
     const fallback = {
+      angle: () => 90,
       stops: [
-        { pos: 0, color: getCss('--brand-primary') || '#888888' },
-        { pos: 1, color: getCss('--brand-secondary') || '#444444' },
-      ]
+        { color: getCss('--brand-primary') || '#1E40AF', pos: 0, unit: '%' },
+        { color: getCss('--brand-secondary') || '#F59E0B', pos: 100, unit: '%' },
+      ],
     };
-    // Greedy match: computed backgroundImage resolves colours to rgb(...),
-    // so the gradient body contains nested parens — a non-greedy [^)]+
-    // would stop at the first ')' inside rgb() and corrupt the stops.
-    const m = /linear-gradient\((.*)\)/s.exec(bg);
-    if (!m) return fallback;
-    // Split on top-level commas only (paren-depth aware)
+    const start = (bg || '').indexOf('linear-gradient(');
+    if (start < 0) return isClear(bgColor) ? fallback : { solid: bgColor };
+    // Arguments up to the matching parenthesis, split on top-level commas
+    // only: rgb(R, G, B) carries commas of its own.
     const parts = [];
-    let depth = 0, cur = '';
-    for (const ch of m[1]) {
+    let depth = 0, buf = '';
+    for (const ch of bg.slice(start + 'linear-gradient('.length)) {
       if (ch === '(') depth++;
-      else if (ch === ')') depth--;
-      if (ch === ',' && depth === 0) { parts.push(cur.trim()); cur = ''; }
-      else cur += ch;
+      if (ch === ')' && depth-- === 0) break;
+      if (ch === ',' && depth === 0) { parts.push(buf.trim()); buf = ''; continue; }
+      buf += ch;
     }
-    if (cur.trim()) parts.push(cur.trim());
-    // first part may be an angle; keep only colour stops
-    const stopParts = parts.filter(p => /#|rgb|hsl|var\(/i.test(p));
-    if (!stopParts.length) return fallback;
-    const denom = Math.max(1, stopParts.length - 1);
-    return {
-      stops: stopParts.map((s, i) => {
-        const posMatch = /(-?[\d.]+)%\s*$/.exec(s);
-        const color = posMatch ? s.slice(0, posMatch.index).trim() : s;
-        let pos = posMatch ? parseFloat(posMatch[1]) / 100 : i / denom;
-        if (!isFinite(pos)) pos = i / denom;
-        return { pos: Math.max(0, Math.min(1, pos)), color };
-      })
-    };
+    parts.push(buf.trim());
+
+    let angle = () => 180; // CSS default: to bottom
+    const dir = parts[0].replace(/\bin\s+[\w-]+(\s+\w+\s+hue)?/, '').trim();
+    const unit = /^(-?[\d.]+)(deg|rad|turn|grad)$/.exec(dir);
+    if (unit) {
+      const v = parseFloat(unit[1]);
+      const deg = { deg: v, rad: v * 180 / Math.PI, turn: v * 360, grad: v * 0.9 }[unit[2]];
+      angle = () => deg;
+      parts.shift();
+    } else if (/^to\s/.test(dir)) {
+      const h = /left/.test(dir) ? -1 : /right/.test(dir) ? 1 : 0;
+      const v = /top/.test(dir) ? -1 : /bottom/.test(dir) ? 1 : 0;
+      angle = (w, hgt) => {
+        if (!v) return h > 0 ? 90 : 270;
+        if (!h) return v < 0 ? 0 : 180;
+        // A corner: the gradient line is perpendicular to the diagonal
+        // joining the two other corners
+        const a = Math.atan2(hgt, w) * 180 / Math.PI;
+        return h > 0 ? (v < 0 ? a : 180 - a) : (v > 0 ? 180 + a : 360 - a);
+      };
+      parts.shift();
+    } else if (!dir) {
+      parts.shift(); // only an interpolation method
+    }
+
+    const stops = [];
+    parts.forEach(p => {
+      if (/^-?[\d.]+(%|px)?$/.test(p)) return; // colour hint, ignored
+      const m = /^(.*?)\s+(-?[\d.]+)(%|px)(?:\s+(-?[\d.]+)(%|px))?$/.exec(p);
+      if (!m) { stops.push({ color: p, pos: null }); return; }
+      stops.push({ color: m[1], pos: parseFloat(m[2]), unit: m[3] });
+      if (m[4] !== undefined) stops.push({ color: m[1], pos: parseFloat(m[4]), unit: m[5] });
+    });
+    return stops.length ? { angle, stops } : fallback;
+  }
+
+  // A canvas fill matching the CSS gradient over the box `a`: the gradient
+  // line runs through the centre at the angle, long enough for the corners
+  // to meet the first and last stops.
+  function makeFill(ctx, grad, a) {
+    if (grad.solid) return grad.solid;
+    const t = grad.angle(a.w, a.h) * Math.PI / 180;
+    const dx = Math.sin(t), dy = -Math.cos(t);
+    const len = Math.abs(a.w * dx) + Math.abs(a.h * dy);
+    const cx = a.x + a.w / 2, cy = a.y + a.h / 2;
+    const lg = ctx.createLinearGradient(cx - dx * len / 2, cy - dy * len / 2,
+                                        cx + dx * len / 2, cy + dy * len / 2);
+    // Stop positions as CSS resolves them: missing ends at 0 and 1, never
+    // backwards, runs without a position spread evenly.
+    const pos = grad.stops.map(s => s.pos === null ? null
+      : s.unit === 'px' ? s.pos / (len || 1) : s.pos / 100);
+    if (pos[0] === null) pos[0] = 0;
+    if (pos[pos.length - 1] === null) pos[pos.length - 1] = 1;
+    let max = -Infinity;
+    pos.forEach((p, i) => { if (p !== null) { pos[i] = Math.max(p, max); max = pos[i]; } });
+    for (let i = 1; i < pos.length - 1; i++) {
+      if (pos[i] !== null) continue;
+      let j = i;
+      while (pos[j] === null) j++;
+      for (let n = i; n < j; n++) pos[n] = pos[i - 1] + (pos[j] - pos[i - 1]) * (n - i + 1) / (j - i + 1);
+      i = j;
+    }
+    try {
+      grad.stops.forEach((s, i) => lg.addColorStop(Math.min(1, Math.max(0, pos[i])), s.color));
+    } catch (e) {
+      return grad.stops[0].color; // a colour the canvas cannot parse
+    }
+    return lg;
   }
 
   function getCss(name) {
@@ -1120,23 +1387,25 @@ body.presenting.nav-peek .nav-rail { opacity: 1; transform: translate(-50%, 0); 
 
   function restoreAllRaster() {
     document.querySelectorAll('[data-rasterized="1"]').forEach(el => {
-      el.innerHTML = el.dataset.originalHTML;
+      el.querySelectorAll(':scope > img[data-raster-overlay]').forEach(img => img.remove());
+      if (el.dataset.originalStyle) el.setAttribute('style', el.dataset.originalStyle);
+      else el.removeAttribute('style');
       el.removeAttribute('data-rasterized');
-      delete el.dataset.originalHTML;
+      delete el.dataset.originalStyle;
     });
     document.body.classList.remove('printing-pdf');
-    document.getElementById('pdf-btn').classList.remove('exporting');
+    pdfBtn.classList.remove('exporting');
   }
 
   function printPdf() {
     if (overview.classList.contains('open')) closeOverview();
-    document.getElementById('pdf-btn').classList.add('exporting');
+    pdfBtn.classList.add('exporting');
     document.body.classList.add('printing-pdf');
     rasterizeAllGradients();
     requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
   }
   window.addEventListener('afterprint', restoreAllRaster);
-  document.getElementById('pdf-btn').addEventListener('click', printPdf);
+  pdfBtn.addEventListener('click', printPdf);
 
   // Globals exposed for headless QA / PDF export scripts
   window.__enablePrintMode = () => document.body.classList.add('printing-pdf');

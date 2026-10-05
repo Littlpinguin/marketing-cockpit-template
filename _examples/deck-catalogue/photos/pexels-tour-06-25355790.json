@@ -1,0 +1,22 @@
+{
+  "source": "pexels",
+  "id": 25355790,
+  "slug": "tour-06",
+  "pexels_url": "https://www.pexels.com/photo/lighthouse-zero-in-hamburg-germany-25355790/",
+  "photographer": "Wolfgang Weiser",
+  "photographer_url": "https://www.pexels.com/@wolfgang-weiser-467045605",
+  "alt": "Black and white image of a modern architectural tower against a cloudy sky in Hamburg.",
+  "avg_color": "#767676",
+  "original_size": [
+    5504,
+    5504
+  ],
+  "download_width": 640,
+  "query": "concrete water tower sky",
+  "downloaded_at": "2026-09-26T09:50:48+00:00",
+  "files": [
+    "pexels-tour-06-25355790-mono.jpg"
+  ],
+  "license": "Pexels License: free to use and modify, attribution appreciated (credited on the deck's photo-credits slide). https://www.pexels.com/license/",
+  "treatment_note": "mono baked with the catalogue's fictional Meridian palette (#1c2420 -> #f2efe7)"
+}

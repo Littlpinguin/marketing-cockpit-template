@@ -13,6 +13,12 @@
 #   vars     table « --variable » -> chemin de token, ou table en ligne
 #            { token = "color.primary", alpha = 0.12 } (couleur en rgba)
 #            { token = "gradient.signature", angle = "180deg" } (autre angle)
+#            { token = "color.primary", mix = "#000000", amount = 0.12 }
+#              (color-mix(in srgb, primaire, noir 12%), rendu en hex littéral)
+#            { token = "color.primary", mix = "#000000", min_contrast = 4.5,
+#              against = <fond ou liste de fonds> } (mélange poussé par pas de
+#              1 % depuis amount jusqu'au contraste WCAG voulu sur chaque fond ;
+#              un fond est un chemin de token, un hex, ou { token, mix, amount })
 #   auto     groupes exportés d'office sous le nom « --<groupe>-<chemin> »,
 #            parmi "color", "gradient", "font", "radius"
 #
@@ -23,8 +29,13 @@
 # Source des tokens (défaut : 01-brand/tokens.json).
 tokens = "01-brand/tokens.json"
 
-# Tokens des decks HTML : le bloc vit dans le :root existant de tokens.css,
-# les variantes _deep / _soft restent calculées par color-mix() en dessous.
+# Tokens des decks HTML : le fichier de marque du moteur de slides vendorisé
+# depuis slides-agent (docs/vendored-slides.md). Mêmes noms de variables que le
+# brand/tokens.css de slides-agent, mêmes formules de dérivation que ses
+# commentaires, en valeurs littérales : la QA des decks lit des couleurs
+# calculées et ne sait pas lire le color(srgb ...) d'un color-mix().
+# Les accents du registre des étiquettes (folios, surtitres, 12-13 px) sont
+# poussés jusqu'au contraste WCAG AA de 4,5:1 sur les fonds où ils se posent.
 [[targets]]
 path = "06-graphic-design/presentations/tokens.css"
 mode = "block"
@@ -32,12 +43,29 @@ indent = "  "
 
 [targets.vars]
 "--brand-primary" = "color.primary"
+"--brand-primary-deep" = { token = "color.primary", mix = "#000000", amount = 0.12 }
+"--brand-primary-soft" = { token = "color.primary", alpha = 0.12 }
 "--brand-secondary" = "color.accent"
+"--brand-secondary-deep" = { token = "color.accent", mix = "#000000", amount = 0.12 }
+"--brand-secondary-soft" = { token = "color.accent", alpha = 0.12 }
 "--brand-neutral-light" = "color.light"
+"--brand-neutral-light-soft" = { token = "color.light", mix = "#FFFFFF", amount = 0.35 }
+"--brand-neutral-light-deep" = { token = "color.light", mix = "#000000", amount = 0.06 }
 "--brand-neutral-dark" = "color.dark"
+"--brand-neutral-dark-soft" = { token = "color.dark", mix = "#FFFFFF", amount = 0.14 }
+"--brand-neutral-dark-deep" = { token = "color.dark", mix = "#000000", amount = 0.18 }
+"--rule" = { token = "color.dark", alpha = 0.10 }
+"--rule-light" = { token = "color.light", alpha = 0.18 }
 "--brand-gradient" = "gradient.signature"
+"--brand-gradient-vertical" = { token = "gradient.signature", angle = "180deg" }
 "--font-display" = "font.display"
 "--font-mono" = "font.mono"
+# Surtitres et étiquettes d'accent sur fond clair : la primaire, assombrie
+# jusqu'à 4,5:1 sur le fond clair le plus foncé (neutral-light-deep).
+"--label-accent" = { token = "color.primary", mix = "#000000", min_contrast = 4.5, against = { token = "color.light", mix = "#000000", amount = 0.06 } }
+# Les mêmes sur fond sombre : la primaire mêlée à 50 % de blanc, éclaircie
+# jusqu'à 4,5:1 sur neutral-dark et sur neutral-dark-soft.
+"--label-accent-dark" = { token = "color.primary", mix = "#FFFFFF", amount = 0.5, min_contrast = 4.5, against = ["color.dark", { token = "color.dark", mix = "#FFFFFF", amount = 0.14 }] }
 
 # Annexe CSS du style-guide : la référence lisible de toutes les variables.
 [[targets]]

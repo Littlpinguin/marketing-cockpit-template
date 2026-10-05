@@ -489,6 +489,23 @@ def test_off_palette_ignore_les_data_uri(racine):
     assert par_regle(racine, "off-palette") == []
 
 
+def test_off_palette_ignore_les_blocs_generes_par_build_tokens(racine):
+    """Les nuances dérivées écrites par build-tokens.py se vérifient par son --check."""
+    ecrire(racine, "06-graphic-design/presentations/tokens.css",
+           ":root {\n  /* brand-tokens:start */\n"
+           "  --brand-primary-deep: #1A389A;\n  --brand-secondary-deep: #D88B0A;\n"
+           "  --brand-neutral-dark-soft: #313748;\n  --label-accent-dark: #8EA0D7;\n"
+           "  /* brand-tokens:end */\n  --hors-bloc: #FF0000;\n}\n")
+    trouves = par_regle(racine, "off-palette")
+    assert [c["match"] for c in trouves] == ["#FF0000"]
+
+
+def test_off_palette_bloc_genere_sans_fin_n_exempte_rien(racine):
+    ecrire(racine, "06-graphic-design/a.css",
+           ":root {\n  /* brand-tokens:start */\n  --a: #FF0000;\n}\n")
+    assert len(par_regle(racine, "off-palette")) == 1
+
+
 def test_off_palette_dossiers_exclus(racine):
     fautif = ".a{color:#FF0000;background:#00FF00;border-color:#0000FF;outline-color:#FF00FF}\n"
     ecrire(racine, "05-web-content/templates/a.css", fautif)

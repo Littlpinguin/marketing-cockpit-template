@@ -14,7 +14,8 @@ Sens inverse de `sync-template` : une mécanique éprouvée chez un client (nouv
 3. **Filtrer** : seule la mécanique remonte (logique de skill, script, hook, structure de dossier, doc générique). Est exclu d'office :
    - tout contenu produit (`03-` à `09-`),
    - tout fichier de `01-brand/`, `profile/`, `.setup-completed`, `.env*`,
-   - toute config d'outil contenant des identifiants de ressources client (IDs Notion, audiences, boards).
+   - toute config d'outil contenant des identifiants de ressources client (IDs Notion, audiences, boards),
+   - les fichiers du moteur de slides vendorisé (en-tête `VENDORED from slides-agent`, liste dans `docs/vendored-slides.md`) : une amélioration du moteur remonte vers [slides-agent](https://github.com/Littlpinguin/slides-agent), sa source de vérité, puis redescend dans le template par `python3 scripts/sync-slides-engine.py`.
 4. Si un commit mélange mécanique et marque, ne reprendre que les hunks de mécanique (reconstruire le fichier cible à la main plutôt que cherry-pick aveugle).
 
 ## Étape 2 — Dé-brandification

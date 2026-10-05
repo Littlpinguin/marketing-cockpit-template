@@ -1,8 +1,8 @@
 """Tests de 06-graphic-design/scripts/qa_common.py (briques de QA visuelle partagées).
 
-Pur Python : aucune dépendance à Playwright ni à un navigateur. Les scripts de QA
-visuelle (decks, carrousels, visuels composés) collectent les valeurs CSS
-calculées dans le navigateur et délèguent tout le calcul à ce module.
+Pur Python : aucune dépendance à Playwright ni à un navigateur. La QA des
+carrousels et des visuels composés (qa-visuel.py) collecte les valeurs CSS
+calculées dans le navigateur et délègue tout le calcul à ce module.
 
 Les couleurs et polices de ces tests sont celles d'une marque fictive
 (« Acme », les exemples de docs/placeholders.json) : jamais celles d'un client.

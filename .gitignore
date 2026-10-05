@@ -90,6 +90,9 @@ _sources/research/**/*
 14-print/**/output/
 14-print/**/*.pdf
 
+# Local caches (Pexels search results and contact sheets of the slides engine)
+.cache/
+
 # Python
 __pycache__/
 *.py[cod]
