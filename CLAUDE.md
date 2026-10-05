@@ -78,7 +78,7 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 
 | Folder | Role | When to use |
 |---|---|---|
-| `00-intel/` | — (confidential memory) | Meeting transcripts, internal/client/prospect intel — n8n-fed, never versioned |
+| `00-intel/` | — (confidential memory) | Meeting transcripts, internal/client/prospect/partner intel — fed by n8n or by the Google Drive transcripts feed (`_integrations/drive-transcripts/`), never versioned |
 | `01-brand/` | — (reference) | Single source of truth: identity, design system, voice, personas |
 | `02-strategy/` | Head of strategy | Objectives cascade, campaign briefs, calendar, KPIs — **central calendar in `02-strategy/calendar/calendar.md`** |
 | `03-social-media/` | Social media manager | LinkedIn, Discord, WhatsApp, other activated channels |
@@ -105,10 +105,12 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 
 | Subfolder | Content | Who feeds it |
 |---|---|---|
-| `inbox/` | Unprocessed drops (meeting transcripts, notes) | n8n workflow (module `automatisations`) or manual drop |
+| `inbox/` | Unprocessed drops (meeting transcripts, notes) | n8n workflow (module `automatisations`), Drive transcripts feed (`scripts/sync-intel.py`, Monday routine `intel-hebdo`) or manual drop |
 | `interne/` | Team meetings, internal decisions | Classified from `inbox/` |
 | `clients/<name>/` | Everything about an existing client | Classified from `inbox/` |
 | `prospects/<name>/` | Sales meetings, expressed needs | Classified from `inbox/` |
+| `partenaires/<name>/` | Partners working with the company without buying from it | Classified from `inbox/` |
+| `radar/` | Weekly comms radars, intel routine log | Monday routines `intel-hebdo` and `radar-com` |
 
 ### `_sources/` subfolders
 

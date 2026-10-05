@@ -177,7 +177,10 @@
       { "name": "NOM_DU_WORKFLOW",             "marker": true, "used_in": "10-automatisations/rex-template.md", "description": "rex-template.md is a copy-template — one REX per deployed workflow" },
       { "name": "WORKFLOW_ID",                 "marker": true, "used_in": "10-automatisations/rex-template.md", "description": "rex-template.md copy-template slot" },
       { "name": "MOIS",                        "marker": true, "used_in": "11-reporting/README.md (notification email subject)", "description": "Month name in the monthly client notification — runtime slot" },
-      { "name": "POSTIZ_URL",                  "marker": true, "used_in": "11-reporting/automation.md", "description": "Postiz instance URL — env-level value referenced in ops docs" }
+      { "name": "POSTIZ_URL",                  "marker": true, "used_in": "11-reporting/automation.md", "description": "Postiz instance URL — env-level value referenced in ops docs" },
+      { "name": "INTEL_DRIVE_ID", "marker": true, "used_in": "_integrations/drive-transcripts/", "description": "ID of the Google shared drive holding Gemini meeting notes — filled when the Drive transcripts feed is installed, never by the wizard", "example": "0AXXXXXXXXXXXXXXXXX" },
+      { "name": "INTEL_DRIVE_ACCOUNT", "marker": true, "used_in": "_integrations/drive-transcripts/", "description": "Google Workspace account that runs the export Apps Script and Drive for desktop", "example": "marketing@example.com" },
+      { "name": "INTEL_REPORT_EMAIL", "marker": true, "used_in": "_integrations/drive-transcripts/", "description": "Recipient of the Monday comms radar and sync alerts", "example": "marketing@example.com" }
     ]
   }
 }
