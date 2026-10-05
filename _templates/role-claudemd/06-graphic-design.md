@@ -27,15 +27,16 @@ All three share the same brand source of truth (`../01-brand/`) and the same ban
 ├── prompts/                  ← reusable Gemini prompts (hero, carousel, portrait, ...)
 ├── templates/                ← carousel layouts, header layouts, social card bases
 ├── references/               ← private moodboard inspiration
-├── scripts/                  ← visual QA, carousel builder, compose capture, provenance, asset promotion
+├── scripts/                  ← visual QA, carousel builder, compose capture, provenance, asset promotion, new-deck.py
 ├── lib/                      ← compose.css (local brand font + tokens for HTML compositions), README
-├── presentations/            ← see "Presentations" sub-area below
+├── presentations/            ← see "Presentations" sub-area below (engine vendored from slides-agent)
 │   ├── decks/                ← generated HTML decks
 │   ├── briefs/               ← per-deck briefs
-│   ├── templates/            ← base.html, components.md, components/
-│   ├── scripts/              ← qa.py, serve.sh, export-pdf.sh, export_pdf.py
-│   ├── docs/                 ← design-system.md, hosting.md, pdf-export.md
-│   └── tokens.css            ← slide-specific CSS variables
+│   ├── assets/photos/        ← deck-local photos (optional Pexels downloads), created on demand
+│   ├── templates/            ← base.html (starter), components.md, components/          [vendored]
+│   ├── scripts/              ← qa.py, serve.sh, export-pdf.sh, export_pdf.py, shots.py, pexels.py [vendored]
+│   ├── docs/                 ← design-system.md, engine-parity.md, pdf-export.md, pexels-setup.md [vendored], hosting.md
+│   └── tokens.css            ← the engine's brand file, generated from ../01-brand/tokens.json
 └── mail-signatures/
     ├── README.md             ← scope + workflow
     ├── template.html         ← signature skeleton
@@ -100,14 +101,19 @@ Tout se mesure et se fabrique avec les scripts de `./scripts/`, jamais avec un s
 | Capturer une composition HTML | `06-graphic-design/scripts/compose-screenshot.sh <compo.html> <sortie.png> [L] [H]` | Chrome headless, rendu 2× puis redimensionné. La composition linke `lib/compose.css` (police locale + tokens), voir `lib/README.md` |
 | Tracer la provenance d'une image générée | `genmeta.finalize_output()` (module `scripts/genmeta.py`) | Extension réelle, tag PNG `ai:generated_by`, fiche `<image>.gen.json` (modèle, prompt, réglages, sha256) |
 | Promouvoir un asset validé | `python3 06-graphic-design/scripts/promote-asset.py <source> --dest … --droits … --auteur …` | Rangement au nom conforme dans `../01-brand/assets/`, fiche dans `index.md`, champs de droits obligatoires, fiche de génération reportée |
+| Créer un deck aux couleurs de la marque | `python3 06-graphic-design/scripts/new-deck.py <slug> [--titre "…"]` | Copie le starter vendorisé dans `presentations/decks/<slug>.html` et remplace son `:root` neutre par celui de `presentations/tokens.css` ; signale les polices de marque que le `<link>` du starter ne charge pas |
 
-Cycle de vie d'un visuel généré : **staging** (`outputs/`, avec sa fiche `.gen.json`) → **validé** par un humain → **promu** par `promote-asset.py`. Un visuel non promu n'est jamais référencé comme officiel. Les decks gardent leur propre QA (`presentations/scripts/qa.py`, ci-dessous) ; les deux QA partagent `scripts/qa_common.py`. Tests de l'outillage : `python3 -m pytest scripts/tests -q` à la racine du dépôt (les tests qui pilotent Chromium sont sautés proprement si Playwright ou le navigateur manquent).
+Cycle de vie d'un visuel généré : **staging** (`outputs/`, avec sa fiche `.gen.json`) → **validé** par un humain → **promu** par `promote-asset.py`. Un visuel non promu n'est jamais référencé comme officiel. Les decks gardent leur propre QA (`presentations/scripts/qa.py`, vendorisée depuis slides-agent, ci-dessous) ; `scripts/qa_common.py` porte les calculs de `qa-visuel.py`. Tests de l'outillage : `python3 -m pytest scripts/tests -q` à la racine du dépôt (les tests qui pilotent Chromium sont sautés proprement si Playwright ou le navigateur manquent).
 
 ---
 
 ## Sub-area 2 — Presentations (HTML decks)
 
 Editorial-grade decks live under `./presentations/`. Reference quality bar: *Monocle × Bloomberg viz × MIT Tech Review print*. Self-contained HTML (one file), exportable to clean 1920×1080 PDF, hostable on any static host.
+
+### The engine is vendored from slides-agent
+
+The slides engine (starter, components, layout catalogue, QA, PDF export and their tests) has one source of truth: [slides-agent](https://github.com/Littlpinguin/slides-agent). Its files carry a `VENDORED from slides-agent` header and are written by `python3 scripts/sync-slides-engine.py` only. **Never edit them by hand**: change slides-agent, then re-sync (`--check` exits 1 on any drift). Mapping, mechanical adaptations and resync procedure: `../docs/vendored-slides.md`. What stays template-owned: `presentations/tokens.css`, `presentations/docs/hosting.md`, `scripts/new-deck.py` and the catalogue's `README.md`.
 
 ### How decks are produced
 
@@ -119,43 +125,41 @@ The skill enforces:
 
 - 1920×1080 frame, 80×120 slide padding, 110px bottom safe zone
 - Brand strict: only `tokens.css` custom properties, only declared font families
-- One idea per slide, 3–4 breathing slides per 24
-- Triple navigation (drag-bar, overview `O`, quick-jump digits + Enter) wired in `templates/base.html`
-- Mandatory Playwright QA before delivery (`scripts/qa.py`)
+- One idea per slide, 3–4 breathing slides per 24; layouts picked by beat from the 120-layout library, no layout twice in a row
+- The full presentation engine wired in `templates/base.html` (canonical feature list: `presentations/docs/engine-parity.md`): triple navigation (drag-bar, overview `O` grouped by family, quick-jump digits + Enter), fullscreen mode `F` with nav-peek, auto-numbered folios (`SLIDE_COUNT`), PDF export `P` with per-character rasterisation of gradient text, brand-pattern hooks, optional ambient aurora
+- Mandatory Playwright QA before delivery (`presentations/scripts/qa.py`)
 - Brand-check gate (5-pass) before delivery
+
+### Brand: how a deck gets it
+
+`01-brand/tokens.json` → `python3 scripts/build-tokens.py` → the brand block of `presentations/tokens.css`, with slides-agent's variable names (`--brand-primary`, `--brand-secondary`, `--brand-neutral-light` / `-dark` and their `-deep` / `-soft` shades, `--rule`, `--brand-gradient`, `--font-display`, `--font-mono`, `--label-accent` / `-dark`, computed to reach WCAG 4.5:1). The starter keeps its neutral example `:root`; `python3 06-graphic-design/scripts/new-deck.py <slug>` copies it into `presentations/decks/` with the `:root` of `tokens.css` instead. Before the wizard, `tokens.css` carries the same neutral example palette as the starter.
 
 ### Files of interest
 
-- `presentations/templates/base.html` — deck skeleton (chrome, nav, print mode, QA hooks)
-- `presentations/templates/components.md` — paste-ready slide layouts + selection guide
-- `presentations/tokens.css` — slide-specific CSS variables; its brand block is generated from `../01-brand/tokens.json` by `python3 scripts/build-tokens.py` (never edit it by hand)
+- `presentations/templates/base.html` — the starter: chrome, navigation, print mode, headless hooks, three example slides
+- `presentations/templates/components.md` — paste-ready slide components with their known traps
+- `../_examples/deck-catalogue/LAYOUTS.md` — index of the 120 layouts in 8 families, by "reach for it when"; `../_examples/deck-catalogue/catalogue.html` executes them all (press `O`)
+- `presentations/tokens.css` — the engine's brand file; its brand block is generated from `../01-brand/tokens.json` by `python3 scripts/build-tokens.py` (never edit it by hand)
 - `presentations/docs/design-system.md` — principles, anti-patterns, type scale
+- `presentations/docs/engine-parity.md` — canonical engine feature list + parity rule (enforced by `presentations/scripts/qa.py`)
 - `presentations/docs/pdf-export.md` — gradient-text rasterisation explained
+- `presentations/docs/pexels-setup.md` — optional real photography (free `PEXELS_API_KEY` in `.env`)
 - `presentations/docs/hosting.md` — Netlify Drop, S3, GitHub Pages, etc.
 
-### Run a deck locally
+### Commands (from the repository root)
 
 ```bash
-cd 06-graphic-design/presentations
-./scripts/serve.sh
-# opens on http://localhost:5173/decks/
-```
-
-### Export to PDF
-
-```bash
-cd 06-graphic-design/presentations
-./scripts/export-pdf.sh decks/<your-deck>.html
+python3 06-graphic-design/scripts/new-deck.py <slug> --titre "Deck title"   # new deck, brand :root
+./06-graphic-design/presentations/scripts/serve.sh                         # http://localhost:5173/06-graphic-design/presentations/decks/
+python3 06-graphic-design/presentations/scripts/qa.py 06-graphic-design/presentations/decks/<deck>.html
+python3 06-graphic-design/presentations/scripts/qa.py 06-graphic-design/presentations/decks/<deck>.html --with-pdf
+./06-graphic-design/presentations/scripts/export-pdf.sh 06-graphic-design/presentations/decks/<deck>.html
+python3 06-graphic-design/presentations/scripts/shots.py 06-graphic-design/presentations/decks/<deck>.html 3 8   # control screenshots
 ```
 
 ### QA
 
-```bash
-cd 06-graphic-design/presentations
-python scripts/qa.py decks/<your-deck>.html
-```
-
-Must return `All slides clean` before delivery. Au-delà du débordement et de la zone de sécurité du chrome, le script contrôle la parité du moteur (`docs/engine-parity.md`), le plancher typographique (18 px contenu, 12 px chrome), la police (familles `font.*` de `../01-brand/tokens.json`), le contraste WCAG et les folios ; `--format json` pour l'agent `qa-visuel`.
+Must return `All slides clean` before delivery (exit 0; warnings are listed, read them). Au-delà du débordement et de la zone de sécurité du chrome, le script contrôle la parité du moteur (`presentations/docs/engine-parity.md`), les planchers typographiques (18 px pour le contenu, 12 px pour le registre des étiquettes : chrome, surtitres, folios, mono ; avertissement `tight-body` sous 24 px), la police (familles `font.*` de `../01-brand/tokens.json`, sinon les variables du deck), le contraste WCAG AA opacité comprise et les folios. Options utiles : `--format json` (agent `qa-visuel`), `--with-pdf`, `--lang <code>`, `--wait <ms>`, `--bleed <sélecteur>`, `--font <famille>`, `--no-folio`, `--no-engine-check` (catalogue seulement), `--screenshots [dossier]`. Ne jamais contourner un constat (`data-bleed` sur du texte, seuil abaissé) : corriger la slide.
 
 ---
 

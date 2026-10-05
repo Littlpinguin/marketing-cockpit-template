@@ -1,5 +1,5 @@
-# On every skills/agents change on main:
-#   1. re-syncs the README counts (tagline + section headings) and commits
+# On every skills/agents/slide-catalogue change on main:
+#   1. re-syncs the README counts (tagline + section headings, slide layouts) and commits
 #      if needed — the bot commit only touches README.md, so it never
 #      re-triggers this workflow (paths filter);
 #   2. notifies the showcase site (jm-consulting-site) via repository_dispatch
@@ -23,6 +23,7 @@ on:
     paths:
       - ".claude/skills/**"
       - ".claude/agents/**"
+      - "_examples/deck-catalogue/catalogue.html"
   workflow_dispatch:
 
 permissions:

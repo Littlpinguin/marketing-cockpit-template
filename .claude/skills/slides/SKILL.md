@@ -20,30 +20,35 @@ Avant le moindre plan de slides :
 
 ## Où vit le travail
 
-Tous les fichiers slides vivent sous `06-graphic-design/presentations/` :
+Tous les fichiers slides vivent sous `06-graphic-design/presentations/` ; toutes les commandes se lancent **depuis la racine du dépôt**.
 
 ```
 06-graphic-design/presentations/
 ├── decks/                  ← decks générés (un .html par deck)
 ├── briefs/                 ← briefs par deck (intention, audience, décision, sources)
-├── templates/
-│   ├── base.html           ← squelette (chrome, nav, mode print, hooks QA)
-│   ├── components.md       ← catalogue de composants + guide de sélection
-│   └── components/         ← layouts de slides prêts à coller
-├── scripts/
-│   ├── qa.py               ← check Playwright overflow (obligatoire)
-│   ├── serve.sh            ← serveur statique local :5173
-│   ├── export-pdf.sh       ← export PDF 1920×1080 propre
-│   └── export_pdf.py       ← worker Chromium headless
+├── assets/photos/          ← photos propres aux decks (Pexels, en option), créé au besoin
+├── templates/              [vendorisé]
+│   ├── base.html           ← starter : moteur complet + 3 slides d'exemple, :root neutre
+│   └── components.md       ← composants prêts à coller, avec leurs pièges
+├── scripts/                [vendorisé]
+│   ├── qa.py               ← gate QA Playwright (obligatoire)
+│   ├── shots.py            ← captures de contrôle, animations neutralisées
+│   ├── serve.sh            ← serveur statique local :5173 (racine du dépôt)
+│   ├── export-pdf.sh       ← export PDF 1920×1080 propre (+ export_pdf.py)
+│   └── pexels.py           ← photos réelles Pexels (optionnel, clé gratuite)
 ├── docs/
-│   ├── design-system.md    ← principes, anti-patterns, échelle typo
-│   ├── engine-parity.md    ← liste CANONIQUE des features du moteur + règle de parité
-│   ├── pdf-export.md       ← rastérisation du texte en gradient expliquée
+│   ├── design-system.md    ← principes, anti-patterns, échelle typo        [vendorisé]
+│   ├── engine-parity.md    ← liste CANONIQUE des features du moteur        [vendorisé]
+│   ├── pdf-export.md       ← rastérisation du texte en gradient expliquée  [vendorisé]
+│   ├── pexels-setup.md     ← obtenir et poser la clé Pexels                [vendorisé]
 │   └── hosting.md          ← Netlify Drop, S3, GitHub Pages, etc.
-└── tokens.css              ← variables CSS slides, dérivées de 01-brand/
+└── tokens.css              ← le fichier de marque du moteur, généré depuis 01-brand/tokens.json
+_examples/deck-catalogue/   ← LAYOUTS.md (index des 120 layouts) + catalogue.html (exécutés) [vendorisé]
 ```
 
-**Base technique** : le starter `templates/base.html` embarque le **moteur complet** (parité avec `_examples/deck-catalogue/catalogue.html`, voir `docs/engine-parity.md`) : plein écran, overview groupée, export PDF, folios auto, hooks de pattern. Partir du starter (ou du deck approuvé le plus récent dans `decks/` pour ses compositions) — mais le moteur, lui, ne se réécrit jamais : il se reprend tel quel et `qa.py` vérifie sa présence.
+**Moteur vendorisé.** Le moteur (starter, composants, catalogue, QA, export, tests) vient de [slides-agent](https://github.com/Littlpinguin/slides-agent), sa source de vérité unique : les fichiers marqués `[vendorisé]` portent un en-tête `VENDORED from slides-agent` et **ne s'éditent jamais à la main**. Une évolution du moteur se fait dans slides-agent, puis `python3 scripts/sync-slides-engine.py` la reprend (procédure : `docs/vendored-slides.md`). Les mentions de « CLAUDE.md », de l'« onboarding » ou de la skill `pexels-photos` dans ces fichiers désignent ceux de slides-agent : ici, c'est cette skill.
+
+**Base technique** : un deck naît de `python3 06-graphic-design/scripts/new-deck.py <slug> --titre "…"`, qui copie le starter dans `decks/` et remplace son `:root` neutre par celui de `tokens.css` (la marque du projet). Le starter embarque le **moteur complet** (liste canonique : `docs/engine-parity.md`) : plein écran, vue d'ensemble groupée, export PDF, folios auto, hooks de motif. Le moteur ne se réécrit jamais : il se reprend tel quel et `qa.py` vérifie sa présence. Les compositions viennent de la bibliothèque de layouts et de `components.md`, jamais d'un deck précédent (il contamine l'arc, les compositions et la métaphore du nouveau), sauf demande explicite de reprendre un deck existant.
 
 ## Quand invoquer cette skill
 
@@ -57,7 +62,7 @@ Carrousel LinkedIn PDF → `carousel`. Infographie statique, post social, banni�
 
 ## Prérequis — confirmer avant de démarrer
 
-1. **Setup marque complet.** `.setup-completed` existe à la racine ; `01-brand/style-guide.md`, `01-brand/voice.md` et `tokens.css` ne contiennent plus de `{{...}}`.
+1. **Setup marque complet.** `.setup-completed` existe à la racine ; `01-brand/style-guide.md` et `01-brand/voice.md` ne contiennent plus de `{{...}}` ; `01-brand/tokens.json` existe et `python3 scripts/build-tokens.py --check` passe (le bloc de marque de `tokens.css` est à jour).
 2. **Matière source claire.** Soit l'utilisateur fournit brief / transcription / mémo, soit tu passes par `superpowers:brainstorming`. Jamais de HTML sur un brief verbal flou.
 3. **Le plan de slides est approuvé.** Rédiger une liste numérotée (eyebrow + headline par slide, 10-24 au total) et obtenir un accord explicite avant de générer le HTML. C'est LE moment de correction le moins cher.
 
@@ -79,7 +84,7 @@ Carrousel LinkedIn PDF → `carousel`. Infographie statique, post social, banni�
 
 ### Phase 3 — Composants
 
-9. Décider quels patterns de `templates/components.md` tu réutilises. Construire tout nouveau composant en isolation, le tester à 1920×1080, puis l'intégrer. **Quand un temps de slide n'entre dans aucun composant documenté**, invoquer `frontend-design` pour en concevoir un. Pour des références plus riches, les outils 21st.dev (`mcp__magic__21st_magic_component_builder` / `inspiration` / `refiner`) — traiter leur sortie comme inspiration : retravailler la géométrie au cadre 1920×1080, respecter la safe-zone du chrome, ré-appliquer les tokens. Jamais de composant généré collé tel quel.
+9. **Choisir un layout par temps du récit** dans `_examples/deck-catalogue/LAYOUTS.md` (120 layouts en 8 familles, chacun avec sa ligne « quand l'utiliser »), puis le regarder exécuté dans `_examples/deck-catalogue/catalogue.html` (touche `O`). **Règle de variété** : jamais deux fois de suite le même layout, jamais plus de deux fois dans un deck ; si deux temps voisins veulent le même, l'un des deux est le mauvais temps. Le catalogue est une marque fictive sans arc : on y prend une géométrie, jamais un contenu ni un enchaînement. Décider ensuite quels composants de `templates/components.md` tu réutilises. Construire tout nouveau composant en isolation, le tester à 1920×1080, puis l'intégrer. **Quand un temps de slide n'entre dans aucun composant documenté**, invoquer `frontend-design` pour en concevoir un. Pour des références plus riches, les outils 21st.dev (`mcp__magic__21st_magic_component_builder` / `inspiration` / `refiner`) — traiter leur sortie comme inspiration : retravailler la géométrie au cadre 1920×1080, respecter la safe-zone du chrome, ré-appliquer les tokens. Jamais de composant généré collé tel quel.
 10. Tester le tout premier composant via Playwright avant d'en ajouter d'autres — attrape tôt les bugs d'échelle et de typo.
 11. **Icônes = Lucide en SVG inline** (`stroke-width: 1.75`, `stroke: var(--brand-primary)`, `fill: none`) dans une pastille de fill léger. Plus net que des icônes générées.
 12. **Eyebrows : souvent en trop.** Le tag-meta du chrome (haut-gauche) suffit pour le contexte ; ne poser un eyebrow au-dessus d'un titre que s'il apporte une information.
@@ -88,7 +93,8 @@ Carrousel LinkedIn PDF → `carousel`. Infographie statique, post social, banni�
 
 13. **Logo de marque** : inline en `<symbol id="brand-logo">` depuis `01-brand/assets/`. Toujours `fill="currentColor"` sur les paths internes — le shadow DOM du `<use>` ne reçoit PAS `fill: url(#gradient)` ; piloter la couleur via `color:` sur le wrapper.
 14. **Illustrations / photos de marque** : d'abord `01-brand/assets/index.md` (catalogue), puis `06-graphic-design/outputs/` (visuels déjà produits par `image-generation`). SVG inlinés ; rasters en chemins relatifs.
-15. **Captures produit réelles** : si la marque a un produit, préférer de vraies captures soignées à toute illustration générique. Les référencer dans le brief.
+15. **Captures produit réelles** : si la marque a un produit, préférer de vraies captures soignées à toute illustration générique. Les référencer dans le brief. En attendant la capture, le placeholder `.shotph` du catalogue tient le ratio.
+15b. **Photos réelles (Pexels, optionnel)** : quand un temps du récit appelle un lieu, une matière, un objet ou un geste réels (une slide sur quatre au plus), l'ordre est : assets de `01-brand/assets/`, puis Pexels, puis `image-generation`, puis la typographie seule. Pexels demande une clé gratuite `PEXELS_API_KEY` dans le `.env` de la racine (procédure pas à pas : `06-graphic-design/presentations/docs/pexels-setup.md` ; ne jamais demander ni recopier la clé dans le chat) et `python3 -m pip install requests pillow`. `pexels.py search` (planche contact), `get --slug … [--treatment mono|duotone]` (photo dans `presentations/assets/photos/` + fiche de crédit), puis `credits` génère la **dernière slide de crédits, obligatoire**. Jamais de photo de stock générique (visuels bannis : {{BRAND_BANNED_VISUALS}}) ; consigner l'usage dans `01-brand/droits.md`. Les 8 layouts de la famille « photo » du catalogue montrent comment poser une photo à côté du texte, jamais sous lui.
 16. **Co-branding** : logo partenaire monochrome foncé sur fond sombre → `filter: brightness(0) invert(1)` pour le passer en blanc.
 17. **Logos d'outils tiers** (au besoin), ordre de tentative : (a) `cdn.simpleicons.org/<slug>/<hex-sans-#>`, (b) `api.iconify.design/logos/<slug>.svg` ou `api.iconify.design/simple-icons/<slug>.svg?color=<hex>`, (c) WebFetch du site officiel + extraction du SVG inline, (d) fallback PNG `google.com/s2/favicons?domain=<domaine>&sz=256`. Sauvegarder sous `01-brand/assets/<slug>.<ext>` et référencer en relatif. Re-vérifier les URLs à chaque projet — elles dérivent.
 
@@ -98,24 +104,25 @@ Carrousel LinkedIn PDF → `carousel`. Infographie statique, post social, banni�
 19. **Jamais de point final sur un titre.** Jamais de tiret cadratin (`—`) dans le contenu visible : `–`, virgule ou reformulation.
 20. Chaque affirmation est adossée à un chiffre, une date ou une source nommée. Croiser avec `01-brand/messaging-framework.md` — ne jamais publier un chiffre qui n'y est pas ou qui n'est pas dans `_sources/reports/`.
 21. Vérifier slogans et formules signature : uniquement les versions validées de `01-brand/voice.md`.
-22. Baseline footer : `{{COMPANY_NAME}} · {{COMPANY_WEBSITE}}` en signature bottom du chrome sur chaque slide hors hero (déjà câblé dans `base.html`).
+22. Baseline footer : `{{COMPANY_NAME}} · {{COMPANY_WEBSITE}}` en signature bottom du chrome (`.signature`) sur chaque slide hors hero ; le starter porte une signature générique, à remplacer dans le deck.
 
 ### Phase 6 — Navigation
 
-23. La navigation triple est câblée dans `templates/base.html` : drag-bar horizontale, overview panel (`O` / `Esc`, **groupée par familles** via `data-family` : ouverture, editorial, dataviz, schema, tableau, preuve, conclusion), quick-jump clavier (chiffres + Enter). Plus les classiques ←/→/Espace/Page↑↓/Home/End, molette debouncée 700ms, swipe tactile. **Mode plein écran** : bouton `⛶` + raccourci `F` (Fullscreen API avec fallback `webkit`) → `body.presenting` masque la nav, `fit()` tourne sans réserve ni cap, et la nav réapparaît quand le pointeur passe à moins de 90 px du bas (`nav-peek`). **Folios auto-numérotés** : le moteur injecte `NN / TOTAL` dans chaque `.nav-num` depuis `SLIDE_COUNT` — laisser les spans vides, ne jamais coder un folio en dur. **Ne pas retirer ni réimplémenter** — la liste canonique des features est `docs/engine-parity.md`.
+23. La navigation triple est câblée dans `templates/base.html` : drag-bar horizontale, overview panel (`O` / `Esc`, **groupée par familles** via `data-family` : ouverture, editorial, dataviz, schema, tableau, preuve, conclusion, photo), quick-jump clavier (chiffres + Enter). Plus les classiques ←/→/Espace/Page↑↓/Home/End, molette debouncée 700ms, swipe tactile. **Mode plein écran** : bouton `⛶` + raccourci `F` (Fullscreen API avec fallback `webkit`) → `body.presenting` masque la nav, `fit()` tourne sans réserve ni cap, et la nav réapparaît quand le pointeur passe à moins de 90 px du bas (`nav-peek`). **Folios auto-numérotés** : le moteur injecte `NN / TOTAL` dans chaque `.nav-num` depuis `SLIDE_COUNT` — laisser les spans vides, ne jamais coder un folio en dur. **Ne pas retirer ni réimplémenter** — la liste canonique des features est `docs/engine-parity.md`.
 24. Centrage du cadre : `transform: translate(-50%, calc(-50% + ${yShift}px)) scale(${scale})` avec `yShift = -(24 + nav.offsetHeight)/2`. `place-items: center` ne fonctionne PAS avec `transform: scale()` — la boîte de layout reste 1920×1080.
 
 ### Phase 7 — QA Playwright (NON NÉGOCIABLE)
 
-25. Exécuter `python scripts/qa.py decks/<deck>.html` depuis `06-graphic-design/presentations/` (ou dispatcher l'agent `qa-visuel`, qui lit la sortie `--format json`). Doit retourner `All slides clean` (code 0 ; les avertissements ne bloquent pas mais se relisent). Le script vérifie :
+25. Exécuter `python3 06-graphic-design/presentations/scripts/qa.py 06-graphic-design/presentations/decks/<deck>.html` (ou dispatcher l'agent `qa-visuel`, qui lit la sortie `--format json`). Doit retourner `All slides clean` (code 0 ; les avertissements ne bloquent pas mais se relisent). Puis une passe `--with-pdf` : le PDF passe par les mêmes hooks d'impression que l'export, et un poids moyen sous 40 Ko par slide signale des pages effondrées. Le script vérifie :
     - **Parité moteur** (`docs/engine-parity.md`) : présence mécanique des marqueurs du moteur (`body.presenting`, `nav-peek`, `SLIDE_COUNT`, export PDF, `--brand-pattern`…). Échec = une feature du moteur manque ; la porter depuis `templates/base.html` ou le catalogue, jamais la réécrire.
     - Aucun élément ne déborde du cadre 1920×1080 (géométries ramenées au cadre natif, quel que soit le viewport).
     - Écart contenu bas / chrome bas ≥ 16px sur chaque slide.
-    - **Plancher typographique** : aucun texte de contenu sous 18px (erreur), avertissement sous 24px ; le texte du chrome (folio, signature, méta) garde un plancher de 12px.
-    - **Police** : chaque texte dans une famille de la marque (`font.*` de `01-brand/tokens.json`, à défaut `--font-display` / `--font-body` du deck) ; une monospace n'est admise sans réserve que dans le chrome et sur `code`/`pre`/`kbd`/`.mono`.
-    - **Contraste** WCAG 2.x sur tout texte visible (4,5:1, 3:1 en grand ou en gras) ; les textes en dégradé sont listés à part, à relire à l'œil.
+    - **Planchers typographiques**, deux registres : contenu ≥ 18px (erreur `type-floor`, avertissement `tight-body` sous 24px) ; registre des étiquettes ≥ 12px (texte du `.chrome`, classes `.eyebrow`, `.meta-label`, `.signature`, `.nav-num`, et tout texte en monospace). Une phrase de plus de 12 mots réduite au corps d'étiquette sort en `long-label` : couper la slide, pas la police.
+    - **Police** : chaque texte dans une famille de la marque (`font.*` de `01-brand/tokens.json`, à défaut `--font-display` / `--font-body` / `--font-mono` du deck) ; une monospace non déclarée n'est admise sans réserve que dans les étiquettes et sur `code`/`pre`/`kbd`/`.mono`.
+    - **Contraste** WCAG 2.x AA sur tout texte visible, chrome compris, opacité comprise (4,5:1, 3:1 en grand ou en gras) ; les textes en dégradé sont listés à part, à relire à l'œil. Sur une erreur de contraste du chrome ou d'un surtitre, monter `--chrome-opacity` dans `tokens.css` juste au-delà du seuil, jamais retoucher la slide.
     - **Folios** présents et croissants (`.nav-num` du moteur, `.tag-folio` du catalogue).
-    - Options utiles : `--lang <code>` (deck bilingue exposant `window.__setLang`, à passer dans chaque langue), `--bleed <sélecteur>` (calque décoratif volontairement débordant, ou `data-bleed` sur le calque), `--attente 2000` (apparitions échelonnées), `--screenshots <dossier>`.
+    - Options utiles : `--lang <code>` (deck bilingue exposant `window.__setLang`, à passer dans chaque langue), `--bleed <sélecteur>` (calque décoratif volontairement débordant, ou `data-bleed` sur le calque d'image, jamais sur du texte), `--wait 2000` (apparitions échelonnées), `--screenshots [dossier]`, `--font <famille>`, `--no-folio`, `--max-per-slide 0`. Ne jamais maquiller un constat : corriger la slide.
+    - Captures ciblées : `python3 06-graphic-design/presentations/scripts/shots.py <deck> 3 8` (animations neutralisées).
 26. Re-tester à 1366×768 et 1024×600 pour confirmer le scaling responsive. Inspecter visuellement chaque screenshot.
 27. **Insertion / suppression de slide** : aucune renumérotation manuelle — les folios `NN / TOTAL`, le compteur de la nav et l'overview se recalculent depuis `SLIDE_COUNT` (JS). Vérifier seulement que la nouvelle slide porte `data-family`, `data-eyebrow`, `data-heading` et un `.nav-num` vide. `qa.py` détecte le nombre de slides automatiquement.
 
@@ -123,11 +130,11 @@ Carrousel LinkedIn PDF → `carousel`. Infographie statique, post social, banni�
 
 28. **Brand-check obligatoire** avant livraison (5 points : vocabulaire / ton / preuve / audience / visuel). Les decks passent la même porte que le social, l'email et le web. Le hook PostToolUse rappelle ; ne pas le contourner.
 29. Garder `v1` intact pendant l'itération. Révision → `v2` à côté. Une fois approuvé, supprimer `v1` si souhaité.
-30. Confirmer que l'utilisateur a prévisualisé le deck (`./scripts/serve.sh` puis `http://localhost:5173/decks/<deck>.html`) avant d'annoncer terminé.
+30. Confirmer que l'utilisateur a prévisualisé le deck (`./06-graphic-design/presentations/scripts/serve.sh` puis `http://localhost:5173/06-graphic-design/presentations/decks/<deck>.html`) avant d'annoncer terminé. Si le deck utilise des photos Pexels : la dernière slide est celle des crédits, régénérée par `pexels.py credits` après le dernier changement de photo.
 
 ## Lisibilité typographique (règle de présentation)
 
-Plancher : **aucun texte de contenu sous ~18-20px** sur le cadre 1920×1080 (équivalent 18pt minimum en projection ; corps idéal 20-24pt). Seuls les labels mono du chrome (folio, signature, tag-meta) restent à 12-14px. `scripts/qa.py` mesure ces planchers (18px contenu, 12px chrome, avertissement sous 24px) : un label hors chrome sous 18px y sort en erreur.
+Plancher : **aucun texte de contenu sous 18px** sur le cadre 1920×1080 (équivalent 18pt en projection ; corps confortable dès 24px). Seul le registre des étiquettes (folio, signature, surtitre, légende mono) reste à 12-14px. `qa.py` mesure ces deux planchers et l'avertissement sous 24px ; ne jamais réduire une vraie phrase au corps d'étiquette pour la faire tenir.
 
 **Éviter l'espace vide** sur les slides « titre + contenu » : centrer le **bloc entier** (titre + contenu ensemble), pas titre collé en haut + contenu centré (qui crée un trou au milieu). Pattern : `.plate.vcenter { justify-content: center } .plate.vcenter .body-wrap { flex: 0 0 auto }`.
 
@@ -139,7 +146,7 @@ Plancher : **aucun texte de contenu sous ~18-20px** sur le cadre 1920×1080 (éq
 | Texte en gradient rendu différemment après `transform: scale()` | `-webkit-background-clip: text` + rendu sub-pixel | `display: inline-block; transform: translateZ(0); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision` |
 | Halos colorés autour du texte en gradient en PDF/print | `background-clip: text` + `display: inline-block` clippent mal en print | En `@media print`, remplacer le gradient par un aplat `var(--brand-primary-deep)` — ou rastériser (voir export PDF) |
 | Chiffre + unité qui passent sur 2 lignes | `display: block` ou colonne de grille trop étroite | `display: inline-flex; align-items: baseline; white-space: nowrap`, élargir la colonne |
-| Logo invisible après embed | `fill: url(#grad)` ne traverse pas le shadow DOM du `<use>` | `fill="currentColor"` dans le `<symbol>`, `color:` sur le wrapper (slide sombre : `color: var(--brand-light)`) |
+| Logo invisible après embed | `fill: url(#grad)` ne traverse pas le shadow DOM du `<use>` | `fill="currentColor"` dans le `<symbol>`, `color:` sur le wrapper (slide sombre : `color: var(--brand-neutral-light)`) |
 | Élément qui déborde sur le chrome bas | Composant trop haut, padding-bottom trop court | Audit Playwright, réduire font-sizes / paddings / gaps ; jamais de padding-bottom de slide < 110px |
 
 ## CRITIQUE — zone de sécurité du chrome bas
@@ -162,7 +169,7 @@ Chromium a un bug documenté dans son pipeline PDF avec `background-clip: text` 
 
 **Deux régimes selon l'identité de marque :**
 
-- **La marque titre en couleur solide (pas de gradient sur texte)** — cas le plus simple : laisser `GRADIENT_TEXT_SELECTORS = []` dans `templates/base.html` et le PDF imprime le texte nativement. Il suffit d'activer le mode print (`__enablePrintMode()` ajoute `body.printing-pdf`) puis `window.print()`. Export headless : `page.evaluate("__enablePrintMode()")` puis `page.pdf(prefer_css_page_size=True, print_background=True)` ; vérifier une page par slide (compter `/Type /Page`) et un poids plausible.
+- **La marque titre en couleur solide (pas de gradient sur texte)** — cas le plus simple : vider `GRADIENT_TEXT_SELECTORS` dans le deck (jamais dans le starter vendorisé) et le PDF imprime le texte nativement. Il suffit d'activer le mode print (`__enablePrintMode()` ajoute `body.printing-pdf`) puis `window.print()`. Export headless : `page.evaluate("__enablePrintMode()")` puis `page.pdf(prefer_css_page_size=True, print_background=True)` ; vérifier une page par slide (compter `/Type /Page`) et un poids plausible.
 - **La marque utilise du texte en gradient** ({{BRAND_GRADIENT}} sur heros / big numbers) : la solution câblée dans `base.html` — avant `window.print()`, parcourir chaque sélecteur de texte-gradient, rendre l'élément dans un `<canvas>` avec le même gradient, remplacer le DOM par des `<img>` PNG, restaurer sur `afterprint`. Sélecteurs à maintenir dans la constante :
 
 ```js
@@ -174,7 +181,7 @@ const GRADIENT_TEXT_SELECTORS = [
 ];
 ```
 
-Si tu ajoutes un composant à texte-gradient, **ajoute son sélecteur à cette liste**, sinon le PDF montrera des artefacts sur cet élément.
+Si tu ajoutes un composant à texte-gradient, **ajoute son sélecteur à cette liste dans le deck** (pas dans le starter vendorisé), sinon le PDF montrera des artefacts sur cet élément. Le rastériseur dessine chaque caractère à sa position mesurée, dans sa police : un PDF fidèle à l'écran (détails dans `docs/pdf-export.md`).
 
 Autres règles print déjà câblées :
 
@@ -212,7 +219,7 @@ Un deck vivant porte le motif de la marque — jamais de la décoration généri
 4. **Si la marque n'a aucun motif** : en générer un avec la skill `image-generation` (ou le brandkit) à partir des éléments d'identité existants, et le faire **valider par l'humain** avant tout usage. Jamais décoratif gratuit — toujours issu de la marque.
 5. Le motif reste sous tout (`z-index` en dessous du contenu, du chrome et du cartouche), à opacité faible, et la QA Playwright se re-passe après chaque ajout.
 
-Référence exécutée : `_examples/deck-catalogue/catalogue.html` — hooks `--brand-pattern` / `--brand-pattern-light` / `--corner-motif` dans le `:root`, classes `.motif` / `.texture` / `.corner` / `.filet-orn` (doc complète dans son README, section « Vie graphique de la marque »). Le starter `templates/base.html` et `tokens.css` embarquent les mêmes hooks avec un motif placeholder neutre : le remplacer par le motif réel de la marque avant livraison.
+Référence exécutée : `_examples/deck-catalogue/catalogue.html` — hooks `--brand-pattern` / `--brand-pattern-light` / `--corner-motif` dans le `:root`, classes `.motif` / `.texture` / `.corner` / `.filet-orn` (voir son README, section « Vie graphique de la marque »). Le starter `templates/base.html` et `tokens.css` embarquent les mêmes hooks, **inertes** (`none`) tant que la marque n'a pas de motif validé : renseigner `--brand-pattern`, `--brand-pattern-light` et `--corner-motif` dans `tokens.css` (hors du bloc généré) avec le motif réel, jamais une décoration générique. Doc des hooks : section « Brand pattern hooks » de `templates/components.md`.
 
 **Rappel descendantes de titres** : `line-height ≥ 1.1` sur tous les niveaux de titres texte, jamais de clip. Sur un titre en `background-clip: text` (texte en dégradé), la zone peinte s'arrête à la boîte de l'inline-block : compensation `padding: 0.22em 0.08em; margin: -0.22em -0.08em; overflow: visible` obligatoire, sinon le bas des g / j / p / q disparaît (voir le tableau des pièges).
 
@@ -223,28 +230,26 @@ Trois modes ; défaut = (A). Ne jamais imposer un stack lourd.
 **A. Présentation locale**
 
 ```
-cd 06-graphic-design/presentations
-./scripts/serve.sh
+./06-graphic-design/presentations/scripts/serve.sh
 ```
 
-Serveur statique sur `http://localhost:5173`. Ouvrir le deck : `→` avance, `O` overview, `F` plein écran, `P` impression PDF.
+Serveur statique de la racine du dépôt sur `http://localhost:5173` ; les decks sont sous `/06-graphic-design/presentations/decks/`. Ouvrir le deck : `→` avance, `O` vue d'ensemble, `F` plein écran, `P` impression PDF.
 
 **B. Export PDF**
 
 ```
-cd 06-graphic-design/presentations
-./scripts/export-pdf.sh decks/<deck>.html
+./06-graphic-design/presentations/scripts/export-pdf.sh 06-graphic-design/presentations/decks/<deck>.html
 ```
 
 PDF 1920×1080 propre (une slide par page) via Chromium headless. Voir la section export PDF ci-dessus.
 
 **C. Partage en ligne**
 
-Le deck est un fichier HTML unique, assets inlinés ou en chemins relatifs. Déposer le dossier (ou juste `decks/` + `01-brand/assets/`) sur n'importe quel hébergeur statique. Voir `docs/hosting.md`.
+Le deck est un fichier HTML unique, assets inlinés ou en chemins relatifs. Déposer le dossier (ou juste `decks/`, `assets/` + `01-brand/assets/`) sur n'importe quel hébergeur statique. Voir `docs/hosting.md`.
 
 ## Livrable final
 
-Un seul fichier : `06-graphic-design/presentations/decks/<sujet>-<date>-<version>.html`, plus les éventuels logos tiers référencés en relatif. Autonome (s'ouvre dans Chrome sans serveur), partageable via `./scripts/serve.sh`, exportable en PDF, hébergeable en statique.
+Un seul fichier : `06-graphic-design/presentations/decks/<sujet>-<date>-<version>.html`, plus les éventuels logos tiers et photos référencés en relatif. Autonome (s'ouvre dans Chrome sans serveur), partageable via `serve.sh`, exportable en PDF, hébergeable en statique.
 
 Après livraison : mettre à jour l'entrée du calendrier éditorial (`02-strategy/calendar/calendar.md` — statut + chemin du deck) et indexer le deck dans `_templates/inventory.md` (skill `inventory`, type `deck`).
 

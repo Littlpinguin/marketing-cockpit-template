@@ -47,8 +47,9 @@ Codes de sortie : 0 propre, 1 au moins une erreur, 2 usage incorrect ou fichier
 illisible. Les avertissements ne font pas échouer la QA.
 
 Les decks projetés ont leur propre script,
-`06-graphic-design/presentations/scripts/qa.py`, qui contrôle en plus les
-débordements, le chrome, les folios et la parité du moteur. Les deux partagent
+`06-graphic-design/presentations/scripts/qa.py` (vendorisé depuis slides-agent,
+voir docs/vendored-slides.md), qui contrôle en plus les débordements, le chrome,
+les folios et la parité du moteur. Ce script-ci délègue ses calculs à
 `06-graphic-design/scripts/qa_common.py` : couleurs, palette, contraste, police,
 lecture du viewport et collecteur JavaScript des textes.
 

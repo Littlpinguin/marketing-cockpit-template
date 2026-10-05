@@ -409,3 +409,115 @@ def test_tokens_css_declare_les_variables_attendues_par_les_gabarits_de_deck(tmp
     assert run(root, config=CONFIG_LIVREE).returncode == 0
     declarees = set(DECLARATION_RE.findall((root / TOKENS_CSS_DECKS).read_text(encoding="utf-8")))
     assert sorted(attendues - declarees) == []
+
+
+# --------------------------------------------------------------------------
+# Couleurs dérivées (mix, contraste) : le fichier de marque du moteur de slides
+# --------------------------------------------------------------------------
+
+def test_mix_reproduit_les_derivees_de_slides_agent():
+    """color-mix(in srgb, ...) rendu en hex : les valeurs publiées par slides-agent."""
+    assert build_tokens.mix_hex("#1E40AF", "#000000", 0.12) == "#1A389A"
+    assert build_tokens.mix_hex("#F59E0B", "#000000", 0.12) == "#D88B0A"
+    assert build_tokens.mix_hex("#F8FAFC", "#FFFFFF", 0.35) == "#FAFCFD"
+    assert build_tokens.mix_hex("#0F172A", "#FFFFFF", 0.14) == "#313748"
+    assert build_tokens.mix_hex("#1E40AF", "#FFFFFF", 0.5) == "#8EA0D7"
+
+
+def test_contraste_wcag():
+    assert round(build_tokens.contraste("#000000", "#FFFFFF"), 2) == 21.0
+    assert round(build_tokens.contraste("#1E40AF", "#E9EBED"), 1) == 7.3
+
+
+def _spec(**options):
+    return {"token": "color.primary", **options}
+
+
+def test_min_contrast_garde_une_couleur_deja_conforme():
+    spec = _spec(mix="#000000", min_contrast=4.5,
+                 against={"token": "color.light", "mix": "#000000", "amount": 0.06})
+    assert build_tokens.render_value(TOKENS_FICTIFS, spec, "t") == "#1E40AF"
+
+
+def test_min_contrast_assombrit_une_primaire_claire_jusqu_au_seuil():
+    tokens = json.loads(json.dumps(TOKENS_FICTIFS))
+    tokens["color"]["primary"]["$value"] = "#38BDF8"
+    spec = _spec(mix="#000000", min_contrast=4.5, against=["color.light", "#FFFFFF"])
+    rendu = build_tokens.render_value(tokens, spec, "t")
+    assert rendu != "#38BDF8"
+    assert build_tokens.contraste(rendu, "#F8FAFC") >= 4.5
+    # le pas précédent n'y suffisait pas : le mélange s'arrête au seuil, pas au noir
+    assert rendu != "#000000"
+
+
+def test_min_contrast_inatteignable_refuse():
+    # assombrir la primaire ne l'éloignera jamais d'un fond noir
+    spec = _spec(mix="#000000", min_contrast=4.5, against="#000000")
+    with pytest.raises(build_tokens.TokenError, match="inatteignable"):
+        build_tokens.render_value(TOKENS_FICTIFS, spec, "t")
+
+
+@pytest.mark.parametrize("spec, motif", [
+    (_spec(amount=0.12), "demandent « mix »"),
+    (_spec(mix="#000000", against="color.light"), "against"),
+    (_spec(mix="#000000", alpha=0.1), "exclusifs"),
+    (_spec(mix="#000000", amount=1.5), "hors de"),
+    (_spec(mix="#000000", min_contrast=40, against="color.light"), "min_contrast"),
+    (_spec(mix="color.inexistante"), "color.inexistante"),
+    ({"token": "gradient.signature", "mix": "#000000"}, "qu'à une couleur"),
+])
+def test_options_de_derivee_mal_formees_refusees(spec, motif):
+    with pytest.raises(build_tokens.TokenError, match=motif):
+        build_tokens.render_value(TOKENS_FICTIFS, spec, "t")
+
+
+def test_mix_vers_un_token(tmp_path):
+    spec = _spec(mix="color.dark", amount=0.5)
+    assert build_tokens.render_value(TOKENS_FICTIFS, spec, "t") == \
+        build_tokens.mix_hex("#1E40AF", "#0F172A", 0.5)
+
+
+# Le template livre tokens.css avec la palette d'exemple de docs/placeholders.json.
+# Dans un fork configuré, le wizard a remplacé ces valeurs : ces deux tests ne
+# concernent que le template lui-même.
+template_non_configure = pytest.mark.skipif(
+    (REPO / TOKENS).exists(),
+    reason="fork configuré : 01-brand/tokens.json a remplacé la palette d'exemple",
+)
+
+
+@template_non_configure
+def test_tokens_css_livre_est_la_sortie_de_la_palette_d_exemple(tmp_path):
+    """Le bloc livré est exactement ce que build-tokens.py écrit pour les exemples."""
+    root = racine_du_template_apres_wizard(tmp_path)
+    assert run(root, config=CONFIG_LIVREE).returncode == 0
+    assert (root / TOKENS_CSS_DECKS).read_text(encoding="utf-8") == \
+        (REPO / TOKENS_CSS_DECKS).read_text(encoding="utf-8")
+
+
+def _valeurs_root(texte: str) -> dict[str, str]:
+    bloc = BLOC_ROOT_RE.search(texte).group(1)
+    bloc = re.sub(r"/\*.*?\*/", "", bloc, flags=re.S)
+    return {nom: valeur.strip() for nom, valeur in
+            re.findall(r"(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);", bloc)}
+
+
+def _normaliser(valeur: str) -> str:
+    valeur = re.sub(r"\s+", "", valeur).upper()
+    if valeur.startswith("'") or valeur.startswith('"') or "," in valeur and "(" not in valeur:
+        valeur = valeur.split(",")[0].strip("'\"")    # police : la première famille
+    return valeur
+
+
+@template_non_configure
+def test_valeurs_par_defaut_identiques_au_starter_vendorise():
+    """La palette d'exemple de tokens.css est celle du starter de slides-agent."""
+    starter = _valeurs_root((REPO / "06-graphic-design/presentations/templates/base.html")
+                            .read_text(encoding="utf-8"))
+    tokens = _valeurs_root((REPO / TOKENS_CSS_DECKS).read_text(encoding="utf-8"))
+    comparees = [nom for nom, valeur in starter.items()
+                 if nom in tokens and "var(" not in valeur]
+    assert len(comparees) >= 20
+    ecarts = {nom: (starter[nom], tokens[nom]) for nom in comparees
+              if _normaliser(starter[nom]) != _normaliser(tokens[nom])}
+    assert ecarts == {}

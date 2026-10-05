@@ -1,0 +1,22 @@
+{
+  "source": "pexels",
+  "id": 20145180,
+  "slug": "tour-03",
+  "pexels_url": "https://www.pexels.com/photo/kuwait-water-towers-20145180/",
+  "photographer": "Elliot Fais",
+  "photographer_url": "https://www.pexels.com/@elliot-fais-471883",
+  "alt": "Iconic striped water towers in Kuwait City, under a clear blue sky.",
+  "avg_color": "#4A7FA9",
+  "original_size": [
+    4053,
+    4053
+  ],
+  "download_width": 640,
+  "query": "concrete water tower sky",
+  "downloaded_at": "2026-09-26T09:50:46+00:00",
+  "files": [
+    "pexels-tour-03-20145180-mono.jpg"
+  ],
+  "license": "Pexels License: free to use and modify, attribution appreciated (credited on the deck's photo-credits slide). https://www.pexels.com/license/",
+  "treatment_note": "mono baked with the catalogue's fictional Meridian palette (#1c2420 -> #f2efe7)"
+}

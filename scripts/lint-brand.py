@@ -681,6 +681,29 @@ def plages_data_uri(texte: str) -> list[tuple[int, int]]:
     return plages
 
 
+DEBUT_BLOC_GENERE = "/* brand-tokens:start */"
+FIN_BLOC_GENERE = "/* brand-tokens:end */"
+
+
+def plages_generees(texte: str) -> list[tuple[int, int]]:
+    """Étendue de chaque bloc écrit par scripts/build-tokens.py depuis tokens.json.
+
+    Ses nuances dérivées (-deep, -soft, accents des étiquettes) sont calculées
+    depuis la palette : les mesurer contre elle n'a pas de sens, et leur
+    conformité se vérifie par `build-tokens.py --check`. Un bloc ouvert sans
+    marqueur de fin n'exempte rien.
+    """
+    plages: list[tuple[int, int]] = []
+    debut = texte.find(DEBUT_BLOC_GENERE)
+    while debut != -1:
+        fin = texte.find(FIN_BLOC_GENERE, debut)
+        if fin == -1:
+            break
+        plages.append((debut, fin + len(FIN_BLOC_GENERE)))
+        debut = texte.find(DEBUT_BLOC_GENERE, fin)
+    return plages
+
+
 def _est_gris(hexa: str) -> bool:
     return hexa[1:3] == hexa[3:5] == hexa[5:7]
 
@@ -694,7 +717,7 @@ def regle_off_palette(chemin: str, texte: str, config: dict[str, Any]) -> list[C
     if sous_chemin(chemin, exclusions_production(config)):
         return []
 
-    plages_data = plages_data_uri(texte)
+    plages_data = plages_data_uri(texte) + plages_generees(texte)
     palette = config["_palette"]
     admis = [t for t in palette if t.admis_dans(chemin)]
 

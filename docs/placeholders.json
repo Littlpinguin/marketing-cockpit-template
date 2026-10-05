@@ -129,7 +129,7 @@
       { "name": "CONCURRENT",           "marker": true, "used_in": "05-web-content/templates/landing-pages/comparateur-concurrent.html", "description": "Competitor name in the vs-competitor landing template — replaced per comparison page", "example": "CompetitorX" }
     ],
     "decks": [
-      { "name": "DECK_TITLE",   "marker": true, "used_in": "06-graphic-design/presentations/templates/base.html", "description": "Title for an individual deck — replaced when copying base.html into decks/" }
+      { "name": "DECK_TITLE",   "marker": true, "used_in": "06-graphic-design/presentations/templates/base.html", "description": "Title for an individual deck — replaced when copying base.html into decks/ (06-graphic-design/scripts/new-deck.py --titre)" }
     ],
     "signatures": [
       { "name": "NAME",         "used_in": "06-graphic-design/mail-signatures/template.html" },

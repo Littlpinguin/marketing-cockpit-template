@@ -228,7 +228,7 @@ See `docs/setup-completed.schema.json` for the full schema.
 | Skill | Role | Notes |
 |---|---|---|
 | `image-generation` | Brand-compliant visuals via Gemini | Prompt auto-prefixed with brand style; check `01-brand/assets/` first |
-| `slides` | Editorial-grade HTML presentations | 1920×1080 frame, Playwright QA, clean PDF export |
+| `slides` | Editorial-grade HTML presentations | 1920×1080 frame, 120-layout library, Playwright QA, clean PDF export; engine vendored from slides-agent |
 | `carousel` | LinkedIn carousels (PDF 1080×1350) | Strict type/spacing scales, export pipeline |
 | `brandkit` | Brand boards & identity decks | Express the existing brand, or draft an identity proposal for a prospect |
 | `design-direction` | Distinctive art direction | Deliberate aesthetic choices for new pages — upstream of `design-system` |
@@ -287,7 +287,7 @@ La marque est vérifiable par script ; ces contrôles priment sur toute appréci
 | Faut-il mentionner que c'est généré par IA, et comment ? | `01-brand/divulgation-ia.md` |
 | Cette formulation a-t-elle déjà été refusée ? | `01-brand/exemples-rejetes.md` |
 
-Réglages propres à la marque : `scripts/lint-brand.toml` (vocabulaire, tirets, règles actives), `scripts/build-tokens.toml` (fichiers CSS générés), `scripts/build-inventory.toml` (dossiers inventoriés). Tests : `python3 -m pytest scripts/tests -q`.
+Réglages propres à la marque : `scripts/lint-brand.toml` (vocabulaire, tirets, règles actives), `scripts/build-tokens.toml` (fichiers CSS générés, dont le fichier de marque du moteur de slides), `scripts/build-inventory.toml` (dossiers inventoriés). Tests : `python3 -m pytest scripts/tests -q`.
 
 ## Agents (in `.claude/agents/`)
 
@@ -353,10 +353,12 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 ### Editorial deck (pitch / kickoff / readout)
 1. Brief in `06-graphic-design/presentations/briefs/<slug>.md` (audience, decision, sources).
 2. `slides` skill drafts a slide map (eyebrow + headline per slide, 18–24 slides) for human approval.
-3. On sign-off, deck written to `06-graphic-design/presentations/decks/<slug>.html` from `templates/base.html` + `templates/components/`.
-4. `python scripts/qa.py decks/<slug>.html` until "All slides clean".
+3. On sign-off, `python3 06-graphic-design/scripts/new-deck.py <slug>` creates `06-graphic-design/presentations/decks/<slug>.html` from the vendored starter with the brand `:root` of `tokens.css`; slides are composed from the layout library (`_examples/deck-catalogue/LAYOUTS.md`, 120 layouts) and `templates/components.md`.
+4. `python3 06-graphic-design/presentations/scripts/qa.py 06-graphic-design/presentations/decks/<slug>.html` until "All slides clean", then once with `--with-pdf`.
 5. Brand-check fires automatically.
-6. Optional: `./scripts/export-pdf.sh decks/<slug>.html` for a PDF leave-behind, or push to a static host (see `presentations/docs/hosting.md`).
+6. Optional: `./06-graphic-design/presentations/scripts/export-pdf.sh 06-graphic-design/presentations/decks/<slug>.html` for a PDF leave-behind, or push to a static host (see `06-graphic-design/presentations/docs/hosting.md`).
+
+The slides engine (starter, components, catalogue, QA, PDF export) is vendored from [slides-agent](https://github.com/Littlpinguin/slides-agent): never edit its files by hand, change slides-agent and run `python3 scripts/sync-slides-engine.py` (see `docs/vendored-slides.md`).
 
 ## Visual identity quick reference
 

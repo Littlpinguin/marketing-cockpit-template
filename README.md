@@ -2,7 +2,7 @@
 
 **Your marketing department, running inside Claude Code — and it knows your brand by heart.**
 
-54 production skills · 14 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+54 production skills · 14 specialist agents · 120 slide layouts · 20 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
@@ -23,7 +23,7 @@ Everything below ships in the template and opens in a browser with zero build st
 |---|---|
 | ![Waterfall chart slide layout](docs/launch/screenshots/deck-slide-waterfall.jpg) | ![Client quote slide layout with textured background](docs/launch/screenshots/deck-slide-quote.jpg) |
 
-*Three of the 52 slide layouts, captured in full-screen presentation mode from the self-documenting catalogue (each slide carries its own usage note). 7 families: opening, editorial, dataviz, diagrams, tables, proof, closing. The `slides` skill picks layouts by message type, then reskins them with your brand tokens.*
+*Three of the 120 slide layouts, captured in full-screen presentation mode from the self-documenting catalogue (each slide carries its own usage note). 8 families: opening, editorial, dataviz, diagrams, tables, proof, closing, photography. The `slides` skill picks one layout per narrative beat, then rebuilds it with your brand tokens.*
 
 | Landing pages (10 templates) | Interactive lead magnets (10 templates) |
 |---|---|
@@ -155,7 +155,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 | Category | Skills | Count |
 |---|---|---|
 | Writing & editing | `copywriting`, `copy-editing` (7-pass review), `humanize-writing` (anti-AI-tells), `translation`, `social-content`, `email`, `email-deliverability`, `event-marketing` | 8 |
-| Design & presentations | `design-system`, `design-direction`, `design-review`, `design-taste`, `design-redesign`, `brandkit`, `image-generation`, `slides` (52-layout HTML decks + Playwright QA), `carousel` (LinkedIn PDF) | 9 |
+| Design & presentations | `design-system`, `design-direction`, `design-review`, `design-taste`, `design-redesign`, `brandkit`, `image-generation`, `slides` (120-layout HTML decks + Playwright QA), `carousel` (LinkedIn PDF) | 9 |
 | Web & CRO | `landing-page`, `lead-magnet` (with full capture circuit), `cro-page`, `cro-form`, `cro-popup`, `cro-pricing`, `accessibility-web` (WCAG 2.2 AA) | 7 |
 | SEO & content engine | `seo`, `seo-audit`, `seo-schema`, `seo-geo` (AI-search/AEO), `seo-cluster`, `blog-engine` (fact-checked articles, ≥90/100 quality gate) | 6 |
 | Strategy & intelligence | `content-strategy`, `veille-strategy` (market watch), `scraping`, `performance-report`, `strategy-challenger` (challenge any strategy) | 5 |
@@ -170,7 +170,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 
 **Working assets, not lorem ipsum:**
 
-- **52 slide layouts** in 7 families (`_examples/deck-catalogue/catalogue.html`) — a self-documenting HTML deck: keyboard nav, grouped overview, fullscreen mode, PDF export with gradient-text rasterization, automated Playwright QA (contrast AA, ≥18px type, overflow checks).
+- **120 slide layouts** in 8 families (`_examples/deck-catalogue/catalogue.html`, indexed by narrative beat in `LAYOUTS.md`) — a self-documenting HTML deck: keyboard nav, grouped overview, fullscreen mode, PDF export with per-character gradient-text rasterization, automated Playwright QA (engine parity, overflow, ≥18px content and ≥12px labels, brand fonts, contrast AA). The slides engine is vendored from [slides-agent](https://github.com/Littlpinguin/slides-agent) by `scripts/sync-slides-engine.py`.
 - **10 landing page templates** (`05-web-content/templates/landing-pages/`) — one per conversion goal (B2B demo, SaaS trial, lead magnet, webinar, pricing, competitor comparison, long-form sales, local one-pager, waitlist, service). Single-file, responsive, GA4/UTM conventions wired.
 - **10 interactive lead magnets** (`05-web-content/templates/lead-magnets/`) — ROI calculator, diagnostic score, grader, quiz, budget estimator… all with an email capture gate and nurturing segmentation baked in.
 - **A client reporting dashboard** (`11-reporting/`) — static HTML + monthly JSON snapshots + written analysis, deployed on the client's own site by FTP behind an access code. A demo with 4 months of fictional data (all sources, embedded — opens on double-click) lives in `11-reporting/dashboard/demo/index.html`.
@@ -194,7 +194,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 Honest answers, because you'll figure them out anyway:
 
 - **vs. a chat session (ChatGPT, Claude.ai, …):** a chat has no filesystem. This repo *is* the memory — brand doctrine, editorial calendar with statuses, per-channel archives, inventories. The brand gate is a deterministic hook, not a system prompt you hope survives the context window. Deliverables are versioned files (HTML decks, landing pages, dashboards), not text to copy-paste.
-- **vs. a prompt pack or a "mega-prompt":** prompts don't ship 52 QA'd slide layouts, 20 working page templates, a dry-run connector layer, or a wizard that regenerates role docs based on the tools you actually use.
+- **vs. a prompt pack or a "mega-prompt":** prompts don't ship 120 QA'd slide layouts, 20 working page templates, a dry-run connector layer, or a wizard that regenerates role docs based on the tools you actually use.
 - **vs. an agency:** this is an operational framework, not outcomes-as-a-service. It needs your inputs, your validation, and someone who can tell good marketing from bad. It makes a competent operator much faster; it doesn't replace judgment.
 
 **What it is *not*:** not an autopilot (human validation is a designed-in step, sending/scheduling stays manual or goes through dry-run gates), not a social scheduler (that's Postiz, optional), and not magic on an empty brand — see ["What good requires"](#what-good-requires).
@@ -235,6 +235,7 @@ The best community skills are **vendored** (copied, adapted, attributed) rather 
 | [claudedesignskills](https://github.com/freshtechbro/claudedesignskills) | freshtechbro | Web animation skills (GSAP/ScrollTrigger, Anime.js, Lottie, AOS) | MIT |
 | [email-marketing-bible](https://github.com/CosmoBlk/email-marketing-bible) | CosmoBlk | Deliverability triage, compliance table, dark-mode-safe design | MIT |
 | [accessibility-agents](https://github.com/Community-Access/accessibility-agents) | Taylor Arndt | WCAG 2.2 AA web referential + a11y audit agent | MIT |
+| [slides-agent](https://github.com/Littlpinguin/slides-agent) | Jessy Martin (same author) | The slides engine: starter, components, 120-layout catalogue, QA, PDF export, tests — a mechanical mirror (`scripts/sync-slides-engine.py`, register `docs/vendored-slides.md`) | MIT |
 
 Each register documents what was kept, what was cut and why, plus a re-sync procedure. If you're an upstream author and want anything changed, open an issue.
 

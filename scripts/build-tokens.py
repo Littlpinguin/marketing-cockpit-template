@@ -17,10 +17,15 @@ sans toucher au code. Deux modes de cible :
   - file  : le fichier entier est réécrit.
 
 Chaque variable d'une cible pointe un token par son chemin (« color.primary »),
-avec deux modificateurs facultatifs : `alpha` (une couleur rendue en rgba) et
-`angle` (un gradient rendu sous un autre angle). Une liste `auto` de groupes
-(« color », « gradient », « font », « radius ») exporte d'office chaque token
-de ces groupes sous le nom « --<groupe>-<chemin> ».
+avec des modificateurs facultatifs : `alpha` (une couleur rendue en rgba),
+`angle` (un gradient rendu sous un autre angle), `mix` + `amount` (une couleur
+mélangée en sRGB à une autre, comme color-mix(in srgb, token, mix amount%),
+rendue en hex littéral) et `min_contrast` + `against` (le mélange est poussé par
+pas de 1 % jusqu'à atteindre ce contraste WCAG sur chacun des fonds donnés). Les
+dérivées sont écrites en valeurs littérales, pas en color-mix() : la QA des
+decks lit les couleurs calculées et ne sait pas lire color(srgb ...). Une liste
+`auto` de groupes (« color », « gradient », « font », « radius ») exporte
+d'office chaque token de ces groupes sous le nom « --<groupe>-<chemin> ».
 
 Usage:
   python3 scripts/build-tokens.py             # écrit les cibles
@@ -235,18 +240,118 @@ def font_css(tokens: dict[str, Any], chemin: str) -> str:
     return ", ".join(f if f in FAMILLES_GENERIQUES else f"'{f}'" for f in familles)
 
 
+def _rgb(hexa: str) -> tuple[int, int, int]:
+    return tuple(int(hexa[i:i + 2], 16) for i in (1, 3, 5))    # type: ignore[return-value]
+
+
+def mix_hex(base: str, autre: str, part: float) -> str:
+    """color-mix(in srgb, base, autre part%) entre deux couleurs opaques, en #RRGGBB.
+
+    L'arrondi par canal est celui de round() (au pair sur un .5) : c'est lui qui
+    redonne à l'identique les valeurs dérivées publiées par slides-agent.
+    """
+    canaux = (round(a * (1 - part) + b * part) for a, b in zip(_rgb(base), _rgb(autre)))
+    return "#" + "".join(f"{c:02X}" for c in canaux)
+
+
+def luminance(hexa: str) -> float:
+    """Luminance relative WCAG 2.x d'une couleur #RRGGBB."""
+    def lineaire(canal: int) -> float:
+        c = canal / 255
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (lineaire(c) for c in _rgb(hexa))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def contraste(a: str, b: str) -> float:
+    claire, sombre = sorted((luminance(a), luminance(b)), reverse=True)
+    return (claire + 0.05) / (sombre + 0.05)
+
+
+OPTIONS_SPEC = {"alpha", "angle", "mix", "amount", "min_contrast", "against"}
+
+
+def _part(valeur: Any, contexte: str, nom: str) -> float:
+    if isinstance(valeur, bool) or not isinstance(valeur, (int, float)) or not 0 <= valeur <= 1:
+        raise TokenError(f"{contexte} : {nom} {valeur!r} hors de [0, 1]")
+    return float(valeur)
+
+
+def couleur_simple(tokens: dict[str, Any], valeur: Any, contexte: str) -> str:
+    """Une couleur désignée par un hex, une référence « {color.x} » ou un chemin de token."""
+    if isinstance(valeur, str) and (HEX_RE.match(valeur) or REF_RE.match(valeur)):
+        return resolve_color(tokens, valeur, contexte)
+    if isinstance(valeur, str):
+        lookup_node(tokens, valeur)
+        if type_of(tokens, valeur) != "color":
+            raise TokenError(f"{contexte} : « {valeur} » n'est pas un token de couleur")
+        return color(tokens, valeur)
+    raise TokenError(f"{contexte} : couleur attendue (#RRGGBB ou chemin de token), "
+                     f"trouvé {valeur!r}")
+
+
+def couleur_derivee(tokens: dict[str, Any], chemin: str, options: dict[str, Any],
+                    contexte: str) -> str:
+    """Couleur d'un token mélangée (`mix`, `amount`), poussée au besoin jusqu'à un
+    contraste minimal (`min_contrast`) sur un ou plusieurs fonds (`against`)."""
+    base = color(tokens, chemin)
+    if "mix" not in options:
+        raise TokenError(f"{contexte} : « amount » et « min_contrast » demandent « mix »")
+    autre = couleur_simple(tokens, options["mix"], contexte)
+    part = _part(options.get("amount", 0), contexte, "amount")
+    if "min_contrast" not in options:
+        if "against" in options:
+            raise TokenError(f"{contexte} : « against » demande « min_contrast »")
+        return mix_hex(base, autre, part)
+
+    seuil = options["min_contrast"]
+    if isinstance(seuil, bool) or not isinstance(seuil, (int, float)) or not 1 < seuil <= 21:
+        raise TokenError(f"{contexte} : min_contrast {seuil!r} hors de ]1, 21]")
+    fonds_spec = options.get("against")
+    if fonds_spec is None:
+        raise TokenError(f"{contexte} : « min_contrast » demande « against » (le ou les fonds)")
+    if not isinstance(fonds_spec, list):
+        fonds_spec = [fonds_spec]
+    fonds = [_fond(tokens, f, f"{contexte}, against[{i}]") for i, f in enumerate(fonds_spec)]
+    for centieme in range(round(part * 100), 101):
+        candidate = mix_hex(base, autre, centieme / 100)
+        if all(contraste(candidate, fond) >= seuil for fond in fonds):
+            return candidate
+    raise TokenError(
+        f"{contexte} : contraste {seuil}:1 inatteignable en mélangeant {base} avec {autre} "
+        f"sur {', '.join(fonds)}"
+    )
+
+
+def _fond(tokens: dict[str, Any], spec: Any, contexte: str) -> str:
+    """Un fond de « against » : une couleur simple, ou une table { token, mix, amount }."""
+    if isinstance(spec, dict) and isinstance(spec.get("token"), str):
+        options = {k: v for k, v in spec.items() if k != "token"}
+        inconnues = sorted(set(options) - {"mix", "amount"})
+        if inconnues:
+            raise TokenError(f"{contexte} : option(s) inconnue(s) {', '.join(inconnues)}")
+        if type_of(tokens, spec["token"]) != "color":
+            raise TokenError(f"{contexte} : « {spec['token']} » n'est pas un token de couleur")
+        if not options:
+            return color(tokens, spec["token"])
+        return couleur_derivee(tokens, spec["token"], options, contexte)
+    return couleur_simple(tokens, spec, contexte)
+
+
 def render_value(tokens: dict[str, Any], spec: Any, contexte: str) -> str:
     """Rend la valeur CSS d'une variable depuis sa spécification de cible.
 
     La spécification est soit un chemin de token (« color.primary »), soit une
-    table { token = "...", alpha = 0.12 } ou { token = "...", angle = "180deg" }.
+    table { token = "...", alpha = 0.12 }, { token = "...", angle = "180deg" },
+    { token = "...", mix = "#000000", amount = 0.12 } ou
+    { token = "...", mix = "#000000", min_contrast = 4.5, against = [...] }.
     """
     if isinstance(spec, str):
         chemin, options = spec, {}
     elif isinstance(spec, dict) and isinstance(spec.get("token"), str):
         chemin = spec["token"]
         options = {k: v for k, v in spec.items() if k != "token"}
-        inconnues = sorted(set(options) - {"alpha", "angle"})
+        inconnues = sorted(set(options) - OPTIONS_SPEC)
         if inconnues:
             raise TokenError(f"{contexte} : option(s) inconnue(s) {', '.join(inconnues)}")
     else:
@@ -256,6 +361,14 @@ def render_value(tokens: dict[str, Any], spec: Any, contexte: str) -> str:
 
     lookup_node(tokens, chemin)    # lève si le chemin ne désigne pas un token
     type_token = type_of(tokens, chemin)
+    derivee = {"mix", "amount", "min_contrast", "against"} & set(options)
+    if derivee:
+        if type_token != "color":
+            raise TokenError(f"{contexte} : « {', '.join(sorted(derivee))} » ne s'applique "
+                             "qu'à une couleur")
+        if "alpha" in options:
+            raise TokenError(f"{contexte} : « alpha » et « mix » sont exclusifs")
+        return couleur_derivee(tokens, chemin, options, contexte)
     if "alpha" in options:
         if type_token != "color":
             raise TokenError(f"{contexte} : « alpha » ne s'applique qu'à une couleur")

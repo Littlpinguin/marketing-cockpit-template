@@ -1,0 +1,22 @@
+{
+  "source": "pexels",
+  "id": 15445740,
+  "slug": "tour-01",
+  "pexels_url": "https://www.pexels.com/photo/tower-under-clear-sky-15445740/",
+  "photographer": "زاهد احمد 1",
+  "photographer_url": "https://www.pexels.com/@1-446111269",
+  "alt": "Impressive view of a modern water tower against a clear blue sky in Baghdad, Iraq.",
+  "avg_color": "#55759C",
+  "original_size": [
+    2992,
+    2992
+  ],
+  "download_width": 640,
+  "query": "concrete water tower sky",
+  "downloaded_at": "2026-09-26T09:50:44+00:00",
+  "files": [
+    "pexels-tour-01-15445740-mono.jpg"
+  ],
+  "license": "Pexels License: free to use and modify, attribution appreciated (credited on the deck's photo-credits slide). https://www.pexels.com/license/",
+  "treatment_note": "mono baked with the catalogue's fictional Meridian palette (#1c2420 -> #f2efe7)"
+}

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Briques de calcul partagées par les scripts de QA visuelle.
 
-Les scripts de QA (decks, carrousels, visuels composés) collectent dans le
+Les scripts de QA du template (carrousels, visuels composés : qa-visuel.py ; la
+QA des decks, vendorisée depuis slides-agent, porte ses propres calculs) collectent dans le
 navigateur des valeurs CSS déjà calculées (`getComputedStyle`), sous forme de
 chaînes, puis délèguent ici tout le raisonnement : lecture des couleurs,
 luminance relative, contraste WCAG 2.x, aplatissement d'une pile de fonds

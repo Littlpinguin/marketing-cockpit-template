@@ -35,11 +35,13 @@ palette, les familles de police et les règles du logo se lisent dans `01-brand/
 python3 06-graphic-design/presentations/scripts/qa.py <deck.html> --format json
 ```
 
-Parité du moteur d'abord (`presentations/docs/engine-parity.md`), puis cadre natif 1920×1080
-ramené à la fenêtre par un `transform: scale()`, plancher du contenu 18 px, plancher du
-chrome 12 px. Un deck bilingue se contrôle **dans chaque langue** (`--lang <code>`), la plus
-longue étant la plus exposée au débordement. Monter `--attente` jusqu'à 2000 si le deck a
-des apparitions échelonnées.
+Ce script est vendorisé depuis slides-agent (`docs/vendored-slides.md`) : ses options sont en
+anglais. Parité du moteur d'abord (`presentations/docs/engine-parity.md`), puis cadre natif
+1920×1080 ramené à la fenêtre par un `transform: scale()`, plancher du contenu 18 px,
+plancher du registre des étiquettes 12 px (chrome, surtitres, folios, texte en monospace).
+Un deck bilingue se contrôle **dans chaque langue** (`--lang <code>`), la plus longue étant la
+plus exposée au débordement. Monter `--wait` jusqu'à 2000 si le deck a des apparitions
+échelonnées. Avant livraison, une passe `--with-pdf` vérifie aussi l'export.
 
 ### Carrousel LinkedIn
 
@@ -51,7 +53,7 @@ python3 06-graphic-design/scripts/qa-visuel.py <carrousel.html> \
 
 python3 06-graphic-design/presentations/scripts/qa.py <carrousel.html> \
   --viewport 1080x1350 --frame 1080x1350 --min-font 28 \
-  --no-engine-check --sans-folio --format json        # débordements
+  --no-engine-check --no-folio --format json          # débordements
 ```
 
 Le plancher monte à 28 px : un carrousel se lit sur un téléphone, dans le fil. Il est
@@ -61,7 +63,7 @@ par `data-brand-chrome`, et les classes `.brand-chrome`, `.foot`, `.folio`, `.so
 `.credit` le reconnaissent (`--chrome` pour en ajouter, `--min-font-chrome` pour le seuil).
 `summary.min_font` et `summary.min_font_chrome` disent lesquels ont été appliqués. Un
 carrousel n'embarque ni le moteur de slides ni de folio : d'où `--no-engine-check` et
-`--sans-folio` sur la seconde passe.
+`--no-folio` sur la seconde passe.
 
 ### Visuel composé ou image générée
 
@@ -83,11 +85,16 @@ silencieux.
 ## Procédure
 
 1. **Lancer le ou les scripts** en `--format json`, avec les options du format concerné.
-2. **Lire le JSON**, jamais la sortie texte : `summary` (erreurs, avertissements, plancher
-   appliqué, familles de police, nombre de textes et de logos), `constats` (chacun avec
-   `niveau`, `type`, `message`), `couleurs` (`dominantes`, `hors_palette`, part en
-   pourcentage et ΔE76 au token le plus proche), `gradient_text` pour `qa-visuel.py` ;
-   `engine` et `slides[]` pour `qa.py`.
+2. **Lire le JSON**, jamais la sortie texte. Pour `qa-visuel.py` : `summary` (erreurs,
+   avertissements, plancher appliqué, familles de police, nombre de textes et de logos),
+   `constats` (chacun avec `niveau`, `type`, `message`), `couleurs` (`dominantes`,
+   `hors_palette`, part en pourcentage et ΔE76 au token le plus proche), `gradient_text`.
+   Pour `qa.py` : `summary` (`errors`, `warnings`, `errors_total`, `warnings_total`,
+   `by_type`, `fonts`), `engine.missing`, `deck_findings`, `slides[]` (chacun avec
+   `findings` : `level` `error` / `warning` / `summary`, `type`, `message`, `target`),
+   `gradient_text` et `pdf`. Types stables : `overflow`, `chrome-gap`, `type-floor`,
+   `tight-body`, `long-label`, `font`, `contrast`, `folio`, `truncated`, `lang`,
+   `pdf-weight`.
 3. **Trier les constats** par gravité, en écartant les faux positifs connus ci-dessous, et en
    disant lesquels tu as écartés et pourquoi.
 4. **Reprendre à la main** ce que les scripts laissent ouvert (section suivante).
@@ -106,7 +113,7 @@ silencieux.
   ou `--allow-photo x,y,largeur,hauteur` sur une image, puis dire dans le rapport quelles
   zones ont été exclues.
 - **Folio absent sur un carrousel** (`qa.py`) : la plateforme numérote les pages elle-même ;
-  passer `--sans-folio`.
+  passer `--no-folio`.
 - **Débordements décoratifs voulus** (`qa.py`) : les neutraliser par `--bleed <sélecteur>`,
   répétable, et dire quels sélecteurs ont été blanchis.
 
