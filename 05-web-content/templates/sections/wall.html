@@ -1,0 +1,514 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "wall",
+  "name": "Mur d’avis qui se déplie",
+  "objection": "D’autres comme moi l’ont-ils fait, et sont-ils nombreux",
+  "engines": ["viewer"],
+  "when": "Huit avis signés ou plus (idéalement 12 à 30), quand le nombre fait partie de la preuve : formation, cohorte, produit grand public, service récurrent. Les premiers avis (fold_after, 6 par défaut) sont visibles, le reste se déplie derrière un bouton qui dit combien il en reste. À côté du mur, une colonne qui reste à l’écran porte une note moyenne sourcée et une citation phare (sans elles, le mur prend toute la largeur). Un avis peut avoir sa vidéo, ouverte dans la visionneuse, avec sous-titres et transcription. Peut coexister avec testimonials : trois avis près de l’offre, le mur plus haut.",
+  "avoid": "Bandeau qui défile tout seul, avis inventés, anonymes ou sans accord, note moyenne sans effectif ni source, étoiles décoratives, avis sans contexte (fonction, taille), vidéo sans sous-titres ni transcription, moins de huit avis (prendre testimonials).",
+  "reduced_motion": "Rien ne bouge : les avis repliés apparaissent d’un coup quand on déplie, la visionneuse s’ouvre sans fondu et la vidéo attend que le visiteur lance la lecture.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, coupure décidée par <br>.", "example": "Ils ont fait<br><span class=\"hl\">le parcours avant&nbsp;vous</span>"},
+    "intro": {"type": "text", "doc": "Chapô facultatif : d’où viennent les avis (vide : rien).", "example": "Des avis recueillis à la fin de chaque cohorte, publiés avec l’accord de leurs auteurs."},
+    "summary": {"type": "object", "doc": "Ligne de synthèse facultative (null : rien). value : le chiffre en grand (note moyenne ou nombre d’avis) ; detail : ce qu’il mesure et sur combien de personnes ; source : d’où il vient, moins de 12 mots. Jamais de note sans effectif ni source.", "fields": {"value": "chiffre", "detail": "ce qu’il mesure", "source": "source courte"}, "example": {"value": "4,6 sur 5", "detail": "note moyenne donnée par 38 participants en fin de parcours", "source": "Questionnaire de fin de cohorte 2025 et 2026 (chiffres fictifs)"}},
+    "pull": {"type": "object", "doc": "Citation phare facultative, en grand dans la colonne de gauche (null : rien). Un avis réel et court, qui n’est pas repris dans le mur.", "fields": {"quote": "citation courte", "name": "nom", "role": "fonction et contexte", "initials": "deux lettres"}, "example": {"quote": "Le bilan nous sert maintenant à choisir nos fournisseurs. Nous le rouvrons à chaque appel d’offres.", "name": "Valérie N.", "role": "Directrice générale, fabricant de luminaires (avis fictif)", "initials": "VN"}},
+    "quotes": {"type": "list", "doc": "Les avis, dans l’ordre d’affichage (les plus parlants d’abord). quote : la citation exacte ; name, role : signature (role en moins de 12 mots) ; initials : avatar sans photo ; result : le résultat en quelques mots, facultatif ; video : facultative, {src (fichier .mp4 : sans JavaScript, le lien y mène), poster (image, sinon une composition aux couleurs de la marque), duration, captions (.vtt), transcript (texte)}.", "fields": {"result": "résultat court ou vide", "quote": "citation", "name": "nom", "role": "fonction et contexte", "initials": "deux lettres", "video": "objet facultatif {src, poster, duration, captions, transcript}"}, "example": [
+      {"result": "Bilan remis à la banque en mai", "quote": "Notre banque conditionnait un prêt à un bilan d’émissions. Nous l’avons remis avec ses sources trois semaines avant le comité, sans aucune relance de leur part.", "name": "Claire D.", "role": "Gérante, imprimerie, 23 salariés (avis fictif)", "initials": "CD"},
+      {"result": "Les achats enfin triés par famille", "quote": "Le grand livre faisait 4 000 lignes. L’atelier sur les achats nous a appris à le trier par famille en une matinée, et les achats sont devenus notre premier poste.", "name": "Karim B.", "role": "Directeur financier, négoce de matériaux (avis fictif)", "initials": "KB", "video": {"src": "https://www.example.com/videos/temoignage-karim.mp4", "poster": "", "duration": "1 min 48", "captions": "https://www.example.com/videos/temoignage-karim.vtt", "transcript": "Avant le parcours, notre bilan tenait sur une estimation de notre expert-comptable. Pendant l’atelier sur les achats, nous avons trié le grand livre par famille, et les achats sont apparus comme notre premier poste, loin devant l’énergie. Depuis, nous demandons leurs facteurs d’émission à nos dix plus gros fournisseurs."}},
+      {"result": "Trois sites sur la même méthode", "quote": "Chaque site calculait à sa façon. Le modèle de collecte a mis tout le monde sur les mêmes facteurs, et les écarts entre usines veulent enfin dire quelque chose.", "name": "Julien M.", "role": "Responsable QSE, agroalimentaire, trois sites (avis fictif)", "initials": "JM"},
+      {"result": "", "quote": "J’avais peur de ne pas suivre sans formation scientifique. Les ateliers partent de nos factures, et l’animatrice reprend chaque poste avec nous jusqu’à ce qu’il soit clair.", "name": "Nadia F.", "role": "Assistante de direction, cabinet d’architectes (avis fictif)", "initials": "NF"},
+      {"result": "Le questionnaire du donneur d’ordre rempli en deux jours", "quote": "Notre client principal envoie le même questionnaire chaque année. Cette fois, toutes les réponses étaient déjà dans le dossier du parcours, sources comprises.", "name": "Thierry L.", "role": "Dirigeant, sous-traitant automobile, 60 salariés (avis fictif)", "initials": "TL", "video": {"src": "https://www.example.com/videos/temoignage-thierry.mp4", "poster": "", "duration": "2 min 05", "captions": "https://www.example.com/videos/temoignage-thierry.vtt", "transcript": "Chaque année, notre donneur d’ordre nous envoie un questionnaire sur nos émissions. Nous y passions une semaine, en estimant presque tout. Cette année, j’ai ouvert le dossier du parcours et recopié les chiffres avec leurs sources : deux jours, et aucune question en retour."}},
+      {"result": "Deux références passées de l’avion au bateau", "quote": "Le calcul a montré que deux références arrivaient par avion par simple habitude. Nous les faisons venir par bateau depuis septembre, avec un mois de stock en plus.", "name": "Émilie G.", "role": "Responsable logistique, cosmétiques (avis fictif)", "initials": "ÉG"},
+      {"result": "Un plan d’action chiffré présenté au conseil", "quote": "Les mesures classées par tonnes évitées et par coût, c’est exactement ce que notre conseil d’administration attendait pour trancher.", "name": "Bernard O.", "role": "Président, coopérative agricole (avis fictif)", "initials": "BO"},
+      {"result": "", "quote": "Le format en groupe m’a surprise. Entendre comment une boulangerie traitait ses déplacements m’a débloquée pour nos tournées d’équipes.", "name": "Sophie A.", "role": "Gérante, entreprise de nettoyage, 85 salariés (avis fictif)", "initials": "SA"},
+      {"result": "Onze contrats d’électricité rassemblés", "quote": "Je n’imaginais pas que nos onze agences avaient onze contrats différents. Le tableau de collecte nous a obligés à les réunir, et deux ont été renégociés.", "name": "Paul V.", "role": "Directeur des services généraux, réseau d’agences (avis fictif)", "initials": "PV"},
+      {"result": "", "quote": "Les permanences du jeudi ont tout changé pour moi. J’y arrivais avec mes questions de la semaine et je repartais avec une réponse précise.", "name": "Lina K.", "role": "Chargée RSE, éditeur de logiciels (avis fictif)", "initials": "LK"},
+      {"result": "Les trajets domicile travail mesurés", "quote": "Un questionnaire de dix minutes envoyé aux salariés, et nous avions un chiffre à la place d’une estimation faite au doigt mouillé.", "name": "Marc P.", "role": "Responsable du personnel, clinique (avis fictif)", "initials": "MP"},
+      {"result": "Le logiciel déjà acheté enfin utilisé", "quote": "Nous avions acheté un logiciel de calcul l’an dernier. Personne ne savait quoi y saisir : le parcours nous a donné la méthode qui manquait.", "name": "Isabelle T.", "role": "Contrôleuse de gestion, distribution spécialisée (avis fictif)", "initials": "IT"},
+      {"result": "La note maximale sur le critère climat", "quote": "Le marché comptait pour 10 % de la note sur l’empreinte carbone. Nous avons joint le bilan et le plan d’action, et obtenu tous les points de ce critère.", "name": "Olivier R.", "role": "Gérant, travaux publics (avis fictif)", "initials": "OR"},
+      {"result": "", "quote": "Six semaines, c’est court. Le rythme d’un atelier par semaine nous a obligés à avancer, et c’est ce qui nous avait manqué les deux années précédentes.", "name": "Agnès L.", "role": "Secrétaire générale, fédération professionnelle (avis fictif)", "initials": "AL"}
+    ]},
+    "fold_after": {"type": "number", "doc": "Nombre d’avis visibles avant le dépliage (6 par défaut). Rien n’est replié s’il reste moins de deux avis derrière, ni sans JavaScript.", "example": 6},
+    "more_label": {"type": "text", "doc": "Bouton de dépliage ; {n} reçoit le nombre d’avis repliés, {total} le nombre total.", "example": "Lire les {n} autres avis"},
+    "less_label": {"type": "text", "doc": "Bouton une fois déplié (vide : le bouton disparaît, le focus reste sur le premier avis révélé).", "example": "Replier les avis"},
+    "video_label": {"type": "text", "doc": "Libellé du lien vers une vidéo (un verbe).", "example": "Voir le témoignage"},
+    "transcript_label": {"type": "text", "doc": "Libellé qui ouvre la transcription d’une vidéo.", "example": "Lire la transcription"}
+  }
+}
+</script>
+<style data-section-style="wall">
+.s-wall__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+}
+
+/* No summary and no pull quote: the wall takes the whole width. */
+.s-wall__layout:not(:has(.s-wall__aside > *)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.s-wall__layout:not(:has(.s-wall__aside > *)) .s-wall__aside {
+  display: none;
+}
+
+.s-wall__layout:not(:has(.s-wall__aside > *)) .s-wall__list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+}
+
+.s-wall__aside {
+  display: grid;
+  align-content: start;
+  align-self: start;
+  gap: clamp(28px, 1rem + 1.6vw, 44px);
+}
+
+/* The left column stays on screen while the wall scrolls, on screens tall
+   enough to hold it whole (no pinning: it costs nothing to the page budget). */
+@media (min-width: 1101px) and (min-height: 760px) {
+  .s-wall__aside {
+    position: sticky;
+    top: calc(var(--topbar-h) + 40px);
+  }
+}
+
+.s-wall__summary {
+  display: grid;
+  gap: 6px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-strong);
+}
+
+.s-wall__score {
+  font-size: clamp(2.25rem, 1.6rem + 2vw, 3.25rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-wall__source {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-wall__pull {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  padding-left: 24px;
+}
+
+.s-wall__pull::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--gradient-v);
+}
+
+.s-wall__pull blockquote p {
+  font-size: clamp(1.375rem, 1.1rem + 0.9vw, 1.75rem);
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+/* Cards keep their own height (align-items: start): a long review or a
+   video never leaves a hollow card next to it. */
+.s-wall__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(14px, 0.5rem + 1vw, 24px);
+}
+
+/* Masonry only where the browser lays it out natively: reading and tab
+   order stay the DOM order (never CSS columns, never a script that moves
+   cards between columns). */
+@supports (grid-template-rows: masonry) {
+  .s-wall__list {
+    grid-template-rows: masonry;
+  }
+}
+
+.s-wall__item {
+  min-width: 0;
+  border-radius: var(--radius-card);
+}
+
+.s-wall__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(20px, 0.9rem + 0.9vw, 28px);
+}
+
+.s-wall__result {
+  color: var(--hl);
+  font-size: 1.125rem;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.s-wall__quote p {
+  text-wrap: pretty;
+}
+
+.s-wall__quote p::before {
+  content: "«\00a0";
+}
+
+.s-wall__quote p::after {
+  content: "\00a0»";
+}
+
+.s-wall__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.s-wall__pull .s-wall__who {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.s-wall__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--hl);
+  font-size: var(--t-small);
+  font-weight: 800;
+}
+
+.s-wall__name {
+  display: block;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-wall__role {
+  display: block;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+/* Video: a compact row (thumbnail, label, duration) under the quote, opened
+   by the viewer engine; a plain link to the file without JavaScript. Without
+   a poster, a composition in the brand colours: initials and a play disc. */
+.s-wall__video {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 -8px;
+  padding: 8px;
+  border-radius: calc(var(--radius-card) - 4px);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.s-wall__video:hover {
+  background: var(--surface-2);
+}
+
+.s-wall__thumb {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center end;
+  padding-right: 14px;
+  width: clamp(112px, 34%, 148px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--tint);
+}
+
+.s-wall__thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-wall__mark {
+  color: var(--hl);
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.s-wall__play {
+  position: absolute;
+  top: calc(50% - 16px);
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__play svg {
+  width: 14px;
+  height: 14px;
+  margin-left: 2px;
+}
+
+.s-wall__video:hover .s-wall__play {
+  transform: scale(1.1);
+}
+
+.s-wall__video-label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.s-wall__video-text {
+  font-weight: 700;
+  line-height: 1.3;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.3em;
+}
+
+.s-wall__video:hover .s-wall__video-text {
+  text-decoration-color: currentColor;
+}
+
+.s-wall__duration {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.s-wall__transcript summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.s-wall__transcript summary::-webkit-details-marker {
+  display: none;
+}
+
+.s-wall__transcript summary::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-left: 2px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__transcript[open] summary::before {
+  transform: rotate(45deg);
+}
+
+.s-wall__transcript p {
+  padding-bottom: 6px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* The fold: a rule across the column, the button in its middle. */
+.s-wall__fold {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: clamp(24px, 1rem + 1vw, 36px);
+}
+
+.s-wall__fold::before,
+.s-wall__fold::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.s-wall__more {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 24px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-cta);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__more:hover {
+  border-color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.s-wall__more svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-wall__more[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .s-wall__item.is-new {
+    animation: s-wall-in 0.5s var(--ease) both;
+    animation-delay: calc(var(--k, 0) * 60ms);
+  }
+}
+
+@keyframes s-wall-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+
+@media (max-width: 1100px) {
+  .s-wall__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-wall__aside {
+    max-width: 40rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-wall__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-wall__fold {
+    gap: 12px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-wall section" aria-labelledby="{{id}}-titre" data-section="wall">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+    </div>
+    <div class="s-wall__layout">
+      <div class="s-wall__aside">
+        {{#summary}}<p class="s-wall__summary"><span class="s-wall__score">{{value}}</span><span class="s-wall__detail">{{detail}}</span>{{#source}}<span class="s-wall__source">{{source}}</span>{{/source}}</p>{{/summary}}
+        {{#pull}}<figure class="s-wall__pull">
+          <blockquote><p>{{quote}}</p></blockquote>
+          <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">{{initials}}</span><span><span class="s-wall__name">{{name}}</span><span class="s-wall__role">{{role}}</span></span></figcaption>
+        </figure>{{/pull}}
+      </div>
+      <div class="s-wall__main">
+        <ul class="s-wall__list" id="{{id}}-avis" role="list" data-wall-fold="{{fold_after}}" data-reveal-group>
+          {{#quotes}}<li class="s-wall__item" data-reveal>
+            <figure class="s-wall__card card">
+              {{#result}}<p class="s-wall__result">{{result}}</p>{{/result}}
+              <blockquote class="s-wall__quote"><p>{{quote}}</p></blockquote>
+              {{#video}}<a class="s-wall__video" href="{{src}}" data-viewer="video" data-viewer-group="{{id}}-videos" data-viewer-title="{{name}}" data-viewer-caption="{{role}}"{{#poster}} data-viewer-poster="{{poster}}"{{/poster}}{{#captions}} data-viewer-captions="{{captions}}"{{/captions}}>
+                <span class="s-wall__thumb" aria-hidden="true" data-qa-decor>{{#poster}}<img src="{{poster}}" alt="" loading="lazy">{{/poster}}{{^poster}}<span class="s-wall__mark">{{initials}}</span>{{/poster}}<span class="s-wall__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M7 4.5v15l12.5-7.5z"/></svg></span></span>
+                <span class="s-wall__video-label"><span class="s-wall__video-text">{{video_label}}<span class="sr-only"> : {{name}}</span></span>{{#duration}}<span class="s-wall__duration">{{duration}}</span>{{/duration}}</span>
+              </a>{{/video}}
+              {{#video.transcript}}<details class="s-wall__transcript"><summary>{{transcript_label}}</summary><p>{{.}}</p></details>{{/video.transcript}}
+              <figcaption class="s-wall__who"><span class="s-wall__avatar" aria-hidden="true">{{initials}}</span><span><span class="s-wall__name">{{name}}</span><span class="s-wall__role">{{role}}</span></span></figcaption>
+            </figure>
+          </li>{{/quotes}}
+        </ul>
+        <div class="s-wall__fold" hidden>
+          <button type="button" class="s-wall__more" aria-expanded="false" aria-controls="{{id}}-avis" data-more="{{more_label}}" data-less="{{less_label}}"><span data-wall-label>{{more_label}}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="wall">
+(function () {
+  // Fold: without JavaScript every review is visible. The script hides the
+  // ones after fold_after (real `hidden`, out of the keyboard and the
+  // accessibility tree), shows the button that says how many remain, and
+  // moves the focus to the first review it reveals.
+  document.querySelectorAll('.s-wall').forEach(function (wall) {
+    var list = wall.querySelector('.s-wall__list');
+    var fold = wall.querySelector('.s-wall__fold');
+    var button = fold && fold.querySelector('.s-wall__more');
+    var text = button && button.querySelector('[data-wall-label]');
+    if (!list || !button || !text) return;
+    var items = Array.prototype.slice.call(list.children);
+    var keep = parseInt(list.getAttribute('data-wall-fold'), 10);
+    if (!(keep > 0) || items.length - keep < 2) return;
+    var extra = items.slice(keep);
+    var more = (button.getAttribute('data-more') || '')
+      .split('{n}').join(String(extra.length))
+      .split('{total}').join(String(items.length));
+    var less = button.getAttribute('data-less') || '';
+
+    function set(open, byHand) {
+      extra.forEach(function (li, k) {
+        li.hidden = !open;
+        li.classList.toggle('is-new', open && byHand);
+        li.style.setProperty('--k', String(Math.min(k, 8)));
+      });
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      text.textContent = open ? less : more;
+      if (open && byHand) {
+        extra[0].setAttribute('tabindex', '-1');
+        extra[0].focus();
+      }
+      fold.hidden = open && !less;
+      if (!open && byHand) button.focus();
+    }
+
+    set(false, false);
+    fold.hidden = false;
+    button.addEventListener('click', function () {
+      set(button.getAttribute('aria-expanded') !== 'true', true);
+    });
+  });
+})();
+</script>

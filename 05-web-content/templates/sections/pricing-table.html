@@ -3,9 +3,9 @@
   "id": "pricing-table",
   "name": "Grille tarifaire",
   "objection": "Quelle formule, à quel prix",
-  "when": "Page de tarifs ou offre à plusieurs plans : 2 ou 3 plans, le plan recommandé en carte sombre, ce que chaque prix comprend, un bascule mensuel / annuel si les deux existent. Prix = offre validée uniquement.",
+  "when": "Page de tarifs ou offre à plusieurs plans : 2 ou 3 plans, le plan recommandé en carte sombre, ce que chaque prix comprend, un bascule mensuel / annuel si les deux existent. Prix = offre validée uniquement. À la bascule, les prix changent dans une View Transition (l’ancien s’efface vers le haut, le nouveau monte) quand le navigateur la connaît et que le mouvement est permis.",
   "avoid": "Plus de trois plans, prix barrés fictifs, plan « entreprise » sans prix ni contenu, bascule qui change autre chose que le prix. Pour vendre une seule offre datée, préférer le billet (offer-ticket).",
-  "reduced_motion": "Immobile.",
+  "reduced_motion": "Immobile : à la bascule, les prix changent sans transition.",
   "slots": {
     "title": {"type": "html", "doc": "h2 centré sans virgule ni point.", "example": "Un accompagnement <span class=\"hl\">à la mesure de votre équipe</span>"},
     "intro": {"type": "text", "doc": "Chapô : ce que tous les plans ont en commun.", "example": "Après le parcours, le suivi annuel vous aide à mettre le bilan à jour. Prix hors taxes."},
@@ -135,6 +135,46 @@
   padding-top: 18px;
   border-top: 1px solid var(--line);
 }
+
+/* Period switch: each price (up to four plans) is named only for the length
+   of the View Transition (script); the old figure rolls up and the new one
+   comes in from below, clipped to the price line. */
+@keyframes s-pricing-out {
+  to { opacity: 0; transform: translateY(-45%); }
+}
+
+@keyframes s-pricing-in {
+  from { opacity: 0; transform: translateY(45%); }
+}
+
+::view-transition-image-pair(s-pricing-prix-0),
+::view-transition-image-pair(s-pricing-prix-1),
+::view-transition-image-pair(s-pricing-prix-2),
+::view-transition-image-pair(s-pricing-prix-3) {
+  overflow: clip;
+}
+
+::view-transition-old(s-pricing-prix-0),
+::view-transition-old(s-pricing-prix-1),
+::view-transition-old(s-pricing-prix-2),
+::view-transition-old(s-pricing-prix-3) {
+  animation: s-pricing-out 0.24s var(--ease) both;
+}
+
+::view-transition-new(s-pricing-prix-0),
+::view-transition-new(s-pricing-prix-1),
+::view-transition-new(s-pricing-prix-2),
+::view-transition-new(s-pricing-prix-3) {
+  animation: s-pricing-in 0.34s var(--ease) 0.04s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
 </style>
 <!-- section:{{id}} -->
 <section id="{{id}}" class="s-pricing section" aria-labelledby="{{id}}-titre" data-section="pricing-table" data-period="month">
@@ -162,17 +202,34 @@
 <!-- /section:{{id}} -->
 <script data-section-script="pricing-table">
 (function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   document.querySelectorAll('.s-pricing').forEach(function (section) {
     // No yearly price anywhere: no switch (CSS :has() does it too).
     var wrap = section.querySelector('.s-pricing__toggle-wrap');
     if (wrap && !section.querySelector('[data-period-show="year"]')) wrap.hidden = true;
+    function setPeriod(value) {
+      section.setAttribute('data-period', value);
+      section.querySelectorAll('[data-period-show]').forEach(function (el) {
+        el.hidden = el.getAttribute('data-period-show') !== value;
+      });
+    }
     section.querySelectorAll('.s-pricing__toggle input').forEach(function (input) {
       input.addEventListener('change', function () {
         if (!input.checked) return;
-        section.setAttribute('data-period', input.value);
-        section.querySelectorAll('[data-period-show]').forEach(function (el) {
-          el.hidden = el.getAttribute('data-period-show') !== input.value;
-        });
+        if (!document.startViewTransition || reduce.matches) { setPeriod(input.value); return; }
+        // Names live only during the transition, on this section's prices:
+        // never a duplicate view-transition-name on the page.
+        var prices = Array.prototype.slice.call(section.querySelectorAll('.s-pricing__price'));
+        prices.forEach(function (p, i) { p.style.viewTransitionName = 's-pricing-prix-' + i; });
+        var done = function () {
+          prices.forEach(function (p) { p.style.viewTransitionName = ''; });
+        };
+        try {
+          document.startViewTransition(function () { setPeriod(input.value); }).finished.then(done, done);
+        } catch (e) {
+          done();
+          setPeriod(input.value);
+        }
       });
     });
   });

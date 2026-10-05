@@ -1,0 +1,418 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "ownership-diagram",
+  "name": "Schéma de propriété (le dossier reste, l’outil change)",
+  "objection": "Suis-je enfermé chez vous, que deviennent mes fichiers si je change d’outil ou de prestataire",
+  "when": "Offre qui s’installe dans les données ou les outils du client (logiciel, accompagnement, prestation récurrente), quand la peur de l’enfermement freine la décision. Un schéma en vrai HTML, lisible comme deux listes : ce que le client possède (fichiers, données, comptes, documents, chacun avec son format) dans un bloc plein, et les outils ou prestataires qui s’y branchent, l’actuel en trait plein et les autres en pointillé. Une légende, puis deux ou trois preuves vérifiables (format d’export, préavis, passation). Après la démonstration ou le parcours, ou près de la FAQ.",
+  "avoid": "Promesse de liberté sans preuve vérifiable (format, délai, démarche), concurrent nommé ou logo de marque tierce sans autorisation, schéma qui porte une information absente du texte, plus de cinq éléments de chaque côté.",
+  "reduced_motion": "Liaisons tracées d’emblée, rien ne bouge. Sans JavaScript, de même.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Votre bilan<br><span class=\"hl\">part avec vous</span>"},
+    "intro": {"type": "text", "doc": "Chapô : à qui appartient quoi, et ce qui se passe si le client part.", "example": "Les données collectées et le modèle de calcul sont à votre nom, dans des formats ouverts. Si vous changez de cabinet, ils partent avec vous."},
+    "owned_title": {"type": "text", "doc": "Titre du bloc de ce que le client possède (h3), court.", "example": "Votre dossier"},
+    "owned": {"type": "list", "doc": "2 à 5 éléments que le client possède. name : l'élément ; format : où ou sous quelle forme il existe (format de fichier, compte à son nom), court, ou vide.", "fields": {"name": "élément possédé", "format": "format ou forme, court"}, "example": [
+      {"name": "Les données d’activité collectées", "format": "XLSX · CSV"},
+      {"name": "Le modèle de calcul et ses facteurs sourcés", "format": "XLSX"},
+      {"name": "Le rapport et ses annexes", "format": "PDF · DOCX"},
+      {"name": "Les comptes des outils, ouverts à votre nom", "format": "Accès admin"}
+    ]},
+    "tools_title": {"type": "text", "doc": "Titre de la colonne des outils et prestataires (h3), court.", "example": "Ce qui s’y branche"},
+    "tools": {"type": "list", "doc": "2 à 5 outils ou prestataires remplaçables. name : nom (le vôtre pour l'actuel, une catégorie pour les autres, jamais un concurrent nommé sans accord) ; note : ce qu'il fait du dossier ; state : current (trait plein, un seul) ou alt (pointillé) ; tag : état court affiché (« Aujourd’hui »), ou vide.", "fields": {"name": "nom ou catégorie", "note": "rôle, une ligne", "state": "current ou alt", "tag": "état court ou vide"}, "example": [
+      {"name": "Meridian Conseil", "note": "Le cabinet qui mène votre bilan cette année", "state": "current", "tag": "Aujourd’hui"},
+      {"name": "Un autre cabinet", "note": "Reprend le dossier là où il en est", "state": "alt", "tag": ""},
+      {"name": "Votre équipe", "note": "Met le bilan à jour seule l’année suivante", "state": "alt", "tag": ""},
+      {"name": "Un logiciel de bilan carbone", "note": "Importe vos données et vos facteurs", "state": "alt", "tag": ""}
+    ]},
+    "caption": {"type": "text", "doc": "Légende du schéma, une phrase qui dit ce qu'il montre.", "example": "Le dossier ne bouge pas : seul ce qui s’y branche change, et c’est vous qui décidez quand."},
+    "proofs": {"type": "list", "doc": "2 ou 3 preuves vérifiables. term : intitulé court (Formats, Préavis, Passation) ; text : la condition exacte, chiffrée ou datée.", "fields": {"term": "intitulé", "text": "condition exacte"}, "example": [
+      {"term": "Formats", "text": "Tableurs ouverts en XLSX et CSV, rapport en PDF et en DOCX modifiable. Aucun format propre au cabinet."},
+      {"term": "Préavis", "text": "La mission s’arrête sur simple email, avec trente jours de préavis et sans frais de sortie."},
+      {"term": "Passation", "text": "Deux heures avec la personne qui prend la suite, pour lui remettre le dossier et ses hypothèses."}
+    ]}
+  }
+}
+</script>
+<style data-section-style="ownership-diagram">
+/* Text column (head, then the proofs) and the diagram beside it. The DOM
+   keeps head, diagram, proofs: the stacked order on a narrow screen. */
+.s-own__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+  grid-template-areas:
+    "head figure"
+    "proofs figure";
+  grid-template-rows: auto 1fr;
+  gap: 0 clamp(40px, 1rem + 5vw, 96px);
+}
+
+.s-own__head {
+  grid-area: head;
+  margin-bottom: clamp(24px, 1rem + 1vw, 36px);
+}
+
+.s-own__figure {
+  grid-area: figure;
+  align-self: center;
+  margin: 0;
+}
+
+.s-own__proofs {
+  grid-area: proofs;
+  align-self: start;
+  border-top: 1px solid var(--line);
+}
+
+.s-own__proof {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 0.32fr) minmax(0, 1fr);
+  gap: 4px 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-own__proof dt {
+  font-weight: 700;
+}
+
+.s-own__proof dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- The diagram: the owned block, a link, then a spine that every tool
+   plugs into. Lines are borders and pseudo-elements: any number of tools,
+   any card height, nothing to measure. ---- */
+.s-own__diagram {
+  --link: clamp(28px, 0.6rem + 2.4vw, 52px);
+  --elbow: 34px;
+  --wire: 2px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--link) minmax(0, 1.1fr);
+  grid-template-areas:
+    ". . ttl"
+    "core link list";
+  align-items: center;
+  row-gap: 10px;
+}
+
+.s-own__core {
+  grid-area: core;
+  padding: clamp(20px, 0.9rem + 1vw, 28px);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lift);
+}
+
+.s-own__core-title,
+.s-own__tools-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.125rem;
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-own__core-title svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+
+/* Owned items as a file tree: a trunk, a tick per item, the format in mono. */
+.s-own__owned {
+  margin: 16px 0 0 10px;
+  border-left: 1.5px solid var(--line-strong);
+}
+
+.s-own__owned > li {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 8px 0 8px 22px;
+}
+
+.s-own__owned > li::before {
+  content: "";
+  position: absolute;
+  top: calc(8px + 0.8em);
+  left: 0;
+  width: 14px;
+  border-top: 1.5px solid var(--line-strong);
+}
+
+.s-own__file {
+  line-height: var(--lh-snug);
+  text-wrap: pretty;
+}
+
+.s-own__format {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.s-own__link {
+  grid-area: link;
+  height: var(--wire);
+  background: var(--ink);
+  transform-origin: 0 50%;
+}
+
+.s-own__tools-title {
+  grid-area: ttl;
+  padding-left: var(--elbow);
+}
+
+.s-own__tools {
+  grid-area: list;
+}
+
+.s-own__tool {
+  position: relative;
+  padding: 7px 0 7px var(--elbow);
+}
+
+/* The spine: one segment per tool, from the first card's middle to the last's. */
+.s-own__tool::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-left: var(--wire) solid var(--ink);
+}
+
+.s-own__tool:first-child::before {
+  top: 50%;
+}
+
+.s-own__tool:last-child::before {
+  bottom: 50%;
+}
+
+.s-own__tool:only-child::before {
+  content: none;
+}
+
+/* The stub from the spine to the card: solid for the tool in place,
+   dashed for the ones that could take its place. */
+.s-own__tool::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - var(--wire) / 2);
+  left: 0;
+  width: var(--elbow);
+  border-top: var(--wire) dashed var(--line-strong);
+  transform-origin: 0 50%;
+}
+
+.s-own__tool[data-state="current"]::after {
+  border-top-style: solid;
+  border-top-color: var(--ink);
+}
+
+.s-own__card {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: calc(var(--radius-card) - 4px);
+  background: var(--surface);
+}
+
+.s-own__tool[data-state="current"] .s-own__card {
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow);
+}
+
+/* The plug: a hollow socket for a possible tool, filled for the one in place. */
+.s-own__card::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border: var(--wire) solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.s-own__tool[data-state="current"] .s-own__card::before {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.s-own__tool-name {
+  font-weight: 700;
+  line-height: var(--lh-snug);
+}
+
+.s-own__tool-note {
+  color: var(--muted);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.s-own__tag {
+  justify-self: start;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-own__caption {
+  max-width: 46ch;
+  margin-top: 22px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Drawn once, when the diagram enters (reveal.js sets .is-in). Only when the
+   engine runs with motion allowed (html.rv-on): otherwise the wires are
+   simply there. Transform and opacity only. */
+.rv-on .s-own__figure .s-own__link {
+  transform: scaleX(0);
+  transition: transform 0.4s var(--ease) 0.2s;
+}
+
+.rv-on .s-own__figure .s-own__tool::before {
+  opacity: 0;
+  transition: opacity 0.3s var(--ease) 0.5s;
+}
+
+.rv-on .s-own__figure .s-own__tool::after {
+  transform: scaleX(0);
+  transition: transform 0.35s var(--ease) calc(0.62s + var(--i, 0) * 0.1s);
+}
+
+.rv-on .s-own__figure .s-own__card {
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+  transition:
+    opacity 0.45s var(--ease) calc(0.8s + var(--i, 0) * 0.1s),
+    transform 0.45s var(--ease) calc(0.8s + var(--i, 0) * 0.1s);
+}
+
+.rv-on .s-own__figure.is-in .s-own__link,
+.rv-on .s-own__figure.is-in .s-own__tool::after,
+.rv-on .s-own__figure.is-in .s-own__card {
+  transform: none;
+}
+
+.rv-on .s-own__figure.is-in .s-own__tool::before,
+.rv-on .s-own__figure.is-in .s-own__card {
+  opacity: 1;
+}
+
+@media (max-width: 1100px) {
+  .s-own__grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "figure"
+      "proofs";
+    grid-template-rows: none;
+  }
+
+  .s-own__figure {
+    max-width: 760px;
+    margin-bottom: clamp(32px, 1rem + 2vw, 48px);
+  }
+}
+
+/* Narrow screens: the owned block on top, the link drops down to the spine,
+   which runs past the tools title to the last card. */
+@media (max-width: 640px) {
+  .s-own__diagram {
+    --elbow: 28px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "core"
+      "link"
+      "ttl"
+      "list";
+    row-gap: 0;
+  }
+
+  .s-own__link {
+    justify-self: start;
+    width: var(--wire);
+    height: 28px;
+    margin-left: 24px;
+    transform-origin: 50% 0;
+  }
+
+  .rv-on .s-own__figure .s-own__link {
+    transform: scaleY(0);
+  }
+
+  .s-own__tools-title,
+  .s-own__tools {
+    margin-left: 24px;
+  }
+
+  .s-own__tools-title {
+    position: relative;
+    padding-block: 6px 12px;
+  }
+
+  .s-own__tools-title::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-left: var(--wire) solid var(--ink);
+  }
+
+  .s-own__tool:first-child::before {
+    top: 0;
+  }
+
+  .s-own__tool:only-child::before {
+    content: "";
+    bottom: 50%;
+  }
+
+  .s-own__proof {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-own section" aria-labelledby="{{id}}-titre" data-section="ownership-diagram">
+  <div class="wrap s-own__grid">
+    <div class="section-head s-own__head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+    <figure class="s-own__figure" data-reveal="fade">
+      <div class="s-own__diagram">
+        <div class="s-own__core band-dark">
+          <h3 class="s-own__core-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 7.5V18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9.5a2 2 0 0 0-2-2h-7.2L9.6 5H5a2 2 0 0 0-2 2.5Z"/></svg>{{owned_title}}</h3>
+          <ul class="s-own__owned" role="list">
+            {{#owned}}<li><span class="s-own__file">{{name}}</span>{{#format}}<span class="s-own__format">{{format}}</span>{{/format}}</li>{{/owned}}
+          </ul>
+        </div>
+        <span class="s-own__link" aria-hidden="true"></span>
+        <h3 class="s-own__tools-title">{{tools_title}}</h3>
+        <ul class="s-own__tools" role="list">
+          {{#tools}}<li class="s-own__tool" data-state="{{state}}" style="--i:{{@index0}}"><div class="s-own__card">{{#tag}}<span class="s-own__tag">{{tag}}</span>{{/tag}}<span class="s-own__tool-name">{{name}}</span><span class="s-own__tool-note">{{note}}</span></div></li>{{/tools}}
+        </ul>
+      </div>
+      <figcaption class="s-own__caption">{{caption}}</figcaption>
+    </figure>
+    <dl class="s-own__proofs" data-reveal-group>
+      {{#proofs}}<div class="s-own__proof" data-reveal><dt>{{term}}</dt><dd>{{text}}</dd></div>{{/proofs}}
+    </dl>
+  </div>
+</section>
+<!-- /section:{{id}} -->

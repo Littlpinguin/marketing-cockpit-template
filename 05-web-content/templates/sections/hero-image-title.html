@@ -1,0 +1,198 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "hero-image-title",
+  "name": "Hero à image dans le titre",
+  "objection": "De quoi s’agit-il, pour qui, jusqu’à quand",
+  "when": "En première section, à la place de hero, quand une petite image dit l’offre mieux qu’un objet posé à côté : la ressource, le livrable, le geste du métier. L’image s’insère entre deux mots du titre, à la hauteur de la lettre, dans une pastille aux couleurs de la marque ; le titre devient l’objet fort. Puis une accroche courte, un seul bouton, la ligne d’échéance.",
+  "avoid": "Photo de banque d’images, plus d’une image dans le titre, image chargée de texte, titre de plus de trois lignes, image en fin de titre (elle finirait seule sur sa ligne), alt qui répète le titre, étiquette au-dessus du h1, second bouton concurrent.",
+  "reduced_motion": "La pastille est ouverte d’emblée, rien ne bouge.",
+  "slots": {
+    "level": {"type": "number", "doc": "Niveau du titre : 1 sur une page (un seul h1). 2 seulement dans le catalogue, où un autre hero porte déjà le h1.", "example": 1},
+    "title_start": {"type": "html", "doc": "Début du titre, avant l’image (deux ou trois mots forts). Sans virgule ni point.", "example": "Le bilan carbone"},
+    "title_end": {"type": "html", "doc": "Suite du titre après l’image, collée à elle par une espace insécable (l’image ne finit jamais seule sur sa ligne). Coupures en <br>, segment accentué en <span class=\"hl\">…</span>. Sans virgule ni point.", "example": "de votre PME<br><span class=\"hl\">en six semaines</span>"},
+    "tone": {"type": "text", "doc": "Fond de la pastille : tint (teinte claire de la marque), gradient (dégradé signature), dark (encre). L’objet composé se dessine en currentColor sur ce fond.", "example": "gradient"},
+    "image": {"type": "object", "doc": "Vraie image à la place de l’objet : {src, alt, width, height}, WebP recadré à 2,2:1 (le produit, le livrable, l’équipe au travail ; jamais de banque d’images). alt vide : image décorative (le cas normal, le titre dit tout). alt rempli : lu dans le titre, entre les deux moitiés, donc écrit comme un complément (« (atelier en usine) »). Mention IA si générée. null : l’objet composé.", "fields": {"src": "chemin relatif (WebP 2,2:1)", "alt": "vide ou complément lu dans le titre", "width": "px", "height": "px"}, "example": null},
+    "object": {"type": "html", "doc": "Scène composée dans la pastille quand « image » est vide : un <svg> en currentColor (viewBox en 2,2:1, par exemple 0 0 220 100), sans texte. Classe s-himg__ko sur un tracé qui doit prendre la couleur du fond (ajour). Toujours décoratif.", "example": "<svg viewBox=\"0 0 220 100\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"44\" y=\"20\" width=\"22\" height=\"58\" rx=\"6\" opacity=\".5\"/><rect x=\"76\" y=\"30\" width=\"22\" height=\"48\" rx=\"6\" opacity=\".62\"/><rect x=\"108\" y=\"41\" width=\"22\" height=\"37\" rx=\"6\" opacity=\".74\"/><rect x=\"140\" y=\"52\" width=\"22\" height=\"26\" rx=\"6\" opacity=\".86\"/><rect x=\"172\" y=\"61\" width=\"22\" height=\"17\" rx=\"6\"/><path d=\"M36 86h166\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"4\" stroke-linecap=\"round\" opacity=\".6\"/></svg>"},
+    "lede": {"type": "text", "doc": "Une phrase, deux lignes sur bureau : pour qui, et ce qu’on obtient.", "example": "Six ateliers en petit groupe pour mesurer vos émissions et répondre aux questionnaires carbone de vos clients."},
+    "cta_label": {"type": "text", "doc": "Libellé du bouton : un verbe, sans prix.", "example": "Réserver ma place"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion (#offre) ou URL de la conversion.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le bouton (le CTA que la QA protège).", "example": true},
+    "secondary_label": {"type": "text", "doc": "Lien de lecture facultatif à côté du bouton, jamais un second objectif. Mesuré en cta_click, position hero-lien : la QA le signale (cta-hors-objectif) s’il ne mène pas à la conversion. Vide : rien.", "example": ""},
+    "secondary_href": {"type": "url", "doc": "Ancre de la section visée par le lien de lecture.", "example": "#programme"},
+    "deadline": {"type": "text", "doc": "Ligne d’échéance statique, toujours vraie (une date, pas un compte). Vide : pas de ligne.", "example": "Inscriptions jusqu’au 31 mars 2027"},
+    "countdown": {"type": "object", "doc": "Optionnel : remplace la date par les jours restants (moteur offer). Champs many (« … {n} jours »), one, zero. null : la date reste.", "fields": {"many": "texte avec {n}", "one": "veille de la clôture", "zero": "jour de la clôture"}, "example": {"many": "Clôture des inscriptions dans {n} jours", "one": "Clôture des inscriptions demain", "zero": "Clôture des inscriptions ce soir"}},
+    "detail": {"type": "text", "doc": "Fait court après l’échéance (places, format). Vide : rien.", "example": "12 entreprises par cohorte"},
+    "proof": {"type": "text", "doc": "Ligne de preuve facultative sous le bouton : un fait vérifiable et sa source, moins de douze mots. Vide : rien.", "example": ""}
+  }
+}
+</script>
+<style data-section-style="hero-image-title">
+/* The title carries the image: a pill at the height of the capitals, set
+   between two words, glued to the next one by a no-break space. The title
+   spans the grid; the lede and the action follow underneath. */
+.s-himg {
+  padding-block: clamp(40px, 1.5rem + 5vw, 104px) clamp(64px, 2.5rem + 5vw, 120px);
+}
+
+.s-himg__title {
+  max-width: 15em;
+  font-size: clamp(2.75rem, 0.8rem + 6.4vw, 7rem);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+@supports (text-box: trim-both cap alphabetic) {
+  .s-himg__title {
+    text-box: trim-both cap alphabetic;
+  }
+}
+
+/* The pill: its colours come from the tone, the scene inside is drawn in
+   currentColor; .s-himg__ko takes the colour of the ground (a cut-out). */
+/* The pill and the word after it never part (an atomic inline is a break
+   opportunity of its own, the no-break space alone does not hold it). */
+.s-himg__glue {
+  white-space: nowrap;
+}
+
+.s-himg__pic {
+  --pic-ground: var(--surface);
+  position: relative;
+  display: inline-block;
+  height: 0.8em;
+  aspect-ratio: 2.2 / 1;
+  overflow: hidden;
+  vertical-align: -0.02em;
+  border-radius: var(--radius-cta);
+  background: linear-gradient(var(--tint), var(--tint)), var(--pic-ground);
+  color: var(--hl);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.s-himg__pic--gradient {
+  --pic-ground: var(--brand-primary);
+  background: var(--gradient);
+  color: var(--brand-white);
+  box-shadow: none;
+}
+
+.s-himg__pic--dark {
+  --pic-ground: var(--brand-dark);
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  box-shadow: none;
+}
+
+.s-himg__pic > svg,
+.s-himg__pic > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.s-himg__pic > img {
+  object-fit: cover;
+}
+
+.s-himg__pic .s-himg__ko {
+  stroke: var(--pic-ground);
+}
+
+/* Entrance: the pill opens from its centre, once, after the title is read. */
+.rv-on .s-himg__pic[data-reveal] {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 50% round var(--radius-cta));
+  transition: clip-path 0.9s var(--ease) 0.3s;
+}
+
+.rv-on .s-himg__pic[data-reveal].is-in {
+  clip-path: inset(0 round var(--radius-cta));
+}
+
+.s-himg__body {
+  display: grid;
+  justify-items: start;
+  gap: clamp(20px, 1rem + 0.8vw, 28px);
+  max-width: 38rem;
+  margin-top: clamp(28px, 1rem + 2.4vw, 56px);
+}
+
+.s-himg__lede {
+  color: var(--muted);
+}
+
+.s-himg__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 4px;
+}
+
+.s-himg__deadline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 10px;
+  margin-top: -6px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.s-himg__deadline::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-himg__proof {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-himg__proof svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--hl);
+  transform: translateY(3px);
+}
+
+/* Wide screens: the lede and the action sit under the title, offset by two
+   columns of the grid, so that the title keeps the left edge to itself. */
+@media (min-width: 1101px) {
+  .s-himg__body {
+    margin-left: calc((100% + var(--gutter)) / 12 * 2);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-himg section" aria-labelledby="{{id}}-titre" data-section="hero-image-title">
+  <div class="wrap">
+    <h{{level}} id="{{id}}-titre" class="s-himg__title">{{{title_start}}} <span class="s-himg__glue"><span class="s-himg__pic s-himg__pic--{{tone}}"{{^image.alt}} aria-hidden="true" data-qa-decor{{/image.alt}} data-reveal>{{#image}}<img src="{{src}}" alt="{{alt}}" width="{{width}}" height="{{height}}" fetchpriority="high">{{/image}}{{^image}}{{{object}}}{{/image}}</span>&nbsp;</span>{{{title_end}}}</h{{level}}>
+    <div class="s-himg__body">
+      <p class="s-himg__lede lede">{{lede}}</p>
+      <div class="s-himg__buttons">
+        <a class="btn btn--primary" href="{{cta_href}}" data-track="cta_click" data-cta-position="hero"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        {{#secondary_label}}<a class="link-arrow" href="{{secondary_href}}" data-track="cta_click" data-cta-position="hero-lien">{{secondary_label}}</a>{{/secondary_label}}
+      </div>
+      {{#deadline}}<p class="s-himg__deadline"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#detail}}<span aria-hidden="true">·</span><span>{{detail}}</span>{{/detail}}</p>{{/deadline}}
+      {{#proof}}<p class="s-himg__proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>{{proof}}</span></p>{{/proof}}
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

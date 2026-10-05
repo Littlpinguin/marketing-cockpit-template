@@ -1,0 +1,114 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "quote-interlude",
+  "name": "Citation en respiration",
+  "objection": "Qu’en dit quelqu’un qui l’a vécu",
+  "engines": ["annotate"],
+  "when": "Entre deux sections denses, pour faire respirer la page : une seule phrase en grand, sur toute la largeur, signée et datée, avec au plus une annotation à main levée sur les mots qui comptent. Fond clair ou bande sombre (dark).",
+  "avoid": "Citation inventée ou anonyme, plus d’une phrase, phrase de plus de 30 mots, compliment sans fait, deux citations en respiration sur la même page, une bande sombre juste avant ou après une autre bande sombre.",
+  "reduced_motion": "Citation visible d’emblée ; l’annotation est posée sans être tracée.",
+  "slots": {
+    "title": {"type": "text", "doc": "Titre lu par les lecteurs d’écran seulement (la section n’affiche pas de titre).", "example": "Ce qu’en dit une participante"},
+    "quote": {"type": "html", "doc": "Une phrase, 30 mots au plus, sans guillemets (ils sont posés par la section). Au plus une annotation : <mark data-annotate=\"underline\">deux ou trois mots</mark> (underline, highlight, circle, box).", "example": "Le jour où l’acheteur a demandé d’où venait notre chiffre, j’avais <mark data-annotate=\"underline\">la source sous les yeux</mark>."},
+    "name": {"type": "text", "doc": "Nom de la personne (prénom et initiale, avec son accord).", "example": "Claire M."},
+    "role": {"type": "text", "doc": "Fonction et entreprise, ou contexte.", "example": "Directrice administrative, transport frigorifique (avis fictif)"},
+    "context": {"type": "text", "doc": "Quand ou à quelle occasion, facultatif (vide : rien).", "example": "Après la cohorte de printemps 2026"},
+    "dark": {"type": "bool", "doc": "true : bande sombre ; false : fond clair (jamais à côté d’une autre bande sombre).", "example": false}
+  }
+}
+</script>
+<style data-section-style="quote-interlude">
+.s-quote {
+  padding-block: clamp(96px, 4rem + 8vw, 184px);
+}
+
+.s-quote.band-dark {
+  padding-block: clamp(104px, 4.5rem + 8vw, 200px);
+}
+
+/* Asymmetric: the quote starts a little in from the column, and its opening
+   guillemet hangs in that margin, so the letters align on one edge. */
+.s-quote__fig {
+  display: grid;
+  gap: clamp(28px, 1.2rem + 1.6vw, 48px);
+  max-width: 64rem;
+  padding-inline-start: max(28px, 6vw);
+}
+
+.s-quote__text {
+  font-size: clamp(1.75rem, 1.05rem + 2.6vw, 3.375rem);
+  line-height: 1.14;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.s-quote__text p {
+  position: relative;
+  max-width: 22em;
+  text-wrap: balance;
+}
+
+.s-quote__text p::before {
+  content: "«";
+  content: "«" / "";
+  position: absolute;
+  top: 0;
+  right: 100%;
+  padding-right: 0.16em;
+  color: var(--hl);
+}
+
+.s-quote__text p::after {
+  content: "\00a0»";
+  content: "\00a0»" / "";
+  color: var(--hl);
+}
+
+.s-quote__who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  line-height: 1.45;
+}
+
+.s-quote__rule {
+  flex: none;
+  align-self: center;
+  width: 40px;
+  height: 3px;
+  background: var(--gradient);
+}
+
+.s-quote__name {
+  font-weight: 700;
+}
+
+.s-quote__role,
+.s-quote__context {
+  color: var(--muted);
+}
+
+.s-quote__context {
+  flex-basis: 100%;
+  padding-inline-start: 54px;
+  font-size: var(--t-small);
+}
+
+@media (max-width: 640px) {
+  .s-quote__context {
+    padding-inline-start: 0;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-quote section{{#dark}} band-dark{{/dark}}" aria-labelledby="{{id}}-titre" data-section="quote-interlude">
+  <div class="wrap">
+    <h2 id="{{id}}-titre" class="sr-only">{{title}}</h2>
+    <figure class="s-quote__fig" data-reveal-group>
+      <blockquote class="s-quote__text" data-reveal="fade"><p>{{{quote}}}</p></blockquote>
+      <figcaption class="s-quote__who" data-reveal="fade"><span class="s-quote__rule" aria-hidden="true"></span><span class="s-quote__name">{{name}}</span><span class="s-quote__role">{{role}}</span>{{#context}}<span class="s-quote__context">{{context}}</span>{{/context}}</figcaption>
+    </figure>
+  </div>
+</section>
+<!-- /section:{{id}} -->

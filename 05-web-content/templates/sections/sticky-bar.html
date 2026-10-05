@@ -4,7 +4,7 @@
   "name": "Barre d’action mobile collante",
   "region": "after",
   "objection": "Agir sans remonter la page (mobile)",
-  "when": "Pages longues sur mobile, ou page locale (le bouton appelle). Sous 768 px seulement : une barre fixe en bas porte le CTA primaire. Elle apparaît une fois le hero passé et s’efface devant le bloc de conversion et le pied de page, pour ne rien masquer.",
+  "when": "Pages longues sur mobile, ou page locale (le bouton appelle). Sous 768 px seulement : une barre fixe en bas porte le CTA primaire. Elle apparaît une fois le hero passé et s’efface devant le bloc de conversion et le pied de page, pour ne rien masquer. Cachée, elle est hors du clavier (visibility). Tant qu’elle est visible, la barre du haut (topbar) retire son propre bouton : jamais deux fois le même bouton à l’écran (événement landing:sticky-bar, attribut data-sticky-bar sur <html>).",
   "avoid": "Une barre sur bureau, une barre visible dès le chargement, une destination différente du CTA primaire, un bouton sous 44 px.",
   "reduced_motion": "La barre apparaît et disparaît sans glissement.",
   "slots": {
@@ -102,13 +102,21 @@
     guards = guards.filter(Boolean);
     var onScreen = new Map();
     var heroPassed = !hero;
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+    var root = document.documentElement;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
         else onScreen.set(e.target, e.isIntersecting);
       });
       var blocked = guards.some(function (g) { return onScreen.get(g); });
-      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+      var visible = heroPassed && !blocked;
+      if (visible === bar.hasAttribute('data-visible') && root.hasAttribute('data-sticky-bar')) return;
+      bar.toggleAttribute('data-visible', visible);
+      // The top bar drops its own button on small screens while this one shows.
+      root.setAttribute('data-sticky-bar', visible ? 'on' : 'off');
+      document.dispatchEvent(new CustomEvent('landing:sticky-bar', { detail: { visible: visible } }));
     });
     if (hero) io.observe(hero);
     guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });

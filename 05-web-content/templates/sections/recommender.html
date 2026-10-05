@@ -1,0 +1,1022 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "recommender",
+  "name": "Recommandeur d’offre",
+  "objection": "Laquelle de vos offres est pour moi",
+  "when": "Trois offres ou plus, ou un bon choix qui dépend du profil : deux ou trois questions courtes (vrais boutons radio, une question par écran), puis l’offre recommandée avec la phrase qui reprend les réponses, ce qu’elle comprend, son prix et son bouton. Une réponse peut mener à une autre question (next) ou conclure sur une offre (offer) ; sinon l’offre qui a le plus de points l’emporte, la première de la liste en cas d’égalité. Sur une page à billet (offer-ticket), une offre qui porte formula règle la formule du billet comme la porte de choix (landing:choice, parties gated révélées) et son bouton mène au bloc de conversion ; sinon il suit son href. Mesure : select_content à l’affichage de la recommandation. Sans JavaScript, toutes les offres restent listées avec leur ligne « pour qui ». Place : juste avant la grille tarifaire ou le billet d’une page à plusieurs offres, ou juste après le hero d’une page hub.",
+  "avoid": "Deux offres seulement (la porte de choix suffit), plus de trois questions sur un chemin, une question sans effet sur la recommandation, une recommandation sans prix ni contenu, un questionnaire qui retient la réponse derrière un email.",
+  "reduced_motion": "Les questions et le résultat changent sans transition : rien ne glisse, rien ne s’estompe.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, coupé par <br>.", "example": "Trois questions<br>pour trouver<br><span class=\"hl\">votre parcours</span>"},
+    "intro": {"type": "text", "doc": "Chapô d’une phrase : ce que le visiteur obtient en répondant.", "example": "Répondez en une minute : nous vous disons quel parcours vous convient, ce qu’il comprend et combien il coûte."},
+    "param": {"type": "text", "doc": "Type de contenu mesuré (select_content) et nom du paramètre transmis avec landing:choice.", "example": "formule"},
+    "questions": {"type": "list", "doc": "2 ou 3 questions par chemin, dans l’ordre. key : identifiant ; step : nom court de l’étape (rail) ; text : la question, terminée par « ? » ; options : 2 à 4 réponses. Par réponse : value, label (réponse courte), detail (précision facultative, moins de 12 mots), echo (groupe verbal repris dans la phrase « pourquoi », après « Vous »), et au choix next (key de la question suivante quand elle dépend de cette réponse), offer (key d’une offre : la réponse conclut) ou points (keys d’offres favorisées, séparées par des espaces ; répéter une key double son poids).", "fields": {"key": "identifiant", "step": "nom court de l’étape", "text": "question", "options": "liste de {value, label, detail, echo, next, offer, points}"}, "example": [
+      {"key": "depart", "step": "Votre point de départ", "text": "Avez-vous déjà mesuré vos émissions ?", "options": [
+        {"value": "jamais", "label": "Jamais", "detail": "Ce sera votre premier bilan", "echo": "n’avez jamais mesuré vos émissions"},
+        {"value": "ancien", "label": "Oui, il y a plus de deux ans", "echo": "avez un bilan de plus de deux ans à refaire"},
+        {"value": "recent", "label": "Oui, depuis moins de deux ans", "detail": "Il reste à le tenir à jour", "echo": "avez un bilan de moins de deux ans", "offer": "suivi"}
+      ]},
+      {"key": "equipe", "step": "Votre équipe", "text": "Qui portera le bilan chez vous ?", "options": [
+        {"value": "seul", "label": "Une seule personne", "detail": "Elle réunit les données de tous les postes", "echo": "menez le bilan seul", "next": "sites"},
+        {"value": "plusieurs", "label": "Deux ou trois personnes", "detail": "Chacune prend ses postes", "echo": "répartissez le travail entre deux ou trois personnes", "offer": "equipe"}
+      ]},
+      {"key": "sites", "step": "Vos sites", "text": "Sur combien de sites travaillez-vous ?", "options": [
+        {"value": "un", "label": "Un seul site", "echo": "travaillez sur un seul site", "points": "solo"},
+        {"value": "plusieurs", "label": "Plusieurs sites", "detail": "Usines, agences ou entrepôts", "echo": "travaillez sur plusieurs sites", "points": "equipe"}
+      ]}
+    ]},
+    "offers": {"type": "list", "doc": "2 à 4 offres ; la première l’emporte en cas d’égalité. key : identifiant (celui des réponses) ; name : nom (h3) ; for : pour qui, en une phrase (liste sans JavaScript) ; reason : pourquoi celle-ci, une phrase après celle qui reprend les réponses ; price, unit : prix affiché et unité ; includes : 3 à 5 lignes ; href : destination du bouton (ancre ou URL) ; formula : facultatif, valeur d’une formule du billet (offer-ticket) que l’offre règle ; cta_label : verbe du bouton ; primary : facultatif, remplace le slot primary pour cette offre.", "fields": {"key": "identifiant", "name": "nom", "for": "pour qui", "reason": "pourquoi celle-ci", "price": "prix affiché", "unit": "unité", "includes": "liste", "href": "ancre ou URL", "formula": "formule du billet ou vide", "cta_label": "verbe du bouton", "primary": "bool facultatif"}, "example": [
+      {"key": "solo", "name": "Parcours Solo", "for": "Une personne qui mène le bilan d’une entreprise installée sur un seul site.", "reason": "Le parcours Solo suffit quand une seule personne réunit les données d’un site.", "price": "1 900 € HT", "unit": "par entreprise", "includes": ["Six ateliers de deux heures en visio, enregistrés", "Le modèle de collecte et la table de facteurs", "La relecture de votre bilan avant la restitution", "Le groupe d’échange de la cohorte, ouvert un an"], "href": "#offre", "formula": "solo", "cta_label": "Réserver ce parcours"},
+      {"key": "equipe", "name": "Parcours Équipe", "for": "Deux ou trois personnes de la même entreprise, ou une entreprise sur plusieurs sites.", "reason": "Le parcours Équipe inscrit jusqu’à trois référents, chacun sur ses postes ou son site, et la relecture couvre tout le bilan.", "price": "2 900 € HT", "unit": "par entreprise", "includes": ["Les six ateliers pour trois personnes", "Un espace de collecte partagé, un onglet par référent", "La relecture de votre bilan avant la restitution", "Une restitution commune pour toute l’équipe"], "href": "#offre", "formula": "equipe", "cta_label": "Réserver ce parcours"},
+      {"key": "suivi", "name": "Suivi annuel", "for": "Une entreprise qui a déjà un bilan de moins de deux ans à tenir à jour.", "reason": "Votre bilan existe déjà : le suivi le met à jour chaque année sans repartir des ateliers.", "price": "dès 49 € HT", "unit": "par mois, sans engagement", "includes": ["La mise à jour annuelle des facteurs", "Le modèle de collecte de l’année", "Une séance de questions par trimestre"], "href": "#suivi", "cta_label": "Voir les formules de suivi", "primary": false}
+    ]},
+    "labels": {"type": "object", "doc": "Libellés de l’outil. step : compteur ({n}, {total}) ; next, see : bouton vers la question suivante ou vers le résultat ; back ; required : message sans réponse ; result_lead : ligne au-dessus de l’offre ; why : phrase des réponses ({answers} reçoit les echo, joints par des virgules et and) ; and ; includes : titre de la liste ; restart ; status : annonce du résultat ({name}) ; rail_result : dernière étape du rail ; all_offers : titre de la liste de toutes les offres.", "fields": {"step": "« Question {n} sur {total} »", "next": "suivant", "see": "voir le résultat", "back": "retour", "required": "erreur", "result_lead": "ligne d’en-tête du résultat", "why": "« Vous {answers}. »", "and": "et", "includes": "titre", "restart": "recommencer", "status": "« Recommandation : {name}. »", "rail_result": "dernière étape", "all_offers": "toutes les offres"}, "example": {"step": "Question {n} sur {total}", "next": "Question suivante", "see": "Voir ma recommandation", "back": "Retour", "required": "Choisissez une réponse pour continuer.", "result_lead": "D’après vos réponses", "why": "Vous {answers}.", "and": "et", "includes": "Compris", "restart": "Recommencer", "status": "Recommandation : {name}.", "rail_result": "Notre recommandation", "all_offers": "Toutes les offres en un coup d’œil"}},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le bouton de chaque offre (sauf celles qui portent primary: false) : à réserver aux offres qui mènent à la conversion de la page.", "example": true}
+  }
+}
+</script>
+<style data-section-style="recommender">
+.s-reco__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 1rem + 4vw, 96px);
+  align-items: start;
+}
+
+/* Without JavaScript the tool stays hidden: the list of offers is the section. */
+.s-reco__layout:has(> .s-reco__tool[hidden]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.s-reco__aside .section-head {
+  margin-bottom: 0;
+}
+
+/* ---- Rail: the path of questions, then the recommendation (decorative,
+   the same information is in each legend and in the result) ---- */
+.s-reco__rail {
+  display: grid;
+  margin-top: clamp(32px, 1.4rem + 1.6vw, 52px);
+}
+
+.s-reco__mark {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  column-gap: 16px;
+  padding-bottom: 22px;
+}
+
+.s-reco__mark:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 40px;
+  bottom: 6px;
+  left: 16px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.s-reco__mark[data-state="done"]::before {
+  background: var(--ink);
+}
+
+.s-reco__mark-n {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.s-reco__mark-n svg {
+  width: 16px;
+  height: 16px;
+}
+
+.s-reco__mark-step {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-reco__mark-answer {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+.s-reco__mark-answer:empty {
+  display: none;
+}
+
+.s-reco__mark[data-state="current"] .s-reco__mark-n {
+  border-color: var(--hl);
+  color: var(--hl);
+  box-shadow: 0 0 0 5px var(--tint);
+}
+
+.s-reco__mark[data-state="done"] .s-reco__mark-n {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.s-reco__mark[data-state="current"] .s-reco__mark-step,
+.s-reco__mark[data-state="done"] .s-reco__mark-step {
+  color: var(--ink);
+}
+
+/* ---- The tool: one card, one screen at a time ---- */
+.s-reco__tool {
+  padding: clamp(24px, 1rem + 2vw, 48px);
+}
+
+.s-reco__tool::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 28px;
+  right: 28px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gradient);
+}
+
+/* Every question screen takes the height of the tallest (measured by the
+   script): the nav keeps its place from one question to the next. */
+.s-reco__screens {
+  min-height: var(--reco-q-h, 0px);
+}
+
+.s-reco__q {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-reco__legend {
+  width: 100%;
+  margin-bottom: 24px;
+  padding: 0;
+}
+
+.s-reco__count {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-reco__question {
+  display: block;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.s-reco__opts {
+  display: grid;
+  gap: 12px;
+}
+
+.s-reco__opt {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 60px;
+  padding: 14px 20px;
+  border: 1.5px solid var(--line);
+  border-radius: calc(var(--radius-card) - 4px);
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.s-reco__opt:hover {
+  border-color: var(--line-strong);
+}
+
+.s-reco__opt:has(:checked) {
+  border-color: var(--hl);
+  background: var(--tint);
+}
+
+.s-reco__opt:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* The real radio, redrawn: a ring, filled with the highlight once checked. */
+.s-reco__opt input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.s-reco__opt input:checked {
+  border-color: var(--hl);
+  background: var(--hl);
+  box-shadow: inset 0 0 0 4px var(--surface);
+}
+
+.s-reco__opt input:focus-visible {
+  outline: none;
+}
+
+.s-reco__opt-text {
+  display: grid;
+  gap: 2px;
+}
+
+.s-reco__opt-label {
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.s-reco__opt-detail {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+/* On the tinted fill of a checked answer, the detail goes to full ink:
+   muted text keeps its 4.5:1 only on the plain grounds. */
+.s-reco__opt:has(:checked) .s-reco__opt-detail {
+  color: var(--ink);
+}
+
+.s-reco__error {
+  margin-top: 16px;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.s-reco__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 28px;
+}
+
+/* Next step: ink, never the accent of the conversion button. */
+.s-reco__next.btn {
+  --btn-bg: var(--ink);
+  --btn-ink: var(--paper);
+  --btn-border: var(--ink);
+}
+
+.s-reco__back,
+.s-reco__restart {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.s-reco__back svg,
+.s-reco__restart svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Result ---- */
+.s-reco__lead {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-reco__name {
+  margin-top: 8px;
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.s-reco__why {
+  max-width: 40em;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.s-reco__echo {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.s-reco__inc {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.s-reco__inc-title {
+  margin-bottom: 14px;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.s-reco__inc .list-check {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  column-gap: 28px;
+}
+
+.s-reco__buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-top: 26px;
+  padding: 20px 24px;
+  border-radius: calc(var(--radius-card) - 4px);
+  background: var(--surface-2);
+}
+
+.s-reco__price {
+  display: grid;
+  gap: 6px;
+}
+
+.s-reco__amount {
+  font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.5rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-reco__unit {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-reco__restart {
+  margin-top: 18px;
+}
+
+/* ---- Every offer at a glance (open without JavaScript) ---- */
+.s-reco__all {
+  margin-top: clamp(40px, 1.5rem + 2.5vw, 64px);
+  border-top: 1px solid var(--line);
+}
+
+.s-reco__all-sum {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding: 16px 0;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.s-reco__all-sum::-webkit-details-marker {
+  display: none;
+}
+
+.s-reco__all-icon {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.s-reco__all-icon::before,
+.s-reco__all-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 2px;
+  margin: -1px 0 0 -6px;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.s-reco__all-icon::after {
+  transform: rotate(90deg);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-reco__all[open] .s-reco__all-icon::after {
+  transform: rotate(0deg);
+}
+
+.s-reco__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 28px clamp(24px, 1rem + 2vw, 48px);
+  padding: 8px 0 12px;
+}
+
+.s-reco__row {
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 8px;
+  padding-top: 18px;
+  border-top: 2px solid var(--ink);
+}
+
+.s-reco__row-name {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-reco__row-for {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-reco__row-price {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-reco__row-price span {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.s-reco__row .link-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (min-width: 1101px) {
+  /* The rail says where we are: the counter stays for screen readers only. */
+  .s-reco__count {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 1100px) {
+  .s-reco__layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  /* The rail becomes a segmented progress bar above the card. */
+  .s-reco__rail {
+    display: flex;
+    gap: 6px;
+    margin: 28px 0 16px;
+  }
+
+  .s-reco__mark {
+    flex: 1;
+    display: block;
+    height: 6px;
+    padding: 0;
+    border-radius: 3px;
+    background: var(--line);
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+
+  .s-reco__mark > *,
+  .s-reco__mark:not(:last-child)::before {
+    display: none;
+  }
+
+  .s-reco__mark[data-state="done"] {
+    background: var(--ink);
+  }
+
+  .s-reco__mark[data-state="current"] {
+    background: var(--hl);
+  }
+}
+
+/* Small screens: the price block loses its fill so the button gets the full
+   width of the card (its label stays on one line). */
+@media (max-width: 640px) {
+  .s-reco__buy {
+    padding: 20px 0 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+  }
+
+  .s-reco__buy .btn {
+    width: 100%;
+    padding-inline: 20px;
+  }
+}
+
+/* ---- Changing screens: a View Transition. For its length only (script),
+   the stage, the card and each rail step carry a name: the screens slide
+   forward or back, the card resizes, the steps move to their new place.
+   Without the API, the new screen fades in from its starting style. ---- */
+@keyframes s-reco-out-left {
+  to { opacity: 0; transform: translateX(-28px); }
+}
+
+@keyframes s-reco-in-right {
+  from { opacity: 0; transform: translateX(36px); }
+}
+
+@keyframes s-reco-out-right {
+  to { opacity: 0; transform: translateX(28px); }
+}
+
+@keyframes s-reco-in-left {
+  from { opacity: 0; transform: translateX(-36px); }
+}
+
+::view-transition-group(s-reco-stage),
+::view-transition-group(s-reco-card) {
+  animation-duration: 0.36s;
+  animation-timing-function: var(--ease);
+}
+
+/* The card resizes as one box (its content travels in the stage group). */
+::view-transition-old(s-reco-card),
+::view-transition-new(s-reco-card) {
+  height: 100%;
+}
+
+::view-transition-image-pair(s-reco-stage) {
+  overflow: clip;
+}
+
+html.s-reco-fwd::view-transition-old(s-reco-stage) {
+  animation: s-reco-out-left 0.2s var(--ease) both;
+}
+
+html.s-reco-fwd::view-transition-new(s-reco-stage) {
+  animation: s-reco-in-right 0.36s var(--ease) 0.06s both;
+}
+
+html.s-reco-back::view-transition-old(s-reco-stage) {
+  animation: s-reco-out-right 0.2s var(--ease) both;
+}
+
+html.s-reco-back::view-transition-new(s-reco-stage) {
+  animation: s-reco-in-left 0.36s var(--ease) 0.06s both;
+}
+
+@supports not (view-transition-name: none) {
+  @media (prefers-reduced-motion: no-preference) {
+    .s-reco__q,
+    .s-reco__result {
+      transition:
+        opacity 0.3s var(--ease),
+        translate 0.3s var(--ease);
+    }
+
+    @starting-style {
+      .s-reco__q,
+      .s-reco__result {
+        opacity: 0;
+        translate: 24px 0;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-reco section" aria-labelledby="{{id}}-titre" data-section="recommender" data-reco-param="{{param}}">
+  <div class="wrap">
+    <div class="s-reco__layout">
+      <div class="s-reco__aside">
+        <div class="section-head">
+          <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+          <p class="section-intro">{{intro}}</p>
+        </div>
+        <ol class="s-reco__rail" role="list" aria-hidden="true" data-reco-rail hidden>
+          {{#questions}}<li class="s-reco__mark" data-rail-q><span class="s-reco__mark-n">{{@index}}</span><span class="s-reco__mark-step">{{step}}</span><span class="s-reco__mark-answer" data-rail-answer></span></li>{{/questions}}
+          <li class="s-reco__mark" data-rail-end><span class="s-reco__mark-n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s-reco__mark-step">{{labels.rail_result}}</span><span class="s-reco__mark-answer" data-rail-answer></span></li>
+        </ol>
+      </div>
+      <div class="s-reco__tool card" data-reco-tool hidden data-l-step="{{labels.step}}" data-l-next="{{labels.next}}" data-l-see="{{labels.see}}" data-l-why="{{labels.why}}" data-l-and="{{labels.and}}" data-l-status="{{labels.status}}">
+        <div class="s-reco__screens" data-reco-stage>
+          {{#questions}}<fieldset class="s-reco__q" data-reco-q="{{key}}">
+            <legend class="s-reco__legend"><span class="s-reco__count" data-reco-count></span><span class="s-reco__question">{{text}}</span></legend>
+            <div class="s-reco__opts">
+              {{#options}}<label class="s-reco__opt"><input type="radio" name="{{id}}-{{key}}" value="{{value}}" autocomplete="off" data-echo="{{echo}}" data-next="{{next}}" data-offer="{{offer}}" data-points="{{points}}"><span class="s-reco__opt-text"><span class="s-reco__opt-label">{{label}}</span>{{#detail}}<span class="s-reco__opt-detail">{{detail}}</span>{{/detail}}</span></label>{{/options}}
+            </div>
+          </fieldset>{{/questions}}
+          <div class="s-reco__result" data-reco-result hidden>
+            <p class="s-reco__lead">{{labels.result_lead}}</p>
+            {{#offers}}<div class="s-reco__offer" data-reco-offer="{{key}}" data-name="{{name}}" hidden>
+              <h3 class="s-reco__name" tabindex="-1" data-reco-name>{{name}}</h3>
+              <p class="s-reco__why"><span class="s-reco__echo" data-reco-why></span> {{reason}}</p>
+              <div class="s-reco__inc">
+                <h4 class="s-reco__inc-title">{{labels.includes}}</h4>
+                <ul class="list-check" role="list">{{#includes}}<li>{{.}}</li>{{/includes}}</ul>
+              </div>
+              <div class="s-reco__buy">
+                <p class="s-reco__price"><span class="s-reco__amount">{{price}}</span>{{#unit}}<span class="s-reco__unit">{{unit}}</span>{{/unit}}</p>
+                <a class="btn {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" href="{{href}}" data-track="cta_click" data-cta-position="recommandation" data-reco-cta data-name="{{name}}"{{#formula}} data-formula="{{formula}}"{{/formula}}{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</a>
+              </div>
+            </div>{{/offers}}
+            <button type="button" class="link-arrow s-reco__restart" data-reco-restart><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>{{labels.restart}}</button>
+          </div>
+        </div>
+        <p class="s-reco__error" id="{{id}}-erreur" data-reco-error hidden>{{labels.required}}</p>
+        <div class="s-reco__nav" data-reco-nav>
+          <button type="button" class="btn s-reco__next" data-reco-next>{{labels.next}}</button>
+          <button type="button" class="link-arrow s-reco__back" data-reco-back hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>{{labels.back}}</button>
+        </div>
+      </div>
+    </div>
+    <p class="sr-only" role="status" aria-live="polite" data-reco-status></p>
+    <details class="s-reco__all" open data-reco-all>
+      <summary class="s-reco__all-sum"><span>{{labels.all_offers}}</span><span class="s-reco__all-icon" aria-hidden="true"></span></summary>
+      <ul class="s-reco__list" role="list">
+        {{#offers}}<li class="s-reco__row">
+          <h3 class="s-reco__row-name">{{name}}</h3>
+          <p class="s-reco__row-for">{{for}}</p>
+          <p class="s-reco__row-price">{{price}}{{#unit}} <span>{{unit}}</span>{{/unit}}</p>
+          <a class="link-arrow" href="{{href}}" data-track="cta_click" data-cta-position="recommandeur-liste" data-reco-link data-name="{{name}}"{{#formula}} data-formula="{{formula}}"{{/formula}}>{{cta_label}}<span class="sr-only"> ({{name}})</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        </li>{{/offers}}
+      </ul>
+    </details>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="recommender">
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // A change of screen inside a View Transition when the browser has the API
+  // and motion is allowed; otherwise the change, as is. Names are set only
+  // for the length of the transition: never a duplicate name on the page.
+  function swap(sec, dir, update) {
+    if (!document.startViewTransition || reduce.matches) { update(); return; }
+    var root = document.documentElement;
+    var cls = dir === 'back' ? 's-reco-back' : 's-reco-fwd';
+    var named = [];
+    var name = function (el, n) { if (el) { el.style.viewTransitionName = n; named.push(el); } };
+    name(sec.querySelector('[data-reco-tool]'), 's-reco-card');
+    name(sec.querySelector('[data-reco-stage]'), 's-reco-stage');
+    sec.querySelectorAll('.s-reco__mark').forEach(function (m, i) { name(m, 's-reco-mark-' + i); });
+    root.classList.add(cls);
+    var done = function () {
+      named.forEach(function (el) { el.style.viewTransitionName = ''; });
+      root.classList.remove(cls);
+    };
+    try {
+      document.startViewTransition(update).finished.then(done, done);
+    } catch (e) {
+      done();
+      update();
+    }
+  }
+
+  function formulaInput(value) {
+    var inputs = document.querySelectorAll('input[name="formule"], input[name="formula"]');
+    for (var i = 0; i < inputs.length; i++) if (inputs[i].value === value) return inputs[i];
+    return null;
+  }
+
+  // Parts of the page kept for after a choice (choice-gate, gated: true).
+  function revealGated() {
+    var parts = document.querySelectorAll('[data-gated][hidden]');
+    parts.forEach(function (p) { p.hidden = false; });
+    if (parts.length) document.dispatchEvent(new CustomEvent('landing:revealed'));
+  }
+
+  // The same mechanism as the choice gate: the page's ticket takes the
+  // formula, gated parts open, and the button goes to the conversion block.
+  // Without a matching formula, an anchor into a gated part still opens it.
+  function applyChoice(el, param) {
+    var value = el.getAttribute('data-formula');
+    var input = value ? formulaInput(value) : null;
+    if (!input) {
+      var href = el.getAttribute('href') || '';
+      var target = href.charAt(0) === '#' && href.length > 1 ? document.getElementById(href.slice(1)) : null;
+      if (target && target.closest('[data-gated][hidden]')) revealGated();
+      return false;
+    }
+    document.documentElement.setAttribute('data-choice', value);
+    document.querySelectorAll('[data-for]').forEach(function (n) {
+      n.hidden = n.getAttribute('data-for').split(/\s+/).indexOf(value) === -1;
+    });
+    revealGated();
+    document.dispatchEvent(new CustomEvent('landing:choice', {
+      detail: { param: param, value: value, label: el.getAttribute('data-name') || '', source: 'recommender' }
+    }));
+    var block = input.closest('section[id]') || input.form;
+    if (block && block.id) el.setAttribute('href', '#' + block.id);
+    return true;
+  }
+
+  document.querySelectorAll('.s-reco').forEach(function (sec) {
+    var tool = sec.querySelector('[data-reco-tool]');
+    var stage = sec.querySelector('[data-reco-stage]');
+    var qs = Array.prototype.slice.call(sec.querySelectorAll('[data-reco-q]'));
+    if (!tool || !stage || !qs.length) return;
+    var keys = qs.map(function (q) { return q.getAttribute('data-reco-q'); });
+    var rail = sec.querySelector('[data-reco-rail]');
+    var marks = rail ? Array.prototype.slice.call(rail.querySelectorAll('[data-rail-q]')) : [];
+    var endMark = rail ? rail.querySelector('[data-rail-end]') : null;
+    var result = sec.querySelector('[data-reco-result]');
+    var nav = sec.querySelector('[data-reco-nav]');
+    var next = sec.querySelector('[data-reco-next]');
+    var back = sec.querySelector('[data-reco-back]');
+    var error = sec.querySelector('[data-reco-error]');
+    var status = sec.querySelector('[data-reco-status]');
+    var all = sec.querySelector('[data-reco-all]');
+    var param = sec.getAttribute('data-reco-param') || 'recommandation';
+    var cards = {};
+    var order = [];
+    sec.querySelectorAll('[data-reco-offer]').forEach(function (c) {
+      var k = c.getAttribute('data-reco-offer');
+      cards[k] = c;
+      order.push(k);
+    });
+    var label = function (k, fallback) { return tool.getAttribute('data-l-' + k) || fallback || ''; };
+    var path = [0];
+
+    function checked(i) { return qs[i] ? qs[i].querySelector('input:checked') : null; }
+    function clear(i) { qs[i].querySelectorAll('input').forEach(function (r) { r.checked = false; }); }
+
+    // Where an answer leads: a fixed offer, a named question further on, the
+    // next question in order, or the end (offer decided by points).
+    function step(i, input) {
+      if (input) {
+        var offer = input.getAttribute('data-offer');
+        if (offer && cards[offer]) return { offer: offer };
+        var j = keys.indexOf(input.getAttribute('data-next') || '');
+        if (j > i) return { q: j };
+      }
+      return i + 1 < qs.length ? { q: i + 1 } : { end: true };
+    }
+
+    function projected() {
+      var list = path.slice();
+      var i = list[list.length - 1];
+      for (var guard = 0; guard < qs.length; guard++) {
+        var s = step(i, checked(i));
+        if (s.q === undefined) break;
+        list.push(s.q);
+        i = s.q;
+      }
+      return list;
+    }
+
+    function answerLabel(i) {
+      var input = checked(i);
+      var text = input ? input.closest('label').querySelector('.s-reco__opt-label') : null;
+      return text ? text.textContent : '';
+    }
+
+    function render(atResult, offerName) {
+      var proj = atResult ? path : projected();
+      var cur = path[path.length - 1];
+      if (!atResult) {
+        var count = qs[cur].querySelector('[data-reco-count]');
+        if (count) count.textContent = label('step').replace('{n}', proj.indexOf(cur) + 1).replace('{total}', proj.length);
+        next.textContent = step(cur, checked(cur)).q === undefined ? label('see') : label('next');
+      }
+      var n = 0;
+      marks.forEach(function (mark, i) {
+        var on = proj.indexOf(i) !== -1;
+        mark.hidden = !on;
+        if (!on) return;
+        n += 1;
+        var state = atResult || (i !== cur && path.indexOf(i) !== -1) ? 'done' : (i === cur ? 'current' : 'next');
+        mark.setAttribute('data-state', state);
+        mark.querySelector('.s-reco__mark-n').textContent = String(n);
+        mark.querySelector('[data-rail-answer]').textContent = state === 'done' ? answerLabel(i) : '';
+      });
+      if (endMark) {
+        endMark.setAttribute('data-state', atResult ? 'current' : 'next');
+        endMark.querySelector('[data-rail-answer]').textContent = atResult ? offerName || '' : '';
+      }
+    }
+
+    function clearError() {
+      error.hidden = true;
+      qs.forEach(function (q) { q.removeAttribute('aria-describedby'); });
+    }
+
+    function showError(i) {
+      error.hidden = false;
+      qs[i].setAttribute('aria-describedby', error.id);
+      var first = qs[i].querySelector('input');
+      if (first) first.focus();
+    }
+
+    function showQuestion(i, dir) {
+      swap(sec, dir, function () {
+        qs.forEach(function (q, k) { q.hidden = k !== i; });
+        result.hidden = true;
+        nav.hidden = false;
+        back.hidden = path.length < 2;
+        clearError();
+        render(false);
+        var target = checked(i) || qs[i].querySelector('input');
+        if (target) target.focus();
+      });
+    }
+
+    function decide(forced) {
+      if (forced && cards[forced]) return forced;
+      var score = {};
+      order.forEach(function (k) { score[k] = 0; });
+      path.forEach(function (i) {
+        var input = checked(i);
+        if (!input) return;
+        (input.getAttribute('data-points') || '').split(/\s+/).forEach(function (k) {
+          if (Object.prototype.hasOwnProperty.call(score, k)) score[k] += 1;
+        });
+      });
+      return order.reduce(function (best, k) { return score[k] > score[best] ? k : best; }, order[0]);
+    }
+
+    function sentence() {
+      var parts = path.map(checked).filter(Boolean)
+        .map(function (input) { return input.getAttribute('data-echo') || ''; })
+        .filter(Boolean);
+      if (!parts.length) return '';
+      var joined = parts.length === 1 ? parts[0]
+        : parts.slice(0, -1).join(', ') + ' ' + label('and', 'et') + ' ' + parts[parts.length - 1];
+      return label('why', '{answers}').replace('{answers}', joined);
+    }
+
+    function showResult(forced) {
+      var key = decide(forced);
+      var card = cards[key];
+      if (!card) return;
+      var why = sentence();
+      var name = card.getAttribute('data-name') || '';
+      // The choice applies at once (ticket, gated parts, button destination);
+      // only the change of screen waits for the transition.
+      var cta = card.querySelector('[data-reco-cta]');
+      if (cta) applyChoice(cta, param);
+      swap(sec, 'fwd', function () {
+        qs.forEach(function (q) { q.hidden = true; });
+        nav.hidden = true;
+        clearError();
+        order.forEach(function (k) { cards[k].hidden = k !== key; });
+        var w = card.querySelector('[data-reco-why]');
+        if (w) w.textContent = why;
+        result.hidden = false;
+        render(true, name);
+        var heading = card.querySelector('[data-reco-name]');
+        if (heading) heading.focus();
+      });
+      // Announced once, when the result is on screen.
+      if (status) {
+        status.textContent = '';
+        window.setTimeout(function () {
+          status.textContent = (label('status', '{name}').replace('{name}', name) + ' ' + why).trim();
+        }, 80);
+      }
+      if (typeof window.landingTrack === 'function') {
+        window.landingTrack('select_content', {
+          content_type: param,
+          content_id: key,
+          answers: path.map(function (i) { var input = checked(i); return keys[i] + ':' + (input ? input.value : ''); }).join(',')
+        });
+      }
+    }
+
+    next.addEventListener('click', function () {
+      var cur = path[path.length - 1];
+      var input = checked(cur);
+      if (!input) { showError(cur); return; }
+      var s = step(cur, input);
+      if (s.q !== undefined) {
+        path.push(s.q);
+        showQuestion(s.q, 'fwd');
+      } else {
+        showResult(s.offer);
+      }
+    });
+
+    // Back: the answer of the screen we leave is cleared.
+    back.addEventListener('click', function () {
+      if (path.length < 2) return;
+      clear(path.pop());
+      showQuestion(path[path.length - 1], 'back');
+    });
+
+    sec.querySelector('[data-reco-restart]').addEventListener('click', function () {
+      qs.forEach(function (q, i) { clear(i); });
+      path = [0];
+      if (status) status.textContent = '';
+      showQuestion(0, 'back');
+    });
+
+    sec.addEventListener('change', function (e) {
+      if (!e.target.closest || !e.target.closest('[data-reco-q]')) return;
+      clearError();
+      render(false);
+    });
+
+    // Enter on an answer moves on, as in a form.
+    stage.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' || !e.target.closest || !e.target.closest('[data-reco-q]')) return;
+      e.preventDefault();
+      next.click();
+    });
+
+    // A button of an offer (result or list): the ticket takes its formula.
+    sec.addEventListener('click', function (e) {
+      var link = e.target.closest && e.target.closest('[data-reco-cta], [data-reco-link]');
+      if (link && sec.contains(link)) applyChoice(link, param);
+    });
+
+    // Every question screen as tall as the tallest one.
+    function equalize() {
+      if (tool.hidden) return;
+      var max = 0;
+      qs.forEach(function (q) {
+        var was = q.hidden;
+        q.hidden = false;
+        max = Math.max(max, q.offsetHeight);
+        q.hidden = was;
+      });
+      stage.style.setProperty('--reco-q-h', max + 'px');
+    }
+
+    // Start: first question, tool shown, the full list folded under it.
+    qs.forEach(function (q, i) { clear(i); q.hidden = i !== 0; });
+    order.forEach(function (k) { cards[k].hidden = true; });
+    result.hidden = true;
+    back.hidden = true;
+    render(false);
+    tool.hidden = false;
+    if (rail) rail.hidden = false;
+    if (all) all.open = false;
+    sec.setAttribute('data-reco-ready', '');
+    equalize();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(equalize);
+    if ('ResizeObserver' in window) {
+      var width = tool.offsetWidth;
+      var pending = 0;
+      new ResizeObserver(function () {
+        if (tool.offsetWidth === width || pending) return;
+        width = tool.offsetWidth;
+        pending = window.requestAnimationFrame(function () { pending = 0; equalize(); });
+      }).observe(tool);
+    }
+  });
+})();
+</script>

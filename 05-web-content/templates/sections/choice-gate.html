@@ -3,9 +3,9 @@
   "id": "choice-gate",
   "name": "Porte de choix",
   "objection": "Laquelle est pour moi",
-  "when": "Seulement pour une offre à variantes réelles (formules, profils). Deux grandes cartes dont toute la surface est cliquable. Le choix révèle la suite de la page (sections marquées « gated: true » dans la spec), règle le billet sur la formule choisie, part en mesure (select_content) et s’inscrit dans l’URL (?<param>=<valeur>) : un lien direct ouvre la bonne suite sans glissé.",
+  "when": "Seulement pour une offre à variantes réelles (formules, profils). Deux grandes cartes dont toute la surface est cliquable. Le choix révèle la suite de la page (sections marquées « gated: true » dans la spec), règle le billet sur la formule choisie, part en mesure (select_content) et s’inscrit dans l’URL (?<param>=<valeur>) : un lien direct ouvre la bonne suite sans glissé. Le passage vers la suite se fait dans une View Transition (l’écran de la porte s’efface, la suite monte) quand le navigateur la connaît et que le mouvement est permis ; sinon, défilement doux.",
   "avoid": "Une porte qui cache l’essentiel à un visiteur pressé, plus de trois options, des options sans différence réelle de prix ou de contenu.",
-  "reduced_motion": "La suite apparaît sans transition ; le saut vers elle est instantané.",
+  "reduced_motion": "La suite apparaît sans transition ni fondu ; le saut vers elle est instantané.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Vous menez le bilan <span class=\"hl\">seul ou à plusieurs</span>"},
     "intro": {"type": "text", "doc": "Une phrase : ce que le choix change.", "example": "Le contenu est le même. Le prix et l’accompagnement changent avec le nombre de personnes."},
@@ -156,6 +156,34 @@
   color: var(--muted);
   text-align: center;
 }
+
+/* Revealing the chosen path: during the View Transition (class set by the
+   script for its length only), the gate screen fades up and the path rises
+   in its place. The top bar and the mobile bar carry their own names and
+   stay still. */
+@keyframes s-gate-vt-out {
+  to { opacity: 0; transform: translateY(-4vh); }
+}
+
+@keyframes s-gate-vt-in {
+  from { opacity: 0; transform: translateY(6vh); }
+}
+
+html.s-gate-vt::view-transition-old(root) {
+  animation: s-gate-vt-out 0.28s var(--ease) both;
+}
+
+html.s-gate-vt::view-transition-new(root) {
+  animation: s-gate-vt-in 0.52s var(--ease) 0.06s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
 </style>
 <!-- section:{{id}} -->
 <section id="{{id}}" class="s-gate section" aria-labelledby="{{id}}-titre" data-section="choice-gate" data-enter="fade" data-gate-param="{{param}}">
@@ -183,7 +211,8 @@
 <!-- /section:{{id}} -->
 <script data-section-script="choice-gate">
 (function () {
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var reduce = motion.matches;
   document.querySelectorAll('.s-gate').forEach(function (gate) {
     var param = gate.getAttribute('data-gate-param') || 'choix';
     var buttons = Array.prototype.slice.call(gate.querySelectorAll('[data-gate-choice]'));
@@ -201,7 +230,7 @@
 
     function choose(value, opts) {
       var button = buttons[values.indexOf(value)];
-      if (!button) return;
+      if (!button) return null;
       buttons.forEach(function (b) {
         var on = b === button;
         b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -223,18 +252,43 @@
         url.searchParams.set(param, value);
         window.history.replaceState(null, '', url.toString());
       } catch (e) { /* file:// or old browser: the choice still applies */ }
-      if (opts.jump && first) {
-        var heading = first.querySelector('h2');
-        window.scrollTo({ top: first.getBoundingClientRect().top + window.scrollY, behavior: reduce || !opts.smooth ? 'auto' : 'smooth' });
-        if (heading) {
-          heading.setAttribute('tabindex', '-1');
-          heading.focus({ preventScroll: true });
-        }
+      if (opts.jump && first) jump(first, opts.smooth);
+      return first;
+    }
+
+    function jump(first, smooth) {
+      var heading = first.querySelector('h2');
+      window.scrollTo({ top: first.getBoundingClientRect().top + window.scrollY, behavior: reduce || !smooth ? 'auto' : 'smooth' });
+      if (heading) {
+        heading.setAttribute('tabindex', '-1');
+        heading.focus({ preventScroll: true });
+      }
+    }
+
+    // With the View Transitions API and motion allowed: the choice applies at
+    // once (ticket, measure, URL, path revealed), then the jump to the path
+    // happens inside the transition, an instant scroll seen as a cross-fade.
+    // Otherwise, the behaviour as before: smooth scroll, or a jump in reduced motion.
+    function chooseAnimated(value) {
+      if (!document.startViewTransition || motion.matches) {
+        choose(value, { jump: true, smooth: true });
+        return;
+      }
+      var first = choose(value, { jump: false });
+      if (!first) return;
+      var root = document.documentElement;
+      root.classList.add('s-gate-vt');
+      var done = function () { root.classList.remove('s-gate-vt'); };
+      try {
+        document.startViewTransition(function () { jump(first, false); }).finished.then(done, done);
+      } catch (e) {
+        done();
+        jump(first, true);
       }
     }
 
     buttons.forEach(function (b) {
-      b.addEventListener('click', function () { choose(b.getAttribute('data-gate-choice'), { jump: true, smooth: true }); });
+      b.addEventListener('click', function () { chooseAnimated(b.getAttribute('data-gate-choice')); });
     });
     gate.querySelector('[data-gate-reset]').addEventListener('click', function () {
       result.hidden = true;

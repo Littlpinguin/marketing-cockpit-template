@@ -1,0 +1,664 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "work-wall",
+  "name": "Mur de réalisations filtrable",
+  "objection": "Qu’est-ce que ça produit concrètement, et pour quelqu’un comme moi",
+  "engines": ["viewer"],
+  "when": "Cabinet, agence, indépendant ou produit qui livre des documents : 6 à 24 réalisations réelles, chacune avec son secteur, son année et un résultat. Des filtres (secteur ou type de livrable) masquent ce qui ne concerne pas le visiteur et un compteur dit ce qui reste. Deux affichages : grid, des cartes avec un visuel ; index, des rangées numérotées comme une table des matières, avec un aperçu qui reste à l’écran à côté de la liste sur grand écran à la souris. Une réalisation peut s’ouvrir en dossier à feuilleter dans la visionneuse (pages en images ou en HTML), mener à une page de cas, ou rester une simple carte.",
+  "avoid": "Réalisations sans résultat, photos de banque d’images, maquettes présentées comme des livrables réels, client nommé sans son accord, filtre qui ne garde qu’un élément, plus de 24 réalisations, effet de survol qui cache le texte.",
+  "reduced_motion": "Le filtre s’applique d’un coup, sans transition ; l’aperçu de l’index change sans fondu ; la visionneuse s’ouvre sans zoom. Sans JavaScript, toutes les réalisations sont visibles et les filtres absents.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, coupure décidée par <br>.", "example": "Neuf missions<br><span class=\"hl\">et ce qui a changé</span>"},
+    "intro": {"type": "text", "doc": "Chapô : ce que montre le mur, et la mention « fictif » tant que les réalisations le sont.", "example": "Bilans, trajectoires et plans d’action remis à nos clients. Ouvrez un dossier pour le feuilleter page par page (missions et chiffres fictifs)."},
+    "mode": {"type": "text", "doc": "Affichage : grid (cartes avec visuel) ou index (rangées numérotées, aperçu à côté sur grand écran à la souris).", "example": "grid"},
+    "dark": {"type": "bool", "doc": "true : bande sombre ; false : fond clair.", "example": false},
+    "filters_label": {"type": "text", "doc": "Nom du groupe de filtres, lu par les lecteurs d’écran.", "example": "Filtrer les réalisations par secteur"},
+    "all_label": {"type": "text", "doc": "Bouton qui montre tout.", "example": "Toutes"},
+    "filters": {"type": "list", "doc": "Filtres (liste vide : aucun). value : identifiant repris dans le champ tags des réalisations ; label : libellé court. Un filtre sans réalisation n’apparaît pas ; avec un seul filtre utile, la barre reste cachée.", "fields": {"value": "identifiant", "label": "libellé"}, "example": [
+      {"value": "industrie", "label": "Industrie"},
+      {"value": "sante", "label": "Santé"},
+      {"value": "public", "label": "Collectivités"},
+      {"value": "commerce", "label": "Commerce et services"}
+    ]},
+    "count_one": {"type": "text", "doc": "Nom après le compteur, au singulier.", "example": "réalisation"},
+    "count_many": {"type": "text", "doc": "Nom après le compteur, au pluriel.", "example": "réalisations"},
+    "items": {"type": "list", "doc": "Les réalisations, dans l’ordre (jamais réordonnées par le filtre). key : identifiant unique (minuscules, tirets) ; title : h3 sans virgule ni point ; sector, year : étiquettes ; tags : valeurs de filtre séparées par des espaces ; result : le résultat, une phrase ; image : couverture (URL) ou, à défaut, art : objet composé (kit .obj, décoratif) ; tone : fond du visuel (vide, tint, warm ou dark) ; pages : dossier à feuilleter, chaque page {src (URL d’une image) ou html, alt, caption} ; href : page de cas, ou destination sans JavaScript d’un dossier ; action : libellé du lien (un verbe, avec le nombre de pages s’il y en a). Sans pages ni href : une carte sans lien.", "fields": {"key": "identifiant", "title": "titre", "sector": "secteur", "year": "année", "tags": "valeurs de filtre", "result": "résultat", "image": "URL de couverture ou vide", "art": "HTML décoratif", "tone": "vide, tint, warm, dark", "pages": "liste {src, html, alt, caption} ou vide", "href": "URL ou vide", "action": "libellé du lien"}, "example": [
+      {"key": "fonderie", "title": "Le bilan carbone d’une fonderie d’aluminium", "sector": "Industrie", "year": "2026", "tags": "industrie", "result": "Le métal acheté pèse 71 % des émissions, chiffré pour la première fois.", "image": "", "tone": "", "href": "", "action": "Feuilleter les 4 pages",
+        "art": "<div class=\"obj obj-stack s-work__cover\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Bilan 2025</b><span class=\"obj-push\">Fonderie</span></div><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:.71\"><span>Métal</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>71 %</b></div><div class=\"obj-bar\" style=\"--v:.14\"><span>Énergie</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>14 %</b></div><div class=\"obj-bar\" style=\"--v:.09\"><span>Fret</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>9 %</b></div></div></div></div>",
+        "pages": [
+          {"src": "", "alt": "", "caption": "Page de synthèse remise au comité de direction.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Synthèse</b><span class=\"obj-push\">p. 1 sur 4</span></div><div class=\"obj-rule\"></div><p class=\"obj-title\">Bilan des émissions 2025, fonderie d’aluminium</p><div class=\"obj-kpi\">18 400<small>t CO₂e</small></div><div class=\"obj-rule\"></div><div class=\"obj-lines\"><i style=\"--w:94%\"></i><i style=\"--w:82%\"></i><i style=\"--w:88%\"></i><i style=\"--w:46%\"></i></div><p class=\"obj-small\">Périmètre : deux sites, achats, fret amont et aval.</p></div>"},
+          {"src": "", "alt": "", "caption": "Répartition des émissions par poste, en part du total.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Répartition par poste</b><span class=\"obj-push\">p. 2 sur 4</span></div><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:.71\"><span>Métal acheté</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>71 %</b></div><div class=\"obj-bar\" style=\"--v:.14\"><span>Énergie</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>14 %</b></div><div class=\"obj-bar\" style=\"--v:.09\"><span>Fret</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>9 %</b></div><div class=\"obj-bar\" style=\"--v:.06\"><span>Autres</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>6 %</b></div></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Facteurs d’émission : base publique, version 2025.</p></div>"},
+          {"src": "", "alt": "", "caption": "Les mesures du plan d’action, classées par tonnes évitées et par coût.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Plan d’action</b><span class=\"obj-push\">p. 3 sur 4</span></div><div class=\"obj-rule\"></div><div class=\"obj-grid\" style=\"--cols:3\"><span class=\"is-head\">Mesure</span><span class=\"is-head\">t évitées</span><span class=\"is-head\">Coût</span><span class=\"is-warn\">Aluminium recyclé</span><span class=\"is-warn\">3 900</span><span class=\"is-warn\">Moyen</span><span>Chaleur des fours</span><span>650</span><span>Élevé</span><span>Fret ferroviaire</span><span>420</span><span>Faible</span><span>Éclairage</span><span>80</span><span>Faible</span></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Première mesure : <span class=\"obj-highlight\">30 % d’aluminium recyclé en 2027</span></p></div>"},
+          {"src": "", "alt": "", "caption": "Trajectoire visée de 2025 à 2030, scénario retenu par la direction.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Trajectoire 2030</b><span class=\"obj-push\">p. 4 sur 4</span></div><div class=\"obj-rule\"></div><div class=\"obj-chart\"><i style=\"--v:1\"></i><i style=\"--v:.94\"></i><i style=\"--v:.86\"></i><i style=\"--v:.78\"></i><i style=\"--v:.71\"></i><i class=\"is-hl\" style=\"--v:.64\"></i></div><div class=\"obj-rule\"></div><p class=\"obj-small\">De 18 400 à 11 800 t CO₂e, soit 36 % de moins.</p></div>"}
+        ]},
+      {"key": "cliniques", "title": "La trajectoire 2030 d’un groupe de cliniques", "sector": "Santé", "year": "2025", "tags": "sante", "result": "Une baisse de 32 % visée, validée par le comité de direction.", "image": "", "tone": "tint", "href": "", "action": "Feuilleter les 3 pages",
+        "art": "<div class=\"obj obj-stack s-work__cover\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Trajectoire</b><span class=\"obj-push\">2025 à 2030</span></div><div class=\"obj-rule\"></div><div class=\"obj-chart\"><i style=\"--v:1\"></i><i style=\"--v:.9\"></i><i style=\"--v:.82\"></i><i style=\"--v:.75\"></i><i class=\"is-hl\" style=\"--v:.68\"></i></div></div></div>",
+        "pages": [
+          {"src": "", "alt": "", "caption": "Point de départ : les émissions 2024 des six cliniques, par site.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Point de départ</b><span class=\"obj-push\">p. 1 sur 3</span></div><div class=\"obj-rule\"></div><div class=\"obj-grid\" style=\"--cols:3\"><span class=\"is-head\">Site</span><span class=\"is-head\">Lits</span><span class=\"is-head\">t CO₂e</span><span>Clinique A</span><span>180</span><span>2 100</span><span>Clinique B</span><span>140</span><span>1 650</span><span>Clinique C</span><span>95</span><span>1 020</span><span class=\"is-warn\">Trois autres</span><span class=\"is-warn\">210</span><span class=\"is-warn\">2 380</span></div><p class=\"obj-small\">Gaz anesthésiques compris, poste propre au secteur.</p></div>"},
+          {"src": "", "alt": "", "caption": "Les leviers retenus et leur contribution à la baisse.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Leviers</b><span class=\"obj-push\">p. 2 sur 3</span></div><div class=\"obj-rule\"></div><div class=\"obj-check\"><span class=\"is-done\">Gaz anesthésiques à faible impact</span><span class=\"is-done\">Chaufferies passées au réseau de chaleur</span><span class=\"is-done\">Achats de dispositifs réutilisables</span><span>Déplacements des patients</span></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Le quatrième levier reste à étudier avec l’agence régionale.</p></div>"},
+          {"src": "", "alt": "", "caption": "La trajectoire validée, année par année.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Trajectoire validée</b><span class=\"obj-push\">p. 3 sur 3</span></div><div class=\"obj-rule\"></div><div class=\"obj-chart\"><i style=\"--v:1\"></i><i style=\"--v:.93\"></i><i style=\"--v:.85\"></i><i style=\"--v:.79\"></i><i style=\"--v:.73\"></i><i class=\"is-hl\" style=\"--v:.68\"></i></div><p class=\"obj-small\">Moins 32 % en 2030 par rapport à 2024.</p></div>"}
+        ]},
+      {"key": "plan-climat", "title": "Le plan climat d’une communauté de communes", "sector": "Collectivités", "year": "2025", "tags": "public", "result": "Quarante actions classées par tonnes évitées et par coût pour la collectivité.", "image": "", "tone": "warm", "href": "https://www.example.com/cas/plan-climat", "action": "Lire le cas", "pages": [],
+        "art": "<div class=\"obj obj-sheet s-work__cover\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Plan climat</b><span class=\"obj-push\">40 actions</span></div><div class=\"obj-rule\"></div><div class=\"obj-check\"><span class=\"is-done\">Rénovation des écoles</span><span class=\"is-done\">Transport à la demande</span><span>Réseau de chaleur</span></div></div>"},
+      {"key": "menuiserie", "title": "Le premier bilan d’une menuiserie de 40 salariés", "sector": "Industrie", "year": "2024", "tags": "industrie", "result": "Des données réelles sur 80 % des postes, en six semaines.", "image": "", "tone": "", "href": "", "action": "Feuilleter les 2 pages",
+        "art": "<div class=\"obj obj-stack s-work__cover\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Premier bilan</b><span class=\"obj-push\">Menuiserie</span></div><div class=\"obj-rule\"></div><div class=\"obj-kpi\">80 %<small>mesuré</small></div></div></div>",
+        "pages": [
+          {"src": "", "alt": "", "caption": "La collecte : part des données réelles, poste par poste.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Collecte</b><span class=\"obj-push\">p. 1 sur 2</span></div><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:1\"><span>Énergie</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>100 %</b></div><div class=\"obj-bar\" style=\"--v:.86\"><span>Bois acheté</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>86 %</b></div><div class=\"obj-bar\" style=\"--v:.62\"><span>Déplacements</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>62 %</b></div></div><p class=\"obj-small\">Le reste est estimé, avec l’hypothèse écrite à côté.</p></div>"},
+          {"src": "", "alt": "", "caption": "Le résultat : émissions par poste et premier poste à traiter.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Résultat</b><span class=\"obj-push\">p. 2 sur 2</span></div><div class=\"obj-rule\"></div><div class=\"obj-kpi\">1 240<small>t CO₂e</small></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Premier poste : <span class=\"obj-highlight\">le bois acheté, 58 % du total</span></p></div>"}
+        ]},
+      {"key": "laboratoires", "title": "Les achats d’un réseau de laboratoires", "sector": "Santé", "year": "2026", "tags": "sante", "result": "Douze fournisseurs portent la moitié des émissions liées aux achats.", "image": "", "tone": "dark", "href": "", "action": "Feuilleter les 2 pages",
+        "art": "<div class=\"obj obj-stack s-work__cover\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Achats</b><span class=\"obj-push\">12 sites</span></div><div class=\"obj-rule\"></div><div class=\"obj-grid\" style=\"--cols:2\"><span class=\"is-head\">Famille</span><span class=\"is-head\">Part</span><span class=\"is-warn\">Réactifs</span><span class=\"is-warn\">38 %</span><span>Consommables</span><span>24 %</span><span>Transport</span><span>15 %</span></div></div></div>",
+        "pages": [
+          {"src": "", "alt": "", "caption": "Les familles d’achats classées par émissions.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Familles d’achats</b><span class=\"obj-push\">p. 1 sur 2</span></div><div class=\"obj-rule\"></div><div class=\"obj-grid\" style=\"--cols:3\"><span class=\"is-head\">Famille</span><span class=\"is-head\">Part</span><span class=\"is-head\">Fournisseurs</span><span class=\"is-warn\">Réactifs</span><span class=\"is-warn\">38 %</span><span class=\"is-warn\">5</span><span>Consommables</span><span>24 %</span><span>4</span><span>Transport</span><span>15 %</span><span>3</span><span>Autres</span><span>23 %</span><span>61</span></div></div>"},
+          {"src": "", "alt": "", "caption": "Les douze fournisseurs à contacter en premier.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Fournisseurs prioritaires</b><span class=\"obj-push\">p. 2 sur 2</span></div><div class=\"obj-rule\"></div><div class=\"obj-check\"><span class=\"is-done\">Données demandées à 12 fournisseurs</span><span class=\"is-done\">Réponses de 9 sur 12</span><span>Clause carbone au prochain contrat</span></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Douze fournisseurs, la moitié des émissions d’achats.</p></div>"}
+        ]},
+      {"key": "bricolage", "title": "La logistique d’une enseigne de bricolage", "sector": "Commerce et services", "year": "2025", "tags": "commerce", "result": "Le fret amont des références lourdes réduit de moitié en un an.", "image": "", "tone": "tint", "href": "", "action": "", "pages": [],
+        "art": "<div class=\"obj obj-window s-work__cover\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Fret amont</span></div><div class=\"obj-window__body\"><div class=\"obj-chart\"><i style=\"--v:1\"></i><i style=\"--v:.8\"></i><i style=\"--v:.62\"></i><i class=\"is-hl\" style=\"--v:.5\"></i></div></div></div>"},
+      {"key": "lycees", "title": "Le bilan des lycées d’une région", "sector": "Collectivités", "year": "2024", "tags": "public", "result": "Cent douze établissements comparés sur la même méthode.", "image": "", "tone": "", "href": "https://www.example.com/cas/lycees", "action": "Lire le cas", "pages": [],
+        "art": "<div class=\"obj obj-sheet s-work__cover\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Lycées</b><span class=\"obj-push\">112 sites</span></div><div class=\"obj-rule\"></div><div class=\"obj-kpi\">112<small>établissements</small></div></div>"},
+      {"key": "editeur", "title": "Le numérique d’un éditeur de logiciels", "sector": "Commerce et services", "year": "2026", "tags": "commerce", "result": "Le matériel des salariés pèse plus que les serveurs.", "image": "", "tone": "warm", "href": "https://www.example.com/cas/numerique", "action": "Lire le cas", "pages": [],
+        "art": "<div class=\"obj obj-sheet s-work__cover\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Numérique</b><span class=\"obj-push\">2026</span></div><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:.62\"><span>Postes</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>62 %</b></div><div class=\"obj-bar\" style=\"--v:.38\"><span>Serveurs</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>38 %</b></div></div></div>"},
+      {"key": "verrerie", "title": "Trois scénarios pour les fours d’une verrerie", "sector": "Industrie", "year": "2026", "tags": "industrie", "result": "Trois scénarios d’électrification chiffrés pour une décision en 2028.", "image": "", "tone": "", "href": "https://www.example.com/cas/verrerie", "action": "Feuilleter les 3 scénarios",
+        "art": "<div class=\"obj obj-stack s-work__cover\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Scénarios</b><span class=\"obj-push\">Fours</span></div><div class=\"obj-rule\"></div><div class=\"obj-check\"><span class=\"is-done\">Four hybride</span><span class=\"is-done\">Four électrique</span><span>Biométhane</span></div></div></div>",
+        "pages": [
+          {"src": "", "alt": "", "caption": "Scénario 1 : four hybride, gaz et électricité.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Scénario 1 · four hybride</b><span class=\"obj-push\">p. 1 sur 3</span></div><div class=\"obj-rule\"></div><div class=\"obj-kpi\">−45 %<small>sur le four</small></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Investissement moyen, arrêt de production de trois semaines.</p></div>"},
+          {"src": "", "alt": "", "caption": "Scénario 2 : four entièrement électrique.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Scénario 2 · four électrique</b><span class=\"obj-push\">p. 2 sur 3</span></div><div class=\"obj-rule\"></div><div class=\"obj-kpi\">−80 %<small>sur le four</small></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Raccordement électrique à renforcer avant 2028.</p></div>"},
+          {"src": "", "alt": "", "caption": "Les trois scénarios comparés sur les mêmes critères.", "html": "<div class=\"obj s-work__page\" aria-hidden=\"true\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Comparaison</b><span class=\"obj-push\">p. 3 sur 3</span></div><div class=\"obj-rule\"></div><div class=\"obj-grid\" style=\"--cols:3\"><span class=\"is-head\">Scénario</span><span class=\"is-head\">Baisse</span><span class=\"is-head\">Coût</span><span>Hybride</span><span>45 %</span><span>Moyen</span><span class=\"is-warn\">Électrique</span><span class=\"is-warn\">80 %</span><span class=\"is-warn\">Élevé</span><span>Biométhane</span><span>60 %</span><span>Variable</span></div></div>"}
+        ]}
+    ]}
+  }
+}
+</script>
+<style data-section-style="work-wall">
+.s-work {
+  --work-pad: clamp(18px, 0.8rem + 0.8vw, 26px);
+}
+
+/* ---------- tools: filters and live count ---------- */
+.s-work__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: clamp(24px, 1rem + 1.6vw, 44px);
+}
+
+.s-work__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.s-work__filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  background: transparent;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.s-work__filter:hover {
+  border-color: var(--ink);
+}
+
+/* Pressed: ink inversion, never the conversion accent. */
+.s-work__filter[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.s-work__fcount {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-work__fcount:empty {
+  display: none;
+}
+
+.s-work__count {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------- grid (default) ---------- */
+.s-work__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
+  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
+}
+
+.s-work__item {
+  min-width: 0;
+}
+
+.s-work__body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "media media"
+    "sector year"
+    "title title"
+    "result result"
+    "open open";
+  align-content: start;
+  gap: 10px 16px;
+  height: 100%;
+  padding: 0 var(--work-pad) var(--work-pad);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.s-work__body:has(.s-work__open:not([hidden])):hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+
+.s-work__body:has(.s-work__open:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.s-work__n {
+  display: none;
+  grid-area: n;
+}
+
+.s-work__n::before {
+  content: counter(work, decimal-leading-zero);
+}
+
+.s-work__media {
+  position: relative;
+  display: grid;
+  grid-area: media;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  margin: 0 calc(-1 * var(--work-pad)) 8px;
+  padding: clamp(18px, 1rem + 1vw, 32px);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.s-work__media--tint {
+  background: var(--tint);
+}
+
+.s-work__media--warm {
+  background: var(--tint-accent);
+}
+
+.s-work__media--dark {
+  background: var(--brand-dark);
+}
+
+.s-work__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-work__cover {
+  width: min(100%, 250px);
+  transform: rotate(-2deg);
+  transition: transform var(--dur) var(--ease);
+}
+
+.s-work__body:hover .s-work__cover,
+.s-work__body:focus-within .s-work__cover {
+  transform: rotate(0deg) translateY(-6px);
+}
+
+.s-work__sector {
+  grid-area: sector;
+  min-width: 0;
+}
+
+.s-work__year {
+  grid-area: year;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-work__title {
+  grid-area: title;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-work__result {
+  grid-area: result;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* The action: a real link or button whose pseudo-element covers the card,
+   so the whole card is the target (principle of the choice gate). */
+.s-work__open {
+  display: inline-flex;
+  grid-area: open;
+  align-items: center;
+  justify-self: start;
+  gap: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: var(--t-body);
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+}
+
+.s-work__open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.s-work__open:focus-visible {
+  outline: none;
+}
+
+.s-work__open svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-work__body:hover .s-work__open {
+  text-decoration-color: currentColor;
+}
+
+.s-work__body:hover .s-work__open svg {
+  transform: translateX(4px);
+}
+
+/* Pages of a dossier, shown by the viewer (outside the section). */
+.s-work__page {
+  display: grid;
+  gap: 16px;
+}
+
+.s-work__page .obj-head {
+  font-size: 13px;
+}
+
+.s-work__page .obj-head b {
+  font-size: 16px;
+}
+
+.s-work__page .obj-rule {
+  margin: 4px 0;
+}
+
+.s-work__page .obj-title {
+  font-size: clamp(20px, 1rem + 1vw, 26px);
+  line-height: 1.2;
+}
+
+.s-work__page .obj-small {
+  font-size: 14px;
+}
+
+.s-work__page .obj-bar {
+  grid-template-columns: minmax(96px, 0.4fr) 1fr 52px;
+  font-size: 14px;
+}
+
+.s-work__page .obj-grid {
+  font-size: 13px;
+}
+
+.s-work__page .obj-grid span {
+  padding: 8px 10px;
+}
+
+.s-work__page .obj-check span {
+  font-size: 15px;
+}
+
+.s-work__page .obj-chart {
+  height: clamp(120px, 22vh, 200px);
+}
+
+.s-work__stage {
+  display: none;
+}
+
+/* ---------- index ---------- */
+.s-work--index .s-work__list {
+  display: block;
+  border-top: 1px solid var(--line-strong);
+}
+
+.s-work--index .s-work__item {
+  border-bottom: 1px solid var(--line);
+}
+
+.s-work--index .s-work__body {
+  grid-template-columns: 3.25rem minmax(0, 1fr) minmax(0, 11rem) 4rem 2.75rem;
+  grid-template-areas:
+    "n title sector year open"
+    "n result sector year open";
+  align-items: start;
+  gap: 6px 20px;
+  height: auto;
+  padding: clamp(18px, 0.8rem + 0.8vw, 26px) 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.s-work--index .s-work__body:has(.s-work__open:not([hidden])):hover {
+  transform: none;
+  box-shadow: none;
+  background: var(--surface);
+}
+
+.s-work--index .s-work__body:has(.s-work__open:focus-visible) {
+  outline-offset: -3px;
+}
+
+.s-work--index .s-work__n {
+  display: block;
+  padding-top: 0.4em;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-variant-numeric: tabular-nums;
+}
+
+.s-work--index .s-work__media {
+  display: none;
+}
+
+.s-work--index .s-work__title {
+  font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.75rem);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.s-work--index .s-work__body:hover .s-work__title {
+  color: var(--hl);
+}
+
+.s-work--index .s-work__sector,
+.s-work--index .s-work__year {
+  padding-top: 0.55em;
+}
+
+.s-work--index .s-work__year {
+  text-align: right;
+}
+
+.s-work--index .s-work__open {
+  justify-self: end;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.s-work--index .s-work__open > span:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The preview stands beside the list, on a wide screen driven by a mouse:
+   a decorative copy of the hovered or focused row's visual (the first row's
+   until then). Touch screens and narrow windows read the rows alone. */
+@media (min-width: 1101px) and (hover: hover) and (pointer: fine) {
+  .s-work--index .s-work__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.48fr);
+    gap: clamp(32px, 1rem + 3vw, 72px);
+  }
+
+  .s-work--index .s-work__stage {
+    position: sticky;
+    top: calc(var(--topbar-h) + 40px);
+    display: block;
+    align-self: start;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--surface-2);
+  }
+
+  .s-work--index .s-work__stage .s-work__media {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    aspect-ratio: auto;
+    margin: 0;
+    padding: clamp(24px, 1rem + 2vw, 48px);
+  }
+
+  .s-work--index .s-work__stage .s-work__cover {
+    width: min(100%, 300px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .s-work__stage .s-work__peek {
+    animation: s-work-peek 0.35s var(--ease);
+  }
+}
+
+@keyframes s-work-peek {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+::view-transition-group(.s-work-item) {
+  animation-duration: 0.42s;
+  animation-timing-function: var(--ease);
+}
+
+@media (max-width: 768px) {
+  .s-work__tools {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .s-work--index .s-work__body {
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto 2.75rem;
+    grid-template-areas:
+      "n title title open"
+      "n result result open"
+      "n sector year open";
+    gap: 6px 12px;
+    padding-inline: 4px;
+  }
+
+  .s-work--index .s-work__sector,
+  .s-work--index .s-work__year {
+    padding-top: 4px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-work s-work--{{mode}} section{{#dark}} band-dark{{/dark}}" aria-labelledby="{{id}}-titre" data-section="work-wall">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+    </div>
+    <div class="s-work__tools">
+      {{#filters}}{{#@first}}<div class="s-work__filters" role="group" aria-label="{{filters_label}}" data-work-filters hidden>
+        <button type="button" class="s-work__filter" data-work-filter="*" data-work-label="{{all_label}}" aria-pressed="true">{{all_label}}<span class="s-work__fcount"></span></button>{{/@first}}
+        <button type="button" class="s-work__filter" data-work-filter="{{value}}" data-work-label="{{label}}" aria-pressed="false">{{label}}<span class="s-work__fcount"></span></button>{{#@last}}
+      </div>{{/@last}}{{/filters}}
+      <p class="s-work__count" role="status"><span data-work-n>{{items.length}}</span> <span data-work-noun data-one="{{count_one}}" data-many="{{count_many}}">{{count_many}}</span><span data-work-current></span></p>
+    </div>
+    <div class="s-work__layout">
+      <ol class="s-work__list" role="list" data-reveal-group>
+        {{#items}}<li class="s-work__item" data-work-key="{{key}}" data-work-tags="{{tags}}" style="counter-reset: work {{@index}}" data-reveal>
+          <div class="s-work__body">
+            <span class="s-work__n" aria-hidden="true"></span>
+            <div class="s-work__media{{#tone}} s-work__media--{{tone}}{{/tone}}" aria-hidden="true" data-qa-decor>{{#image}}<img src="{{image}}" alt="" loading="lazy">{{/image}}{{^image}}{{{art}}}{{/image}}</div>
+            <p class="s-work__sector label">{{sector}}</p>
+            <p class="s-work__year label">{{year}}</p>
+            <h3 class="s-work__title">{{title}}</h3>
+            {{#result}}<p class="s-work__result">{{result}}</p>{{/result}}
+            {{#pages}}{{#@first}}{{#href}}<a class="s-work__open" href="{{href}}" data-viewer data-viewer-src="#{{id}}-{{key}}" data-viewer-title="{{title}}" data-viewer-id="{{key}}">{{/href}}{{^href}}<button type="button" class="s-work__open" data-viewer data-viewer-js data-viewer-src="#{{id}}-{{key}}" data-viewer-title="{{title}}" data-viewer-id="{{key}}" hidden>{{/href}}<span>{{action}}<span class="sr-only"> : {{title}}</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>{{#href}}</a>{{/href}}{{^href}}</button>{{/href}}{{/@first}}{{/pages}}
+            {{^pages}}{{#href}}<a class="s-work__open" href="{{href}}"><span>{{action}}<span class="sr-only"> : {{title}}</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>{{/href}}{{/pages}}
+          </div>
+          {{#pages}}{{#@first}}<template id="{{id}}-{{key}}">{{/@first}}<div data-viewer-page data-viewer-src="{{src}}" data-viewer-alt="{{alt}}" data-viewer-caption="{{caption}}">{{{html}}}</div>{{#@last}}</template>{{/@last}}{{/pages}}
+        </li>{{/items}}
+      </ol>
+      <div class="s-work__stage" aria-hidden="true" data-qa-decor>{{#items}}{{#@first}}<div class="s-work__media{{#tone}} s-work__media--{{tone}}{{/tone}}">{{#image}}<img src="{{image}}" alt="" loading="lazy">{{/image}}{{^image}}{{{art}}}{{/image}}</div>{{/@first}}{{/items}}</div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="work-wall">
+(function () {
+  // Filters hide (hidden), never reorder the DOM: reading and tab order stay
+  // the order of the list. The change goes through a View Transition when the
+  // browser has one and motion is allowed. Without JavaScript the filter bar
+  // stays hidden and every item is visible.
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var track = function (name, params) {
+    if (typeof window.landingTrack === 'function') window.landingTrack(name, params);
+  };
+
+  document.querySelectorAll('.s-work').forEach(function (sec) {
+    var items = Array.prototype.slice.call(sec.querySelectorAll('.s-work__item'));
+    var bar = sec.querySelector('[data-work-filters]');
+    var buttons = bar ? Array.prototype.slice.call(bar.querySelectorAll('[data-work-filter]')) : [];
+    var number = sec.querySelector('[data-work-n]');
+    var noun = sec.querySelector('[data-work-noun]');
+    var current = sec.querySelector('[data-work-current]');
+    var stage = sec.querySelector('.s-work__stage');
+    var prefix = sec.id || 'work';
+
+    function tags(item) { return (item.getAttribute('data-work-tags') || '').split(/\s+/); }
+    function fits(item, value) { return value === '*' || tags(item).indexOf(value) !== -1; }
+    function visible() { return items.filter(function (item) { return !item.hidden; }); }
+
+    // Count per filter; a filter with nothing behind it is not offered, and a
+    // bar with a single useful filter is not shown at all.
+    var useful = 0;
+    buttons.forEach(function (b) {
+      var value = b.getAttribute('data-work-filter');
+      var n = items.filter(function (item) { return fits(item, value); }).length;
+      var c = b.querySelector('.s-work__fcount');
+      if (c) c.textContent = String(n);
+      if (n === 0) b.hidden = true;
+      else if (value !== '*' && n < items.length) useful++;
+    });
+    if (bar && useful > 1) bar.hidden = false;
+
+    function count(value, label) {
+      var n = visible().length;
+      if (number) number.textContent = String(n);
+      if (noun) noun.textContent = noun.getAttribute(n === 1 ? 'data-one' : 'data-many') || noun.textContent;
+      if (current) current.textContent = value === '*' ? '' : ' · ' + label;
+    }
+
+    /* ---- index preview (wide screen, mouse) ---- */
+    var shown = items[0] || null;
+    function peek(item) {
+      if (!stage || !item || item === shown) return;
+      var media = item.querySelector('.s-work__media');
+      if (!media) return;
+      shown = item;
+      var copy = media.cloneNode(true);
+      copy.removeAttribute('aria-hidden');
+      copy.removeAttribute('data-qa-decor');
+      copy.querySelectorAll('[id]').forEach(function (x) { x.removeAttribute('id'); });
+      copy.classList.add('s-work__peek');
+      stage.replaceChildren(copy);
+    }
+    if (stage && sec.classList.contains('s-work--index')) {
+      sec.addEventListener('pointerover', function (e) {
+        if (!fine.matches || e.pointerType === 'touch') return;
+        var item = e.target.closest('.s-work__item');
+        if (item && sec.contains(item)) peek(item);
+      });
+      sec.addEventListener('focusin', function (e) {
+        var item = e.target.closest('.s-work__item');
+        if (item && sec.contains(item)) peek(item);
+      });
+    }
+
+    function apply(value, label) {
+      items.forEach(function (item) { item.hidden = !fits(item, value); });
+      count(value, label);
+      if (shown && shown.hidden) peek(visible()[0]);
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.getAttribute('aria-pressed') === 'true') return;
+        var value = b.getAttribute('data-work-filter');
+        var label = b.getAttribute('data-work-label') || '';
+        buttons.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        if (typeof document.startViewTransition === 'function' && !reduce.matches) {
+          items.forEach(function (item, i) {
+            item.style.setProperty('view-transition-name', prefix + '-item-' + (i + 1));
+            item.style.setProperty('view-transition-class', 's-work-item');
+          });
+          var done = function () {
+            items.forEach(function (item) {
+              item.style.removeProperty('view-transition-name');
+              item.style.removeProperty('view-transition-class');
+            });
+          };
+          var transition = document.startViewTransition(function () { apply(value, label); });
+          transition.finished.then(done, done);
+        } else {
+          apply(value, label);
+        }
+        track('select_content', { content_type: 'filtre', content_id: value });
+      });
+    });
+  });
+})();
+</script>
