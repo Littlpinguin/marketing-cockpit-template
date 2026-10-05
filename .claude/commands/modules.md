@@ -1,6 +1,6 @@
 ---
 name: modules
-description: Active ou désactive les modules optionnels du cockpit (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client). Vérifie les prérequis de chaque module, enregistre l'état dans .setup-completed et pilote le chargement conditionnel.
+description: Active ou désactive les modules optionnels du cockpit (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print). Vérifie les prérequis de chaque module, enregistre l'état dans .setup-completed et pilote le chargement conditionnel.
 ---
 
 # /modules — activer / désactiver les modules optionnels
@@ -24,6 +24,7 @@ Commande réentrante : relancée, elle affiche l'état courant et demande quoi c
 | `veille` | Alimentation de `00-intel/` + backlog d'idées du calendrier | `00-intel/` présent ; recommandé : module `automatisations` actif pour l'alimentation n8n |
 | `publication-sociale` | Push des posts validés vers les réseaux | Compte Postiz : `POSTIZ_API_KEY` (+ URL d'instance si self-hosted) dans `.env` |
 | `espace-client` | Partage de présentations / dashboards protégés par code | Accès FTP : `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`, `FTP_REMOTE_PATH` dans `.env` (configurés via `/tools-setup`) |
+| `print` | `14-print/` (imprimés : skill `print`, agents `print-preflight` et `print-editorial`) | Outillage local, aucun secret : Chrome ou Chromium détecté (ou `CHROME` renseigné), `gs --version` ≥ 10, `python3 -c "import fitz, PIL, numpy"` ; au moins un profil ICC dans `14-print/icc/` (sinon : afficher `14-print/icc/README.md` et proposer le téléchargement par l'utilisateur sur le site de l'ECI) |
 
 ## Flux
 
@@ -58,7 +59,8 @@ Mettre à jour la clé `modules` de `.setup-completed` (créer la clé si absent
   "acquisition":          { "enabled": false, "checked_at": "ISO 8601" },
   "veille":               { "enabled": true,  "checked_at": "ISO 8601" },
   "publication-sociale":  { "enabled": false, "checked_at": "ISO 8601" },
-  "espace-client":        { "enabled": true,  "checked_at": "ISO 8601" }
+  "espace-client":        { "enabled": true,  "checked_at": "ISO 8601" },
+  "print":                { "enabled": false, "checked_at": "ISO 8601" }
 }
 ```
 
@@ -71,6 +73,7 @@ Le contrat de chargement, appliqué par toutes les sessions :
 - **Module actif** → le `CLAUDE.md` du dossier concerné fait foi ; ses workflows sont disponibles ; `/health-check` vérifie ses prérequis à chaque passage.
 - **Module inactif** → ne pas lire ni appliquer le `CLAUDE.md` du module, ne pas proposer ses workflows, ne pas exiger ses variables `.env`. Si l'utilisateur demande explicitement une tâche du module, répondre : « Ce module n'est pas actif — lancez `/modules` pour l'activer. »
 - À l'activation, si le dossier du module ne contient que son `CLAUDE.md`, créer l'arborescence décrite dans ce `CLAUDE.md` (sous-dossiers + `.gitkeep`).
+- À l'activation de `print` : substituer `{{COMPANY_NAME}}` dans `14-print/CLAUDE.md`, puis reporter les valeurs de `01-brand/style-guide.md` dans les variables `:root` de `14-print/gabarits/print-a5.css` (commentaires `← BRAND_*`), en couleurs pleines, et signaler si la police de marque n'est pas disponible en local (`01-brand/assets/fonts/`).
 
 ### Étape 6 — Récapitulatif
 

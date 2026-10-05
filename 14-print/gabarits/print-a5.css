@@ -1,0 +1,213 @@
+/* ---------------------------------------------------------------------------
+   Gabarit print A5 — grille, échelle et composants, base réutilisable.
+   Page composée 154 x 216 mm (coupe 148 x 210, fond perdu 3 mm), papier blanc.
+
+   Tokens de marque : le gabarit livre des valeurs NEUTRES, pas des {{...}} (un
+   marqueur littéral en CSS casse la mise en page en silence ; le gabarit brut doit
+   passer qa.py tel quel). À l'activation du module, remplacer chaque valeur marquée
+   « ← BRAND_* » par celle de 01-brand/style-guide.md.
+
+   Règle d'impression : aucune couleur à canal alpha (rgba, opacity, color-mix vers
+   transparent). Toute teinte claire se calcule en couleur pleine, mélangée au blanc :
+   Ghostscript aplatirait la transparence à 72 dpi.
+
+   Autre format : recalculer la page en pixels CSS (96 par pouce) :
+   largeur px = arrondi supérieur de (fini + 2 x fond perdu) / 25,4 x 96, idem en hauteur,
+   et @page d'un pixel de plus en hauteur (voir plus bas). Adapter --zone-w et les marges.
+--------------------------------------------------------------------------- */
+
+/* Police de marque : embarquer le woff2 en local (01-brand/assets/fonts/), jamais un
+   lien vers un service de polices : Chrome headless imprime avant de l'avoir chargé et
+   substitue une police système sans prévenir. font-display:block attend la police.
+@font-face {
+  font-family: 'Marque';
+  src: url('../../01-brand/assets/fonts/marque.woff2') format('woff2');
+  font-weight: 100 900; font-display: block;
+}
+*/
+
+:root {
+  /* ---------- Marque (valeurs neutres à remplacer) ---------- */
+  --font-marque: system-ui, sans-serif;   /* ← BRAND_FONT_PRIMARY, puis la pile de secours */
+  --primaire: #5D6B7E;                    /* ← BRAND_COLOR_PRIMARY (neutral slate) */
+  --accent: #A89F8D;                      /* ← BRAND_COLOR_ACCENT (neutral greige) */
+  --fonce: #23262B;                       /* ← BRAND_COLOR_DARK : texte courant */
+  --clair: #F6F5F2;                       /* ← BRAND_COLOR_LIGHT : cartes, panneaux */
+  --degrade: linear-gradient(90deg, #5D6B7E 0%, #A89F8D 100%); /* ← BRAND_GRADIENT (écran seulement : en print, chiffre-svg.py) */
+
+  /* Teintes pleines dérivées (jamais de transparence) */
+  --primaire-10: color-mix(in srgb, var(--primaire) 10%, white);   /* fond de carte */
+  --primaire-20: color-mix(in srgb, var(--primaire) 20%, white);
+  --accent-texte: color-mix(in srgb, var(--accent), black 30%);     /* accent lisible en petit corps sur blanc : contrôler ≥ 4,5:1 */
+  --discret: color-mix(in srgb, var(--fonce) 70%, white);           /* texte secondaire : ≥ 4,5:1 sur blanc */
+  --regle: #D9D9D9;                       /* réglures et filets légers : passés en K seul par blacktext.py */
+
+  /* ---------- Géométrie de page ---------- */
+  --bleed: 3mm;
+  --margin-out: 15mm;   /* 12 mm depuis la coupe + 3 mm de fond perdu */
+  --margin-in: 18mm;    /* 15 mm depuis la coupe + 3 mm de fond perdu */
+  --zone-w: 121mm;
+  --u: 5mm;             /* unité de rythme vertical = interligne du corps (14,17 pt) */
+  --lB: 28mm;           /* ligne d'accroche B : début du corps, 40 mm de la coupe haute */
+  --lC: 133mm;          /* ligne d'accroche C : blocs de pied, 145 mm de la coupe haute */
+  --r: 5mm;             /* rayon des cartes : reprendre l'esprit de BRAND_BORDER_RADIUS, à l'échelle du papier */
+}
+
+/* Un pixel de plus que .page : Chrome plafonne une boîte overflow:hidden à la page imprimable
+   en pixels entiers ; ce pixel garantit que le fond perdu couvre le bas (mesuré : 216,18 mm). */
+@page { size: 583px 818px; margin: 0; }
+
+body {
+  margin: 0;
+  font-family: var(--font-marque);
+  font-size: 10pt; line-height: 14.17pt;
+  color: var(--fonce);
+  background: #FFFFFF;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  /* Chrome ≥ 117 : évite les mots orphelins en fin de paragraphe en rééquilibrant
+     les dernières lignes. Le QA reste le juge de paix. */
+  text-wrap: pretty;
+  hyphens: manual;      /* les césures automatiques ne sont pas fiables en impression headless */
+}
+h1, h2, .exergue, .lede { text-wrap: balance; }
+
+/* --- page ------------------------------------------------------------------ */
+.page {
+  /* 583 x 817 px = 154,25 x 216,16 mm : Chrome arrondit les hauteurs au pixel et laissait
+     un filet blanc de 0,13 mm en pied ; build.sh rogne l'excédent au montage. */
+  /* overflow:hidden OBLIGATOIRE : un débord à droite (logo, image à fond perdu) élargirait
+     le document et Chrome réduirait toute la page (shrink-to-fit à 0,907, mesuré). */
+  position: relative; width: 583px; height: 817px; overflow: hidden;
+  page-break-after: always; background: #FFFFFF;
+}
+.page:last-child { page-break-after: auto; }
+
+.zone { position: absolute; top: var(--margin-out); bottom: 20.16mm; width: var(--zone-w); z-index: 2; }
+.page.droite .zone { left: var(--margin-in); }
+.page.gauche  .zone { left: var(--margin-out); }
+
+/* Grille 6 colonnes (16,83 mm, gouttière 4 mm), lecture de la grille mère en 12 unités.
+   Découpes usuelles : 4+2, 2+4, 3+3, 5+1. */
+.g6 { display: grid; grid-template-columns: repeat(6, 1fr); column-gap: 4mm; }
+.c1 { grid-column: span 1; } .c2 { grid-column: span 2; } .c3 { grid-column: span 3; }
+.c4 { grid-column: span 4; } .c5 { grid-column: span 5; } .c6 { grid-column: span 6; }
+
+/* --- lignes d'accroche : tête en A (haut de zone), corps en B, pied en C ------- */
+.corps { position: absolute; top: var(--lB); left: 0; right: 0; }
+.pied  { position: absolute; top: var(--lC); left: 0; right: 0; }
+.titre-courant { position: absolute; top: 0; left: 0; }
+
+/* --- folio : constante, même place sur toutes les pages, à ≥ 6 mm de la coupe ---- */
+.folio {
+  position: absolute; bottom: 9.16mm; width: 7mm; line-height: 7mm;
+  text-align: center; font-size: 8pt; font-weight: 600; z-index: 3;
+}
+.page.droite .folio { right: 12.25mm; transform: translateX(50%); }
+.page.gauche .folio { left: 12mm;  transform: translateX(-50%); }
+
+/* Filet signature facultatif, en marge extérieure. Épaisseur en multiple du pixel CSS
+   (0,265 / 0,53 / 0,79 mm) : Chrome accroche les bords des rectangles au pixel. */
+.fil { position: absolute; background: var(--primaire); }
+.fil.marge { width: .53mm; top: 0; bottom: 0; }
+.page.droite .fil.marge { right: 12.25mm; }
+.page.gauche .fil.marge { left: 12mm; }
+
+/* --- échelle typographique --------------------------------------------------
+   Sauts francs : c'est le contraste de taille qui porte la hiérarchie
+   (doctrine-mise-en-page-editoriale.md §3.1). */
+.surtitre {
+  font-size: 8pt; line-height: 11.34pt; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--primaire); margin: 0 0 3mm;
+}
+h1 { font-size: 30pt; line-height: 32pt; font-weight: 800; letter-spacing: -.02em; margin: 0 0 var(--u); }
+h1.xl { font-size: 40pt; line-height: 40pt; }
+h1.geant { font-size: 64pt; line-height: 60pt; letter-spacing: -.03em; }
+h2 { font-size: 20pt; line-height: 22.5pt; font-weight: 700; margin: 0 0 3mm; letter-spacing: -.01em; }
+h3 { font-size: 10pt; line-height: 14.17pt; font-weight: 700; margin: var(--u) 0 0; }
+p  { margin: 0 0 var(--u); }
+p:last-child { margin-bottom: 0; }
+.lede { font-size: 12.5pt; line-height: 17pt; font-weight: 300; }
+.legende { font-size: 8pt; line-height: 11.34pt; }
+.discret { color: var(--discret); }
+strong { font-weight: 600; }
+
+/* Lettrine sur trois lignes, pour les ouvertures (3 x 14,17 pt). */
+.lettrine::first-letter {
+  float: left; font-size: 42.5pt; line-height: 42.5pt; font-weight: 800;
+  padding: 0 2mm 0 0; margin-top: .02em; color: var(--primaire);
+}
+
+/* Exergue : colonne meuble ou héros de demi-page, filet d'accent côté texte. */
+.exergue {
+  font-size: 18pt; line-height: 22.5pt; font-weight: 600; letter-spacing: -.01em;
+  border-left: 1.06mm solid var(--accent); padding-left: 5mm;
+}
+.exergue.petite { font-size: 15pt; line-height: 19pt; }
+.page.gauche .exergue { border-left: 0; border-right: 1.06mm solid var(--accent); padding-left: 0; padding-right: 4mm; text-align: right; }
+
+/* Chiffres héros : JAMAIS de background-clip:text en print. Un dégradé sur du texte est
+   rastérisé et son masque perdu à la conversion CMJN : il ne reste qu'un rectangle.
+   On pose un PNG 600 dpi issu de lib/chiffre-svg.py + lib/chiffres-png.sh.
+   align-self obligatoire : dans une carte en flex colonne, l'alignement par défaut
+   étire l'image sur toute la largeur et écrase le chiffre. */
+.hero-img { display: block; width: auto; align-self: flex-start; }
+.n-plein { font-size: 28pt; line-height: 30pt; font-weight: 800; color: var(--primaire); letter-spacing: -.02em; }
+
+/* --- cartes et panneaux (couleurs pleines) ------------------------------------ */
+.carte { background: var(--primaire-10); border-radius: var(--r); padding: var(--u); box-sizing: border-box; }
+.carte.blanche { background: #FFFFFF; border: .53mm solid var(--regle); }
+.carte.claire { background: var(--clair); }
+.carte.pleine { background: var(--primaire); color: #FFFFFF; }   /* réserve : texte ≥ 8 pt, graisse ≥ 600 */
+.bord-primaire { border-left: 1.06mm solid var(--primaire); }
+.bord-accent   { border-left: 1.06mm solid var(--accent); }
+
+/* --- médaillons (trombinoscope, intervenants) --------------------------------- */
+.medaillon {
+  width: 30mm; height: 30mm; border-radius: 50%; background: #FFFFFF;
+  border: .53mm solid var(--primaire); overflow: hidden; position: relative;
+}
+/* Portraits normalisés par lib/normaliser-portraits.py : carrés, dessin à la même hauteur
+   et à la même place. Une seule règle suffit donc. Les portraits arrivent APLATIS sur le
+   blanc du médaillon (lib/aplatir.py), jamais en PNG à canal alpha. */
+.medaillon img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.medaillon.grand { width: 36mm; height: 36mm; }
+
+/* Trombinoscope 3 x 4 par page : pas horizontal 42 mm, légende centrée sous le médaillon. */
+.trombi { display: grid; grid-template-columns: repeat(3, 37mm); column-gap: 5mm; row-gap: 4mm; }
+.trombi .perso { display: flex; flex-direction: column; align-items: center; }
+.trombi .perso .nom { margin-top: 1.6mm; font-size: 9pt; line-height: 11.34pt; font-weight: 600; text-align: center; }
+.trombi .perso .legende { text-align: center; }
+
+/* --- programme : une colonne d'heures, un pas constant ------------------------- */
+.creneau { display: grid; grid-template-columns: 16.83mm 1fr; column-gap: 4mm; margin-bottom: 2.6mm; align-items: start; }
+.creneau .h { font-size: 11pt; font-weight: 700; line-height: 14pt; padding-top: 1.6mm; font-variant-numeric: tabular-nums; }
+.creneau .bloc { border-radius: 3.5mm; padding: 1.6mm 3.5mm 1.8mm; background: #FFFFFF; border: .4mm solid var(--regle); }
+.creneau .bloc.travail { background: var(--primaire-10); border-color: var(--primaire-10); }
+.creneau .bloc.pause   { border-color: var(--accent); border-left-width: 1.6mm; }
+.creneau .bloc.social  { background: var(--primaire-20); border-color: var(--primaire-20); }
+.creneau .quoi { display: block; font-weight: 600; }
+.creneau .detail { display: block; font-size: 8.5pt; line-height: 11.34pt; color: var(--discret); }
+
+/* --- notes ----------------------------------------------------------------------
+   Réglures et points : SVG inline à éléments explicites (<rect>, <circle>). Un
+   background-image CSS ou un <pattern> SVG est rastérisé à 72 dpi par Chrome. */
+.lignes, .points { position: absolute; top: 24mm; width: 121mm; height: 172mm; display: block; }
+.page.droite .lignes, .page.droite .points { left: var(--margin-in); }
+.page.gauche .lignes, .page.gauche .points { left: var(--margin-out); }
+
+/* Lignes à remplir : ≥ 8 mm par ligne d'écriture, filet ≥ 0,3 pt et ≥ 40 % de noir. */
+.ligne-vide { display: block; height: 8mm; border-bottom: .3mm solid #8C8C8C; }
+.ligne-vide.courte { width: 60mm; }
+
+/* --- QR code : symbole SVG généré SANS zone de silence, zone posée ici en CSS ------
+   (4 modules, sur un fond d'une seule couleur). Côté ≥ 20 mm, module ≥ 0,5 mm. */
+.qr { display: block; background: #FFFFFF; box-sizing: content-box; }
+
+/* --- plaque : mode body.impression / body.plaque (voir lib/plaque.sh) ------------
+   La plaque porte tout ce qui se superpose ; le texte vivant reste en mode impression. */
+.plaque-img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 0; }
+body.impression .decor { display: none; }
+body.plaque .plaque-img,
+body.plaque .zone,
+body.plaque .folio,
+body.plaque .qr { display: none; }

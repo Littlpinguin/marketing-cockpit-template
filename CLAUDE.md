@@ -32,6 +32,7 @@ Toute demande commence par la question : **quel objectif business sert-elle ?** 
 | Lead magnet (guide, calculateur, quiz…) | skill `lead-magnet` | `05-web-content/` + circuit de capture |
 | Image / visuel de marque | skill `image-generation` | `06-graphic-design/` |
 | Vidéo (montage, Reel, Short, sous-titres) | module `video` — skills `video-editing`, `captions`, `video-generation`, `video-matting`, `reel-talking-head` | `08-video/` (doctrine : `08-video/montage.md`) |
+| Imprimé (carnet, brochure, programme, carton, carte de visite, affiche, kakémono) | module `print` — skill `print` + agents `print-preflight` et `print-editorial` | `14-print/productions/` (doctrines : `14-print/doctrine/`) |
 | Article SEO / blog | skill `seo` | `09-seo/` |
 | Audit SEO (technique, contenu, GEO) | plugin claude-seo (agents `seo-technical`, `seo-content`, `seo-geo`…) via la skill `seo` | synthèse dans `09-seo/` |
 | Campagne Google Ads (audit, optimisation, création) | skill `sea-google-ads` + agent `sea-analyst` (module `acquisition`) | `12-acquisition/google-ads/` |
@@ -99,6 +100,7 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 | `10-automatisations/` | `automatisations` | n8n instance |
 | `11-reporting/` | `reporting` | ≥ 1 data source (GA4/GSC, Postiz, email tool) |
 | `12-acquisition/` | `acquisition` | n8n instance (+ Apify for scraping) |
+| `14-print/` | `print` | Chrome or Chromium, Ghostscript ≥ 10, Python (PyMuPDF, Pillow, numpy), paper ICC profile in `14-print/icc/` |
 | — | `veille`, `publication-sociale`, `espace-client` | See `/modules` (feeds `00-intel/`, Postiz, FTP client space) |
 
 ### `00-intel/` subfolders (confidential — gitignored, see `00-intel/CLAUDE.md`)
@@ -129,7 +131,7 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 4. **No claim without a source.** Every factual statement must map to a number in `01-brand/messaging-framework.md` or a cited external reference.
 5. **Never use banned vocabulary** listed in `01-brand/voice.md` and `01-brand/anti-ai-writing-style.md` (checked by `python3 scripts/lint-brand.py`).
 6. **Check the central editorial calendar** (`02-strategy/calendar/calendar.md`) before proposing content, and update entry statuses (`idée → brouillon → à-valider → validé → publié`) as work progresses.
-7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `08-`, `09-`, and for any HTML deck produced under `06-graphic-design/presentations/`. The PostToolUse hook fires a reminder; do not bypass it.
+7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `08-`, `09-`, and for any HTML deck produced under `06-graphic-design/presentations/`. The PostToolUse hook fires a reminder; do not bypass it. Print pieces (`14-print/`, module `print`) pass it through the `print` skill checklist before any order.
 8. **Anti-repetition is file-based**: scan the calendar, per-channel archives (`examples/`, `editions/`, `articles/`) and the inventory files maintained by production skills before drafting. No external vector database is involved.
 9. **Respect module state.** If a module is disabled in `.setup-completed.modules`, do not load its folder's `CLAUDE.md` or propose its workflows — point the user to `/modules`.
 
@@ -162,7 +164,8 @@ Runtime configuration lives in `.setup-completed` (JSON). The wizard writes it a
     "acquisition":         { "enabled": false },
     "veille":              { "enabled": true },
     "publication-sociale": { "enabled": false },
-    "espace-client":       { "enabled": false }
+    "espace-client":       { "enabled": false },
+    "print":               { "enabled": false }
   },
   "features": {
     "image_generation": { "enabled": true, "model": "gemini-3-pro-image-preview" }
@@ -244,6 +247,12 @@ See `docs/setup-completed.schema.json` for the full schema.
 | `video-matting` | Local video matting (alpha layer) | RobustVideoMatting via ONNX, QC, ProRes 4444 export |
 | `reel-talking-head` | Raw talking-head → edited vertical reel | Orchestrator with two hard validation gates before any spend |
 
+### Print (module `print`)
+
+| Skill | Role | Notes |
+|---|---|---|
+| `print` | Anything that goes to a printer (booklet, brochure, programme, card, poster, roll-up) | Flatplan → sourced facts → HTML/CSS on a grid → opaque plate for overlays → PDF/X-4 CMYK chain (`14-print/lib/`) → `verify.py` / `qa.py` → agents `print-preflight` + `print-editorial` → paper proof; ordering stays human |
+
 ### SEO analysis (support of skill `seo`)
 
 | Skill | Role | Notes |
@@ -296,6 +305,8 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 | `seo-google` | Google data: CrUX, Search Console, GA4 (only if GA4/GSC coupling is active) | Skills `seo-audit` / `seo` |
 | `n8n-debugger` | Diagnoses failed n8n executions (read-only) against known error patterns | `n8n-builder`, module `automatisations` |
 | `veille-analyst` | Deep web research on ONE watch level, sourced and dated signals | Skill `veille-strategy` (one per level, in parallel) |
+| `print-preflight` | Prepress audit of the final PDF: boxes, colour space, ink coverage, effective image resolution, rules, minimum sizes, residual transparency, QR codes | Skill `print`, before any order and after each rebuild |
+| `print-editorial` | Spread-by-spread layout review of a print piece: grid, hierarchy, measure, rhythm, white space, widows | Skill `print`, alongside `print-preflight` |
 
 ---
 
@@ -306,7 +317,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 | `/start-cockpit` | Entry point of the wizard. Run once after cloning. Orchestrates the full setup. |
 | `/brand-discover` | Analyze website + social + blog to propose a draft brand doctrine for human validation. |
 | `/tools-setup` | Pick and configure tools per category. Regenerates role `CLAUDE.md` files based on choices. |
-| `/modules` | Enable/disable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client). |
+| `/modules` | Enable/disable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print). |
 | `/validate-setup` | Placeholder lint + sample generation + voice check. Writes `.setup-completed` on success. |
 | `/health-check` | Ongoing: verify env vars, MCP servers, hook wiring, cron state. Run monthly. |
 

@@ -43,7 +43,7 @@ Chaque commande du wizard charge cette skill en premier et applique ses règles 
 Le template utilise des placeholders `{{MAJUSCULES_UNDERSCORE}}` (style Mustache). La liste canonique est `docs/placeholders.json`.
 
 Avant la fin de toute commande :
-- Lancer `python3 scripts/lint-placeholders.py --paths 00-intel 01-brand 02-strategy 03-social-media 04-email 05-web-content 06-graphic-design 07-events 08-video 09-seo 10-automatisations 11-reporting 12-acquisition .claude/skills`.
+- Lancer `python3 scripts/lint-placeholders.py --paths 00-intel 01-brand 02-strategy 03-social-media 04-email 05-web-content 06-graphic-design 07-events 08-video 09-seo 10-automatisations 11-reporting 12-acquisition 14-print .claude/skills`.
 - Code de sortie non nul : la commande ne peut pas conclure. Afficher la liste des placeholders restants et leurs fichiers.
 - Seul `/validate-setup` bloque durement sur des placeholders résiduels — les autres commandes avertissent et peuvent continuer si l'utilisateur accepte.
 
@@ -105,7 +105,8 @@ Seul `/validate-setup` écrit ce fichier (exception : `/modules` peut mettre à 
     "acquisition":         { "enabled": false, "checked_at": "ISO 8601" },
     "veille":              { "enabled": false, "checked_at": "ISO 8601" },
     "publication-sociale": { "enabled": false, "checked_at": "ISO 8601" },
-    "espace-client":       { "enabled": false, "checked_at": "ISO 8601" }
+    "espace-client":       { "enabled": false, "checked_at": "ISO 8601" },
+    "print":               { "enabled": false, "checked_at": "ISO 8601" }
   },
   "features": {
     "image_generation": { "enabled": true, "model": "gemini-3-pro-image-preview" }

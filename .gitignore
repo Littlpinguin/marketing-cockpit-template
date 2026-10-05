@@ -79,6 +79,16 @@ _sources/research/**/*
 *.gen.json
 **/carrousels/*/exports/
 06-graphic-design/outputs/carrousel-*/exports/
+# 14-print — module print (doctrine/, lib/, gabarits/ are template mechanics: versioned)
+# ICC profiles: ECI licence allows use and embedding, NOT redistribution (see 14-print/icc/README.md)
+14-print/icc/*.icc
+14-print/icc/*.icm
+# Print productions are per-project content; a fork may version their sources by removing
+# the two productions lines, but exports (PDF, renders) are never versioned
+14-print/productions/*
+!14-print/productions/README.md
+14-print/**/output/
+14-print/**/*.pdf
 
 # Python
 __pycache__/

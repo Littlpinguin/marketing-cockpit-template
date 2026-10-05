@@ -24,7 +24,7 @@ The wizard orchestrates the sub-commands below. You may run them one by one if y
 1. **Preflight and welcome** (inline, no sub-command)
 2. **`/brand-discover`** — public signals → draft doctrine → human validation → **strategy interview** (objectives 12 mois + trimestre SMART, canaux + cadence, personas réels, définitions conversion/lead, parcours client) → write `01-brand/` + pre-fill `02-strategy/`
 3. **`/tools-setup`** — pick tools per category → generate role CLAUDE.md → update `.env.example`
-4. **`/modules`** — optional, enable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client)
+4. **`/modules`** — optional, enable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print)
 5. **`/validate-setup`** — placeholder lint + sample generation + voice check → write `.setup-completed`
 
 ## Step 1 — Welcome and preflight
@@ -73,7 +73,7 @@ After the user has shared material (or confirmed they have none beyond the websi
 >
 > 1. `/brand-discover` — analyze your signals, propose a design system, voice, and draft personas, then run the strategy interview: your business and marketing objectives, activated channels and sustainable cadence, real personas (triggers, objections heard in meetings, vocabulary, anti-personas), definitions of a conversion and a qualified lead, and the customer journey questions. (20-35 min)
 > 2. `/tools-setup` — ask which tools you use (email platform, CRM, editorial calendar, etc.) and wire them. (5-10 min)
-> 3. `/modules` — enable any optional modules you need (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client). (2-5 min, optional)
+> 3. `/modules` — enable any optional modules you need (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print). (2-5 min, optional)
 > 4. `/validate-setup` — a final lint, a sample post for you to sanity-check the voice, then I write `.setup-completed`.
 >
 > Ready to start with `/brand-discover`? (yes / no / go slower)

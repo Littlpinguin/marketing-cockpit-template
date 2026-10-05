@@ -2,14 +2,14 @@
 
 **Your marketing department, running inside Claude Code — and it knows your brand by heart.**
 
-53 production skills · 12 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 7 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+54 production skills · 14 specialist agents · 52 slide layouts · 20 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
 [![Skills](https://img.shields.io/badge/skills-50-blue.svg)](#whats-inside)
 [![Agents](https://img.shields.io/badge/agents-10-blue.svg)](#whats-inside)
 
-Clone it once per company, run the wizard, and get a role-based cockpit that operates like a marketing director: strategy, social, email, landing pages, design, presentations, SEO — plus optional modules for video, n8n automation, client-facing reporting and outbound acquisition. Every deliverable is a file in your repo. Every word passes a brand gate before it ships.
+Clone it once per company, run the wizard, and get a role-based cockpit that operates like a marketing director: strategy, social, email, landing pages, design, presentations, SEO — plus optional modules for video, n8n automation, client-facing reporting, outbound acquisition and print production. Every deliverable is a file in your repo. Every word passes a brand gate before it ships.
 
 ---
 
@@ -103,7 +103,8 @@ Core (always on)                       Optional modules (/modules)
 │ 02-strategy calendar + KPIs │───────▶│ 11-reporting    client-site  │
 │ 03→07, 09   production roles│        │                 dashboard    │
 │ wizard + skills + agents    │        │ 12-acquisition  ads + outbound│
-└─────────────────────────────┘        │ + veille, Postiz, client FTP │
+└─────────────────────────────┘        │ 14-print        PDF/X-4 CMYK │
+                                       │ + veille, Postiz, client FTP │
         │                              └──────────────────────────────┘
         ▼
  Everything reads 01-brand/ first — no generic AI voice, ever.
@@ -149,7 +150,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 
 ## What's inside
 
-**53 skills**, organized by function (all in `.claude/skills/`):
+**54 skills**, organized by function (all in `.claude/skills/`):
 
 | Category | Skills | Count |
 |---|---|---|
@@ -162,9 +163,10 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 | Paid acquisition | `sea-google-ads`, `ads-audit` (Google/Meta/LinkedIn audit grids, ~157 checks) | 2 |
 | Video | `video-editing`, `captions`, `video-generation` (t2v/i2v rushes + text-fidelity check), `video-matting`, `reel-talking-head` (orchestrator, two validation gates) | 5 |
 | Automation | `n8n-builder`, `n8n-audit` | 2 |
+| Print | `print` (flatplan → grid layout → opaque plate → PDF/X-4 CMYK chain → prepress checks) | 1 |
 | Web animation | `animation-gsap` (GSAP + ScrollTrigger), `animation-animejs`, `animation-lottie`, `animation-scroll-reveal` (AOS & co) | 4 |
 
-**12 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger`, `video-art-director`, `video-model-scout` — dispatched in parallel for audits and multi-channel campaigns.
+**14 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger`, `video-art-director`, `video-model-scout`, `print-preflight`, `print-editorial` — dispatched in parallel for audits and multi-channel campaigns.
 
 **Working assets, not lorem ipsum:**
 
@@ -185,6 +187,7 @@ It fetches your website, analyzes your recent content, drafts your brand doctrin
 | `acquisition` | Outbound campaigns: the cockpit does ICP + brand-voice sequences + lists, [Lemlist MCP](https://developer.lemlist.com/mcp/setup) does sending & deliverability; plus Google Ads operations and multi-platform ads audits | Lemlist account |
 | `publication-sociale` | Direct scheduling via [Postiz](https://postiz.com) (open source, self-hostable) | Postiz instance |
 | `espace-client` | One password-protected space on your site: dashboard + shared presentations | FTP access |
+| `print` | Anything that goes to a printer: two sourced doctrines (editorial layout, prepress), an A5 grid template, an HTML → PDF/X-4 CMYK chain (paper ICC profile, text in pure K, opaque plates instead of transparency) with automated prepress/editorial checks, and two audit agents | Chrome/Chromium, Ghostscript, Python (PyMuPDF), a free ECI ICC profile |
 
 ## Why not just ChatGPT? Why not just a template?
 
