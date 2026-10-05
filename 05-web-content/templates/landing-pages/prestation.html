@@ -3,17 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kit de relance des factures impayées · Encaisse</title>
-<meta name="description" content="Six modèles d’emails et un calendrier de J+1 à J+45 pour être payé par vos clients professionnels sans abîmer la relation.">
+<title>Ouvrance · Audit d’accessibilité numérique</title>
+<meta name="description" content="Vos parcours testés avec des utilisateurs de lecteur d’écran, puis chaque correction livrée en ticket priorisé. Devis sous trois jours ouvrés.">
 <meta name="robots" content="noindex, nofollow">
-<meta property="og:title" content="Le kit de relance des factures impayées">
-<meta property="og:description" content="Six modèles d’emails, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.">
-<meta name="generator" content="assemble-landing.py · sha256:7317cdb37e84c18e3aeffc9c13123c0791e7a814b03bd14ec8ff4c51af95b404">
+<meta name="generator" content="assemble-landing.py · sha256:53b766c640b8ef96c57fb2e72d6c26eff329c70a30884063a9b866c7cc7f4fd3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <script>window.dataLayer = window.dataLayer || [];</script>
-<script>window.LANDING_CONFIG = {"page": "kit-relance", "tracking": {"mode": "datalayer", "utm": true, "page": "kit-relance"}};</script>
+<script>window.LANDING_CONFIG = {"page": "prestation", "tracking": {"mode": "datalayer", "utm": true, "page": "prestation"}};</script>
 <style>
 /* ---- tokens.css ---- */
 /* ============================================================
@@ -1340,45 +1338,146 @@ textarea.field__input {
     justify-self: start;
   }
 }
-/* ---- section : lead-capture ---- */
-.s-lead__grid {
+/* ---- section : problem-pinned ---- */
+.s-problem__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
-  gap: clamp(32px, 1rem + 4vw, 88px);
-  align-items: center;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+  align-items: start;
 }
 
-.s-lead__points {
-  margin-top: 8px;
+.s-problem__head {
+  margin-bottom: clamp(24px, 1rem + 1.5vw, 40px);
 }
 
-.s-lead__card {
-  padding: clamp(24px, 1rem + 1.6vw, 40px);
-}
-
-.s-lead__form,
-.s-lead__fields {
+.s-problem__visuals {
   display: grid;
-  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
-/* What follows the click: a full sentence, so running-text size. */
-.s-lead__after {
+.s-problem__obj {
+  width: 100%;
+  max-width: 400px;
+}
+
+.s-problem__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-problem__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 0 16px;
+  padding: clamp(18px, 0.8rem + 0.8vw, 26px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-problem__item::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient);
+  transition: width 0.6s var(--ease);
+}
+
+.s-problem__num {
+  padding-top: 0.3em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-problem__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  transition: color 0.4s var(--ease);
+}
+
+.s-problem__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 0.5s var(--ease),
+    opacity 0.4s var(--ease);
+}
+
+.s-problem__body > p {
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 10px;
   color: var(--muted);
-  text-align: center;
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
-.s-lead__status:not(:empty) {
-  padding: 14px 16px;
-  border-radius: var(--radius-input);
-  background: var(--tint);
-}
-
-@media (max-width: 900px) {
-  .s-lead__grid {
+@media (max-width: 1100px) {
+  .s-problem__grid {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .s-problem__visuals {
+    display: none;
+  }
+}
+
+/* Pinned (large screen, motion allowed): the stage holds while the
+   constats pass, 55 vh each. Keep in sync with scroll.js (.sc-pin). */
+.sc-pin .s-problem {
+  padding-block: 0;
+}
+
+.sc-pin .s-problem__track {
+  height: calc(100vh + var(--steps, 4) * 55vh);
+}
+
+.sc-pin .s-problem__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  height: calc(100vh - var(--topbar-h));
+}
+
+.sc-pin .s-problem__stage > .wrap {
+  width: var(--wrap);
+}
+
+.sc-pin .s-problem__visuals {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sc-pin .s-problem__visual {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.sc-pin .s-problem__visual[data-active] {
+  opacity: 1;
+  transform: none;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__body {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__title {
+  color: var(--muted);
+}
+
+.sc-pin .s-problem__item[data-active]::before {
+  width: 100%;
 }
 /* ---- section : program ---- */
 .s-program__grid {
@@ -1533,34 +1632,116 @@ textarea.field__input {
     grid-column: 2;
   }
 }
-/* ---- section : for-whom ---- */
-.s-forwhom__grid {
+/* ---- section : cases ---- */
+.s-cases__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
-  max-width: 1080px;
-  margin-inline: auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: clamp(20px, 0.8rem + 1.6vw, 32px);
 }
 
-.s-forwhom__col {
+.s-cases__card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
   padding: clamp(24px, 1rem + 1.4vw, 40px);
-  border-radius: var(--radius-card);
 }
 
-.s-forwhom__col--no {
-  border: 1.5px dashed var(--line-strong);
-}
-
-.s-forwhom__title {
-  margin-bottom: 20px;
+.s-cases__title {
   font-size: var(--t-h3);
   line-height: var(--lh-snug);
   font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 
-@media (max-width: 900px) {
-  .s-forwhom__grid {
+.s-cases__scope {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-cases__meter {
+  display: grid;
+  gap: 14px;
+  margin: 10px 0 6px;
+  padding: 20px 0;
+  border-block: 1px solid var(--line);
+}
+
+.s-cases__row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.s-cases__row dt {
+  font-weight: 600;
+}
+
+.s-cases__row dd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.25rem;
+  align-items: center;
+  gap: 14px;
+}
+
+.s-cases__track {
+  display: block;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+.s-cases__fill {
+  display: block;
+  width: calc(var(--v, 0.5) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--muted);
+  transform-origin: 0 50%;
+  transition: transform 0.9s var(--ease) 0.25s;
+}
+
+.s-cases__row--after .s-cases__fill {
+  background: var(--gradient);
+}
+
+/* Entry: the "after" bar fills once its card is on screen (reveal engine on,
+   motion allowed). Otherwise every bar is full from the start. */
+.rv-on .s-cases__card:not(.is-in) .s-cases__row--after .s-cases__fill {
+  transform: scaleX(0);
+}
+
+.s-cases__value {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-cases__row--after .s-cases__value {
+  color: var(--hl);
+}
+
+.s-cases__quote blockquote {
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  text-wrap: pretty;
+}
+
+.s-cases__quote figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+@media (max-width: 640px) {
+  .s-cases__row {
     grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
   }
 }
 /* ---- section : people ---- */
@@ -1665,6 +1846,227 @@ textarea.field__input {
 
   .s-people__grid[data-shape="rounded"] .s-people__portrait {
     margin: 12px 12px 0;
+  }
+}
+/* ---- section : for-whom ---- */
+.s-forwhom__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.s-forwhom__col {
+  padding: clamp(24px, 1rem + 1.4vw, 40px);
+  border-radius: var(--radius-card);
+}
+
+.s-forwhom__col--no {
+  border: 1.5px dashed var(--line-strong);
+}
+
+.s-forwhom__title {
+  margin-bottom: 20px;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .s-forwhom__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* ---- section : pricing-table ---- */
+.s-pricing__toggle {
+  display: inline-flex;
+  margin: 0 auto clamp(28px, 1rem + 2vw, 44px);
+  padding: 4px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  background: var(--surface);
+}
+
+.s-pricing__toggle-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.s-pricing__toggle label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 20px;
+  border-radius: var(--radius-badge);
+  font-size: var(--t-small);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.s-pricing__toggle label:has(:checked) {
+  background: var(--brand-dark);
+  color: var(--brand-light);
+}
+
+.s-pricing__toggle label:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.s-pricing__plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
+  align-items: stretch;
+}
+
+.s-pricing__plan {
+  display: grid;
+  grid-template-rows: auto auto auto auto auto 1fr;
+  align-content: start;
+  gap: 10px;
+  padding: clamp(24px, 1rem + 1.4vw, 36px);
+}
+
+.s-pricing__plan--featured {
+  transform: translateY(-12px);
+  border-color: transparent;
+  box-shadow: var(--shadow-lift);
+}
+
+.s-pricing__badge {
+  justify-self: start;
+}
+
+.s-pricing__name {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-pricing__for {
+  color: var(--muted);
+}
+
+.s-pricing__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 8px;
+  font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-pricing__prefix {
+  align-self: baseline;
+  color: var(--muted);
+  font-size: var(--t-lead);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* No plan with a yearly price: the period switch has nothing to switch. */
+.s-pricing:not(:has([data-period-show="year"])) .s-pricing__toggle-wrap {
+  display: none;
+}
+
+.s-pricing__unit {
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.s-pricing__note {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-pricing__cta {
+  margin: 12px 0 8px;
+}
+
+.s-pricing__plan .list-check {
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+/* ---- section : form ---- */
+.s-form__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-form__next {
+  display: grid;
+  gap: 14px;
+  counter-reset: next;
+}
+
+.s-form__next > li {
+  position: relative;
+  padding-left: 40px;
+  counter-increment: next;
+}
+
+.s-form__next > li::before {
+  content: counter(next);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--hl);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.s-form__card {
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+}
+
+.s-form__form,
+.s-form__fields {
+  display: grid;
+  gap: 18px;
+}
+
+.s-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.s-form__privacy {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-form__status:not(:empty) {
+  padding: 14px 16px;
+  border-radius: var(--radius-input);
+  background: var(--tint);
+}
+
+@media (max-width: 1100px) {
+  .s-form__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-form__row {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 /* ---- section : faq ---- */
@@ -1917,15 +2319,78 @@ textarea.field__input {
   color: var(--muted);
   font-size: var(--t-small);
 }
+/* ---- section : sticky-bar ---- */
+.s-sticky {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body:has(.s-sticky) {
+    padding-bottom: 88px;
+  }
+
+  .s-sticky {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    display: block;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    background: var(--brand-light);
+    box-shadow: 0 -12px 30px -20px var(--brand-shadow);
+    visibility: hidden;
+    transform: translateY(110%);
+    transition:
+      transform 0.35s var(--ease),
+      visibility 0s linear 0.35s;
+  }
+
+  .s-sticky[data-visible] {
+    visibility: visible;
+    transform: none;
+    transition: transform 0.35s var(--ease);
+  }
+}
+
+.s-sticky__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.s-sticky__text {
+  display: grid;
+  line-height: 1.3;
+}
+
+.s-sticky__text strong {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.s-sticky__text span {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-sticky__btn.btn {
+  flex: none;
+  min-height: 48px;
+  padding: 10px 22px;
+}
 </style>
 </head>
-<body data-page-slug="kit-relance">
+<body data-page-slug="prestation">
 <a class="skip-link" href="#contenu">Aller au contenu</a>
+<div class="reading-progress" aria-hidden="true"></div>
 <!-- section:topbar -->
 <header id="topbar" class="s-topbar" data-section="topbar">
   <div class="wrap s-topbar__inner">
-    <p class="s-topbar__brand"><svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="24" height="20" rx="6"/><path d="m11 16.5 3.5 3.5 7-7.5"/></svg><span>Encaisse</span></p>
-    <a class="btn btn--secondary s-topbar__cta" href="#recevoir" data-track="cta_click" data-cta-position="topbar" data-cta="primaire">Recevoir le kit</a>
+    <p class="s-topbar__brand"><svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M27 16A11 11 0 1 1 16 5"/><path d="M16 11v10M11 16h10"/></svg><span>Ouvrance</span></p>
+    <a class="btn btn--secondary s-topbar__cta" href="#devis" data-track="cta_click" data-cta-position="topbar" data-cta="primaire">Demander un devis</a>
   </div>
 </header>
 <!-- /section:topbar -->
@@ -1934,206 +2399,371 @@ textarea.field__input {
 <section id="hero" class="s-hero section" aria-labelledby="hero-titre" data-section="hero">
   <div class="wrap s-hero__grid">
     <div class="s-hero__text">
-      <h1 id="hero-titre" class="s-hero__title">Six emails<br>pour être payé<br><span class="hl">sans conflit</span></h1>
-      <p class="s-hero__lede lede">Le kit de relance des indépendants : six modèles prêts à copier, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.</p>
+      <h1 id="hero-titre" class="s-hero__title">Votre site accessible<br><span class="hl">ticket par ticket</span></h1>
+      <p class="s-hero__lede lede">Un audit de vos parcours clés avec des utilisateurs de lecteur d’écran, puis chaque correction remise en ticket priorisé.</p>
       <div class="s-hero__actions">
-        <a class="btn btn--primary" href="#recevoir" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Recevoir le kit<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span>Gratuit, par email</span><span aria-hidden="true">·</span><span>14 pages</span></p>
+        <a class="btn btn--primary" href="#devis" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Demander un devis<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <p class="s-hero__deadline"><span>Devis sous trois jours ouvrés</span><span aria-hidden="true">·</span><span>Premier appel de 30 minutes</span></p>
       </div>
     </div>
     <div class="s-hero__visual" data-reveal="right">
-      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor> <div class="obj-stack"><div class="obj-sheet"> <div class="obj-head"><span class="obj-mark"></span><b>Kit de relance</b><span class="obj-stamp obj-push">Modèle 3</span></div> <div class="obj-rule"></div> <div class="obj-mail"> <div class="obj-mail__from"><span class="obj-avatar">VD</span><span><b>Facture F-118 · échéance dépassée</b><br>À Julien, studio Halte</span></div> <p class="obj-small">Bonjour Julien, la facture F-118 de <span class="obj-highlight">1 450 €</span> attend toujours son règlement. Pouvez-vous me confirmer un virement d’ici vendredi ?</p> </div> <div class="obj-rule"></div> <div class="obj-check"> <span class="is-done">J+1 · Le rappel aimable</span> <span class="is-done">J+8 · La relance claire</span> <span class="is-done">J+15 · La relance ferme</span> <span>J+22 · L’appel, puis l’email</span> <span>J+30 · Le dernier rappel</span> <span>J+45 · La mise en demeure</span> </div> </div></div> <span class="obj-chip s-hero__chip"><i></i>Réglée à J+17</span> </div>
+      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor> <div class="obj-stack"><div class="obj-sheet"> <div class="obj-head"><span class="obj-mark"></span><b>ACC-118</b><span class="obj-stamp obj-push">Priorité 1</span></div> <div class="obj-rule"></div> <p class="obj-title">Le bouton de paiement n’a pas de nom accessible</p> <p class="obj-small" style="margin-top:6px">Critère RGAA 11.9 · parcours de commande, page Paiement</p> <div class="obj-rule"></div> <div class="obj-check"><span class="is-done">Reproduit au clavier</span><span class="is-done">Reproduit au lecteur d’écran</span><span class="is-done">Reproduit sur téléphone</span><span>Corrigé, à vérifier au contre‑audit</span></div> <div class="obj-rule"></div> <p class="obj-small">Correction proposée</p> <p class="obj-small" style="margin-top:6px"><span class="obj-highlight">&lt;button aria-label="Payer ma commande"&gt;</span></p> <div class="obj-rule"></div> <div class="obj-head"><span>Rapport · 47 tickets</span><span class="obj-push">12 en priorité 1</span></div> </div></div> <span class="obj-chip s-hero__chip"><i></i>Testé par Samir au lecteur d’écran</span> </div>
     </div>
   </div>
 </section>
 <!-- /section:hero -->
-<!-- section:recevoir -->
-<section id="recevoir" class="s-lead section" aria-labelledby="recevoir-titre" data-section="lead-capture">
-  <div class="wrap s-lead__grid">
-    <div>
-      <div class="section-head">
-        <h2 id="recevoir-titre" class="section-title">Recevez le kit <span class="hl">dans votre boîte mail</span></h2>
-        <p class="section-intro">Un document de quatorze pages relu par une avocate, avec un lien pour copier les modèles dans votre messagerie.</p>
-      </div>
-      <ul class="list-check s-lead__points" role="list"><li>Six modèles d’emails, du rappel aimable à la mise en demeure</li><li>Le calendrier d’envoi, de J+1 à J+45</li><li>Le tableau de suivi des relances, en tableur</li><li>Les mentions à ajouter sur vos prochaines factures</li></ul>
-    </div>
-    <div class="s-lead__card card" data-reveal>
-      <form class="s-lead__form" id="recevoir-form" action="{{FORM_ENDPOINT}}" method="post" data-form="lead" data-track="generate_lead" data-error-required="Indiquez l’adresse où envoyer le kit." data-error-email="Cette adresse email semble incomplète." data-error-consent="Cochez la case pour continuer." data-msg-success="C’est envoyé. Le kit arrive dans votre boîte dans la minute." data-msg-failure="L’envoi n’a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n’a été envoyé.">
-        <div class="hp" aria-hidden="true"><label for="recevoir-site">Site web</label><input type="text" id="recevoir-site" name="site" tabindex="-1" autocomplete="off"></div>
-        <div class="s-lead__fields" data-form-fields>
-          <div class="field">
-            <label class="field__label" for="recevoir-email">Votre email professionnel</label>
-            <input class="field__input" type="email" id="recevoir-email" name="email" autocomplete="email" required placeholder="prenom@example.com" aria-describedby="recevoir-email-hint recevoir-email-error">
-            <p class="field__hint" id="recevoir-email-hint">Le kit arrive à cette adresse.</p>
-            <p class="field__error" id="recevoir-email-error" hidden></p>
+<!-- section:probleme -->
+<section id="probleme" class="s-problem section" aria-labelledby="probleme-titre" data-section="problem-pinned">
+  <div class="s-problem__track" data-scroll-track>
+    <div class="s-problem__stage">
+      <div class="wrap s-problem__grid">
+        <div class="s-problem__aside">
+          <div class="section-head s-problem__head">
+            <h2 id="probleme-titre" class="section-title">Ce que l’on nous dit<br><span class="hl">au premier appel</span></h2>
+            <p class="section-intro">Quatre phrases que nous entendons presque mot pour mot, avant de parler de devis.</p>
           </div>
-          <div class="consent"><input type="checkbox" id="recevoir-optin" name="newsletter" value="oui" data-optin><label for="recevoir-optin">Recevoir aussi la lettre Encaisse sur la trésorerie des indépendants, un email tous les quinze jours. Désinscription en un clic.</label></div>
-          
-          <button type="submit" class="btn btn--block btn--primary" data-cta-position="capture" data-cta="primaire">Recevoir le kit</button>
-          <p class="s-lead__after">Le kit arrive dans votre boîte dans la minute. La lettre ne part que si vous cochez la case.</p>
+          <div class="s-problem__visuals" aria-hidden="true" data-qa-decor>
+            <div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Service client · à traiter</span></div> <div class="obj-window__body obj-mail"> <div class="obj-mail__from"><span class="obj-avatar">MR</span><span><b>Martine R.</b><br>Commande impossible</span></div> <div class="obj-lines"><i style="--w:94%"></i><i style="--w:72%"></i></div> <p class="obj-small">Avec mon lecteur d’écran, le bouton de paiement <span class="obj-highlight">ne dit rien</span>. J’ai abandonné mon panier.</p> <div class="obj-rule"></div> <p class="obj-small">Transféré 3 fois · sans réponse</p></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Rapport automatique · 412 alertes</span></div> <div class="obj-window__body"><div class="obj-grid" style="--cols:2"> <span class="is-head">Alerte</span><span class="is-head">Nombre</span> <span>Contraste insuffisant</span><span class="is-warn">212</span> <span>Image sans alternative</span><span class="is-warn">96</span> <span>Lien sans intitulé</span><span>58</span> <span>Autres</span><span>46</span> </div><p class="obj-small" style="margin-top:10px">Dont 9 composants répétés sur chaque page</p></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Déclaration en ligne</b><span class="obj-stamp obj-push">À vérifier</span></div> <div class="obj-rule"></div> <p class="obj-small">État de conformité : <span class="obj-strike">totalement conforme</span></p> <div class="obj-rule"></div> <div class="obj-lines"><i style="--w:90%"></i><i style="--w:76%"></i><i style="--w:84%"></i><i style="--w:40%"></i></div> <div class="obj-rule"></div> <p class="obj-small">Audit joint : aucun · mise à jour : inconnue</p></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Tickets accessibilité · 0 sur 63 traités</span></div> <div class="obj-window__body"><div class="obj-check"> <span>Contraste du pied de page</span><span>Ordre de tabulation du panier</span><span>Alternative du logo</span><span>Captcha du formulaire de contact</span><span>Menu au clavier</span><span>Titre des pages produit</span> </div><div class="obj-rule"></div><p class="obj-small">Priorité : <span class="obj-highlight">non renseignée</span></p></div></div></div>
+          </div>
         </div>
-        <p class="form-status s-lead__status" role="status" data-form-status></p>
-      </form>
+        <ol class="s-problem__list" role="list">
+          <li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">01</span>
+            <div>
+              <h3 class="s-problem__title">« Une cliente n’a pas pu payer sa commande »</h3>
+              <div class="s-problem__body"><p>Le message arrive au service client, transféré trois fois, et personne ne sait reproduire le blocage sans lecteur d’écran.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">02</span>
+            <div>
+              <h3 class="s-problem__title">« L’outil automatique sort 412 alertes »</h3>
+              <div class="s-problem__body"><p>La liste mélange vrais blocages et doublons, et ne dit pas ce qui empêche un visiteur de commander.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">03</span>
+            <div>
+              <h3 class="s-problem__title">« Notre agence dit que c’est conforme »</h3>
+              <div class="s-problem__body"><p>La déclaration en ligne annonce un site conforme, sans audit pour l’étayer ni date de dernière vérification.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">04</span>
+            <div>
+              <h3 class="s-problem__title">« On ne sait pas quoi corriger en premier »</h3>
+              <div class="s-problem__body"><p>Soixante tickets ouverts sans ordre : les développeurs commencent par les plus faciles, et les blocages attendent.</p></div>
+            </div>
+          </li>
+        </ol>
+      </div>
     </div>
   </div>
 </section>
-<!-- /section:recevoir -->
-<!-- section:contenu -->
-<section id="contenu" class="s-program section" aria-labelledby="contenu-titre" data-section="program">
+<!-- /section:probleme -->
+<!-- section:methode -->
+<section id="methode" class="s-program section" aria-labelledby="methode-titre" data-section="program">
   <div class="wrap s-program__grid">
     <div>
       <div class="section-head">
-        <h2 id="contenu-titre" class="section-title">Six relances <span class="hl">de J+1 à J+45</span></h2>
-        <p class="section-intro">Chaque modèle monte d’un cran. Le ton reste courtois, la demande devient plus précise.</p>
+        <h2 id="methode-titre" class="section-title">Cinq étapes<br><span class="hl">du cadrage au contre‑audit</span></h2>
+        <p class="section-intro">Une mission type pour un site de 10 à 25 pages types. Le devis donne votre calendrier exact.</p>
       </div>
       <ol class="s-program__list" role="list" data-rail>
         <li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+1</p>
-          <h3 class="s-program__title">Le rappel aimable</h3>
-          <p class="s-program__duration">4 lignes</p>
-          <p class="s-program__text">Une ligne pour signaler l’échéance, la facture en pièce jointe.</p>
+          <p class="s-program__when">Semaine 1</p>
+          <h3 class="s-program__title">Cadrer l’échantillon</h3>
+          <p class="s-program__duration">2 h d’atelier</p>
+          <p class="s-program__text">Vos parcours clés et une quinzaine de pages types, choisis avec vous selon le trafic et les obligations.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+8</p>
-          <h3 class="s-program__title">La relance claire</h3>
-          <p class="s-program__duration">6 lignes</p>
-          <p class="s-program__text">Le montant dû et le moyen de paiement, sans un mot de reproche.</p>
+          <p class="s-program__when">Semaines 2 et 3</p>
+          <h3 class="s-program__title">Tester à la main et avec des utilisateurs</h3>
+          <p class="s-program__duration">8 à 12 jours</p>
+          <p class="s-program__text">Chaque critère RGAA vérifié page par page, puis les parcours rejoués au clavier et au lecteur d’écran.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+15</p>
-          <h3 class="s-program__title">La relance ferme</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">Une date de règlement précise et le rappel des pénalités prévues à vos conditions générales.</p>
+          <p class="s-program__when">Semaine 4</p>
+          <h3 class="s-program__title">Restituer en tickets</h3>
+          <p class="s-program__duration">Une demi-journée</p>
+          <p class="s-program__text">Chaque défaut devient un ticket dans votre outil, avec sa priorité, son critère et un exemple de correction.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+22</p>
-          <h3 class="s-program__title">L’appel et l’email qui le résume</h3>
-          <p class="s-program__duration">1 script</p>
-          <p class="s-program__text">Le déroulé d’un appel de cinq minutes et l’email qui confirme ce qui a été convenu.</p>
+          <p class="s-program__when">Mois 2 et 3</p>
+          <h3 class="s-program__title">Accompagner les corrections</h3>
+          <p class="s-program__duration">1 h par semaine</p>
+          <p class="s-program__text">Une permanence pour vos développeurs, sur leurs questions et leurs correctifs en cours.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+30</p>
-          <h3 class="s-program__title">Le dernier rappel</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">L’annonce de la mise en demeure et le rappel de l’indemnité forfaitaire de 40 € due par un client professionnel en retard.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+45</p>
-          <h3 class="s-program__title">La mise en demeure</h3>
-          <p class="s-program__duration">1 lettre</p>
-          <p class="s-program__text">La lettre recommandée prête à compléter, dernière étape avant une injonction de payer.</p>
+          <p class="s-program__when">Mois 3 ou 4</p>
+          <h3 class="s-program__title">Contre‑auditer</h3>
+          <p class="s-program__duration">3 à 5 jours</p>
+          <p class="s-program__text">Nous revérifions les pages corrigées et mettons à jour votre déclaration d’accessibilité.</p>
         </li>
       </ol>
     </div>
     <figure class="s-program__specimen">
       <div class="s-program__figure">
-        <div aria-hidden="true" data-qa-decor><div class="obj"><div class="obj-sheet"> <div class="obj-head"><span class="obj-mark"></span><b>Modèle 3 · La relance ferme</b><span class="obj-push">p. 6</span></div> <div class="obj-rule"></div> <div class="obj-mail"> <p class="obj-small"><b>Objet</b> Facture [numéro] · échéance dépassée de 15 jours</p> <p class="obj-small">Bonjour [prénom],</p> <p class="obj-small">La facture [numéro] de <span class="obj-highlight">[montant]</span>, échue le [date], n’est pas encore réglée.</p> <p class="obj-small">Je vous propose un règlement par virement d’ici le <span class="obj-highlight">[date + 7 jours]</span>. Passé ce délai, les pénalités prévues à nos conditions générales s’appliqueront.</p> <div class="obj-lines"><i style="--w:72%"></i><i style="--w:44%"></i></div> </div> <div class="obj-rule"></div> <div class="obj-head"><span>À joindre : la facture et votre RIB</span></div> </div></div></div>
-        <figcaption><span class="badge">Extrait</span><span>Le modèle 3, page 6 du kit.</span></figcaption>
+        <div aria-hidden="true" data-qa-decor><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Plan de correction</b><span class="obj-push">p. 4 sur 28</span></div> <div class="obj-rule"></div> <div class="obj-grid" style="--cols:4"> <span class="is-head">Ticket</span><span class="is-head">Critère</span><span class="is-head">Page</span><span class="is-head">Priorité</span> <span>ACC-118</span><span>11.9</span><span>Paiement</span><span class="is-warn">1</span> <span>ACC-121</span><span>1.1</span><span>Fiche produit</span><span class="is-warn">1</span> <span>ACC-133</span><span>12.8</span><span>Panier</span><span class="is-warn">1</span> <span>ACC-140</span><span>3.2</span><span>Pied de page</span><span>2</span> <span>ACC-152</span><span>10.7</span><span>Menu</span><span>2</span> </div> <div class="obj-rule"></div> <div class="obj-lines"><i style="--w:88%"></i><i style="--w:64%"></i></div></div></div>
+        <figcaption><span class="badge">Spécimen</span><span>Une page du plan de correction remis en semaine 4, sur un site d’exemple.</span></figcaption>
       </div>
     </figure>
   </div>
 </section>
-<!-- /section:contenu -->
-<!-- section:pour-qui -->
-<section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
-  <div class="wrap">
-    <div class="section-head section-head--center">
-      <h2 id="pour-qui-titre" class="section-title">Un kit écrit <span class="hl">pour les indépendants</span></h2>
-    </div>
-    <div class="s-forwhom__grid" data-reveal-group>
-      <div class="s-forwhom__col card" data-reveal>
-        <h3 class="s-forwhom__title">Il vous servira si</h3>
-        <ul class="list-check" role="list"><li>Vous facturez d’autres entreprises et certaines paient après l’échéance.</li><li>Vous relancez au jugé, sans calendrier ni trace écrite.</li><li>Vous craignez d’abîmer une relation client en insistant.</li><li>Vous travaillez seul ou à deux, sans service comptable.</li></ul>
-      </div>
-      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
-        <h3 class="s-forwhom__title">Il vous servira peu si</h3>
-        <ul class="list-check list-cross" role="list"><li>Vos clients sont des particuliers : les règles et le ton diffèrent.</li><li>Votre client conteste la facture sur le fond : parlez-en d’abord avec lui.</li></ul>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- /section:pour-qui -->
-<!-- section:auteures -->
-<section id="auteures" class="s-people section" aria-labelledby="auteures-titre" data-section="people">
+<!-- /section:methode -->
+<!-- section:cas -->
+<section id="cas" class="s-cases section band-dark" aria-labelledby="cas-titre" data-section="cases">
   <div class="wrap">
     <div class="section-head">
-      <h2 id="auteures-titre" class="section-title">Écrit par une praticienne <span class="hl">et relu par une avocate</span></h2>
-      
+      <h2 id="cas-titre" class="section-title">Deux sites<br><span class="hl">avant et après l’audit</span></h2>
+      <p class="section-intro">Part des critères RGAA respectés sur les pages de l’échantillon, au premier audit puis au contre‑audit.</p>
+    </div>
+    <ul class="s-cases__grid" role="list" data-reveal-group>
+      <li class="s-cases__card card" data-reveal>
+        <h3 class="s-cases__title">Une boutique de matériel de cuisine</h3>
+        <p class="label">Commerce en ligne · cas d’exemple</p>
+        <p class="s-cases__scope">Dix-huit pages types et le parcours de commande, corrigés en quatre mois par l’agence du client avec nos tickets.</p>
+        <dl class="s-cases__meter">
+          <div class="s-cases__row">
+            <dt>Premier audit</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.38"></span></span><span class="s-cases__value">38 %</span></dd>
+          </div>
+          <div class="s-cases__row s-cases__row--after">
+            <dt>Contre‑audit</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.91"></span></span><span class="s-cases__value">91 %</span></dd>
+          </div>
+        </dl>
+        <figure class="s-cases__quote">
+          <blockquote><p>« Pour la première fois, nos développeurs savaient quoi corriger le lundi matin, et dans quel ordre. »</p></blockquote>
+          <figcaption>Directrice e-commerce (avis fictif)</figcaption>
+        </figure>
+      </li><li class="s-cases__card card" data-reveal>
+        <h3 class="s-cases__title">Le portail famille d’une agglomération</h3>
+        <p class="label">Service public local · cas d’exemple</p>
+        <p class="s-cases__scope">Vingt-quatre pages types, dont l’inscription à la cantine, revues en cinq mois avec la collectivité.</p>
+        <dl class="s-cases__meter">
+          <div class="s-cases__row">
+            <dt>Premier audit</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.52"></span></span><span class="s-cases__value">52 %</span></dd>
+          </div>
+          <div class="s-cases__row s-cases__row--after">
+            <dt>Contre‑audit</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.86"></span></span><span class="s-cases__value">86 %</span></dd>
+          </div>
+        </dl>
+        <figure class="s-cases__quote">
+          <blockquote><p>« La déclaration d’accessibilité dit enfin la vérité, dérogations comprises, et les familles nous écrivent moins. »</p></blockquote>
+          <figcaption>Responsable du numérique (avis fictif)</figcaption>
+        </figure>
+      </li>
+    </ul>
+  </div>
+</section>
+<!-- /section:cas -->
+<!-- section:equipe -->
+<section id="equipe" class="s-people section" aria-labelledby="equipe-titre" data-section="people">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="equipe-titre" class="section-title">Deux personnes<br><span class="hl">font votre audit</span></h2>
+      <p class="section-intro">L’auditrice qui vous rappelle après votre demande mène la mission jusqu’au contre‑audit.</p>
     </div>
     <ul class="s-people__grid" role="list" data-shape="rounded" data-reveal-group>
       <li class="s-people__card card" data-reveal>
-        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">VD</span></div>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">LM</span></div>
         <div class="s-people__body">
-          <h3 class="s-people__name">Valentine Dorez</h3>
-          <p class="s-people__role">Fondatrice d’Encaisse (personnage fictif)</p>
+          <h3 class="s-people__name">Lucie Marchal</h3>
+          <p class="s-people__role">Auditrice RGAA, cheffe de mission</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Comptable de formation, elle suit la trésorerie d’indépendants et de petites agences depuis 2017.</dd></div>
-            <div><dt>Preuve</dt><dd>Les six modèles reprennent les relances qu’elle envoie chaque mois pour ses clients.</dd></div>
-            <div><dt>Dans ce kit</dt><dd>Elle a écrit les six emails et leur calendrier.</dd></div>
+            <div><dt>Parcours</dt><dd>Dix ans d’intégration front-end, puis l’audit d’accessibilité à plein temps.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif de démonstration : citer ici une certification ou un nombre d’audits vérifiable.</dd></div>
+            <div><dt>Dans la mission</dt><dd>Mène l’audit du cadrage au contre‑audit, et tient la permanence de vos développeurs.</dd></div>
           </dl>
         </div>
       </li><li class="s-people__card card" data-reveal>
-        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">IL</span></div>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">SO</span></div>
         <div class="s-people__body">
-          <h3 class="s-people__name">Inès Labarthe</h3>
-          <p class="s-people__role">Avocate en droit des affaires (personnage fictif)</p>
+          <h3 class="s-people__name">Samir Ouali</h3>
+          <p class="s-people__role">Testeur, utilisateur de lecteur d’écran</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Elle conseille des TPE sur leurs conditions générales et leurs litiges de paiement.</dd></div>
-            <div><dt>Preuve</dt><dd>Elle a vérifié chaque mention légale du kit en septembre 2026.</dd></div>
-            <div><dt>Dans ce kit</dt><dd>Elle a rédigé la lettre de mise en demeure.</dd></div>
+            <div><dt>Parcours</dt><dd>Utilise un lecteur d’écran chaque jour depuis quinze ans, sur ordinateur comme sur téléphone.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif de démonstration : une preuve se cite avec sa source.</dd></div>
+            <div><dt>Dans la mission</dt><dd>Rejoue vos parcours clés et enregistre, à voix haute, ce qui le bloque.</dd></div>
           </dl>
         </div>
       </li>
     </ul>
   </div>
 </section>
-<!-- /section:auteures -->
+<!-- /section:equipe -->
+<!-- section:pour-qui -->
+<section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="pour-qui-titre" class="section-title">Pour qui<br><span class="hl">est cet audit</span></h2>
+    </div>
+    <div class="s-forwhom__grid" data-reveal-group>
+      <div class="s-forwhom__col card" data-reveal>
+        <h3 class="s-forwhom__title">Pour vous si</h3>
+        <ul class="list-check" role="list"><li>Votre site vend en ligne ou sert vos clients, et l’acte européen sur l’accessibilité vous concerne.</li><li>Une équipe ou une agence peut corriger le code dans les mois qui viennent.</li><li>Vous devez publier une déclaration d’accessibilité qui tienne à la vérification.</li><li>Vous voulez un ordre de correction argumenté, page par page.</li></ul>
+      </div>
+      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
+        <h3 class="s-forwhom__title">Pas pour vous si</h3>
+        <ul class="list-check list-cross" role="list"><li>Vous cherchez une attestation sans toucher au site.</li><li>Vous attendez un module à installer qui rendrait le site conforme sans le modifier.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:pour-qui -->
+<!-- section:tarifs -->
+<section id="tarifs" class="s-pricing section" aria-labelledby="tarifs-titre" data-section="pricing-table" data-period="month">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="tarifs-titre" class="section-title">Trois périmètres<br><span class="hl">et leur prix de départ</span></h2>
+      <p class="section-intro">Le prix dépend du nombre de pages types et de parcours testés. Le devis fixe ce périmètre, puis le prix ne bouge plus. Prix d’exemple, hors taxes.</p>
+    </div>
+    
+    <ul class="s-pricing__plans" role="list" data-reveal-group>
+      <li class="s-pricing__plan card" data-reveal>
+        
+        <h3 class="s-pricing__name">Audit ciblé</h3>
+        <p class="s-pricing__for">Un parcours critique, jusqu’à 10 pages types</p>
+        <p class="s-pricing__price"><span class="s-pricing__prefix">dès</span> <span>4 800 €</span> <span class="s-pricing__unit">HT</span></p>
+        <p class="s-pricing__note">Livré en trois semaines</p>
+        <div>
+          <a class="btn btn--block s-pricing__cta btn--secondary" href="#devis" data-track="cta_click" data-cta-position="tarifs-audit">Demander un devis</a>
+          <ul class="list-check" role="list"><li>Audit RGAA des pages de l’échantillon</li><li>Tests au lecteur d’écran sur le parcours</li><li>Rapport et tickets priorisés</li><li>Restitution de deux heures</li></ul>
+        </div>
+      </li><li class="s-pricing__plan card band-dark s-pricing__plan--featured" data-reveal>
+        <p class="badge badge--accent s-pricing__badge">Le plus demandé</p>
+        <h3 class="s-pricing__name">Audit et corrections</h3>
+        <p class="s-pricing__for">Un site complet, de 10 à 25 pages types</p>
+        <p class="s-pricing__price"><span class="s-pricing__prefix">dès</span> <span>9 600 €</span> <span class="s-pricing__unit">HT</span></p>
+        <p class="s-pricing__note">Sur trois à quatre mois</p>
+        <div>
+          <a class="btn btn--block s-pricing__cta btn--primary" href="#devis" data-track="cta_click" data-cta-position="tarifs-corrections" data-cta="primaire">Demander un devis</a>
+          <ul class="list-check" role="list"><li>L’audit ciblé, étendu au site entier</li><li>Permanence hebdomadaire pour vos développeurs</li><li>Contre‑audit des pages corrigées</li><li>Déclaration d’accessibilité mise à jour</li></ul>
+        </div>
+      </li><li class="s-pricing__plan card" data-reveal>
+        
+        <h3 class="s-pricing__name">Suivi annuel</h3>
+        <p class="s-pricing__for">Des mises en ligne fréquentes</p>
+        <p class="s-pricing__price"><span class="s-pricing__prefix">dès</span> <span>1 200 €</span> <span class="s-pricing__unit">HT par mois</span></p>
+        <p class="s-pricing__note">Engagement de douze mois</p>
+        <div>
+          <a class="btn btn--block s-pricing__cta btn--secondary" href="#devis" data-track="cta_click" data-cta-position="tarifs-suivi">Demander un devis</a>
+          <ul class="list-check" role="list"><li>Deux contre‑audits par an</li><li>Revue des maquettes avant développement</li><li>Une demi-journée de formation pour l’équipe</li></ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+<!-- /section:tarifs -->
+<!-- section:devis -->
+<section id="devis" class="s-form section" aria-labelledby="devis-titre" data-section="form">
+  <div class="wrap s-form__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="devis-titre" class="section-title">Décrivez votre site<br><span class="hl">et recevez un devis</span></h2>
+        <p class="section-intro">Lucie lit votre demande et vous rappelle pour préciser le périmètre.</p>
+      </div>
+      <ol class="s-form__next" role="list"><li>Un appel de 30 minutes avec l’auditrice qui mènera la mission</li><li>Un devis écrit, périmètre et prix détaillés, sous trois jours ouvrés</li><li>Si l’audit ne vous sert pas, nous vous le disons dès cet appel</li></ol>
+    </div>
+    <div class="s-form__card card" data-reveal>
+      <form class="s-form__form" id="devis-form" action="{{FORM_ENDPOINT}}" method="post" data-form="contact" data-track="generate_lead" data-error-required="Ce champ nous sert à préparer le devis." data-error-email="Cette adresse email semble incomplète." data-msg-success="Merci, votre demande est partie. Lucie vous rappelle sous un jour ouvré." data-msg-failure="L’envoi n’a pas abouti. Nouvel essai en cours." data-msg-unwired="Modèle de démonstration : branchez l’adresse du formulaire pour recevoir les demandes.">
+        <div class="hp" aria-hidden="true"><label for="devis-site">Site web</label><input type="text" id="devis-site" name="site" tabindex="-1" autocomplete="off"></div>
+        <div class="s-form__fields" data-form-fields>
+          <div class="s-form__row">
+            <div class="field">
+              <label class="field__label" for="devis-name">Nom et prénom</label>
+              <input class="field__input" type="text" id="devis-name" name="name" autocomplete="name" required aria-describedby="devis-name-error">
+              <p class="field__error" id="devis-name-error" hidden></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="devis-email">Email professionnel</label>
+              <input class="field__input" type="email" id="devis-email" name="email" autocomplete="email" required aria-describedby="devis-email-error">
+              <p class="field__error" id="devis-email-error" hidden></p>
+            </div>
+          </div>
+          <div class="s-form__row">
+            <div class="field">
+              <label class="field__label" for="devis-company">Organisation</label>
+              <input class="field__input" type="text" id="devis-company" name="company" autocomplete="organization" required aria-describedby="devis-company-error">
+              <p class="field__error" id="devis-company-error" hidden></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="devis-size">Taille du site</label>
+              <div class="field__select">
+                <select class="field__input" id="devis-size" name="pages_types" required aria-describedby="devis-size-error">
+                  <option value="">Choisir</option><option>Moins de 10 pages types</option><option>10 à 25 pages types</option><option>Plus de 25 pages types</option><option>Une application mobile</option>
+                </select>
+              </div>
+              <p class="field__error" id="devis-size-error" hidden></p>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="devis-url">Adresse du site</label>
+            <input class="field__input" type="text" inputmode="url" id="devis-url" name="site_url" autocomplete="url" spellcheck="false" placeholder="https://www.example.com" required aria-describedby="devis-url-error">
+            <p class="field__error" id="devis-url-error" hidden></p>
+          </div>
+          <div class="field">
+            <label class="field__label" for="devis-message">Votre contexte <span class="field__optional">(facultatif)</span></label>
+            <textarea class="field__input" id="devis-message" name="message" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn--block btn--primary" data-cta-position="formulaire" data-cta="primaire">Demander un devis</button>
+          <p class="s-form__privacy">Vos réponses servent seulement à préparer le devis. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a></p>
+        </div>
+        <p class="form-status s-form__status" role="status" data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- /section:devis -->
 <!-- section:questions -->
 <section id="questions" class="s-faq section" aria-labelledby="questions-titre" data-section="faq">
   <div class="wrap s-faq__grid">
     <div>
       <div class="section-head">
-        <h2 id="questions-titre" class="section-title">Avant de recevoir <span class="hl">le kit</span></h2>
+        <h2 id="questions-titre" class="section-title">Vos questions<br><span class="hl">avant le devis</span></h2>
         
       </div>
       <div class="s-faq__list">
         <details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Le kit est‑il vraiment gratuit ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Oui, et sans abonnement : vous recevez le kit par email. La lettre Encaisse, un email tous les quinze jours, ne part que si vous cochez la case prévue.</p></div>
+          <summary class="s-faq__q"><h3>Mon site est-il concerné par l’obligation d’accessibilité ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Depuis le 28 juin 2025, l’acte européen sur l’accessibilité couvre notamment le commerce en ligne, les services bancaires et le transport de voyageurs, avec une exemption pour les microentreprises de services. Nous vérifions votre cas au premier appel.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Et si je coche la case de la lettre ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Un email vous demande de confirmer l’abonnement. Sans clic sur son lien, aucune lettre ne part. Vous pouvez vous désinscrire à tout moment et garder le kit.</p></div>
+          <summary class="s-faq__q"><h3>Un outil automatique ne suffit-il pas ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Les outils repèrent une partie des défauts techniques. Le parcours au lecteur d’écran et la pertinence des alternatives demandent un test humain : c’est l’essentiel de nos journées d’audit.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Dans quel format arrive le kit ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Un PDF de quatorze pages, avec les modèles en document modifiable à ouvrir dans votre traitement de texte.</p></div>
+          <summary class="s-faq__q"><h3>Corrigez-vous le code vous-mêmes ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Vos développeurs ou votre agence corrigent, avec nos tickets et la permanence hebdomadaire. Si vous n’avez personne, nous vous orientons vers des développeurs formés.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Les modèles conviennent‑ils à des clients particuliers ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Ils sont écrits pour des clients professionnels. L’indemnité forfaitaire de 40 € et plusieurs mentions ne s’appliquent pas à un particulier.</p></div>
+          <summary class="s-faq__q"><h3>Le prix peut-il changer en cours de mission ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Le devis fixe le périmètre et le prix. Si vous ajoutez des pages en route, nous chiffrons l’ajout et attendons votre accord avant de commencer.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Que devient mon adresse email ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Elle sert à vous envoyer le kit, et la lettre si vous l’avez demandée, rien d’autre. Elle n’est ni vendue ni prêtée, et la politique de confidentialité détaille le reste.</p></div>
+          <summary class="s-faq__q"><h3>Combien de temps dure une mission ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Trois semaines pour un audit ciblé, trois à quatre mois avec l’accompagnement des corrections. Le devis donne le calendrier exact.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Auditez-vous les applications mobiles ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui, avec le référentiel adapté aux applications mobiles. Le devis se fait sur les écrans des parcours clés.</p></div>
         </details>
       </div>
     </div>
     <aside class="s-faq__card card" aria-labelledby="questions-carte">
-      <p class="label">La ressource</p>
-      <p id="questions-carte" class="s-faq__card-title">Le kit de relance</p>
-      <p class="s-faq__card-meta">Gratuit · 14 pages · modèles modifiables</p>
-      <a class="btn btn--secondary btn--block" href="#recevoir" data-track="cta_click" data-cta-position="faq">Recevoir le kit</a>
-      <p class="s-faq__contact">Une autre question : <a href="mailto:bonjour@example.com">bonjour@example.com</a></p>
+      <p class="label">Devis gratuit</p>
+      <p id="questions-carte" class="s-faq__card-title">Audit d’accessibilité</p>
+      <p class="s-faq__card-meta">Dès 4 800 € HT, rapport et tickets compris</p>
+      <a class="btn btn--secondary btn--block" href="#devis" data-track="cta_click" data-cta-position="faq">Demander un devis</a>
+      <p class="s-faq__contact">Une autre question ? <a href="mailto:bonjour@example.com">bonjour@example.com</a></p>
     </aside>
   </div>
 </section>
 <!-- /section:questions -->
 <!-- section:final -->
 <section id="final" class="s-final section band-dark" aria-labelledby="final-titre" data-section="final-cta" data-enter="curtain">
-  <div class="s-final__decor s-final__decor--dots" aria-hidden="true" data-qa-decor></div>
+  <div class="s-final__decor s-final__decor--rings" aria-hidden="true" data-qa-decor></div>
   <div class="wrap s-final__inner" data-reveal-group>
-    <h2 id="final-titre" class="s-final__title" data-reveal>Le prochain retard<br><span class="hl">a déjà son email</span></h2>
-    <p class="s-final__text lede" data-reveal>Recevez les six modèles et envoyez le premier dès la prochaine échéance dépassée.</p>
-    <a class="btn btn--light" href="#recevoir" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>Recevoir le kit<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <p class="s-final__note" data-reveal>Gratuit, sans abonnement</p>
+    <h2 id="final-titre" class="s-final__title" data-reveal>Vos pages critiques<br><span class="hl">auditées en trois semaines</span></h2>
+    <p class="s-final__text lede" data-reveal>Décrivez votre site en deux minutes : Lucie vous rappelle pour cadrer le périmètre et le chiffrer.</p>
+    <a class="btn btn--light" href="#devis" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>Demander un devis<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    <p class="s-final__note" data-reveal>Devis gratuit, sous trois jours ouvrés</p>
   </div>
 </section>
 <!-- /section:final -->
@@ -2141,12 +2771,20 @@ textarea.field__input {
 <!-- section:pied -->
 <footer id="pied" class="s-footer" data-section="footer">
   <div class="wrap s-footer__inner">
-    <p class="s-footer__brand"><svg class="s-footer__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="24" height="20" rx="6"/><path d="m11 16.5 3.5 3.5 7-7.5"/></svg><span>Encaisse</span></p>
+    <p class="s-footer__brand"><svg class="s-footer__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M27 16A11 11 0 1 1 16 5"/><path d="M16 11v10M11 16h10"/></svg><span>Ouvrance</span></p>
     <ul class="s-footer__links" role="list"><li><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a></li><li><a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></li><li><a href="mailto:bonjour@example.com">bonjour@example.com</a></li></ul>
-    <p class="s-footer__legal">© 2026 Encaisse · modèle de démonstration, contenus fictifs</p>
+    <p class="s-footer__legal">© 2026 Ouvrance, marque fictive. Personnes, cas et prix d’exemple.</p>
   </div>
 </footer>
 <!-- /section:pied -->
+<!-- section:barre-mobile -->
+<aside id="barre-mobile" class="s-sticky" aria-label="Demander un devis" data-section="sticky-bar">
+  <div class="s-sticky__inner">
+    <p class="s-sticky__text"><strong>Audit d’accessibilité</strong><span>Devis sous trois jours</span></p>
+    <a class="btn btn--primary s-sticky__btn" href="#devis" data-track="cta_click" data-cta-position="barre-mobile" data-cta="primaire">Demander</a>
+  </div>
+</aside>
+<!-- /section:barre-mobile -->
 <script>
 /* ---- reveal.js ---- */
 /* ==========================================================================
@@ -2851,6 +3489,23 @@ textarea.field__input {
     }, 2600);
   });
 })();
+/* ---- section : pricing-table ---- */
+(function () {
+  document.querySelectorAll('.s-pricing').forEach(function (section) {
+    // No yearly price anywhere: no switch (CSS :has() does it too).
+    var wrap = section.querySelector('.s-pricing__toggle-wrap');
+    if (wrap && !section.querySelector('[data-period-show="year"]')) wrap.hidden = true;
+    section.querySelectorAll('.s-pricing__toggle input').forEach(function (input) {
+      input.addEventListener('change', function () {
+        if (!input.checked) return;
+        section.setAttribute('data-period', input.value);
+        section.querySelectorAll('[data-period-show]').forEach(function (el) {
+          el.hidden = el.getAttribute('data-period-show') !== input.value;
+        });
+      });
+    });
+  });
+})();
 /* ---- section : faq ---- */
 (function () {
   // FAQPage JSON-LD built from the visible questions (indexed pages only).
@@ -2865,6 +3520,32 @@ textarea.field__input {
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: entities });
     document.head.appendChild(script);
+  });
+})();
+/* ---- section : sticky-bar ---- */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  document.querySelectorAll('.s-sticky').forEach(function (bar) {
+    var link = bar.querySelector('a[href]');
+    var href = link ? link.getAttribute('href') : '';
+    // Shown once the hero has been scrolled past; hidden again while the
+    // conversion block or the footer is on screen.
+    var hero = document.querySelector('main section');
+    var guards = [document.querySelector('footer')];
+    if (href && href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+    guards = guards.filter(Boolean);
+    var onScreen = new Map();
+    var heroPassed = !hero;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
+        else onScreen.set(e.target, e.isIntersecting);
+      });
+      var blocked = guards.some(function (g) { return onScreen.get(g); });
+      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+    });
+    if (hero) io.observe(hero);
+    guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });
   });
 })();
 </script>

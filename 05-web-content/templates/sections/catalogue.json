@@ -13,7 +13,7 @@
   "offer": {"state": "open", "closes_at": "2027-03-31T23:59:00+02:00", "after_close": "waitlist"},
   "intro": {
     "title": "Bibliothèque de sections : le catalogue",
-    "text": "Toutes les sections de la bibliothèque, dans un ordre de récit plausible, remplies avec le contenu d'exemple de leurs slots : une marque fictive (Meridian Conseil, cabinet climat inventé) et une offre fictive. Avant chaque section, sa fiche dit l'objection qu'elle traite, quand l'utiliser, quand l'éviter, ce qui se passe en mouvement réduit et quels slots elle prend. Une vraie page n'en prend qu'une dizaine. Page assemblée par 05-web-content/scripts/assemble-landing.py depuis catalogue.json."
+    "text": "Toutes les sections de la bibliothèque, dans un ordre de récit plausible, remplies avec le contenu d’exemple de leurs slots : une marque fictive (Meridian Conseil, cabinet climat inventé) et une offre fictive. Avant chaque section, sa fiche dit l’objection qu’elle traite, quand l’utiliser, quand l’éviter, ce qui se passe en mouvement réduit et quels slots elle prend. Une vraie page n’en prend qu’une dizaine. Page assemblée par 05-web-content/scripts/assemble-landing.py depuis catalogue.json."
   },
   "sections": [
     {"use": "topbar"},
@@ -30,6 +30,7 @@
     {"use": "map-pinned", "id": "rythme"},
     {"use": "people", "id": "animateurs"},
     {"use": "testimonials", "id": "avis"},
+    {"use": "cases", "id": "cas"},
     {"use": "outcomes", "id": "resultats"},
     {"use": "for-whom", "id": "pour-qui"},
     {"use": "process", "id": "ensuite"},
@@ -39,12 +40,17 @@
       "action": "https://inscription.example.com/meridian/bilan-carbone",
       "action_waitlist": "https://inscription.example.com/meridian/liste-attente"
     }},
+    {"use": "guarantee", "id": "garantie"},
     {"use": "lead-capture", "id": "guide", "slots": {
       "action": "https://formulaires.example.com/meridian/liste-donnees",
       "primary": false
     }},
     {"use": "form", "id": "contact", "slots": {
       "action": "https://formulaires.example.com/meridian/contact",
+      "primary": false
+    }},
+    {"use": "event-registration", "id": "inscription", "slots": {
+      "action": "https://formulaires.example.com/meridian/matinale",
       "primary": false
     }},
     {"use": "faq"},

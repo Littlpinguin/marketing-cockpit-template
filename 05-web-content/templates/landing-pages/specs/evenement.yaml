@@ -1,0 +1,423 @@
+# ============================================================================
+# Modèle de landing : ÉVÉNEMENT (conférence, rencontre, matinale ou webinar
+# en direct, sur place et en ligne)
+# ----------------------------------------------------------------------------
+# Assemblage :
+#   python3 05-web-content/scripts/assemble-landing.py \
+#     05-web-content/templates/landing-pages/specs/evenement.yaml
+#   python3 05-web-content/scripts/qa-landing.py \
+#     05-web-content/templates/landing-pages/evenement.html
+#
+# Pour une vraie page : copier ce fichier vers
+# 05-web-content/landing-pages/<slug>/pilotage/page.yaml, changer « output »
+# et « page », réécrire chaque texte (skills copywriting puis copy-editing),
+# puis dérouler la skill landing-page (brief, charte, QA, quatre revues,
+# brand-check). Les polices de « fonts » suivent 01-brand/tokens.json.
+#
+# Marque d'exemple : Brivalle, éditeur FICTIF d'un logiciel de planification
+# de tournées, qui organise sa matinale annuelle. Lieu (Halle Lucine), noms,
+# fonctions, chiffres et avis sont inventés pour montrer le ton et les
+# longueurs : rien ne part en ligne tel quel. Personnes et avis sont marqués
+# comme fictifs sur la page.
+#
+# Variantes :
+#   - 100 % en ligne (webinar) : retirer la section « acces », ne garder que
+#     le mode « En ligne » de l'inscription (modes_legend vide : le mode part
+#     en champ caché), et réécrire les faits « Où » et les étapes ;
+#   - 100 % sur place : retirer le mode « En ligne » et le repère « Direct » ;
+#   - événement payant : remplacer event-registration par offer-ticket
+#     (formules Sur place / En ligne, {{URL_CHECKOUT}}), comme dans
+#     specs/formation.yaml.
+#
+# À brancher avant publication (marqueurs du dépôt, signalés par la QA) :
+#   {{FORM_ENDPOINT}}         endpoint POST de l'inscription (n8n, outil
+#                             d'événement) ; reçoit participation, name,
+#                             email, company, question, prochaines et les UTM
+#   {{URL_ITINERAIRE}}        lien d'itinéraire vers le lieu
+#   {{URL_CONFIDENTIALITE}}   page de politique de confidentialité
+#   {{URL_MENTIONS_LEGALES}}  page des mentions légales
+# Le contact matinale@example.com (FAQ, inscription, pied) se remplace par la
+# vraie adresse.
+#
+# État des inscriptions : une seule configuration, « offer » ci-dessous.
+# Ouvertes jusqu'à closes_at, puis closes (bouton désactivé, message de
+# clôture) ; « state: waitlist » à la main quand la salle est pleine : l'option
+# « Sur place » se désactive, le direct reste ouvert. Jours restants calculés
+# dans le navigateur, jamais de secondes.
+#
+# Mesure : mode datalayer. Événements cta_click (positions topbar, hero, faq,
+# final, barre-mobile), generate_lead à l'inscription (avec participation :
+# sur-place ou en-ligne), faq_open ; UTM de la visite ajoutés au formulaire
+# en champs cachés. Pour GA4 : tracking.mode gtag et tracking.ga4 ; pour GTM :
+# mode gtm et gtm. Marquer generate_lead comme conversion clé côté GA4.
+#
+# Récit : une objection par section, dans l'ordre de la pensée du visiteur.
+#   hero          Quoi, quand, où, pour qui : le badge de la matinale
+#   rapporter     Est-ce que ça vaut ma matinée : ce qu'on rapporte au dépôt
+#   programme     Qu'y a-t-il exactement : l'horaire, un spécimen (rail)
+#   intervenants  Qui parle, et sont-ils crédibles
+#   acces         Comment j'y vais, ou je suis à distance : lieu, direct,
+#                 replay (seul épinglage)
+#   avis          D'autres y sont-ils allés : l'édition précédente (fictifs)
+#   pour-qui      Est-ce pour moi : et pour qui c'est moins utile
+#   inscription   Je m'inscris, sur place ou en ligne (bande sombre,
+#                 event-registration)
+#   questions     Dernières questions, carte collante qui ramène au formulaire
+#   pratique      Organisateur, lieu, image, données, report
+#   final         Je passe à l'action (bande sombre)
+# Un épinglage et un rail ; deux bandes sombres, jamais d'affilée ; une seule
+# conversion (#inscription) pour tous les boutons ; le seul accent fort est
+# le bouton d'envoi.
+# ============================================================================
+output: 05-web-content/templates/landing-pages/evenement.html
+title: "La matinale flotte électrique · 3 juin 2027 à Bordeaux et en direct · Brivalle"
+description: >-
+  Une matinée à Bordeaux et en direct pour les responsables de flotte : trois
+  retours d’expérience chiffrés, une table ronde et vos questions. Gratuit,
+  replay pour tous les inscrits.
+lang: fr
+page: evenement
+robots: "noindex, nofollow"
+og:
+  type: website
+  title: "La matinale flotte électrique, le 3 juin 2027"
+  description: "À Bordeaux et en direct, gratuit, replay sous 48 heures pour tous les inscrits."
+fonts: ["Inter:wght@400;500;600;700;800", "JetBrains Mono:wght@500;600"]
+ground: dots
+theatre: {progress: true}
+tracking: {mode: datalayer, utm: true}
+offer: {state: open, closes_at: "2027-06-02T18:00:00+02:00", after_close: closed}
+skip_link: "Aller au contenu"
+
+sections:
+  - use: topbar
+    slots:
+      brand: >-
+        <svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="25" r="3"/><circle
+        cx="25" cy="7" r="3"/><path d="M10 25h6a4.5 4.5 0 0 0 0-9h-1a4.5 4.5 0 0 1 0-9h7"/></svg><span>Brivalle</span>
+      cta_label: "M’inscrire"
+      cta_href: "#inscription"
+      primary: true
+
+  - use: hero
+    slots:
+      title: 'Passer vos tournées<br><span class="hl">à l’électrique</span>'
+      lede: >-
+        Une matinée à Bordeaux et en direct pour les responsables de flotte,
+        avec trois retours d’expérience chiffrés.
+      cta_label: "M’inscrire"
+      cta_href: "#inscription"
+      primary: true
+      deadline: "Jeudi 3 juin 2027, de 8 h 30 à 13 h"
+      countdown: null
+      detail: "Gratuit, sur place ou en ligne"
+      image: null
+      object: |-
+        <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+          <div class="obj-stack">
+            <div class="obj-sheet">
+              <div class="obj-head"><span class="obj-mark"></span><b>La matinale flotte électrique</b><span class="obj-stamp obj-push">Badge</span></div>
+              <div class="obj-rule"></div>
+              <p class="obj-kpi">3 juin<small>2027</small></p>
+              <p class="obj-small" style="margin-top:8px">Halle Lucine, Bordeaux · accueil à 8 h 30</p>
+              <div class="obj-rule"></div>
+              <div class="obj-mail">
+                <div class="obj-head"><b>9 h 00</b><span>L’autonomie réelle en tournée</span></div>
+                <div class="obj-head"><b>9 h 40</b><span>Recharger au dépôt</span></div>
+                <div class="obj-head"><b>10 h 45</b><span>Quarante utilitaires en dix-huit mois</span></div>
+                <div class="obj-head"><b>11 h 30</b><span>Table ronde avec vos questions</span></div>
+              </div>
+              <div class="obj-rule"></div>
+              <div class="obj-mail__from"><span class="obj-avatar">VN</span><span><b>Votre nom</b><br>Votre entreprise</span><span class="obj-chip" style="position:static;margin-left:auto"><i></i>Sur place</span></div>
+            </div>
+          </div>
+          <span class="obj-chip s-hero__chip"><i></i>En direct dès 9 h</span>
+        </div>
+
+  - use: outcomes
+    id: rapporter
+    slots:
+      title: 'Ce que vous rapportez<br><span class="hl">au dépôt le lendemain</span>'
+      items:
+        - number: "01"
+          title: "Un coût complet par véhicule"
+          text: "La grille de calcul remise à chaque participant, avec les hypothèses des intervenants."
+        - number: "02"
+          title: "Un plan de charge"
+          text: "Puissance, horaires et abonnement : la méthode de 9 h 40, à appliquer à vos tournées."
+        - number: "03"
+          title: "Des contacts qui l’ont fait"
+          text: "Les intervenants restent au déjeuner, et la liste des participants volontaires vous est envoyée."
+
+  - use: program
+    id: programme
+    slots:
+      title: 'La matinée<br><span class="hl">heure par heure</span>'
+      intro: >-
+        Accueil et café dès 8 h 30. Le direct démarre à 9 h, avec une pause de
+        10 h 15 à 10 h 45.
+      modules:
+        - when: "9 h 00"
+          title: "L’autonomie réelle en tournée"
+          text: "Ce que 2 400 tournées enregistrées en 2026 disent de l’autonomie selon la saison et la charge."
+          duration: "35 min"
+        - when: "9 h 40"
+          title: "Recharger au dépôt"
+          text: "Puissance raccordée, abonnement et horaires de charge : dimensionner sans payer la pointe."
+          duration: "35 min"
+        - when: "10 h 45"
+          title: "Quarante utilitaires en dix-huit mois"
+          text: "Le retour d’expérience d’un transporteur régional, chiffres et erreurs compris."
+          duration: "40 min"
+        - when: "11 h 30"
+          title: "Table ronde avec vos questions"
+          text: "Trois responsables de flotte répondent à la salle et aux questions écrites du direct."
+          duration: "45 min"
+        - when: "12 h 15"
+          title: "Déjeuner avec les intervenants"
+          text: "Sur place seulement, pour poursuivre les échanges. Le direct s’arrête à 12 h 15."
+          duration: "45 min"
+      specimen: |-
+        <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Coût complet sur 5 ans</b><span class="obj-push">Fourgon 3,5 t</span></div><div class="obj-rule"></div><div class="obj-grid" style="--cols:3"><span class="is-head">Poste</span><span class="is-head">Diesel</span><span class="is-head">Électrique</span><span>Loyer</span><span>31 200 €</span><span>38 400 €</span><span>Énergie</span><span>21 600 €</span><span>7 900 €</span><span>Entretien</span><span>6 800 €</span><span>4 100 €</span><span class="is-warn">Total</span><span class="is-warn">59 600 €</span><span class="is-warn">50 400 €</span></div><div class="obj-rule"></div><p class="obj-small">Hypothèses : 25 000 km par an, recharge au dépôt la nuit</p><div class="obj-lines" style="margin-top:12px"><i style="--w:88%"></i><i style="--w:64%"></i></div></div>
+      specimen_badge: "Spécimen"
+      specimen_caption: "Une page du cahier remis aux participants, avec des données d’exemple."
+
+  - use: people
+    id: intervenants
+    slots:
+      title: 'Quatre intervenants<br><span class="hl">et leurs propres chiffres</span>'
+      intro: "Chacun présente des données qu’il a mesurées, puis répond aux questions."
+      label_who: "Parcours"
+      label_proof: "Preuve"
+      label_part: "Sur scène"
+      shape: rounded
+      people:
+        - name: "Manon Ricard"
+          role: "Responsable des données, Brivalle"
+          initials: "MR"
+          photo: ""
+          photo_alt: ""
+          who: "Huit ans d’analyse de tournées chez un loueur d’utilitaires."
+          proof: "Personnage fictif : citer ici une étude ou des données publiées."
+          part: "À 9 h, l’autonomie mesurée sur les tournées de 2026."
+        - name: "Julien Ferrandi"
+          role: "Ingénieur recharge, bureau d’études"
+          initials: "JF"
+          photo: ""
+          photo_alt: ""
+          who: "Dimensionne la recharge de dépôts de 20 à 200 véhicules."
+          proof: "Personnage fictif : une preuve se cite avec sa source."
+          part: "À 9 h 40, la recharge au dépôt sans payer la pointe."
+        - name: "Sarah Lemoine"
+          role: "Directrice d’exploitation, transporteur régional"
+          initials: "SL"
+          photo: ""
+          photo_alt: ""
+          who: "Pilote quatre-vingts véhicules de messagerie dans le Sud-Ouest."
+          proof: "Personnage fictif : remplacer par un fait vérifiable."
+          part: "À 10 h 45, quarante utilitaires passés à l’électrique."
+        - name: "Yanis Arnaud"
+          role: "Animateur de la table ronde, Brivalle"
+          initials: "YA"
+          photo: ""
+          photo_alt: ""
+          who: "Ancien responsable de flotte dans la distribution alimentaire."
+          proof: "Personnage fictif : une preuve se cite avec sa source."
+          part: "À 11 h 30, la table ronde et les questions du direct."
+
+  - use: map-pinned
+    id: acces
+    slots:
+      title: 'Sur place ou en ligne<br><span class="hl">le même programme</span>'
+      intro: "La salle ouvre à 8 h 30, le direct démarre à 9 h."
+      decor: dots
+      decor_svg: ""
+      path: "M80 400 C 150 398 176 318 236 300 S 352 296 386 246 S 392 132 446 102"
+      marks:
+        - {x: 80, y: 400, at: 0.02, label: "Gare", title: "En train", text: "La Halle Lucine est à vingt minutes de la gare en tram, sans changement."}
+        - {x: 236, y: 300, at: 0.36, label: "Halle Lucine", title: "Sur place", text: "Accueil dès 8 h 30, salle de plain-pied accessible en fauteuil, parking vélo devant l’entrée."}
+        - {x: 386, y: 246, at: 0.68, label: "Direct", title: "En ligne", text: "Votre lien personnel arrive la veille à 17 h. Les questions écrites sont relayées à la table ronde."}
+        - {x: 446, y: 102, at: 0.98, label: "Replay", title: "Le replay sous 48 heures", text: "Envoyé à tous les inscrits, sur place compris, avec les supports des intervenants."}
+
+  - use: testimonials
+    id: avis
+    slots:
+      title: 'Ce qu’en disent<br><span class="hl">les participants de 2026</span>'
+      quotes:
+        - result: "Un cahier des charges revu"
+          quote: >-
+            L’intervention sur la recharge nous a évité de surdimensionner le
+            raccordement. Nous avons repris notre cahier des charges la semaine
+            suivante.
+          name: "Laurent P."
+          role: "Responsable de flotte, distribution alimentaire, 85 véhicules (avis fictif)"
+          initials: "LP"
+        - result: "Une commande décidée sur des chiffres"
+          quote: >-
+            Le retour d’expérience du transporteur valait la matinée. Des
+            chiffres, et les erreurs avec, de quoi convaincre notre direction.
+          name: "Camille D."
+          role: "Directrice administrative, messagerie, 40 véhicules (avis fictif)"
+          initials: "CD"
+        - result: "Suivi en direct depuis le dépôt"
+          quote: >-
+            J’ai suivi le direct depuis Pau et posé deux questions par écrit. Le
+            replay est arrivé le lendemain pour toute l’équipe.
+          name: "Mehdi A."
+          role: "Exploitant, transport frigorifique, 22 véhicules (avis fictif)"
+          initials: "MA"
+
+  - use: for-whom
+    id: pour-qui
+    slots:
+      title: 'Pour qui <span class="hl">est la matinale</span>'
+      fit_title: "Pour vous si"
+      fit:
+        - "Vous gérez de 10 à 300 utilitaires et préparez un premier lot électrique."
+        - "Vous roulez déjà en partie à l’électrique et la recharge devient un casse-tête."
+        - "Vous dirigez une entreprise de transport et arbitrez le budget de l’an prochain."
+      not_fit_title: "Moins utile si"
+      not_fit:
+        - "Vous cherchez un concessionnaire : aucun vendeur de véhicules ne prend la parole."
+        - "Votre flotte roule surtout en longue distance, hors du sujet de la matinée."
+        - "Vous cherchez une formation certifiante : la matinale est une demi-journée d’échanges."
+
+  - use: event-registration
+    id: inscription
+    slots:
+      title: 'Votre place<br><span class="hl">sur place ou en&nbsp;ligne</span>'
+      intro: >-
+        L’inscription est gratuite. Elle vous réserve un badge à Bordeaux ou le
+        lien du direct, et le replay dans les deux cas.
+      dark: true
+      facts:
+        - {term: "Quand", text: "Jeudi 3 juin 2027, de 8 h 30 à 13 h"}
+        - {term: "Où", text: "Halle Lucine à Bordeaux, et en direct de 9 h à 12 h 15"}
+      next_title: "Après l’inscription"
+      next_steps:
+        - "Un email de confirmation tout de suite, avec l’invitation pour votre agenda"
+        - "La veille à 17 h, votre badge et le plan d’accès, ou le lien du direct"
+        - "Sous 48 heures, le replay et les supports des intervenants"
+      action: "{{FORM_ENDPOINT}}"
+      primary: true
+      position: "inscription"
+      modes_legend: "Comment participez-vous ?"
+      modes:
+        - {value: "sur-place", label: "Sur place", meta: "À Bordeaux, déjeuner compris", checked: true, full_on_waitlist: true}
+        - {value: "en-ligne", label: "En ligne", meta: "En direct, lien envoyé la veille", checked: false, full_on_waitlist: false}
+      badge_full: "Salle complète"
+      labels:
+        name: "Prénom et nom"
+        email: "Email professionnel"
+        company: "Entreprise"
+        question: "Une question pour les intervenants"
+        optional: "(facultatif)"
+      optin: {label: "Me prévenir de la prochaine matinale", name: "prochaines"}
+      cta_label: "M’inscrire"
+      cta_closed: "Inscriptions closes"
+      deadline: "Inscriptions jusqu’au mercredi 2 juin"
+      countdown:
+        many: "Inscriptions closes dans {n} jours"
+        one: "Inscriptions closes demain"
+        zero: "Inscriptions closes ce soir"
+      seats: "120 places sur place"
+      closed_text: 'Les inscriptions sont closes. Écrivez à <a href="mailto:matinale@example.com">matinale@example.com</a> pour recevoir le replay.'
+      privacy: 'Vos données servent à organiser la matinale et à vous envoyer le replay. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Confidentialité<span class="sr-only"> (nouvel onglet)</span></a>'
+      error_required: "Ce champ est nécessaire à votre inscription."
+      error_email: "Cette adresse email semble incomplète."
+      msg_success: "C’est noté. La confirmation et l’invitation pour votre agenda arrivent par email dans quelques minutes."
+      msg_failure: "L’envoi n’a pas abouti. Réessayez dans un instant, ou écrivez à matinale@example.com."
+      msg_unwired: "Formulaire de démonstration : rien n’a été envoyé."
+
+  - use: faq
+    id: questions
+    slots:
+      title: 'Les questions<br><span class="hl">avant de vous inscrire</span>'
+      intro: ""
+      jsonld: false
+      items:
+        - q: "L’inscription est-elle vraiment gratuite ?"
+          a: >-
+            Oui, sur place comme en ligne. Le déjeuner est offert aux
+            participants présents à Bordeaux.
+        - q: "Puis-je changer de mode de participation ?"
+          a: >-
+            Oui, jusqu’à la veille. Répondez à l’email de confirmation et nous
+            basculons votre inscription.
+        - q: "Le replay est-il envoyé à tout le monde ?"
+          a: >-
+            Oui, à tous les inscrits sous 48 heures, avec les supports des
+            intervenants. Il reste en ligne trois mois.
+        - q: "Le lieu est-il accessible en fauteuil ?"
+          a: >-
+            Oui, la salle est de plain-pied. Signalez un besoin particulier
+            dans le champ question du formulaire : nous l’organisons avant
+            votre arrivée.
+        - q: "Puis-je venir avec un collègue ?"
+          a: >-
+            Oui. Chaque personne s’inscrit avec son propre email, pour recevoir
+            son badge ou son lien.
+        - q: "Vais-je recevoir des emails commerciaux ?"
+          a: >-
+            Seulement si vous cochez la case prévue. Sinon, nous vous écrivons
+            pour la matinale et le replay, puis plus rien.
+      card_label: "Deuxième édition"
+      card_title: "La matinale flotte électrique"
+      card_meta: "Jeudi 3 juin 2027 · Bordeaux et en ligne · gratuit"
+      cta_label: "M’inscrire"
+      cta_href: "#inscription"
+      contact: 'Une autre question ? <a href="mailto:matinale@example.com">matinale@example.com</a>'
+
+  - use: legal
+    id: pratique
+    slots:
+      title: "Informations pratiques"
+      items:
+        - term: "Organisateur"
+          text: "Brivalle (entreprise fictive de démonstration), éditeur d’un logiciel de planification de tournées."
+        - term: "Lieu"
+          text: 'Halle Lucine, Bordeaux. <a href="{{URL_ITINERAIRE}}" target="_blank" rel="noopener">Itinéraire<span class="sr-only"> (nouvel onglet)</span></a>'
+        - term: "Droit à l’image"
+          text: "La matinale est filmée pour le replay. La salle n’apparaît à l’image que pendant les questions du public."
+        - term: "Données personnelles"
+          text: 'Vos données servent à l’organisation et à l’envoi du replay, puis sont supprimées après trois mois. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a>'
+        - term: "Report"
+          text: "Si la matinale devait être déplacée, chaque inscrit est prévenu par email au moins sept jours avant."
+
+  - use: final-cta
+    id: final
+    slots:
+      title: 'Jeudi 3 juin<br><span class="hl">à Bordeaux ou en direct</span>'
+      text: "L’inscription prend une minute. Badge ou lien du direct par email, replay sous 48 heures."
+      cta_label: "M’inscrire"
+      cta_href: "#inscription"
+      primary: true
+      note: "Inscriptions jusqu’au mercredi 2 juin · 120 places sur place"
+      decor: lines
+      decor_html: ""
+
+  - use: footer
+    id: pied
+    slots:
+      brand: >-
+        <svg class="s-footer__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="25" r="3"/><circle
+        cx="25" cy="7" r="3"/><path d="M10 25h6a4.5 4.5 0 0 0 0-9h-1a4.5 4.5 0 0 1 0-9h7"/></svg><span>Brivalle</span>
+      links:
+        - {label: "Mentions légales", href: "{{URL_MENTIONS_LEGALES}}"}
+        - {label: "Confidentialité", href: "{{URL_CONFIDENTIALITE}}"}
+        - {label: "matinale@example.com", href: "mailto:matinale@example.com"}
+      legal: "© 2027 Brivalle, marque fictive de démonstration."
+
+  - use: sticky-bar
+    id: barre-mobile
+    slots:
+      label: "S’inscrire à la matinale"
+      title: "Jeudi 3 juin · gratuit"
+      detail: "Bordeaux et en ligne"
+      cta_label: "M’inscrire"
+      cta_href: "#inscription"
+      primary: true

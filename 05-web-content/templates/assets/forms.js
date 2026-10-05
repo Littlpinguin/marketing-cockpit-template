@@ -10,8 +10,14 @@
        data-error-consent            message for an unticked consent box
        data-msg-success              confirmation shown after sending
        data-msg-failure              shown when sending fails
-       data-msg-unwired              shown when the action is still a
-                                     {{PLACEHOLDER}} or empty (nothing sent)
+       data-msg-unwired              added after the success message when
+                                     the action is still a {{PLACEHOLDER}}
+                                     or empty (demonstration: nothing sent)
+     form[data-demo]                 written on load when the action is
+                                     still a {{PLACEHOLDER}} or empty:
+                                     submissions are demonstrations, never
+                                     sent, counted by tracking.js under
+                                     form_demo_submit instead of the lead
      .hp input                       honeypot: filled means a robot; the form
                                      pretends success and sends nothing
      [data-error-for="<name>"]       error message of a field (else the
@@ -23,8 +29,9 @@
    aria-invalid="true" and their message, focus goes to the first one, and
    the form carries data-invalid (tracking.js then counts nothing). A valid
    form is sent with fetch (POST, FormData); if fetch fails, the native
-   submission takes over. Never a pre-ticked consent, never a placeholder
-   used as a label: that is the markup's job.
+   submission takes over. A demonstration form (data-demo) sends nothing
+   over the network and shows the success state at once. Never a pre-ticked
+   box, never a placeholder used as a label: that is the markup's job.
    ========================================================================== */
 (function () {
   'use strict';
@@ -82,14 +89,23 @@
     if (box) box.textContent = text || '';
   }
 
-  function done(form) {
+  function done(form, demo) {
     var fields = form.querySelector('[data-form-fields]');
     if (fields) fields.hidden = true;
-    status(form, form.getAttribute('data-msg-success'));
+    var text = form.getAttribute('data-msg-success') || '';
+    if (demo && form.getAttribute('data-msg-unwired')) text += (text ? ' ' : '') + form.getAttribute('data-msg-unwired');
+    status(form, text);
+  }
+
+  // The endpoint is still a {{PLACEHOLDER}} (or missing): a demonstration.
+  function unwired(form) {
+    var action = form.getAttribute('action') || '';
+    return !action || /\{\{/.test(action);
   }
 
   document.querySelectorAll('form[data-form]').forEach(function (form) {
     form.setAttribute('novalidate', '');
+    if (unwired(form)) form.setAttribute('data-demo', '');
     form.addEventListener('submit', function (e) {
       var trap = form.querySelector('.hp input');
       if (trap && trap.value) {
@@ -106,12 +122,14 @@
         return;
       }
       form.removeAttribute('data-invalid');
-      var action = form.getAttribute('action') || '';
-      if (!action || /\{\{/.test(action)) {
+      if (unwired(form)) {
+        // Nothing leaves the page; tracking.js counts form_demo_submit.
         e.preventDefault();
-        status(form, form.getAttribute('data-msg-unwired'));
+        form.setAttribute('data-demo', '');
+        done(form, true);
         return;
       }
+      var action = form.getAttribute('action');
       if (!window.fetch || !window.FormData) return;   // native submission
       e.preventDefault();
       status(form, '');

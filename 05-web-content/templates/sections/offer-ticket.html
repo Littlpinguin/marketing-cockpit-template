@@ -2,11 +2,11 @@
 {
   "id": "offer-ticket",
   "name": "Bloc de conversion en billet",
-  "objection": "Combien, qu'est-ce qui est compris, comment je réserve, et ensuite",
+  "objection": "Combien, qu’est-ce qui est compris, comment je réserve, et ensuite",
   "engines": ["offer"],
-  "when": "Toute page qui vend ou inscrit : l'offre comme un objet (billet). Le prix avec ce qu'il comprend, les formules en contrôle segmenté (vraies radios), une remise expliquée, le seul bouton à l'accent fort de la page, l'échéance en jours, puis « Compris », « La suite » et les prérequis. Le billet est un formulaire GET vers l'outil de vente : les ancres #<id> de la page et son bouton mènent à la même conversion. L'état réel (ouvert, liste d'attente, clos) vient de la configuration « offer » de la spec.",
-  "avoid": "Prix sans ce qu'il comprend, remise dont on ne dit pas ce qui se passe après sa date, compte à rebours en secondes, compteur de places sans vrai chiffre, prix dans le bouton, second bouton accentué.",
-  "reduced_motion": "Billet immobile (pas d'inclinaison), prix lisible d'emblée.",
+  "when": "Toute page qui vend ou inscrit : l’offre comme un objet (billet). Le prix avec ce qu’il comprend, les formules en contrôle segmenté (vraies radios), une remise expliquée, le seul bouton à l’accent fort de la page, l’échéance en jours, puis « Compris », « La suite » et les prérequis. Le billet est un formulaire GET vers l’outil de vente : les ancres #<id> de la page et son bouton mènent à la même conversion. L’état réel (ouvert, liste d’attente, clos) vient de la configuration « offer » de la spec.",
+  "avoid": "Prix sans ce qu’il comprend, remise dont on ne dit pas ce qui se passe après sa date, compte à rebours en secondes, compteur de places sans vrai chiffre, prix dans le bouton, second bouton accentué.",
+  "reduced_motion": "Billet immobile (pas d’inclinaison), prix lisible d’emblée.",
   "slots": {
     "title": {"type": "html", "doc": "h2 centré sans virgule ni point.", "example": "Votre place <span class=\"hl\">dans la cohorte de printemps</span>"},
     "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Le prix comprend les six ateliers, les outils et la relecture de votre bilan."},
@@ -18,27 +18,29 @@
     "meta": {"type": "text", "doc": "Dates, format, lieu, en une ligne.", "example": "Cohorte de printemps · du 14 avril au 19 mai 2027 · visio et une demi-journée à Lyon"},
     "badge_waitlist": {"type": "text", "doc": "Badge affiché en état liste d'attente.", "example": "Complet"},
     "badge_closed": {"type": "text", "doc": "Badge affiché en état clos.", "example": "Inscriptions closes"},
-    "formula_legend": {"type": "text", "doc": "Nom du choix de formule. Vide : pas de choix affiché (une seule formule, celle marquée checked).", "example": "Formule"},
+    "formula_legend": {"type": "text", "doc": "Nom du choix de formule. Vide : pas de choix affiché (une seule formule, celle marquée checked, envoyée en champ caché) et le billet passe en mise en page horizontale : prix et bouton côte à côte, puis « Compris » et « La suite » en deux colonnes.", "example": "Formule"},
     "formulas": {"type": "list", "doc": "1 à 3 formules. value : identifiant (le même que la porte de choix) ; price : montant numérique (mesure) ; price_label : prix affiché ; note : précision annoncée à chaque changement (aria-live) ; checked : la formule par défaut (une seule).", "fields": {"value": "identifiant", "label": "nom court", "price": "nombre", "price_label": "prix affiché", "note": "précision", "checked": "true pour une seule"}, "example": [
-      {"value": "solo", "label": "Solo", "price": 1900, "price_label": "1 900 € HT", "note": "Une personne de l'entreprise. Avec la remise fondateur : 1 615 € HT.", "checked": true},
-      {"value": "equipe", "label": "Équipe", "price": 2900, "price_label": "2 900 € HT", "note": "Jusqu'à trois personnes de la même entreprise. Avec la remise fondateur : 2 465 € HT.", "checked": false}
+      {"value": "solo", "label": "Solo", "price": 1900, "price_label": "1 900 € HT", "note": "Une personne de l’entreprise. Avec la remise fondateur : 1 615 € HT.", "checked": true},
+      {"value": "equipe", "label": "Équipe", "price": 2900, "price_label": "2 900 € HT", "note": "Jusqu’à trois personnes de la même entreprise. Avec la remise fondateur : 2 465 € HT.", "checked": false}
     ]},
     "price_unit": {"type": "text", "doc": "Unité du prix.", "example": "par entreprise"},
     "discount_title": {"type": "text", "doc": "Nom de la remise (vide : pas de remise).", "example": "Tarif fondateur"},
-    "discount": {"type": "text", "doc": "La remise, sa date, et ce qui se passe après.", "example": "15 % de remise jusqu'au 31 janvier 2027, appliqués à la commande. Après cette date, le prix affiché s'applique."},
+    "discount": {"type": "text", "doc": "La remise, sa date, et ce qui se passe après.", "example": "15 % de remise jusqu’au 31 janvier 2027, appliqués à la commande. Après cette date, le prix affiché s’applique."},
     "cta_label": {"type": "text", "doc": "Le verbe du bouton, sans prix.", "example": "Réserver ma place"},
-    "cta_waitlist": {"type": "text", "doc": "Libellé en état liste d'attente.", "example": "Rejoindre la liste d'attente"},
-    "cta_closed": {"type": "text", "doc": "Libellé en état clos (bouton désactivé).", "example": "Inscriptions closes"},
+    "cta_waitlist": {"type": "text", "doc": "Libellé en état liste d'attente.", "example": "Rejoindre la liste d’attente"},
+    "cta_closed": {"type": "text", "doc": "Libellé en état clos : le bouton reste là, désactivé, lisible à 4,5:1.", "example": "Inscriptions closes"},
+    "cta_notify": {"type": "text", "doc": "État clos seulement : libellé d'un lien vers la liste d'attente ou l'alerte de la session suivante, dessiné en vrai bouton sous le bouton désactivé. Vide : pas de lien.", "example": "Être prévenu de la prochaine cohorte"},
+    "notify_href": {"type": "url", "doc": "Destination de ce lien (formulaire d'alerte, liste d'attente). Dans une page réelle : le marqueur {{URL_LISTE_ATTENTE}} jusqu'à son branchement.", "example": "https://inscription.example.com/meridian/prochaine-cohorte"},
     "deadline": {"type": "text", "doc": "Échéance statique, toujours vraie.", "example": "Clôture le 31 mars 2027"},
     "countdown": {"type": "object", "doc": "Jours restants (moteur offer) : many, one, zero. null : la date reste.", "fields": {"many": "« … {n} jours »", "one": "veille", "zero": "jour même"}, "example": {"many": "Clôture dans {n} jours", "one": "Clôture demain", "zero": "Clôture ce soir"}},
     "seats": {"type": "text", "doc": "Vraies places (un chiffre réel ou rien).", "example": "12 places par cohorte"},
     "included_title": {"type": "text", "doc": "Titre de la colonne de ce qui est compris.", "example": "Compris"},
-    "included": {"type": "list", "doc": "4 à 7 lignes concrètes.", "example": ["Six ateliers de deux heures en visio, enregistrés", "Une demi-journée en présentiel à Lyon", "Le modèle de collecte et la table de facteurs", "La relecture de votre bilan avant la restitution", "Le groupe d'échange de la cohorte, ouvert un an"]},
+    "included": {"type": "list", "doc": "4 à 7 lignes concrètes.", "example": ["Six ateliers de deux heures en visio, enregistrés", "Une demi-journée en présentiel à Lyon", "Le modèle de collecte et la table de facteurs", "La relecture de votre bilan avant la restitution", "Le groupe d’échange de la cohorte, ouvert un an"]},
     "next_title": {"type": "text", "doc": "Titre de la colonne des étapes après le clic.", "example": "La suite"},
-    "next_steps": {"type": "list", "doc": "3 ou 4 étapes après la réservation.", "example": ["Confirmation et facture par email dans l'heure", "Un appel de vingt minutes pour cadrer vos données", "Premier atelier le mardi 14 avril à 9 h"]},
+    "next_steps": {"type": "list", "doc": "3 ou 4 étapes après la réservation.", "example": ["Confirmation et facture par email dans l’heure", "Un appel de vingt minutes pour cadrer vos données", "Premier atelier le mardi 14 avril à 9 h"]},
     "prereq_title": {"type": "text", "doc": "Titre des prérequis.", "example": "Prérequis"},
-    "prerequisites": {"type": "text", "doc": "Ce qu'il faut avoir (vide : rien).", "example": "Les factures d'énergie et le grand livre des achats de l'année écoulée."},
-    "conditions": {"type": "text", "doc": "Conditions sous le billet : paiement, annulation, seuil de confirmation.", "example": "Paiement à la commande ou sur facture à 30 jours. Annulation sans frais jusqu'à 14 jours avant le premier atelier. La cohorte part à partir de 6 entreprises inscrites, sinon remboursement intégral."}
+    "prerequisites": {"type": "text", "doc": "Ce qu'il faut avoir (vide : rien).", "example": "Les factures d’énergie et le grand livre des achats de l’année écoulée."},
+    "conditions": {"type": "text", "doc": "Conditions sous le billet : paiement, annulation, seuil de confirmation.", "example": "Paiement à la commande ou sur facture à 30 jours. Annulation sans frais jusqu’à 14 jours avant le premier atelier. La cohorte part à partir de 6 entreprises inscrites, sinon remboursement intégral."}
   }
 }
 </script>
@@ -202,13 +204,81 @@
   text-wrap: pretty;
 }
 
-.s-offer__cta {
+.s-offer__action {
+  display: grid;
+  gap: 12px;
   margin-top: 4px;
 }
 
+/* Closed: the button stays, visibly unavailable, its label readable at
+   4.5:1 (muted ink on the tinted surface, never an opacity). */
 .s-offer__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
   cursor: not-allowed;
   transform: none;
+}
+
+/* The way out of a closed offer: a real button, same size as the main one. */
+.s-offer__notify {
+  min-height: 56px;
+}
+
+/* Single formula: a horizontal ticket. Price and action side by side, then
+   the stub below with its two columns, so no column is left half empty. */
+.s-offer__ticket--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Rows without gaps: the action spans spare rows that must stay at zero
+   height; the left column keeps its rhythm by margins. */
+.s-offer__ticket--single .s-offer__main {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0 clamp(32px, 1rem + 3vw, 64px);
+}
+
+.s-offer__ticket--single .s-offer__main > * {
+  grid-column: 1;
+}
+
+.s-offer__ticket--single .s-offer__main > * + :not(.s-offer__action) {
+  margin-top: 18px;
+}
+
+.s-offer__ticket--single .s-offer__main > .s-offer__action {
+  grid-column: 2;
+  grid-row: 1 / span 8;
+  align-self: center;
+}
+
+.s-offer__ticket--single .s-offer__stub {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px clamp(32px, 1rem + 3vw, 64px);
+  border-left: 0;
+  border-top: 2px dashed var(--line-strong);
+  border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+}
+
+.s-offer__ticket--single .s-offer__prereq {
+  grid-column: 1 / -1;
+}
+
+.s-offer__ticket--single .s-offer__stub::before,
+.s-offer__ticket--single .s-offer__stub::after {
+  top: calc(var(--notch) / -2 - 1px);
+  bottom: auto;
+}
+
+.s-offer__ticket--single .s-offer__stub::before {
+  left: calc(var(--notch) / -2);
+}
+
+.s-offer__ticket--single .s-offer__stub::after {
+  left: auto;
+  right: calc(var(--notch) / -2);
 }
 
 .s-offer__deadline {
@@ -314,6 +384,20 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .s-offer__ticket--single .s-offer__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main > .s-offer__action {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 18px;
+  }
+
+  .s-offer__ticket--single .s-offer__stub {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .s-offer__stub {
     border-left: 0;
     border-top: 2px dashed var(--line-strong);
@@ -344,7 +428,7 @@
       <p class="section-intro">{{intro}}</p>
     </div>
     <div data-reveal="scale">
-    <form class="s-offer__ticket" id="{{id}}-billet" action="{{action}}" method="get" data-track="begin_checkout" data-track-currency="{{currency}}" data-offer-action-waitlist="{{action_waitlist}}">
+    <form class="s-offer__ticket{{^formula_legend}} s-offer__ticket--single{{/formula_legend}}" id="{{id}}-billet" action="{{action}}" method="get" data-track="begin_checkout" data-track-currency="{{currency}}" data-offer-action-waitlist="{{action_waitlist}}">
       <div class="s-offer__main">
         <div class="s-offer__top">
           <p class="s-offer__name">{{name}}</p>
@@ -363,8 +447,11 @@
           <p class="s-offer__note" aria-live="polite" data-offer-note>{{#formulas}}{{#checked}}{{note}}{{/checked}}{{/formulas}}</p>
         </div>
         {{#discount_title}}<p class="s-offer__discount"><strong>{{discount_title}}</strong> {{discount}}</p>{{/discount_title}}
-        <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre"{{#primary}} data-cta="primaire"{{/primary}} data-offer-text-waitlist="{{cta_waitlist}}" data-offer-text-closed="{{cta_closed}}" data-offer-disabled-closed>{{cta_label}}</button>
-        <p class="s-offer__deadline"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}}<span aria-hidden="true">·</span><span>{{seats}}</span>{{/seats}}</p>
+        <div class="s-offer__action">
+          <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre"{{#primary}} data-cta="primaire"{{/primary}} data-offer-text-waitlist="{{cta_waitlist}}" data-offer-text-closed="{{cta_closed}}" data-offer-disabled-closed>{{cta_label}}</button>
+          {{#cta_notify}}<a class="btn btn--secondary btn--block s-offer__notify" href="{{notify_href}}" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>{{cta_notify}}</a>{{/cta_notify}}
+          <p class="s-offer__deadline"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}}<span aria-hidden="true">·</span><span>{{seats}}</span>{{/seats}}</p>
+        </div>
       </div>
       <div class="s-offer__stub">
         <div>

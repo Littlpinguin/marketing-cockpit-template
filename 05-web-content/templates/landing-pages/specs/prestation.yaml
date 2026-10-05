@@ -1,0 +1,480 @@
+# ============================================================================
+# Modèle de landing : PRESTATION DE SERVICE (audit, conseil, mission d'agence)
+# Conversion : une demande de devis qualifiée, suivie d'un appel découverte.
+# ----------------------------------------------------------------------------
+# Assemblage :
+#   python3 05-web-content/scripts/assemble-landing.py \
+#     05-web-content/templates/landing-pages/specs/prestation.yaml
+#   python3 05-web-content/scripts/qa-landing.py \
+#     05-web-content/templates/landing-pages/prestation.html
+#
+# Pour une vraie page : copier ce fichier vers
+# 05-web-content/landing-pages/<slug>/pilotage/page.yaml, changer « output »
+# et « page », réécrire chaque texte (skills copywriting puis copy-editing),
+# puis dérouler la skill landing-page.
+#
+# Marque d'exemple : Ouvrance, cabinet FICTIF d'audit d'accessibilité
+# numérique. Personnes, cas, avis et prix sont inventés pour montrer le ton,
+# les longueurs et une logique de prix honnête : rien ne part en ligne tel
+# quel. Les seuls faits réels de la page sont réglementaires (acte européen
+# sur l'accessibilité applicable depuis le 28 juin 2025, référentiel RGAA et
+# ses numéros de critères) : à revérifier au moment d'adapter.
+#
+# À brancher avant publication (marqueurs du dépôt, signalés par la QA) :
+#   {{FORM_ENDPOINT}}         endpoint POST du formulaire de devis
+#   {{URL_CONFIDENTIALITE}}   page de politique de confidentialité
+#   {{URL_MENTIONS_LEGALES}}  page des mentions légales
+# Le contact bonjour@example.com du pied et de la FAQ se remplace par la
+# vraie adresse. Mesure : mode datalayer (cta_click, generate_lead, faq_open)
+# et passage des UTM vers le formulaire (champs cachés).
+#
+# Récit : une objection par section, dans l'ordre de la pensée d'un client
+# qui achète une prestation.
+#   hero        De quoi s'agit-il : le livrable montré (un ticket de correction)
+#   probleme    Pourquoi maintenant : quatre phrases du premier appel (épinglé)
+#   methode     Concrètement, comment vous travaillez : cinq étapes datées, un spécimen
+#   cas         Ça a marché pour d'autres : deux cas avant / après (bande sombre)
+#   equipe      Qui fait le travail : les deux personnes de la mission
+#   pour-qui    Est-ce pour moi : qualifie avant le prix
+#   tarifs      Combien : trois périmètres, prix de départ et ce qui les fait varier
+#   devis       Je demande un devis : six champs, dont l'adresse et la taille du site
+#   questions   Dernières questions, carte collante qui ramène au formulaire
+#   final       Je passe à l'action (bande sombre)
+# Les colonnes de for-whom s'appellent fit et not_fit : en YAML 1.1, les clés
+# yes et no nues se lisent comme des booléens (l'assembleur refuse alors la
+# spec ; les cellules yes / no du tableau comparatif s'écrivent entre
+# guillemets).
+# Formulaire sans case de consentement : la demande de devis fonde le
+# traitement (mesures précontractuelles) ; la mention de confidentialité,
+# avec son lien, reste sous le bouton.
+# Une section épinglée ; deux bandes sombres, jamais d'affilée ; une seule
+# conversion (#devis) pour tous les boutons, grille tarifaire comprise.
+# ============================================================================
+output: 05-web-content/templates/landing-pages/prestation.html
+title: "Ouvrance · Audit d’accessibilité numérique"
+description: >-
+  Vos parcours testés avec des utilisateurs de lecteur d’écran, puis chaque
+  correction livrée en ticket priorisé. Devis sous trois jours ouvrés.
+lang: fr
+page: prestation
+robots: "noindex, nofollow"
+fonts: ["Inter:wght@400;500;600;700;800", "JetBrains Mono:wght@500;600"]
+ground: dots
+theatre: {progress: true}
+tracking: {mode: datalayer, utm: true}
+skip_link: "Aller au contenu"
+
+sections:
+  - use: topbar
+    slots:
+      brand: >-
+        <svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        aria-hidden="true"><path d="M27 16A11 11 0 1 1 16 5"/><path
+        d="M16 11v10M11 16h10"/></svg><span>Ouvrance</span>
+      cta_label: "Demander un devis"
+      cta_href: "#devis"
+      primary: true
+
+  - use: hero
+    slots:
+      title: >-
+        Votre site accessible<br><span class="hl">ticket par ticket</span>
+      lede: >-
+        Un audit de vos parcours clés avec des utilisateurs de lecteur d’écran,
+        puis chaque correction remise en ticket priorisé.
+      cta_label: "Demander un devis"
+      cta_href: "#devis"
+      primary: true
+      deadline: "Devis sous trois jours ouvrés"
+      countdown: null
+      detail: "Premier appel de 30 minutes"
+      image: null
+      object: >-
+        <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+        <div class="obj-stack"><div class="obj-sheet">
+        <div class="obj-head"><span class="obj-mark"></span><b>ACC-118</b><span class="obj-stamp obj-push">Priorité 1</span></div>
+        <div class="obj-rule"></div>
+        <p class="obj-title">Le bouton de paiement n’a pas de nom accessible</p>
+        <p class="obj-small" style="margin-top:6px">Critère RGAA 11.9 · parcours de commande, page Paiement</p>
+        <div class="obj-rule"></div>
+        <div class="obj-check"><span class="is-done">Reproduit au clavier</span><span class="is-done">Reproduit au lecteur d’écran</span><span class="is-done">Reproduit sur téléphone</span><span>Corrigé, à vérifier au contre‑audit</span></div>
+        <div class="obj-rule"></div>
+        <p class="obj-small">Correction proposée</p>
+        <p class="obj-small" style="margin-top:6px"><span class="obj-highlight">&lt;button aria-label="Payer ma commande"&gt;</span></p>
+        <div class="obj-rule"></div>
+        <div class="obj-head"><span>Rapport · 47 tickets</span><span class="obj-push">12 en priorité 1</span></div>
+        </div></div>
+        <span class="obj-chip s-hero__chip"><i></i>Testé par Samir au lecteur d’écran</span>
+        </div>
+
+  - use: problem-pinned
+    id: probleme
+    slots:
+      title: >-
+        Ce que l’on nous dit<br><span class="hl">au premier appel</span>
+      intro: >-
+        Quatre phrases que nous entendons presque mot pour mot, avant de
+        parler de devis.
+      items:
+        - title: "« Une cliente n’a pas pu payer sa commande »"
+          text: >-
+            Le message arrive au service client, transféré trois fois, et
+            personne ne sait reproduire le blocage sans lecteur d’écran.
+          visual: >-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Service client · à traiter</span></div>
+            <div class="obj-window__body obj-mail">
+            <div class="obj-mail__from"><span class="obj-avatar">MR</span><span><b>Martine R.</b><br>Commande impossible</span></div>
+            <div class="obj-lines"><i style="--w:94%"></i><i style="--w:72%"></i></div>
+            <p class="obj-small">Avec mon lecteur d’écran, le bouton de paiement <span class="obj-highlight">ne dit rien</span>. J’ai abandonné mon panier.</p>
+            <div class="obj-rule"></div>
+            <p class="obj-small">Transféré 3 fois · sans réponse</p></div></div>
+        - title: "« L’outil automatique sort 412 alertes »"
+          text: >-
+            La liste mélange vrais blocages et doublons, et ne dit pas ce qui
+            empêche un visiteur de commander.
+          visual: >-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Rapport automatique · 412 alertes</span></div>
+            <div class="obj-window__body"><div class="obj-grid" style="--cols:2">
+            <span class="is-head">Alerte</span><span class="is-head">Nombre</span>
+            <span>Contraste insuffisant</span><span class="is-warn">212</span>
+            <span>Image sans alternative</span><span class="is-warn">96</span>
+            <span>Lien sans intitulé</span><span>58</span>
+            <span>Autres</span><span>46</span>
+            </div><p class="obj-small" style="margin-top:10px">Dont 9 composants répétés sur chaque page</p></div></div>
+        - title: "« Notre agence dit que c’est conforme »"
+          text: >-
+            La déclaration en ligne annonce un site conforme, sans audit pour
+            l’étayer ni date de dernière vérification.
+          visual: >-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Déclaration en ligne</b><span class="obj-stamp obj-push">À vérifier</span></div>
+            <div class="obj-rule"></div>
+            <p class="obj-small">État de conformité : <span class="obj-strike">totalement conforme</span></p>
+            <div class="obj-rule"></div>
+            <div class="obj-lines"><i style="--w:90%"></i><i style="--w:76%"></i><i style="--w:84%"></i><i style="--w:40%"></i></div>
+            <div class="obj-rule"></div>
+            <p class="obj-small">Audit joint : aucun · mise à jour : inconnue</p></div>
+        - title: "« On ne sait pas quoi corriger en premier »"
+          text: >-
+            Soixante tickets ouverts sans ordre : les développeurs commencent
+            par les plus faciles, et les blocages attendent.
+          visual: >-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Tickets accessibilité · 0 sur 63 traités</span></div>
+            <div class="obj-window__body"><div class="obj-check">
+            <span>Contraste du pied de page</span><span>Ordre de tabulation du panier</span><span>Alternative du logo</span><span>Captcha du formulaire de contact</span><span>Menu au clavier</span><span>Titre des pages produit</span>
+            </div><div class="obj-rule"></div><p class="obj-small">Priorité : <span class="obj-highlight">non renseignée</span></p></div></div>
+
+  - use: program
+    id: methode
+    slots:
+      title: >-
+        Cinq étapes<br><span class="hl">du cadrage au contre‑audit</span>
+      intro: >-
+        Une mission type pour un site de 10 à 25 pages types. Le devis donne
+        votre calendrier exact.
+      modules:
+        - when: "Semaine 1"
+          title: "Cadrer l’échantillon"
+          duration: "2 h d’atelier"
+          text: >-
+            Vos parcours clés et une quinzaine de pages types, choisis avec
+            vous selon le trafic et les obligations.
+        - when: "Semaines 2 et 3"
+          title: "Tester à la main et avec des utilisateurs"
+          duration: "8 à 12 jours"
+          text: >-
+            Chaque critère RGAA vérifié page par page, puis les parcours
+            rejoués au clavier et au lecteur d’écran.
+        - when: "Semaine 4"
+          title: "Restituer en tickets"
+          duration: "Une demi-journée"
+          text: >-
+            Chaque défaut devient un ticket dans votre outil, avec sa priorité,
+            son critère et un exemple de correction.
+        - when: "Mois 2 et 3"
+          title: "Accompagner les corrections"
+          duration: "1 h par semaine"
+          text: >-
+            Une permanence pour vos développeurs, sur leurs questions et leurs
+            correctifs en cours.
+        - when: "Mois 3 ou 4"
+          title: "Contre‑auditer"
+          duration: "3 à 5 jours"
+          text: >-
+            Nous revérifions les pages corrigées et mettons à jour votre
+            déclaration d’accessibilité.
+      specimen: >-
+        <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Plan de correction</b><span class="obj-push">p. 4 sur 28</span></div>
+        <div class="obj-rule"></div>
+        <div class="obj-grid" style="--cols:4">
+        <span class="is-head">Ticket</span><span class="is-head">Critère</span><span class="is-head">Page</span><span class="is-head">Priorité</span>
+        <span>ACC-118</span><span>11.9</span><span>Paiement</span><span class="is-warn">1</span>
+        <span>ACC-121</span><span>1.1</span><span>Fiche produit</span><span class="is-warn">1</span>
+        <span>ACC-133</span><span>12.8</span><span>Panier</span><span class="is-warn">1</span>
+        <span>ACC-140</span><span>3.2</span><span>Pied de page</span><span>2</span>
+        <span>ACC-152</span><span>10.7</span><span>Menu</span><span>2</span>
+        </div>
+        <div class="obj-rule"></div>
+        <div class="obj-lines"><i style="--w:88%"></i><i style="--w:64%"></i></div></div>
+      specimen_badge: "Spécimen"
+      specimen_caption: "Une page du plan de correction remis en semaine 4, sur un site d’exemple."
+
+  - use: cases
+    id: cas
+    slots:
+      title: >-
+        Deux sites<br><span class="hl">avant et après l’audit</span>
+      intro: >-
+        Part des critères RGAA respectés sur les pages de l’échantillon, au
+        premier audit puis au contre‑audit.
+      dark: true
+      before_label: "Premier audit"
+      after_label: "Contre‑audit"
+      cases:
+        - title: "Une boutique de matériel de cuisine"
+          context: "Commerce en ligne · cas d’exemple"
+          scope: >-
+            Dix-huit pages types et le parcours de commande, corrigés en quatre
+            mois par l’agence du client avec nos tickets.
+          before: "38 %"
+          before_v: 0.38
+          after: "91 %"
+          after_v: 0.91
+          quote: "« Pour la première fois, nos développeurs savaient quoi corriger le lundi matin, et dans quel ordre. »"
+          author: "Directrice e-commerce (avis fictif)"
+        - title: "Le portail famille d’une agglomération"
+          context: "Service public local · cas d’exemple"
+          scope: >-
+            Vingt-quatre pages types, dont l’inscription à la cantine, revues
+            en cinq mois avec la collectivité.
+          before: "52 %"
+          before_v: 0.52
+          after: "86 %"
+          after_v: 0.86
+          quote: "« La déclaration d’accessibilité dit enfin la vérité, dérogations comprises, et les familles nous écrivent moins. »"
+          author: "Responsable du numérique (avis fictif)"
+
+  - use: people
+    id: equipe
+    slots:
+      title: >-
+        Deux personnes<br><span class="hl">font votre audit</span>
+      intro: >-
+        L’auditrice qui vous rappelle après votre demande mène la mission
+        jusqu’au contre‑audit.
+      label_who: "Parcours"
+      label_proof: "Preuve"
+      label_part: "Dans la mission"
+      shape: rounded
+      people:
+        - name: "Lucie Marchal"
+          role: "Auditrice RGAA, cheffe de mission"
+          initials: "LM"
+          photo: ""
+          photo_alt: ""
+          who: "Dix ans d’intégration front-end, puis l’audit d’accessibilité à plein temps."
+          proof: "Personnage fictif de démonstration : citer ici une certification ou un nombre d’audits vérifiable."
+          part: "Mène l’audit du cadrage au contre‑audit, et tient la permanence de vos développeurs."
+        - name: "Samir Ouali"
+          role: "Testeur, utilisateur de lecteur d’écran"
+          initials: "SO"
+          photo: ""
+          photo_alt: ""
+          who: "Utilise un lecteur d’écran chaque jour depuis quinze ans, sur ordinateur comme sur téléphone."
+          proof: "Personnage fictif de démonstration : une preuve se cite avec sa source."
+          part: "Rejoue vos parcours clés et enregistre, à voix haute, ce qui le bloque."
+
+  - use: for-whom
+    id: pour-qui
+    slots:
+      title: >-
+        Pour qui<br><span class="hl">est cet audit</span>
+      fit_title: "Pour vous si"
+      fit:
+        - "Votre site vend en ligne ou sert vos clients, et l’acte européen sur l’accessibilité vous concerne."
+        - "Une équipe ou une agence peut corriger le code dans les mois qui viennent."
+        - "Vous devez publier une déclaration d’accessibilité qui tienne à la vérification."
+        - "Vous voulez un ordre de correction argumenté, page par page."
+      not_fit_title: "Pas pour vous si"
+      not_fit:
+        - "Vous cherchez une attestation sans toucher au site."
+        - "Vous attendez un module à installer qui rendrait le site conforme sans le modifier."
+
+  - use: pricing-table
+    id: tarifs
+    slots:
+      title: >-
+        Trois périmètres<br><span class="hl">et leur prix de départ</span>
+      intro: >-
+        Le prix dépend du nombre de pages types et de parcours testés. Le devis
+        fixe ce périmètre, puis le prix ne bouge plus. Prix d’exemple, hors taxes.
+      toggle: null
+      plans:
+        - key: "audit"
+          name: "Audit ciblé"
+          for: "Un parcours critique, jusqu’à 10 pages types"
+          featured: false
+          badge: ""
+          price_prefix: "dès"
+          price_month: "4 800 €"
+          unit: "HT"
+          note: "Livré en trois semaines"
+          features:
+            - "Audit RGAA des pages de l’échantillon"
+            - "Tests au lecteur d’écran sur le parcours"
+            - "Rapport et tickets priorisés"
+            - "Restitution de deux heures"
+          href: "#devis"
+          cta_label: "Demander un devis"
+          primary: false
+        - key: "corrections"
+          name: "Audit et corrections"
+          for: "Un site complet, de 10 à 25 pages types"
+          featured: true
+          badge: "Le plus demandé"
+          price_prefix: "dès"
+          price_month: "9 600 €"
+          unit: "HT"
+          note: "Sur trois à quatre mois"
+          features:
+            - "L’audit ciblé, étendu au site entier"
+            - "Permanence hebdomadaire pour vos développeurs"
+            - "Contre‑audit des pages corrigées"
+            - "Déclaration d’accessibilité mise à jour"
+          href: "#devis"
+          cta_label: "Demander un devis"
+          primary: true
+        - key: "suivi"
+          name: "Suivi annuel"
+          for: "Des mises en ligne fréquentes"
+          featured: false
+          badge: ""
+          price_prefix: "dès"
+          price_month: "1 200 €"
+          unit: "HT par mois"
+          note: "Engagement de douze mois"
+          features:
+            - "Deux contre‑audits par an"
+            - "Revue des maquettes avant développement"
+            - "Une demi-journée de formation pour l’équipe"
+          href: "#devis"
+          cta_label: "Demander un devis"
+          primary: false
+
+  - use: form
+    id: devis
+    slots:
+      title: >-
+        Décrivez votre site<br><span class="hl">et recevez un devis</span>
+      intro: >-
+        Lucie lit votre demande et vous rappelle pour préciser le périmètre.
+      next:
+        - "Un appel de 30 minutes avec l’auditrice qui mènera la mission"
+        - "Un devis écrit, périmètre et prix détaillés, sous trois jours ouvrés"
+        - "Si l’audit ne vous sert pas, nous vous le disons dès cet appel"
+      action: "{{FORM_ENDPOINT}}"
+      primary: true
+      position: "formulaire"
+      labels:
+        name: "Nom et prénom"
+        email: "Email professionnel"
+        company: "Organisation"
+        size: "Taille du site"
+        message: "Votre contexte"
+        optional: "(facultatif)"
+      select_name: "pages_types"
+      size_options: ["Choisir", "Moins de 10 pages types", "10 à 25 pages types", "Plus de 25 pages types", "Une application mobile"]
+      url_field: {label: "Adresse du site", name: "site_url", placeholder: "https://www.example.com", required: true}
+      cta_label: "Demander un devis"
+      privacy: >-
+        Vos réponses servent seulement à préparer le devis.
+        <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de
+        confidentialité<span class="sr-only"> (nouvel onglet)</span></a>
+      error_required: "Ce champ nous sert à préparer le devis."
+      error_email: "Cette adresse email semble incomplète."
+      msg_success: "Merci, votre demande est partie. Lucie vous rappelle sous un jour ouvré."
+      msg_failure: "L’envoi n’a pas abouti. Nouvel essai en cours."
+      msg_unwired: "Modèle de démonstration : branchez l’adresse du formulaire pour recevoir les demandes."
+
+  - use: faq
+    id: questions
+    slots:
+      title: >-
+        Vos questions<br><span class="hl">avant le devis</span>
+      intro: ""
+      items:
+        - q: "Mon site est-il concerné par l’obligation d’accessibilité ?"
+          a: >-
+            Depuis le 28 juin 2025, l’acte européen sur l’accessibilité couvre
+            notamment le commerce en ligne, les services bancaires et le
+            transport de voyageurs, avec une exemption pour les microentreprises
+            de services. Nous vérifions votre cas au premier appel.
+        - q: "Un outil automatique ne suffit-il pas ?"
+          a: >-
+            Les outils repèrent une partie des défauts techniques. Le parcours
+            au lecteur d’écran et la pertinence des alternatives demandent un
+            test humain : c’est l’essentiel de nos journées d’audit.
+        - q: "Corrigez-vous le code vous-mêmes ?"
+          a: >-
+            Vos développeurs ou votre agence corrigent, avec nos tickets et la
+            permanence hebdomadaire. Si vous n’avez personne, nous vous orientons
+            vers des développeurs formés.
+        - q: "Le prix peut-il changer en cours de mission ?"
+          a: >-
+            Le devis fixe le périmètre et le prix. Si vous ajoutez des pages en
+            route, nous chiffrons l’ajout et attendons votre accord avant de commencer.
+        - q: "Combien de temps dure une mission ?"
+          a: >-
+            Trois semaines pour un audit ciblé, trois à quatre mois avec
+            l’accompagnement des corrections. Le devis donne le calendrier exact.
+        - q: "Auditez-vous les applications mobiles ?"
+          a: >-
+            Oui, avec le référentiel adapté aux applications mobiles. Le devis
+            se fait sur les écrans des parcours clés.
+      jsonld: false
+      card_label: "Devis gratuit"
+      card_title: "Audit d’accessibilité"
+      card_meta: "Dès 4 800 € HT, rapport et tickets compris"
+      cta_label: "Demander un devis"
+      cta_href: "#devis"
+      contact: >-
+        Une autre question ? <a href="mailto:bonjour@example.com">bonjour@example.com</a>
+
+  - use: final-cta
+    id: final
+    slots:
+      title: >-
+        Vos pages critiques<br><span class="hl">auditées en trois semaines</span>
+      text: >-
+        Décrivez votre site en deux minutes : Lucie vous rappelle pour cadrer
+        le périmètre et le chiffrer.
+      cta_label: "Demander un devis"
+      cta_href: "#devis"
+      primary: true
+      note: "Devis gratuit, sous trois jours ouvrés"
+      decor: rings
+      decor_html: ""
+
+  - use: footer
+    id: pied
+    slots:
+      brand: >-
+        <svg class="s-footer__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        aria-hidden="true"><path d="M27 16A11 11 0 1 1 16 5"/><path
+        d="M16 11v10M11 16h10"/></svg><span>Ouvrance</span>
+      links:
+        - {label: "Mentions légales", href: "{{URL_MENTIONS_LEGALES}}"}
+        - {label: "Confidentialité", href: "{{URL_CONFIDENTIALITE}}"}
+        - {label: "bonjour@example.com", href: "mailto:bonjour@example.com"}
+      legal: "© 2026 Ouvrance, marque fictive. Personnes, cas et prix d’exemple."
+
+  - use: sticky-bar
+    id: barre-mobile
+    slots:
+      label: "Demander un devis"
+      title: "Audit d’accessibilité"
+      detail: "Devis sous trois jours"
+      cta_label: "Demander"
+      cta_href: "#devis"
+      primary: true

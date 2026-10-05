@@ -44,7 +44,7 @@ Chaque fiche donne : l'objection du visiteur qu'elle traite, la mécanique, quan
 - **Fragment** : `pivot`.
 - **Objection** : et donc, quelle réponse.
 - **Mécanique** : une phrase géante qui se révèle mot à mot au défilement (opacité, netteté), puis un trait et la réponse : l'offre comme solution. Piste épinglée courte, avec un temps de tenue pour lire.
-- **Quand** : entre le problème et la solution, une fois par page.
+- **Quand** : entre le problème et la solution, une fois par page. Le couple problème épinglé → basculement est le seul enchaînement de deux épinglages admis ; une section non épinglée le suit avant tout autre épinglage.
 - **Anti-modèles** : dégradé de texte posé sur un élément transformé (certains navigateurs le perdent : transformer le parent, colorer l'enfant), phrase lue mot à mot par les lecteurs d'écran (une copie `sr-only` porte la phrase entière, la version animée est en `aria-hidden`).
 - **Mouvement réduit** : la phrase entière, d'emblée.
 
@@ -64,7 +64,7 @@ Chaque fiche donne : l'objection du visiteur qu'elle traite, la mécanique, quan
 - **Mécanique** : un bloc collant d'un écran en deux colonnes. À gauche, « Étape n sur N », un rail qui se remplit jusqu'au point actif, l'étape active sur un panneau, les autres repliées. À droite, une scène `aria-hidden` doublée d'un équivalent `sr-only`, qui change avec l'étape.
 - **Quand** : programme, méthode, parcours client en 3 à 6 étapes.
 - **Anti-modèles** : plus de 6 étapes, scène qui porte une information absente du texte.
-- **Mouvement réduit** : liste simple des étapes, scènes en vignettes ou masquées.
+- **Mouvement réduit et petit écran** : liste simple des étapes, chaque scène immobile sous son étape (à côté sur grand écran), jamais masquée.
 
 ## Programme ou contenu détaillé
 
@@ -117,6 +117,15 @@ Chaque fiche donne : l'objection du visiteur qu'elle traite, la mécanique, quan
 - **Anti-modèles** : avis inventés ou anonymes, initiales sur un dégradé illisible (la QA mesure le contraste à chaque arrêt du dégradé), carrousel automatique.
 - **Mouvement réduit** : mur déplié ou statique.
 
+## Cas avant / après
+
+- **Fragment** : `cases`.
+- **Objection** : est-ce que ça a marché pour d'autres, et de combien.
+- **Mécanique** : deux ou trois cartes de mission (contexte, périmètre, une même mesure avant et après en barres à la même échelle, valeurs écrites à côté, une phrase du client signée). La mesure et sa source se disent dans le chapô.
+- **Quand** : prestation, accompagnement, conseil, dès qu'on a des missions mesurées et l'accord des clients.
+- **Anti-modèles** : cas inventés présentés comme réels, mesures différentes d'une carte à l'autre, barre sans valeur écrite, client nommé sans accord.
+- **Mouvement réduit** : barres pleines d'emblée.
+
 ## Résultats (respiration)
 
 - **Fragment** : `outcomes`.
@@ -134,18 +143,21 @@ Chaque fiche donne : l'objection du visiteur qu'elle traite, la mécanique, quan
 
 ## Bloc de conversion en objet
 
-- **Fragment** : `offer-ticket` (une offre datée) ; `pricing-table` (plusieurs plans) ; `comparison` (tableau comparatif) ; `process` (étapes après le clic).
+- **Fragment** : `offer-ticket` (une offre datée ; une seule formule : billet horizontal) ; `pricing-table` (plusieurs plans, prix « dès » possible, bascule mensuel / annuel seulement si un plan a un prix annuel) ; `comparison` (tableau comparatif, région défilante à première colonne fixe sur petit écran) ; `process` (étapes après le clic) ; `guarantee` (la garantie, juste après le billet).
 - **Objection** : combien, qu'est-ce qui est compris, comment je réserve, et ensuite.
 - **Mécanique** : l'offre comme un objet (billet, carte d'offre, bon de commande) : le prix avec ce qu'il comprend, les éventuelles formules en contrôle segmenté accessible (`fieldset`, vraies radios masquées en `sr-only`), une remise expliquée avec une note en `aria-live`, **le seul bouton à l'accent fort de la page**, puis deux colonnes « Compris » et « La suite ». L'état de l'offre (ouverte, liste d'attente, close) vient de la configuration du socle ; le HTML montre l'état ouvert, le navigateur calcule l'état réel.
 - **Quand** : toute page qui vend ou inscrit.
 - **Anti-modèles** : prix sans ce qu'il comprend, remise dont on ne dit pas ce qui se passe si on l'oublie, compte à rebours en secondes, compteur de places sans vrai chiffre, prix animé sans équivalent lisible.
+- **États** : en liste d'attente, le même bouton mène à la liste ; clos, il reste en place, désactivé et lisible (4,5:1), et un lien dessiné en vrai bouton propose la suite (session suivante, alerte).
+- **Garantie** : quand elle existe, un sceau décoratif et ses conditions exactes (échéance datée, démarche, délai de remboursement), jamais un « satisfait ou remboursé » sans conditions.
 - **Mouvement réduit** : objet immobile, prix lisible d'emblée.
 
 ## Formulaire de capture
 
-- **Fragment** : `lead-capture` (email contre un contenu) ; `form` (démo, rendez-vous, devis).
+- **Fragment** : `lead-capture` (email contre un contenu) ; `form` (démo, rendez-vous, devis) ; `event-registration` (inscription gratuite à un événement, sur place ou en ligne).
 - **Objection** : qu'est-ce que je donne, et qu'est-ce que je reçois.
-- **Mécanique** : le moins de champs possible (l'email seul si la suite le permet), chaque champ avec son `<label>`, `autocomplete` sur les champs d'identité, consentement explicite par case à cocher quand la loi l'exige, champ piège anti-robots hors champ et en `aria-hidden`, message de confirmation en `role="status"`, erreurs annoncées (`aria-invalid` et `aria-describedby`). Une phrase dit ce qui arrive après l'envoi.
+- **Mécanique** : le moins de champs possible (l'email seul si la suite le permet), chaque champ avec son `<label>`, `autocomplete` sur les champs d'identité, champ piège anti-robots hors champ et en `aria-hidden`, message de confirmation en `role="status"`, erreurs annoncées (`aria-invalid` et `aria-describedby`). Une phrase sous le bouton dit ce qui arrive après l'envoi.
+- **Consentement** : recevoir la ressource demandée ne demande aucune case, la demande vaut envoi. L'inscription à une lettre ou à la prochaine édition passe par une case facultative et décochée, mesurée (`optin`). Une demande de démo ou de devis n'a pas de case : la mention de confidentialité et son lien, sous le bouton, suffisent. Un endpoint encore en marqueur fait de l'envoi une démonstration, jamais comptée comme lead.
 - **Règles** : `cro-form` pour l'optimisation, `lead-magnet` pour le circuit complet si la page capture un email contre un contenu.
 - **Anti-modèles** : placeholder qui tient lieu de label, case pré-cochée, champ qui ne paie pas sa friction.
 

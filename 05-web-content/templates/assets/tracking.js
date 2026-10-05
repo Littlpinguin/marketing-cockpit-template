@@ -26,17 +26,25 @@
      generate_lead    valid submit of a form[data-track="generate_lead"]
                       (a form that forms.js refused carries data-invalid and
                       is not counted). form_id (form id), lead_source (page
-                      slug)
+                      slug), optin (true when an input[data-optin] box is
+                      ticked, false otherwise)
      begin_checkout   submit of a form[data-track="begin_checkout"] (the
                       conversion ticket). value, currency, formula
+     form_demo_submit sent INSTEAD of the form's own event when its action
+                      is still a {{MARKER}} (or the form carries data-demo,
+                      written by forms.js, which then sends nothing): a
+                      demonstration submission never counts as a lead or a
+                      checkout. form_event (the event it replaces),
+                      form_id, and the parameters of that event
      select_content   choice gate: content_type, content_id
      faq_open         a details[data-track="faq_open"] opened: question
      <any name>       any other data-track value on a link or button: pushed
                       on click under that name
    Extra parameters: every data-track-<name>="value" attribute on the tracked
-   element is sent as <name>: value (dashes become underscores). A form may
-   expose its current formula through a checked input[name="formule"] or
-   [data-track-formula].
+   element is sent as <name>: value (dashes become underscores). A form
+   exposes its current formula through a checked radio input[name="formule"]
+   (or "formula"), a hidden input of that name (single formula), or
+   [data-track-formula]; the formula input's data-price gives value.
 
    UTM pass-through: utm_* (and gclid) of the landing URL are kept for the
    visit (sessionStorage) and appended to (a) every outbound conversion link
@@ -129,6 +137,17 @@
   });
 
   /* ---- forms ---- */
+  // A form whose action is still a {{MARKER}} is a demonstration (forms.js
+  // also marks data-demo a form it handles with an empty action): nothing is
+  // sent, and the submission is counted under form_demo_submit, never as a
+  // lead or a checkout.
+  function isDemo(form) {
+    return form.hasAttribute('data-demo') || /\{\{/.test(form.getAttribute('action') || '');
+  }
+
+  var FORMULA = 'input[name="formule"]:checked, input[name="formula"]:checked, '
+    + 'input[type="hidden"][name="formule"], input[type="hidden"][name="formula"]';
+
   // Bubble phase: the form's own handler (forms.js) has validated it first,
   // and marked it data-invalid when it refused the submission.
   document.addEventListener('submit', function (e) {
@@ -137,14 +156,21 @@
     if (form.hasAttribute('data-invalid')) return;
     var name = form.getAttribute('data-track');
     var data = extras(form);
-    var checked = form.querySelector('input[name="formule"]:checked, input[name="formula"]:checked');
-    if (checked) data.formula = checked.value;
+    var formula = form.querySelector(FORMULA);
+    if (formula) data.formula = formula.value;
     if (name === 'generate_lead') {
       data.form_id = form.id || '';
       data.lead_source = pageSlug();
+      var optin = form.querySelector('input[data-optin]');
+      data.optin = !!(optin && optin.checked);
     }
-    if (name === 'begin_checkout' && checked && checked.getAttribute('data-price')) {
-      data.value = Number(checked.getAttribute('data-price'));
+    if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
+      data.value = Number(formula.getAttribute('data-price'));
+    }
+    if (isDemo(form)) {
+      data.form_event = name;
+      if (!data.form_id) data.form_id = form.id || '';
+      name = 'form_demo_submit';
     }
     send(name, data);
   });

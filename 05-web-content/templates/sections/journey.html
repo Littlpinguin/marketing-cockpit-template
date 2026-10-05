@@ -2,21 +2,21 @@
 {
   "id": "journey",
   "name": "Parcours en scrollytelling",
-  "objection": "Concrètement, qu'est-ce que je fais et qu'est-ce que j'en tire",
+  "objection": "Concrètement, qu’est-ce que je fais et qu’est-ce que j’en tire",
   "engines": ["scroll"],
-  "when": "Programme, méthode ou parcours client en 3 à 6 étapes. Sur grand écran, un bloc collant d'un écran : à gauche « Étape n sur N », un rail qui se remplit et l'étape active dépliée ; à droite une scène décorative qui change avec l'étape (60 vh par étape).",
-  "avoid": "Plus de six étapes, une scène qui porte une information absente du texte, deux sections épinglées d'affilée sans respiration.",
-  "reduced_motion": "Liste simple des étapes, toutes dépliées, rail plein ; scènes masquées.",
+  "when": "Programme, méthode ou parcours client en 3 à 6 étapes. Sur grand écran, un bloc collant d’un écran : à gauche « Étape n sur N », un rail qui se remplit et l’étape active dépliée ; à droite une scène décorative qui change avec l’étape (60 vh par étape).",
+  "avoid": "Plus de six étapes, une scène qui porte une information absente du texte, deux sections épinglées d’affilée sans respiration.",
+  "reduced_motion": "Liste simple des étapes, toutes dépliées, rail plein ; chaque scène sous son étape, immobile. Même rendu sur petit écran et sans script.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Six semaines <span class=\"hl\">en quatre temps</span>"},
     "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Un atelier de deux heures chaque mardi, et le travail sur vos données entre deux ateliers."},
     "counter_label": {"type": "text", "doc": "Mot du compteur d'étapes (« Étape »), suivi de n / N.", "example": "Étape"},
     "outcome_label": {"type": "text", "doc": "Préfixe du résultat de chaque étape.", "example": "Vous repartez avec"},
     "steps": {"type": "list", "doc": "3 à 6 étapes. when : moment court ; title : h3 sans point ; text : une ou deux phrases ; outcome : ce que l'étape produit ; scene : objet composé décoratif.", "fields": {"when": "moment (« Semaine 1 »)", "title": "titre", "text": "ce qu'on fait", "outcome": "ce qu'on obtient", "scene": "HTML décoratif (kit .obj)"}, "example": [
-      {"when": "Semaines 1 et 2", "title": "Collecter vos données", "text": "Factures d'énergie, achats et déplacements : une liste par poste et un modèle de collecte prêt à remplir.", "outcome": "vos données rangées dans un seul fichier", "scene": "<div class=\"obj obj-window\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Collecte · 34 / 41 postes</span></div><div class=\"obj-window__body\"><div class=\"obj-check\"><span class=\"is-done\">Factures de gaz 2026</span><span class=\"is-done\">Électricité, deux sites</span><span class=\"is-done\">Grand livre des achats</span><span class=\"is-done\">Notes de frais</span><span>Fret amont, à demander</span><span>Déchets, à estimer</span></div></div></div>"},
-      {"when": "Semaine 3", "title": "Calculer vos émissions", "text": "Vous appliquez les facteurs d'émission de la base publique de référence, poste par poste, avec l'animateur.", "outcome": "un total par scope et sa source", "scene": "<div class=\"obj obj-window\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Calcul</span></div><div class=\"obj-window__body\"><div class=\"obj-grid\" style=\"--cols:4\"><span class=\"is-head\">Poste</span><span class=\"is-head\">Quantité</span><span class=\"is-head\">Facteur</span><span class=\"is-head\">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span>0,227</span><span>10,9</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span>1,9</span><span>68,4</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div>"},
-      {"when": "Semaines 4 et 5", "title": "Choisir vos priorités", "text": "Vous classez les mesures possibles par tonnes évitées et par coût, puis vous en retenez une dizaine.", "outcome": "un plan d'action chiffré", "scene": "<div class=\"obj obj-sheet\"><div class=\"obj-head\"><b>Mesures classées</b><span class=\"obj-push\">t évitées / an</span></div><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:.9\"><span>Fournisseur acier</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>41</b></div><div class=\"obj-bar\" style=\"--v:.55\"><span>Fret mutualisé</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>24</b></div><div class=\"obj-bar\" style=\"--v:.32\"><span>Pompe à chaleur</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>14</b></div><div class=\"obj-bar\" style=\"--v:.18\"><span>Visio d'abord</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>8</b></div></div></div>"},
-      {"when": "Semaine 6", "title": "Présenter votre bilan", "text": "Vous répétez la présentation devant le groupe, puis vous envoyez le dossier à vos clients.", "outcome": "un bilan de quatorze pages, sources comprises", "scene": "<div class=\"obj obj-stack\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Bilan d'émissions 2026</b><span class=\"obj-stamp obj-push\">Envoyé</span></div><div class=\"obj-rule\"></div><p class=\"obj-kpi\">412<small>t CO₂e</small></p><div class=\"obj-rule\"></div><div class=\"obj-lines\"><i style=\"--w:94%\"></i><i style=\"--w:80%\"></i><i style=\"--w:86%\"></i></div></div></div>"}
+      {"when": "Semaines 1 et 2", "title": "Collecter vos données", "text": "Factures d’énergie, achats et déplacements : une liste par poste et un modèle de collecte prêt à remplir.", "outcome": "vos données rangées dans un seul fichier", "scene": "<div class=\"obj obj-window\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Collecte · 34 / 41 postes</span></div><div class=\"obj-window__body\"><div class=\"obj-check\"><span class=\"is-done\">Factures de gaz 2026</span><span class=\"is-done\">Électricité, deux sites</span><span class=\"is-done\">Grand livre des achats</span><span class=\"is-done\">Notes de frais</span><span>Fret amont, à demander</span><span>Déchets, à estimer</span></div></div></div>"},
+      {"when": "Semaine 3", "title": "Calculer vos émissions", "text": "Vous appliquez les facteurs d’émission de la base publique de référence, poste par poste, avec l’animateur.", "outcome": "un total par scope et sa source", "scene": "<div class=\"obj obj-window\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Calcul</span></div><div class=\"obj-window__body\"><div class=\"obj-grid\" style=\"--cols:4\"><span class=\"is-head\">Poste</span><span class=\"is-head\">Quantité</span><span class=\"is-head\">Facteur</span><span class=\"is-head\">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span>0,227</span><span>10,9</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span>1,9</span><span>68,4</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div>"},
+      {"when": "Semaines 4 et 5", "title": "Choisir vos priorités", "text": "Vous classez les mesures possibles par tonnes évitées et par coût, puis vous en retenez une dizaine.", "outcome": "un plan d’action chiffré", "scene": "<div class=\"obj obj-sheet\"><div class=\"obj-head\"><b>Mesures classées</b><span class=\"obj-push\">t évitées / an</span></div><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:.9\"><span>Fournisseur acier</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>41</b></div><div class=\"obj-bar\" style=\"--v:.55\"><span>Fret mutualisé</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>24</b></div><div class=\"obj-bar\" style=\"--v:.32\"><span>Pompe à chaleur</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>14</b></div><div class=\"obj-bar\" style=\"--v:.18\"><span>Visio d’abord</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>8</b></div></div></div>"},
+      {"when": "Semaine 6", "title": "Présenter votre bilan", "text": "Vous répétez la présentation devant le groupe, puis vous envoyez le dossier à vos clients.", "outcome": "un bilan de quatorze pages, sources comprises", "scene": "<div class=\"obj obj-stack\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Bilan d’émissions 2026</b><span class=\"obj-stamp obj-push\">Envoyé</span></div><div class=\"obj-rule\"></div><p class=\"obj-kpi\">412<small>t CO₂e</small></p><div class=\"obj-rule\"></div><div class=\"obj-lines\"><i style=\"--w:94%\"></i><i style=\"--w:80%\"></i><i style=\"--w:86%\"></i></div></div></div>"}
     ]}
   }
 }
@@ -143,6 +143,43 @@
   margin-inline: auto;
 }
 
+/* Not pinned (small screen, short screen, reduced motion, no script): each
+   step carries its own scene, static, under its text (beside it on a wide
+   screen). The pinned column of scenes is only for the pinned layout. */
+.s-journey__inline {
+  display: none;
+}
+
+:root:not(.sc-pin) .s-journey__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:root:not(.sc-pin) .s-journey__inline {
+  display: block;
+  grid-column: 2;
+  margin-top: 16px;
+}
+
+:root:not(.sc-pin) .s-journey__inline .obj {
+  width: 100%;
+  max-width: 440px;
+}
+
+@media (min-width: 1101px) {
+  :root:not(.sc-pin) .s-journey__step {
+    grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 clamp(24px, 1rem + 2vw, 56px);
+    padding: 24px 0;
+  }
+
+  :root:not(.sc-pin) .s-journey__inline {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    margin-top: 0;
+  }
+}
+
 /* Not pinned: every step open, dots fill as the reading line passes them. */
 :root:not(.sc-pin) .s-journey__step[data-reached="true"] .s-journey__dot {
   border-color: var(--brand-primary);
@@ -240,6 +277,7 @@
                   {{#outcome}}<p class="s-journey__outcome"><strong>{{outcome_label}}</strong> {{outcome}}</p>{{/outcome}}
                 </div></div>
               </div>
+              <div class="s-journey__inline" aria-hidden="true" data-qa-decor>{{{scene}}}</div>
             </li>{{/steps}}
           </ol>
         </div>

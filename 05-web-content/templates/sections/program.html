@@ -2,25 +2,25 @@
 {
   "id": "program",
   "name": "Programme détaillé",
-  "objection": "Qu'est-ce qu'il y a dedans, exactement",
+  "objection": "Qu’est-ce qu’il y a dedans, exactement",
   "engines": ["scroll"],
-  "when": "Formation, accompagnement, événement ou produit à plusieurs composantes : la liste des modules avec leur durée et ce qu'ils produisent, un rail qui se remplit au défilement, et à côté un spécimen réel (page de cours, extrait de livrable, capture) étiqueté comme tel.",
-  "avoid": "Liste exhaustive qui noie l'essentiel, spécimen non étiqueté, durée absente. Pour un agenda minuté d'événement, garder les mêmes champs (when = l'heure).",
+  "when": "Formation, accompagnement, événement ou produit à plusieurs composantes : la liste des modules avec leur durée et ce qu’ils produisent, un rail qui se remplit au défilement, et à côté un spécimen réel (page de cours, extrait de livrable, capture) étiqueté comme tel.",
+  "avoid": "Liste exhaustive qui noie l’essentiel, spécimen non étiqueté, durée absente. Pour un agenda minuté d’événement, garder les mêmes champs (when = l’heure).",
   "reduced_motion": "Rail plein, tous les jalons atteints, spécimen immobile.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Au programme <span class=\"hl\">atelier par atelier</span>"},
     "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Deux heures en visio chaque mardi à 9 h, enregistrées pour ceux qui ne peuvent pas venir."},
     "modules": {"type": "list", "doc": "Modules dans l'ordre. when : repère court (date, heure, numéro) ; title : h3 sans point ; text : ce qu'il produit ; duration : durée.", "fields": {"when": "repère", "title": "titre", "text": "une phrase", "duration": "durée"}, "example": [
       {"when": "14 avril", "title": "Cadrer le périmètre", "text": "Sites, activités et postes à mesurer, avec la liste des données à réunir.", "duration": "2 h"},
-      {"when": "21 avril", "title": "Énergie et bâtiments", "text": "Les factures de l'année converties en émissions, site par site.", "duration": "2 h"},
-      {"when": "28 avril", "title": "Achats et fret", "text": "Le grand livre trié par famille d'achats, le poste le plus lourd pour la plupart des PME.", "duration": "2 h"},
+      {"when": "21 avril", "title": "Énergie et bâtiments", "text": "Les factures de l’année converties en émissions, site par site.", "duration": "2 h"},
+      {"when": "28 avril", "title": "Achats et fret", "text": "Le grand livre trié par famille d’achats, le poste le plus lourd pour la plupart des PME.", "duration": "2 h"},
       {"when": "5 mai", "title": "Déplacements et numérique", "text": "Trajets, notes de frais et matériel informatique, avec des hypothèses documentées.", "duration": "2 h"},
-      {"when": "12 mai", "title": "Plan d'action", "text": "Les mesures classées par tonnes évitées et par coût, puis votre sélection.", "duration": "2 h"},
+      {"when": "12 mai", "title": "Plan d’action", "text": "Les mesures classées par tonnes évitées et par coût, puis votre sélection.", "duration": "2 h"},
       {"when": "19 mai", "title": "Restitution", "text": "Vous présentez votre bilan au groupe et repartez avec le dossier final.", "duration": "2 h"}
     ]},
     "specimen": {"type": "html", "doc": "Spécimen : objet composé (kit .obj) ou <img> d'une vraie page de livrable. Décoratif : décrit par la légende.", "example": "<div class=\"obj obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Fiche atelier 3 · Achats et fret</b></div><div class=\"obj-rule\"></div><div class=\"obj-grid\" style=\"--cols:3\"><span class=\"is-head\">Famille</span><span class=\"is-head\">Dépense</span><span class=\"is-head\">t CO₂e</span><span>Acier</span><span>148 000 €</span><span>68,4</span><span>Emballages</span><span>36 500 €</span><span>21,2</span><span>Transport</span><span>52 000 €</span><span>44,0</span><span>Services</span><span>81 000 €</span><span>9,7</span></div><div class=\"obj-rule\"></div><div class=\"obj-lines\"><i style=\"--w:90%\"></i><i style=\"--w:72%\"></i></div><p class=\"obj-small\" style=\"margin-top:10px\">Exercice : classer vos cinq premières familles</p></div>"},
     "specimen_badge": {"type": "text", "doc": "Badge d'état de la légende.", "example": "Spécimen"},
-    "specimen_caption": {"type": "text", "doc": "Légende : ce qu'on voit, d'où ça vient.", "example": "Une page de la fiche de l'atelier 3, avec des données d'exemple."}
+    "specimen_caption": {"type": "text", "doc": "Légende : ce qu'on voit, d'où ça vient.", "example": "Une page de la fiche de l’atelier 3, avec des données d’exemple."}
   }
 }
 </script>

@@ -9,11 +9,11 @@
   "slots": {
     "title": {"type": "html", "doc": "h2 centré sans virgule ni point.", "example": "Un accompagnement <span class=\"hl\">à la mesure de votre équipe</span>"},
     "intro": {"type": "text", "doc": "Chapô : ce que tous les plans ont en commun.", "example": "Après le parcours, le suivi annuel vous aide à mettre le bilan à jour. Prix hors taxes."},
-    "toggle": {"type": "object", "doc": "Bascule de période, ou null pour un prix unique. legend : nom du groupe ; month, year : libellés.", "fields": {"legend": "nom du groupe", "month": "libellé mensuel", "year": "libellé annuel", "year_unit": "unité du prix annuel"}, "example": {"legend": "Période de facturation", "month": "Mensuel", "year": "Annuel, deux mois offerts", "year_unit": "par an"}},
-    "plans": {"type": "list", "doc": "2 ou 3 plans. key : identifiant (mesure) ; featured : plan recommandé (un seul) ; badge : état court ; price_month / price_year : prix affichés ; unit : unité ; note : précision ; features : 3 à 6 lignes ; href, cta_label : action.", "fields": {"key": "identifiant", "name": "nom", "for": "pour qui", "featured": "true pour un seul plan", "badge": "état court ou vide", "price_month": "prix mensuel", "price_year": "prix annuel", "unit": "unité", "note": "précision", "features": "liste", "href": "URL", "cta_label": "verbe", "primary": "true si c'est la conversion de la page"}, "example": [
-      {"key": "essentiel", "name": "Essentiel", "for": "Mettre le bilan à jour seul", "featured": false, "badge": "", "price_month": "49 €", "price_year": "490 €", "unit": "par mois", "note": "Sans engagement", "features": ["Mise à jour annuelle des facteurs", "Modèle de collecte de l'année", "Une séance de questions par trimestre"], "href": "https://inscription.example.com/meridian/suivi?plan=essentiel", "cta_label": "Choisir Essentiel", "primary": false},
-      {"key": "suivi", "name": "Suivi", "for": "Mettre à jour et avancer sur le plan", "featured": true, "badge": "Le plus choisi", "price_month": "129 €", "price_year": "1 290 €", "unit": "par mois", "note": "Engagement de 12 mois", "features": ["Tout l'Essentiel", "Relecture du bilan mis à jour", "Un point plan d'action par trimestre", "Accès aux ateliers de la cohorte suivante"], "href": "https://inscription.example.com/meridian/suivi?plan=suivi", "cta_label": "Choisir Suivi", "primary": false},
-      {"key": "groupe", "name": "Groupe", "for": "Plusieurs sites ou filiales", "featured": false, "badge": "", "price_month": "290 €", "price_year": "2 900 €", "unit": "par mois", "note": "Jusqu'à cinq entités", "features": ["Tout le Suivi", "Consolidation multi-sites", "Restitution au comité de direction"], "href": "https://inscription.example.com/meridian/suivi?plan=groupe", "cta_label": "Choisir Groupe", "primary": false}
+    "toggle": {"type": "object", "doc": "Bascule de période, ou null pour un prix unique. legend : nom du groupe ; month, year : libellés ; year_unit : unité du prix annuel. La bascule disparaît d'elle-même si aucun plan n'a de price_year.", "fields": {"legend": "nom du groupe", "month": "libellé mensuel", "year": "libellé annuel", "year_unit": "unité du prix annuel"}, "example": {"legend": "Période de facturation", "month": "Mensuel", "year": "Annuel, deux mois offerts", "year_unit": "par an"}},
+    "plans": {"type": "list", "doc": "2 ou 3 plans. key : identifiant (mesure) ; featured : plan recommandé (un seul) ; badge : état court ; price_prefix : petit mot avant le prix (« dès », facultatif) ; price_month : prix affiché, ou prix unique ; price_year : prix annuel (facultatif : sans lui, le prix ne change pas avec la bascule) ; unit : unité ; note : précision ; features : 3 à 6 lignes ; href, cta_label : action.", "fields": {"key": "identifiant", "name": "nom", "for": "pour qui", "featured": "true pour un seul plan", "badge": "état court ou vide", "price_prefix": "« dès » ou vide", "price_month": "prix mensuel ou unique", "price_year": "prix annuel ou vide", "unit": "unité", "note": "précision", "features": "liste", "href": "URL", "cta_label": "verbe", "primary": "true si c'est la conversion de la page"}, "example": [
+      {"key": "essentiel", "name": "Essentiel", "for": "Mettre le bilan à jour seul", "featured": false, "badge": "", "price_prefix": "", "price_month": "49 €", "price_year": "490 €", "unit": "par mois", "note": "Sans engagement", "features": ["Mise à jour annuelle des facteurs", "Modèle de collecte de l’année", "Une séance de questions par trimestre"], "href": "https://inscription.example.com/meridian/suivi?plan=essentiel", "cta_label": "Choisir Essentiel", "primary": false},
+      {"key": "suivi", "name": "Suivi", "for": "Mettre à jour et avancer sur le plan", "featured": true, "badge": "Le plus choisi", "price_prefix": "", "price_month": "129 €", "price_year": "1 290 €", "unit": "par mois", "note": "Engagement de 12 mois", "features": ["Tout l’Essentiel", "Relecture du bilan mis à jour", "Un point plan d’action par trimestre", "Accès aux ateliers de la cohorte suivante"], "href": "https://inscription.example.com/meridian/suivi?plan=suivi", "cta_label": "Choisir Suivi", "primary": false},
+      {"key": "groupe", "name": "Groupe", "for": "Plusieurs sites ou filiales", "featured": false, "badge": "", "price_prefix": "dès", "price_month": "290 €", "price_year": "2 900 €", "unit": "par mois", "note": "Prix pour deux entités, puis 90 € par entité de plus", "features": ["Tout le Suivi", "Consolidation multi-sites", "Restitution au comité de direction"], "href": "https://inscription.example.com/meridian/suivi?plan=groupe", "cta_label": "Choisir Groupe", "primary": false}
     ]}
   }
 }
@@ -102,6 +102,19 @@
   font-variant-numeric: tabular-nums;
 }
 
+.s-pricing__prefix {
+  align-self: baseline;
+  color: var(--muted);
+  font-size: var(--t-lead);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* No plan with a yearly price: the period switch has nothing to switch. */
+.s-pricing:not(:has([data-period-show="year"])) .s-pricing__toggle-wrap {
+  display: none;
+}
+
 .s-pricing__unit {
   color: var(--muted);
   font-size: var(--t-small);
@@ -136,7 +149,7 @@
         {{#badge}}<p class="badge badge--accent s-pricing__badge">{{badge}}</p>{{/badge}}
         <h3 class="s-pricing__name">{{name}}</h3>
         <p class="s-pricing__for">{{for}}</p>
-        <p class="s-pricing__price"><span data-period-show="month">{{price_month}}</span><span data-period-show="year" hidden>{{price_year}}</span><span class="s-pricing__unit"><span data-period-show="month">{{unit}}</span><span data-period-show="year" hidden>{{toggle.year_unit}}</span></span></p>
+        <p class="s-pricing__price">{{#price_prefix}}<span class="s-pricing__prefix">{{price_prefix}}</span> {{/price_prefix}}{{#price_year}}<span data-period-show="month">{{price_month}}</span><span data-period-show="year" hidden>{{price_year}}</span> <span class="s-pricing__unit"><span data-period-show="month">{{unit}}</span><span data-period-show="year" hidden>{{toggle.year_unit}}</span></span>{{/price_year}}{{^price_year}}<span>{{price_month}}</span> <span class="s-pricing__unit">{{unit}}</span>{{/price_year}}</p>
         <p class="s-pricing__note">{{note}}</p>
         <div>
           <a class="btn btn--block s-pricing__cta {{#featured}}btn--primary{{/featured}}{{^featured}}btn--secondary{{/featured}}" href="{{href}}" data-track="cta_click" data-cta-position="tarifs-{{key}}"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</a>
@@ -150,6 +163,9 @@
 <script data-section-script="pricing-table">
 (function () {
   document.querySelectorAll('.s-pricing').forEach(function (section) {
+    // No yearly price anywhere: no switch (CSS :has() does it too).
+    var wrap = section.querySelector('.s-pricing__toggle-wrap');
+    if (wrap && !section.querySelector('[data-period-show="year"]')) wrap.hidden = true;
     section.querySelectorAll('.s-pricing__toggle input').forEach(function (input) {
       input.addEventListener('change', function () {
         if (!input.checked) return;

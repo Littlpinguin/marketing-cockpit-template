@@ -1,0 +1,144 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "guarantee",
+  "name": "Garantie (sceau et conditions exactes)",
+  "objection": "Et si ça ne me sert pas",
+  "when": "Juste après le bloc de conversion d’une offre achetée en ligne, quand une vraie garantie existe : un sceau qui la résume en un chiffre (décoratif), puis le titre, une phrase et les conditions exactes en liste de définitions (échéance datée, comment la faire jouer, délai de remboursement).",
+  "avoid": "Garantie que l’entreprise ne tient pas, conditions floues (« satisfait ou remboursé » sans délai ni démarche), sceau qui porte une information absente du texte, astérisque qui renvoie à des petites lignes.",
+  "reduced_motion": "Sceau immobile, conditions visibles d’emblée.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Trente jours <span class=\"hl\">pour juger sur pièces</span>"},
+    "intro": {"type": "text", "doc": "La garantie en une ou deux phrases, sans condition cachée.", "example": "Si le parcours ne vous sert pas, écrivez-nous dans les trente jours qui suivent le premier atelier. Vous êtes remboursé en entier et vous gardez les outils."},
+    "seal": {"type": "object", "doc": "Le sceau, décoratif (aria-hidden) : son sens est porté par le titre et les conditions. big : chiffre ou mot court (3 signes au plus) ; small : sa légende (une ligne courte) ; ring : texte du pourtour, en capitales, 40 à 70 signes, terminé par un point médian.", "fields": {"big": "chiffre", "small": "légende", "ring": "texte du pourtour"}, "example": {"big": "30", "small": "jours d’essai", "ring": "REMBOURSÉ EN ENTIER · OUTILS CONSERVÉS · SANS JUSTIFICATION · "}},
+    "terms": {"type": "list", "doc": "2 à 4 conditions exactes. term : intitulé court (Échéance, Comment, Remboursement) ; text : la condition, datée et vérifiable.", "fields": {"term": "intitulé", "text": "condition exacte"}, "example": [{"term": "Échéance", "text": "Le vendredi 14 mai 2027 à minuit, trente jours après le premier atelier."}, {"term": "Comment", "text": "Un email à bonjour@example.com suffit, sans justification ni appel."}, {"term": "Remboursement", "text": "Sous sept jours, sur le moyen de paiement de la commande."}]}
+  }
+}
+</script>
+<style data-section-style="guarantee">
+.s-guarantee__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: center;
+  max-width: 1080px;
+}
+
+.s-guarantee__seal {
+  justify-self: center;
+  width: min(100%, 280px);
+}
+
+.s-guarantee__seal svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  transform: rotate(-8deg);
+}
+
+.s-guarantee__outer {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+}
+
+.s-guarantee__inner {
+  fill: var(--surface);
+  stroke: var(--hl);
+  stroke-width: 2.5;
+}
+
+.s-guarantee__ring {
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.s-guarantee__big {
+  fill: var(--hl);
+  font-family: var(--font-display);
+  font-size: 92px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.s-guarantee__small {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.s-guarantee .section-head {
+  margin-bottom: clamp(24px, 1rem + 1vw, 36px);
+}
+
+.s-guarantee__terms {
+  border-top: 1px solid var(--line);
+}
+
+/* The term column holds a long word (« Remboursement ») without touching
+   the condition beside it. */
+.s-guarantee__row {
+  display: grid;
+  grid-template-columns: minmax(9.75rem, 0.22fr) minmax(0, 1fr);
+  gap: 6px 28px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-guarantee__row dt {
+  font-weight: 700;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.s-guarantee__row dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .s-guarantee__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-guarantee__seal {
+    justify-self: start;
+    width: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-guarantee__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-guarantee section" aria-labelledby="{{id}}-titre" data-section="guarantee">
+  <div class="wrap s-guarantee__grid">
+    <div class="s-guarantee__seal" aria-hidden="true" data-qa-decor data-reveal="scale">
+      <svg viewBox="0 0 240 240" focusable="false">
+        <defs><path id="{{id}}-pourtour" d="M120 120m-99 0a99 99 0 1 1 198 0a99 99 0 1 1-198 0"/></defs>
+        <circle class="s-guarantee__outer" cx="120" cy="120" r="116"/>
+        <circle class="s-guarantee__inner" cx="120" cy="120" r="84"/>
+        {{#seal}}<text class="s-guarantee__ring"><textPath href="#{{id}}-pourtour" textLength="618" lengthAdjust="spacing">{{ring}}</textPath></text>
+        <text class="s-guarantee__big" x="120" y="134" text-anchor="middle">{{big}}</text>
+        <text class="s-guarantee__small" x="120" y="162" text-anchor="middle">{{small}}</text>{{/seal}}
+      </svg>
+    </div>
+    <div>
+      <div class="section-head">
+        <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+        <p class="section-intro">{{intro}}</p>
+      </div>
+      <dl class="s-guarantee__terms" data-reveal-group>
+        {{#terms}}<div class="s-guarantee__row" data-reveal><dt>{{term}}</dt><dd>{{text}}</dd></div>{{/terms}}
+      </dl>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

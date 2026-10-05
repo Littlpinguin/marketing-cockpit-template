@@ -3,8 +3,8 @@
   "id": "people",
   "name": "Personnes (experts, intervenants, équipe)",
   "objection": "Avec qui, et sont-ils crédibles",
-  "when": "Quand l'offre repose sur des personnes : un portrait (ou ses initiales) et une biographie en trois temps, qui, la preuve, le rôle dans l'offre. Faits tirés de sources validées seulement, portrait avec l'accord de la personne.",
-  "avoid": "Faits venus de transcriptions ou de notes internes, portraits sans accord, photo de banque d'images, plus de quatre personnes, biographies qui listent des titres sans preuve.",
+  "when": "Quand l’offre repose sur des personnes : un portrait (ou ses initiales) et une biographie en trois temps, qui, la preuve, le rôle dans l’offre. Faits tirés de sources validées seulement, portrait avec l’accord de la personne.",
+  "avoid": "Faits venus de transcriptions ou de notes internes, portraits sans accord, photo de banque d’images, plus de quatre personnes, biographies qui listent des titres sans preuve.",
   "reduced_motion": "Immobile.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Deux animateurs <span class=\"hl\">qui ont fait le chemin</span>"},
@@ -12,9 +12,10 @@
     "label_who": {"type": "text", "doc": "Intitulé du premier temps.", "example": "Parcours"},
     "label_proof": {"type": "text", "doc": "Intitulé du deuxième temps.", "example": "Preuve"},
     "label_part": {"type": "text", "doc": "Intitulé du troisième temps.", "example": "Dans le parcours"},
+    "shape": {"type": "text", "doc": "Forme du portrait : rounded (bloc arrondi au rayon des cartes, en retrait du bord) ou flush (portrait à fond perdu sur le bord gauche de la carte). Le rayon vient des jetons (--radius-card).", "example": "rounded"},
     "people": {"type": "list", "doc": "2 à 4 personnes. photo : chemin WebP 4:5 (vide : initiales) ; photo_alt : description (mention IA si portrait généré) ; who, proof, part : une phrase chacun.", "fields": {"name": "nom", "role": "fonction", "initials": "deux lettres si pas de photo", "photo": "chemin ou vide", "photo_alt": "alt", "who": "qui", "proof": "la preuve", "part": "son rôle dans l'offre"}, "example": [
-      {"name": "Nadia Ferrand", "role": "Ingénieure énergie, animatrice", "initials": "NF", "photo": "", "photo_alt": "", "who": "Douze ans d'audits énergétiques dans l'industrie, puis le pilotage carbone d'un groupe de transport.", "proof": "Personnage fictif de démonstration : remplacer par une preuve vérifiable (certification, bilans menés).", "part": "Anime les ateliers sur l'énergie, le fret et le plan d'action."},
-      {"name": "Olivier Brunet", "role": "Acheteur industriel, animateur", "initials": "OB", "photo": "", "photo_alt": "", "who": "Quinze ans aux achats, dont six à construire des politiques d'achats responsables.", "proof": "Personnage fictif de démonstration : une preuve se cite avec sa source.", "part": "Anime l'atelier achats et relit chaque bilan avant la restitution."}
+      {"name": "Nadia Ferrand", "role": "Ingénieure énergie, animatrice", "initials": "NF", "photo": "", "photo_alt": "", "who": "Douze ans d’audits énergétiques dans l’industrie, puis le pilotage carbone d’un groupe de transport.", "proof": "Personnage fictif de démonstration : remplacer par une preuve vérifiable (certification, bilans menés).", "part": "Anime les ateliers sur l’énergie, le fret et le plan d’action."},
+      {"name": "Olivier Brunet", "role": "Acheteur industriel, animateur", "initials": "OB", "photo": "", "photo_alt": "", "who": "Quinze ans aux achats, dont six à construire des politiques d’achats responsables.", "proof": "Personnage fictif de démonstration : une preuve se cite avec sa source.", "part": "Anime l’atelier achats et relit chaque bilan avant la restitution."}
     ]}
   }
 }
@@ -32,13 +33,27 @@
   overflow: hidden;
 }
 
+/* The portrait fills its column: width is fixed by the column, the 4:5 ratio
+   gives the height, and min-height stretches it to the card when the
+   biography is taller. Without width: 100%, the ratio would size it from the
+   card height and push it out of its column. */
 .s-people__portrait {
   position: relative;
   display: grid;
   place-items: center;
+  width: 100%;
   min-height: 100%;
   aspect-ratio: 4 / 5;
+  overflow: hidden;
   background: var(--tint);
+}
+
+/* rounded: a block set in from the card edge, at the radius of the tokens. */
+.s-people__grid[data-shape="rounded"] .s-people__portrait {
+  width: calc(100% - 24px);
+  min-height: calc(100% - 24px);
+  margin: 12px 0 12px 12px;
+  border-radius: max(8px, calc(var(--radius-card) - 4px));
 }
 
 .s-people__portrait img {
@@ -47,17 +62,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.s-people__portrait::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-color: var(--brand-primary);
-  opacity: 0.08;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='1.2'%3E%3Cpath d='M50 0C20 25 20 75 50 100M50 0c30 25 30 75 0 100M0 35h100M0 65h100'/%3E%3C/svg%3E") center / 140% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='1.2'%3E%3Cpath d='M50 0C20 25 20 75 50 100M50 0c30 25 30 75 0 100M0 35h100M0 65h100'/%3E%3C/svg%3E") center / 140% no-repeat;
 }
 
 .s-people__initials {
@@ -115,6 +119,10 @@
   .s-people__portrait {
     aspect-ratio: 16 / 9;
   }
+
+  .s-people__grid[data-shape="rounded"] .s-people__portrait {
+    margin: 12px 12px 0;
+  }
 }
 </style>
 <!-- section:{{id}} -->
@@ -124,7 +132,7 @@
       <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
       {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
     </div>
-    <ul class="s-people__grid" role="list" data-reveal-group>
+    <ul class="s-people__grid" role="list" data-shape="{{shape}}" data-reveal-group>
       {{#people}}<li class="s-people__card card" data-reveal>
         <div class="s-people__portrait">{{#photo}}<img src="{{photo}}" alt="{{photo_alt}}" width="480" height="600" loading="lazy">{{/photo}}{{^photo}}<span class="s-people__initials" aria-hidden="true">{{initials}}</span>{{/photo}}</div>
         <div class="s-people__body">

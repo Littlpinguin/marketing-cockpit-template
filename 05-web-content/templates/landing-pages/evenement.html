@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kit de relance des factures impayées · Encaisse</title>
-<meta name="description" content="Six modèles d’emails et un calendrier de J+1 à J+45 pour être payé par vos clients professionnels sans abîmer la relation.">
+<title>La matinale flotte électrique · 3 juin 2027 à Bordeaux et en direct · Brivalle</title>
+<meta name="description" content="Une matinée à Bordeaux et en direct pour les responsables de flotte : trois retours d’expérience chiffrés, une table ronde et vos questions. Gratuit, replay pour tous les inscrits.">
 <meta name="robots" content="noindex, nofollow">
-<meta property="og:title" content="Le kit de relance des factures impayées">
-<meta property="og:description" content="Six modèles d’emails, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.">
-<meta name="generator" content="assemble-landing.py · sha256:7317cdb37e84c18e3aeffc9c13123c0791e7a814b03bd14ec8ff4c51af95b404">
+<meta property="og:type" content="website">
+<meta property="og:title" content="La matinale flotte électrique, le 3 juin 2027">
+<meta property="og:description" content="À Bordeaux et en direct, gratuit, replay sous 48 heures pour tous les inscrits.">
+<meta name="generator" content="assemble-landing.py · sha256:10ea85e264d686b208d6cc72b13e5effa3ae63d1634c56f2abd4dd56b3222833">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <script>window.dataLayer = window.dataLayer || [];</script>
-<script>window.LANDING_CONFIG = {"page": "kit-relance", "tracking": {"mode": "datalayer", "utm": true, "page": "kit-relance"}};</script>
+<script>window.LANDING_CONFIG = {"page": "evenement", "tracking": {"mode": "datalayer", "utm": true, "page": "evenement"}, "offer": {"state": "open", "closes_at": "2027-06-02T18:00:00+02:00", "after_close": "closed"}};</script>
 <style>
 /* ---- tokens.css ---- */
 /* ============================================================
@@ -1340,45 +1341,52 @@ textarea.field__input {
     justify-self: start;
   }
 }
-/* ---- section : lead-capture ---- */
-.s-lead__grid {
+/* ---- section : outcomes ---- */
+.s-outcomes__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
-  gap: clamp(32px, 1rem + 4vw, 88px);
-  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(32px, 1rem + 3vw, 64px);
 }
 
-.s-lead__points {
-  margin-top: 8px;
-}
-
-.s-lead__card {
-  padding: clamp(24px, 1rem + 1.6vw, 40px);
-}
-
-.s-lead__form,
-.s-lead__fields {
+.s-outcomes__item {
   display: grid;
-  gap: 18px;
+  align-content: start;
+  gap: 10px;
 }
 
-/* What follows the click: a full sentence, so running-text size. */
-.s-lead__after {
+.s-outcomes__rule {
+  display: block;
+  height: 2px;
+  margin-bottom: 18px;
+  background: var(--gradient);
+  transform-origin: 0 50%;
+  transition: transform 0.9s var(--ease);
+  transition-delay: calc(var(--rv-i, 0) * 0.15s + 0.2s);
+}
+
+.rv-on .s-outcomes__item:not(.is-in) .s-outcomes__rule {
+  transform: scaleX(0);
+}
+
+.s-outcomes__num {
+  color: var(--hl);
+  font-size: var(--t-number);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-outcomes__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-outcomes__text {
   color: var(--muted);
-  text-align: center;
-  text-wrap: balance;
-}
-
-.s-lead__status:not(:empty) {
-  padding: 14px 16px;
-  border-radius: var(--radius-input);
-  background: var(--tint);
-}
-
-@media (max-width: 900px) {
-  .s-lead__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  text-wrap: pretty;
 }
 /* ---- section : program ---- */
 .s-program__grid {
@@ -1533,36 +1541,6 @@ textarea.field__input {
     grid-column: 2;
   }
 }
-/* ---- section : for-whom ---- */
-.s-forwhom__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
-  max-width: 1080px;
-  margin-inline: auto;
-}
-
-.s-forwhom__col {
-  padding: clamp(24px, 1rem + 1.4vw, 40px);
-  border-radius: var(--radius-card);
-}
-
-.s-forwhom__col--no {
-  border: 1.5px dashed var(--line-strong);
-}
-
-.s-forwhom__title {
-  margin-bottom: 20px;
-  font-size: var(--t-h3);
-  line-height: var(--lh-snug);
-  font-weight: 800;
-}
-
-@media (max-width: 900px) {
-  .s-forwhom__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 /* ---- section : people ---- */
 .s-people__grid {
   display: grid;
@@ -1665,6 +1643,571 @@ textarea.field__input {
 
   .s-people__grid[data-shape="rounded"] .s-people__portrait {
     margin: 12px 12px 0;
+  }
+}
+/* ---- section : map-pinned ---- */
+.s-map__track {
+  --q: min(1, calc(var(--p, 1) / 0.8));
+}
+
+.s-map__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 1rem + 5vw, 96px);
+  align-items: center;
+}
+
+.s-map__legend {
+  display: grid;
+  gap: 18px;
+}
+
+.s-map__item {
+  --on: clamp(0, calc((var(--q) - var(--at)) * 50), 1);
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 0 16px;
+}
+
+.s-map__key {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--brand-primary);
+  border-radius: 50%;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 700;
+}
+
+.s-map__key::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--tint);
+  opacity: var(--on);
+}
+
+.s-map__key span {
+  position: relative;
+}
+
+.s-map__item-title {
+  font-size: 1.1875rem;
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-map__item-text {
+  margin-top: 4px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-map__figure {
+  position: relative;
+  border-radius: calc(var(--radius-card) + 8px);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  overflow: clip;
+}
+
+.s-map__svg {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+/* Ground of the schema, drawn from the tokens (no geography implied). */
+.s-map__figure[data-decor="lines"] {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 59px, var(--line) 59px 60px),
+    repeating-linear-gradient(90deg, transparent 0 59px, var(--line) 59px 60px);
+  background-position: center;
+}
+
+.s-map__figure[data-decor="dots"] {
+  background-image: radial-gradient(circle, var(--line-strong) 1.3px, transparent 1.8px);
+  background-position: center;
+  background-size: 24px 24px;
+}
+
+.s-map__figure[data-decor="rings"] {
+  background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 71px, var(--line) 71px 72.5px);
+}
+
+.s-map__decor {
+  fill: none;
+  stroke: var(--brand-line);
+  stroke-width: 1.5;
+}
+
+.s-map__base {
+  fill: none;
+  stroke: var(--brand-field-border);
+  stroke-width: 2;
+  stroke-dasharray: 2 8;
+  stroke-linecap: round;
+}
+
+.s-map__route {
+  fill: none;
+  stroke: var(--brand-primary);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--q));
+}
+
+.s-map__mark {
+  opacity: clamp(0, calc((var(--q) - var(--at)) * 40 + 1), 1);
+}
+
+.s-map__mark circle {
+  fill: var(--brand-white);
+  stroke: var(--brand-primary);
+  stroke-width: 3;
+}
+
+.s-map__mark .s-map__num {
+  fill: var(--brand-primary-text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* A halo in the colour of the figure keeps each label legible over the
+   ground and the route, whatever its length (no fixed plate). */
+.s-map__mark .s-map__tag {
+  fill: var(--brand-dark);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--brand-white);
+  stroke-width: 7px;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 1100px) {
+  .s-map__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-map__figure {
+    order: -1;
+    max-width: 640px;
+  }
+}
+
+/* Pinned: 2 screens of travel; the route is drawn in the first 80 %, then holds. */
+.sc-pin .s-map {
+  padding-block: 0;
+}
+
+.sc-pin .s-map__track {
+  height: calc(100vh + 200vh);
+}
+
+.sc-pin .s-map__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  height: calc(100vh - var(--topbar-h));
+}
+
+.sc-pin .s-map__stage > .wrap {
+  width: var(--wrap);
+}
+
+.sc-pin .s-map__mark {
+  opacity: clamp(0, calc((var(--q) - var(--at)) * 40), 1);
+}
+/* ---- section : testimonials ---- */
+.s-testi__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
+  align-items: start;
+}
+
+.s-testi__card {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 1rem + 1.2vw, 32px);
+}
+
+.s-testi__card:nth-child(2) {
+  margin-top: clamp(0px, 3vw, 40px);
+}
+
+.s-testi__result {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.s-testi__result::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-bottom: 14px;
+  border-radius: 3px;
+  background: var(--gradient);
+}
+
+.s-testi__quote p {
+  text-wrap: pretty;
+}
+
+.s-testi__quote p::before {
+  content: "«\00a0";
+}
+
+.s-testi__quote p::after {
+  content: "\00a0»";
+}
+
+.s-testi__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.s-testi__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--hl);
+  font-size: var(--t-small);
+  font-weight: 800;
+}
+
+.s-testi__name {
+  display: block;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-testi__role {
+  display: block;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+@media (max-width: 1100px) {
+  .s-testi__grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 680px;
+  }
+
+  .s-testi__card:nth-child(2) {
+    margin-top: 0;
+  }
+}
+/* ---- section : for-whom ---- */
+.s-forwhom__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.s-forwhom__col {
+  padding: clamp(24px, 1rem + 1.4vw, 40px);
+  border-radius: var(--radius-card);
+}
+
+.s-forwhom__col--no {
+  border: 1.5px dashed var(--line-strong);
+}
+
+.s-forwhom__title {
+  margin-bottom: 20px;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .s-forwhom__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* ---- section : event-registration ---- */
+.s-evreg__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-evreg__facts {
+  display: grid;
+  gap: 16px;
+  margin-bottom: clamp(28px, 1rem + 2vw, 40px);
+  padding-block: 22px;
+  border-block: 1px solid var(--line);
+}
+
+.s-evreg__facts > div {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+}
+
+.s-evreg__facts dt {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-evreg__facts dd {
+  font-weight: 600;
+  text-wrap: pretty;
+}
+
+.s-evreg__next-title {
+  margin-bottom: 16px;
+  font-size: var(--t-h3);
+  font-weight: 800;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.015em;
+}
+
+.s-evreg__next {
+  display: grid;
+  gap: 14px;
+  counter-reset: next;
+}
+
+.s-evreg__next > li {
+  position: relative;
+  padding-left: 44px;
+  counter-increment: next;
+  text-wrap: pretty;
+}
+
+.s-evreg__next > li::before {
+  content: counter(next);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+/* The form card is paper, on a dark band too: the semantic layer is pointed
+   back at the light palette (tokens only, no new colour). */
+.s-evreg__card {
+  --ink: var(--brand-dark);
+  --surface: var(--brand-white);
+  --surface-2: var(--brand-surface-2);
+  --muted: var(--brand-muted);
+  --hl: var(--brand-primary-text);
+  --tint: var(--brand-primary-soft);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-field-border);
+  --focus: var(--brand-dark);
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+  color: var(--ink);
+}
+
+.s-evreg__form,
+.s-evreg__fields,
+.s-evreg__open {
+  display: grid;
+  gap: 20px;
+}
+
+.s-evreg__row,
+.s-evreg__seg {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.s-evreg__modes {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-evreg__legend {
+  margin-bottom: 12px;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.s-evreg__opt {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-height: 76px;
+  padding: 14px 48px 14px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.s-evreg__opt:hover {
+  border-color: var(--ink);
+}
+
+.s-evreg__opt::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.s-evreg__opt:has(input:checked) {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--brand-primary);
+}
+
+.s-evreg__opt:has(input:checked)::after {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  box-shadow: inset 0 0 0 4px var(--surface);
+}
+
+.s-evreg__opt:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.s-evreg__opt:has(input:disabled) {
+  border-style: dashed;
+  background: var(--surface-2);
+  cursor: not-allowed;
+}
+
+.s-evreg__opt-label {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-evreg__opt-meta {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+.s-evreg__opt .badge {
+  justify-self: start;
+  margin-top: 4px;
+}
+
+.s-evreg__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.s-evreg__deadline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.s-evreg__deadline::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-evreg__closed {
+  font-weight: 600;
+}
+
+.s-evreg__privacy {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-evreg__status:not(:empty) {
+  padding: 14px 16px;
+  border-radius: var(--radius-input);
+  background: var(--tint);
+}
+
+@media (max-width: 1100px) {
+  .s-evreg__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-evreg__row,
+  .s-evreg__seg {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-evreg__opt {
+    min-height: 64px;
+  }
+
+  .s-evreg__facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
   }
 }
 /* ---- section : faq ---- */
@@ -1798,6 +2341,56 @@ textarea.field__input {
     max-width: 520px;
   }
 }
+/* ---- section : legal ---- */
+.s-legal__inner {
+  max-width: 980px;
+}
+
+.s-legal__title {
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-legal__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-legal__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.32fr) minmax(0, 1fr);
+  gap: 8px 32px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-legal__row dt {
+  font-weight: 700;
+}
+
+.s-legal__row dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-legal__row a[target="_blank"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.3em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 640px) {
+  .s-legal__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 /* ---- section : final-cta ---- */
 .s-final {
   text-align: center;
@@ -1917,15 +2510,78 @@ textarea.field__input {
   color: var(--muted);
   font-size: var(--t-small);
 }
+/* ---- section : sticky-bar ---- */
+.s-sticky {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body:has(.s-sticky) {
+    padding-bottom: 88px;
+  }
+
+  .s-sticky {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    display: block;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    background: var(--brand-light);
+    box-shadow: 0 -12px 30px -20px var(--brand-shadow);
+    visibility: hidden;
+    transform: translateY(110%);
+    transition:
+      transform 0.35s var(--ease),
+      visibility 0s linear 0.35s;
+  }
+
+  .s-sticky[data-visible] {
+    visibility: visible;
+    transform: none;
+    transition: transform 0.35s var(--ease);
+  }
+}
+
+.s-sticky__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.s-sticky__text {
+  display: grid;
+  line-height: 1.3;
+}
+
+.s-sticky__text strong {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.s-sticky__text span {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-sticky__btn.btn {
+  flex: none;
+  min-height: 48px;
+  padding: 10px 22px;
+}
 </style>
 </head>
-<body data-page-slug="kit-relance">
+<body data-page-slug="evenement">
 <a class="skip-link" href="#contenu">Aller au contenu</a>
+<div class="reading-progress" aria-hidden="true"></div>
 <!-- section:topbar -->
 <header id="topbar" class="s-topbar" data-section="topbar">
   <div class="wrap s-topbar__inner">
-    <p class="s-topbar__brand"><svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="24" height="20" rx="6"/><path d="m11 16.5 3.5 3.5 7-7.5"/></svg><span>Encaisse</span></p>
-    <a class="btn btn--secondary s-topbar__cta" href="#recevoir" data-track="cta_click" data-cta-position="topbar" data-cta="primaire">Recevoir le kit</a>
+    <p class="s-topbar__brand"><svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="25" r="3"/><circle cx="25" cy="7" r="3"/><path d="M10 25h6a4.5 4.5 0 0 0 0-9h-1a4.5 4.5 0 0 1 0-9h7"/></svg><span>Brivalle</span></p>
+    <a class="btn btn--secondary s-topbar__cta" href="#inscription" data-track="cta_click" data-cta-position="topbar" data-cta="primaire">M’inscrire</a>
   </div>
 </header>
 <!-- /section:topbar -->
@@ -1934,206 +2590,400 @@ textarea.field__input {
 <section id="hero" class="s-hero section" aria-labelledby="hero-titre" data-section="hero">
   <div class="wrap s-hero__grid">
     <div class="s-hero__text">
-      <h1 id="hero-titre" class="s-hero__title">Six emails<br>pour être payé<br><span class="hl">sans conflit</span></h1>
-      <p class="s-hero__lede lede">Le kit de relance des indépendants : six modèles prêts à copier, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.</p>
+      <h1 id="hero-titre" class="s-hero__title">Passer vos tournées<br><span class="hl">à l’électrique</span></h1>
+      <p class="s-hero__lede lede">Une matinée à Bordeaux et en direct pour les responsables de flotte, avec trois retours d’expérience chiffrés.</p>
       <div class="s-hero__actions">
-        <a class="btn btn--primary" href="#recevoir" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Recevoir le kit<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span>Gratuit, par email</span><span aria-hidden="true">·</span><span>14 pages</span></p>
+        <a class="btn btn--primary" href="#inscription" data-track="cta_click" data-cta-position="hero" data-cta="primaire">M’inscrire<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <p class="s-hero__deadline"><span>Jeudi 3 juin 2027, de 8 h 30 à 13 h</span><span aria-hidden="true">·</span><span>Gratuit, sur place ou en ligne</span></p>
       </div>
     </div>
     <div class="s-hero__visual" data-reveal="right">
-      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor> <div class="obj-stack"><div class="obj-sheet"> <div class="obj-head"><span class="obj-mark"></span><b>Kit de relance</b><span class="obj-stamp obj-push">Modèle 3</span></div> <div class="obj-rule"></div> <div class="obj-mail"> <div class="obj-mail__from"><span class="obj-avatar">VD</span><span><b>Facture F-118 · échéance dépassée</b><br>À Julien, studio Halte</span></div> <p class="obj-small">Bonjour Julien, la facture F-118 de <span class="obj-highlight">1 450 €</span> attend toujours son règlement. Pouvez-vous me confirmer un virement d’ici vendredi ?</p> </div> <div class="obj-rule"></div> <div class="obj-check"> <span class="is-done">J+1 · Le rappel aimable</span> <span class="is-done">J+8 · La relance claire</span> <span class="is-done">J+15 · La relance ferme</span> <span>J+22 · L’appel, puis l’email</span> <span>J+30 · Le dernier rappel</span> <span>J+45 · La mise en demeure</span> </div> </div></div> <span class="obj-chip s-hero__chip"><i></i>Réglée à J+17</span> </div>
+      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+  <div class="obj-stack">
+    <div class="obj-sheet">
+      <div class="obj-head"><span class="obj-mark"></span><b>La matinale flotte électrique</b><span class="obj-stamp obj-push">Badge</span></div>
+      <div class="obj-rule"></div>
+      <p class="obj-kpi">3 juin<small>2027</small></p>
+      <p class="obj-small" style="margin-top:8px">Halle Lucine, Bordeaux · accueil à 8 h 30</p>
+      <div class="obj-rule"></div>
+      <div class="obj-mail">
+        <div class="obj-head"><b>9 h 00</b><span>L’autonomie réelle en tournée</span></div>
+        <div class="obj-head"><b>9 h 40</b><span>Recharger au dépôt</span></div>
+        <div class="obj-head"><b>10 h 45</b><span>Quarante utilitaires en dix-huit mois</span></div>
+        <div class="obj-head"><b>11 h 30</b><span>Table ronde avec vos questions</span></div>
+      </div>
+      <div class="obj-rule"></div>
+      <div class="obj-mail__from"><span class="obj-avatar">VN</span><span><b>Votre nom</b><br>Votre entreprise</span><span class="obj-chip" style="position:static;margin-left:auto"><i></i>Sur place</span></div>
+    </div>
+  </div>
+  <span class="obj-chip s-hero__chip"><i></i>En direct dès 9 h</span>
+</div>
     </div>
   </div>
 </section>
 <!-- /section:hero -->
-<!-- section:recevoir -->
-<section id="recevoir" class="s-lead section" aria-labelledby="recevoir-titre" data-section="lead-capture">
-  <div class="wrap s-lead__grid">
-    <div>
-      <div class="section-head">
-        <h2 id="recevoir-titre" class="section-title">Recevez le kit <span class="hl">dans votre boîte mail</span></h2>
-        <p class="section-intro">Un document de quatorze pages relu par une avocate, avec un lien pour copier les modèles dans votre messagerie.</p>
-      </div>
-      <ul class="list-check s-lead__points" role="list"><li>Six modèles d’emails, du rappel aimable à la mise en demeure</li><li>Le calendrier d’envoi, de J+1 à J+45</li><li>Le tableau de suivi des relances, en tableur</li><li>Les mentions à ajouter sur vos prochaines factures</li></ul>
+<!-- section:rapporter -->
+<section id="rapporter" class="s-outcomes section" aria-labelledby="rapporter-titre" data-section="outcomes">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="rapporter-titre" class="section-title">Ce que vous rapportez<br><span class="hl">au dépôt le lendemain</span></h2>
     </div>
-    <div class="s-lead__card card" data-reveal>
-      <form class="s-lead__form" id="recevoir-form" action="{{FORM_ENDPOINT}}" method="post" data-form="lead" data-track="generate_lead" data-error-required="Indiquez l’adresse où envoyer le kit." data-error-email="Cette adresse email semble incomplète." data-error-consent="Cochez la case pour continuer." data-msg-success="C’est envoyé. Le kit arrive dans votre boîte dans la minute." data-msg-failure="L’envoi n’a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n’a été envoyé.">
-        <div class="hp" aria-hidden="true"><label for="recevoir-site">Site web</label><input type="text" id="recevoir-site" name="site" tabindex="-1" autocomplete="off"></div>
-        <div class="s-lead__fields" data-form-fields>
-          <div class="field">
-            <label class="field__label" for="recevoir-email">Votre email professionnel</label>
-            <input class="field__input" type="email" id="recevoir-email" name="email" autocomplete="email" required placeholder="prenom@example.com" aria-describedby="recevoir-email-hint recevoir-email-error">
-            <p class="field__hint" id="recevoir-email-hint">Le kit arrive à cette adresse.</p>
-            <p class="field__error" id="recevoir-email-error" hidden></p>
-          </div>
-          <div class="consent"><input type="checkbox" id="recevoir-optin" name="newsletter" value="oui" data-optin><label for="recevoir-optin">Recevoir aussi la lettre Encaisse sur la trésorerie des indépendants, un email tous les quinze jours. Désinscription en un clic.</label></div>
-          
-          <button type="submit" class="btn btn--block btn--primary" data-cta-position="capture" data-cta="primaire">Recevoir le kit</button>
-          <p class="s-lead__after">Le kit arrive dans votre boîte dans la minute. La lettre ne part que si vous cochez la case.</p>
-        </div>
-        <p class="form-status s-lead__status" role="status" data-form-status></p>
-      </form>
-    </div>
+    <ol class="s-outcomes__row" role="list" data-reveal-group>
+      <li class="s-outcomes__item" data-reveal="fade">
+        <span class="s-outcomes__rule" aria-hidden="true"></span>
+        <p class="s-outcomes__num">01</p>
+        <h3 class="s-outcomes__title">Un coût complet par véhicule</h3>
+        <p class="s-outcomes__text">La grille de calcul remise à chaque participant, avec les hypothèses des intervenants.</p>
+      </li><li class="s-outcomes__item" data-reveal="fade">
+        <span class="s-outcomes__rule" aria-hidden="true"></span>
+        <p class="s-outcomes__num">02</p>
+        <h3 class="s-outcomes__title">Un plan de charge</h3>
+        <p class="s-outcomes__text">Puissance, horaires et abonnement : la méthode de 9 h 40, à appliquer à vos tournées.</p>
+      </li><li class="s-outcomes__item" data-reveal="fade">
+        <span class="s-outcomes__rule" aria-hidden="true"></span>
+        <p class="s-outcomes__num">03</p>
+        <h3 class="s-outcomes__title">Des contacts qui l’ont fait</h3>
+        <p class="s-outcomes__text">Les intervenants restent au déjeuner, et la liste des participants volontaires vous est envoyée.</p>
+      </li>
+    </ol>
   </div>
 </section>
-<!-- /section:recevoir -->
-<!-- section:contenu -->
-<section id="contenu" class="s-program section" aria-labelledby="contenu-titre" data-section="program">
+<!-- /section:rapporter -->
+<!-- section:programme -->
+<section id="programme" class="s-program section" aria-labelledby="programme-titre" data-section="program">
   <div class="wrap s-program__grid">
     <div>
       <div class="section-head">
-        <h2 id="contenu-titre" class="section-title">Six relances <span class="hl">de J+1 à J+45</span></h2>
-        <p class="section-intro">Chaque modèle monte d’un cran. Le ton reste courtois, la demande devient plus précise.</p>
+        <h2 id="programme-titre" class="section-title">La matinée<br><span class="hl">heure par heure</span></h2>
+        <p class="section-intro">Accueil et café dès 8 h 30. Le direct démarre à 9 h, avec une pause de 10 h 15 à 10 h 45.</p>
       </div>
       <ol class="s-program__list" role="list" data-rail>
         <li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+1</p>
-          <h3 class="s-program__title">Le rappel aimable</h3>
-          <p class="s-program__duration">4 lignes</p>
-          <p class="s-program__text">Une ligne pour signaler l’échéance, la facture en pièce jointe.</p>
+          <p class="s-program__when">9 h 00</p>
+          <h3 class="s-program__title">L’autonomie réelle en tournée</h3>
+          <p class="s-program__duration">35 min</p>
+          <p class="s-program__text">Ce que 2 400 tournées enregistrées en 2026 disent de l’autonomie selon la saison et la charge.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+8</p>
-          <h3 class="s-program__title">La relance claire</h3>
-          <p class="s-program__duration">6 lignes</p>
-          <p class="s-program__text">Le montant dû et le moyen de paiement, sans un mot de reproche.</p>
+          <p class="s-program__when">9 h 40</p>
+          <h3 class="s-program__title">Recharger au dépôt</h3>
+          <p class="s-program__duration">35 min</p>
+          <p class="s-program__text">Puissance raccordée, abonnement et horaires de charge : dimensionner sans payer la pointe.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+15</p>
-          <h3 class="s-program__title">La relance ferme</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">Une date de règlement précise et le rappel des pénalités prévues à vos conditions générales.</p>
+          <p class="s-program__when">10 h 45</p>
+          <h3 class="s-program__title">Quarante utilitaires en dix-huit mois</h3>
+          <p class="s-program__duration">40 min</p>
+          <p class="s-program__text">Le retour d’expérience d’un transporteur régional, chiffres et erreurs compris.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+22</p>
-          <h3 class="s-program__title">L’appel et l’email qui le résume</h3>
-          <p class="s-program__duration">1 script</p>
-          <p class="s-program__text">Le déroulé d’un appel de cinq minutes et l’email qui confirme ce qui a été convenu.</p>
+          <p class="s-program__when">11 h 30</p>
+          <h3 class="s-program__title">Table ronde avec vos questions</h3>
+          <p class="s-program__duration">45 min</p>
+          <p class="s-program__text">Trois responsables de flotte répondent à la salle et aux questions écrites du direct.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+30</p>
-          <h3 class="s-program__title">Le dernier rappel</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">L’annonce de la mise en demeure et le rappel de l’indemnité forfaitaire de 40 € due par un client professionnel en retard.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+45</p>
-          <h3 class="s-program__title">La mise en demeure</h3>
-          <p class="s-program__duration">1 lettre</p>
-          <p class="s-program__text">La lettre recommandée prête à compléter, dernière étape avant une injonction de payer.</p>
+          <p class="s-program__when">12 h 15</p>
+          <h3 class="s-program__title">Déjeuner avec les intervenants</h3>
+          <p class="s-program__duration">45 min</p>
+          <p class="s-program__text">Sur place seulement, pour poursuivre les échanges. Le direct s’arrête à 12 h 15.</p>
         </li>
       </ol>
     </div>
     <figure class="s-program__specimen">
       <div class="s-program__figure">
-        <div aria-hidden="true" data-qa-decor><div class="obj"><div class="obj-sheet"> <div class="obj-head"><span class="obj-mark"></span><b>Modèle 3 · La relance ferme</b><span class="obj-push">p. 6</span></div> <div class="obj-rule"></div> <div class="obj-mail"> <p class="obj-small"><b>Objet</b> Facture [numéro] · échéance dépassée de 15 jours</p> <p class="obj-small">Bonjour [prénom],</p> <p class="obj-small">La facture [numéro] de <span class="obj-highlight">[montant]</span>, échue le [date], n’est pas encore réglée.</p> <p class="obj-small">Je vous propose un règlement par virement d’ici le <span class="obj-highlight">[date + 7 jours]</span>. Passé ce délai, les pénalités prévues à nos conditions générales s’appliqueront.</p> <div class="obj-lines"><i style="--w:72%"></i><i style="--w:44%"></i></div> </div> <div class="obj-rule"></div> <div class="obj-head"><span>À joindre : la facture et votre RIB</span></div> </div></div></div>
-        <figcaption><span class="badge">Extrait</span><span>Le modèle 3, page 6 du kit.</span></figcaption>
+        <div aria-hidden="true" data-qa-decor><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Coût complet sur 5 ans</b><span class="obj-push">Fourgon 3,5 t</span></div><div class="obj-rule"></div><div class="obj-grid" style="--cols:3"><span class="is-head">Poste</span><span class="is-head">Diesel</span><span class="is-head">Électrique</span><span>Loyer</span><span>31 200 €</span><span>38 400 €</span><span>Énergie</span><span>21 600 €</span><span>7 900 €</span><span>Entretien</span><span>6 800 €</span><span>4 100 €</span><span class="is-warn">Total</span><span class="is-warn">59 600 €</span><span class="is-warn">50 400 €</span></div><div class="obj-rule"></div><p class="obj-small">Hypothèses : 25 000 km par an, recharge au dépôt la nuit</p><div class="obj-lines" style="margin-top:12px"><i style="--w:88%"></i><i style="--w:64%"></i></div></div></div>
+        <figcaption><span class="badge">Spécimen</span><span>Une page du cahier remis aux participants, avec des données d’exemple.</span></figcaption>
       </div>
     </figure>
   </div>
 </section>
-<!-- /section:contenu -->
-<!-- section:pour-qui -->
-<section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
-  <div class="wrap">
-    <div class="section-head section-head--center">
-      <h2 id="pour-qui-titre" class="section-title">Un kit écrit <span class="hl">pour les indépendants</span></h2>
-    </div>
-    <div class="s-forwhom__grid" data-reveal-group>
-      <div class="s-forwhom__col card" data-reveal>
-        <h3 class="s-forwhom__title">Il vous servira si</h3>
-        <ul class="list-check" role="list"><li>Vous facturez d’autres entreprises et certaines paient après l’échéance.</li><li>Vous relancez au jugé, sans calendrier ni trace écrite.</li><li>Vous craignez d’abîmer une relation client en insistant.</li><li>Vous travaillez seul ou à deux, sans service comptable.</li></ul>
-      </div>
-      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
-        <h3 class="s-forwhom__title">Il vous servira peu si</h3>
-        <ul class="list-check list-cross" role="list"><li>Vos clients sont des particuliers : les règles et le ton diffèrent.</li><li>Votre client conteste la facture sur le fond : parlez-en d’abord avec lui.</li></ul>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- /section:pour-qui -->
-<!-- section:auteures -->
-<section id="auteures" class="s-people section" aria-labelledby="auteures-titre" data-section="people">
+<!-- /section:programme -->
+<!-- section:intervenants -->
+<section id="intervenants" class="s-people section" aria-labelledby="intervenants-titre" data-section="people">
   <div class="wrap">
     <div class="section-head">
-      <h2 id="auteures-titre" class="section-title">Écrit par une praticienne <span class="hl">et relu par une avocate</span></h2>
-      
+      <h2 id="intervenants-titre" class="section-title">Quatre intervenants<br><span class="hl">et leurs propres chiffres</span></h2>
+      <p class="section-intro">Chacun présente des données qu’il a mesurées, puis répond aux questions.</p>
     </div>
     <ul class="s-people__grid" role="list" data-shape="rounded" data-reveal-group>
       <li class="s-people__card card" data-reveal>
-        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">VD</span></div>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">MR</span></div>
         <div class="s-people__body">
-          <h3 class="s-people__name">Valentine Dorez</h3>
-          <p class="s-people__role">Fondatrice d’Encaisse (personnage fictif)</p>
+          <h3 class="s-people__name">Manon Ricard</h3>
+          <p class="s-people__role">Responsable des données, Brivalle</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Comptable de formation, elle suit la trésorerie d’indépendants et de petites agences depuis 2017.</dd></div>
-            <div><dt>Preuve</dt><dd>Les six modèles reprennent les relances qu’elle envoie chaque mois pour ses clients.</dd></div>
-            <div><dt>Dans ce kit</dt><dd>Elle a écrit les six emails et leur calendrier.</dd></div>
+            <div><dt>Parcours</dt><dd>Huit ans d’analyse de tournées chez un loueur d’utilitaires.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : citer ici une étude ou des données publiées.</dd></div>
+            <div><dt>Sur scène</dt><dd>À 9 h, l’autonomie mesurée sur les tournées de 2026.</dd></div>
           </dl>
         </div>
       </li><li class="s-people__card card" data-reveal>
-        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">IL</span></div>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">JF</span></div>
         <div class="s-people__body">
-          <h3 class="s-people__name">Inès Labarthe</h3>
-          <p class="s-people__role">Avocate en droit des affaires (personnage fictif)</p>
+          <h3 class="s-people__name">Julien Ferrandi</h3>
+          <p class="s-people__role">Ingénieur recharge, bureau d’études</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Elle conseille des TPE sur leurs conditions générales et leurs litiges de paiement.</dd></div>
-            <div><dt>Preuve</dt><dd>Elle a vérifié chaque mention légale du kit en septembre 2026.</dd></div>
-            <div><dt>Dans ce kit</dt><dd>Elle a rédigé la lettre de mise en demeure.</dd></div>
+            <div><dt>Parcours</dt><dd>Dimensionne la recharge de dépôts de 20 à 200 véhicules.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : une preuve se cite avec sa source.</dd></div>
+            <div><dt>Sur scène</dt><dd>À 9 h 40, la recharge au dépôt sans payer la pointe.</dd></div>
+          </dl>
+        </div>
+      </li><li class="s-people__card card" data-reveal>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">SL</span></div>
+        <div class="s-people__body">
+          <h3 class="s-people__name">Sarah Lemoine</h3>
+          <p class="s-people__role">Directrice d’exploitation, transporteur régional</p>
+          <dl class="s-people__bio">
+            <div><dt>Parcours</dt><dd>Pilote quatre-vingts véhicules de messagerie dans le Sud-Ouest.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : remplacer par un fait vérifiable.</dd></div>
+            <div><dt>Sur scène</dt><dd>À 10 h 45, quarante utilitaires passés à l’électrique.</dd></div>
+          </dl>
+        </div>
+      </li><li class="s-people__card card" data-reveal>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">YA</span></div>
+        <div class="s-people__body">
+          <h3 class="s-people__name">Yanis Arnaud</h3>
+          <p class="s-people__role">Animateur de la table ronde, Brivalle</p>
+          <dl class="s-people__bio">
+            <div><dt>Parcours</dt><dd>Ancien responsable de flotte dans la distribution alimentaire.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : une preuve se cite avec sa source.</dd></div>
+            <div><dt>Sur scène</dt><dd>À 11 h 30, la table ronde et les questions du direct.</dd></div>
           </dl>
         </div>
       </li>
     </ul>
   </div>
 </section>
-<!-- /section:auteures -->
+<!-- /section:intervenants -->
+<!-- section:acces -->
+<section id="acces" class="s-map section" aria-labelledby="acces-titre" data-section="map-pinned">
+  <div class="s-map__track" data-scroll-track data-steps="1">
+    <div class="s-map__stage">
+      <div class="wrap s-map__grid">
+        <div>
+          <div class="section-head">
+            <h2 id="acces-titre" class="section-title">Sur place ou en ligne<br><span class="hl">le même programme</span></h2>
+            <p class="section-intro">La salle ouvre à 8 h 30, le direct démarre à 9 h.</p>
+          </div>
+          <ol class="s-map__legend" role="list">
+            <li class="s-map__item" style="--at:0.02">
+              <span class="s-map__key" aria-hidden="true"><span>1</span></span>
+              <div>
+                <h3 class="s-map__item-title">En train</h3>
+                <p class="s-map__item-text">La Halle Lucine est à vingt minutes de la gare en tram, sans changement.</p>
+              </div>
+            </li><li class="s-map__item" style="--at:0.36">
+              <span class="s-map__key" aria-hidden="true"><span>2</span></span>
+              <div>
+                <h3 class="s-map__item-title">Sur place</h3>
+                <p class="s-map__item-text">Accueil dès 8 h 30, salle de plain-pied accessible en fauteuil, parking vélo devant l’entrée.</p>
+              </div>
+            </li><li class="s-map__item" style="--at:0.68">
+              <span class="s-map__key" aria-hidden="true"><span>3</span></span>
+              <div>
+                <h3 class="s-map__item-title">En ligne</h3>
+                <p class="s-map__item-text">Votre lien personnel arrive la veille à 17 h. Les questions écrites sont relayées à la table ronde.</p>
+              </div>
+            </li><li class="s-map__item" style="--at:0.98">
+              <span class="s-map__key" aria-hidden="true"><span>4</span></span>
+              <div>
+                <h3 class="s-map__item-title">Le replay sous 48 heures</h3>
+                <p class="s-map__item-text">Envoyé à tous les inscrits, sur place compris, avec les supports des intervenants.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div class="s-map__figure" aria-hidden="true" data-qa-decor data-decor="dots">
+          <svg class="s-map__svg" viewBox="0 0 600 480" role="presentation" focusable="false">
+            
+            <path class="s-map__base" d="M80 400 C 150 398 176 318 236 300 S 352 296 386 246 S 392 132 446 102"/>
+            <path class="s-map__route" d="M80 400 C 150 398 176 318 236 300 S 352 296 386 246 S 392 132 446 102" pathLength="1"/>
+            <g class="s-map__mark" style="--at:0.02" transform="translate(80 400)">
+              <circle r="14"/>
+              <text class="s-map__num" text-anchor="middle" dy="5">1</text>
+              <text class="s-map__tag" x="30" dy="6">Gare</text>
+            </g><g class="s-map__mark" style="--at:0.36" transform="translate(236 300)">
+              <circle r="14"/>
+              <text class="s-map__num" text-anchor="middle" dy="5">2</text>
+              <text class="s-map__tag" x="30" dy="6">Halle Lucine</text>
+            </g><g class="s-map__mark" style="--at:0.68" transform="translate(386 246)">
+              <circle r="14"/>
+              <text class="s-map__num" text-anchor="middle" dy="5">3</text>
+              <text class="s-map__tag" x="30" dy="6">Direct</text>
+            </g><g class="s-map__mark" style="--at:0.98" transform="translate(446 102)">
+              <circle r="14"/>
+              <text class="s-map__num" text-anchor="middle" dy="5">4</text>
+              <text class="s-map__tag" x="30" dy="6">Replay</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:acces -->
+<!-- section:avis -->
+<section id="avis" class="s-testi section" aria-labelledby="avis-titre" data-section="testimonials">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="avis-titre" class="section-title">Ce qu’en disent<br><span class="hl">les participants de 2026</span></h2>
+    </div>
+    <div class="s-testi__grid" data-reveal-group>
+      <figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">Un cahier des charges revu</p>
+        <blockquote class="s-testi__quote"><p>L’intervention sur la recharge nous a évité de surdimensionner le raccordement. Nous avons repris notre cahier des charges la semaine suivante.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">LP</span><span><span class="s-testi__name">Laurent P.</span><span class="s-testi__role">Responsable de flotte, distribution alimentaire, 85 véhicules (avis fictif)</span></span></figcaption>
+      </figure><figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">Une commande décidée sur des chiffres</p>
+        <blockquote class="s-testi__quote"><p>Le retour d’expérience du transporteur valait la matinée. Des chiffres, et les erreurs avec, de quoi convaincre notre direction.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">CD</span><span><span class="s-testi__name">Camille D.</span><span class="s-testi__role">Directrice administrative, messagerie, 40 véhicules (avis fictif)</span></span></figcaption>
+      </figure><figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">Suivi en direct depuis le dépôt</p>
+        <blockquote class="s-testi__quote"><p>J’ai suivi le direct depuis Pau et posé deux questions par écrit. Le replay est arrivé le lendemain pour toute l’équipe.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">MA</span><span><span class="s-testi__name">Mehdi A.</span><span class="s-testi__role">Exploitant, transport frigorifique, 22 véhicules (avis fictif)</span></span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- /section:avis -->
+<!-- section:pour-qui -->
+<section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="pour-qui-titre" class="section-title">Pour qui <span class="hl">est la matinale</span></h2>
+    </div>
+    <div class="s-forwhom__grid" data-reveal-group>
+      <div class="s-forwhom__col card" data-reveal>
+        <h3 class="s-forwhom__title">Pour vous si</h3>
+        <ul class="list-check" role="list"><li>Vous gérez de 10 à 300 utilitaires et préparez un premier lot électrique.</li><li>Vous roulez déjà en partie à l’électrique et la recharge devient un casse-tête.</li><li>Vous dirigez une entreprise de transport et arbitrez le budget de l’an prochain.</li></ul>
+      </div>
+      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
+        <h3 class="s-forwhom__title">Moins utile si</h3>
+        <ul class="list-check list-cross" role="list"><li>Vous cherchez un concessionnaire : aucun vendeur de véhicules ne prend la parole.</li><li>Votre flotte roule surtout en longue distance, hors du sujet de la matinée.</li><li>Vous cherchez une formation certifiante : la matinale est une demi-journée d’échanges.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:pour-qui -->
+<!-- section:inscription -->
+<section id="inscription" class="s-evreg section band-dark" aria-labelledby="inscription-titre" data-section="event-registration">
+  <div class="wrap s-evreg__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="inscription-titre" class="section-title">Votre place<br><span class="hl">sur place ou en&nbsp;ligne</span></h2>
+        <p class="section-intro">L’inscription est gratuite. Elle vous réserve un badge à Bordeaux ou le lien du direct, et le replay dans les deux cas.</p>
+      </div>
+      <dl class="s-evreg__facts">
+        <div><dt>Quand</dt><dd>Jeudi 3 juin 2027, de 8 h 30 à 13 h</dd></div><div><dt>Où</dt><dd>Halle Lucine à Bordeaux, et en direct de 9 h à 12 h 15</dd></div>
+      </dl>
+      <h3 class="s-evreg__next-title">Après l’inscription</h3>
+      <ol class="s-evreg__next" role="list"><li>Un email de confirmation tout de suite, avec l’invitation pour votre agenda</li><li>La veille à 17 h, votre badge et le plan d’accès, ou le lien du direct</li><li>Sous 48 heures, le replay et les supports des intervenants</li></ol>
+    </div>
+    <div class="s-evreg__card card" data-reveal>
+      <form class="s-evreg__form" id="inscription-form" action="{{FORM_ENDPOINT}}" method="post" data-form="inscription" data-track="generate_lead" data-track-participation="sur-place" data-error-required="Ce champ est nécessaire à votre inscription." data-error-email="Cette adresse email semble incomplète." data-msg-success="C’est noté. La confirmation et l’invitation pour votre agenda arrivent par email dans quelques minutes." data-msg-failure="L’envoi n’a pas abouti. Réessayez dans un instant, ou écrivez à matinale@example.com." data-msg-unwired="Formulaire de démonstration : rien n’a été envoyé.">
+        <div class="hp" aria-hidden="true"><label for="inscription-site">Site web</label><input type="text" id="inscription-site" name="site" tabindex="-1" autocomplete="off"></div>
+        <div class="s-evreg__fields" data-form-fields>
+          <div class="s-evreg__open" data-offer-show="open waitlist">
+            <fieldset class="s-evreg__modes">
+              <legend class="s-evreg__legend">Comment participez-vous ?</legend>
+              <div class="s-evreg__seg">
+                <label class="s-evreg__opt"><input class="sr-only" type="radio" name="participation" value="sur-place" checked data-offer-disabled-waitlist data-full><span class="s-evreg__opt-label">Sur place</span><span class="s-evreg__opt-meta">À Bordeaux, déjeuner compris</span><span class="badge badge--accent" data-offer-show="waitlist" hidden>Salle complète</span></label><label class="s-evreg__opt"><input class="sr-only" type="radio" name="participation" value="en-ligne"><span class="s-evreg__opt-label">En ligne</span><span class="s-evreg__opt-meta">En direct, lien envoyé la veille</span></label>
+              </div>
+            </fieldset>
+            <div class="s-evreg__row">
+              <div class="field">
+                <label class="field__label" for="inscription-name">Prénom et nom</label>
+                <input class="field__input" type="text" id="inscription-name" name="name" autocomplete="name" required aria-describedby="inscription-name-error">
+                <p class="field__error" id="inscription-name-error" hidden></p>
+              </div>
+              <div class="field">
+                <label class="field__label" for="inscription-email">Email professionnel</label>
+                <input class="field__input" type="email" id="inscription-email" name="email" autocomplete="email" required aria-describedby="inscription-email-error">
+                <p class="field__error" id="inscription-email-error" hidden></p>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="inscription-company">Entreprise</label>
+              <input class="field__input" type="text" id="inscription-company" name="company" autocomplete="organization" required aria-describedby="inscription-company-error">
+              <p class="field__error" id="inscription-company-error" hidden></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="inscription-question">Une question pour les intervenants <span class="field__optional">(facultatif)</span></label>
+              <textarea class="field__input" id="inscription-question" name="question" rows="3"></textarea>
+            </div>
+            <div class="consent"><input type="checkbox" id="inscription-optin" name="prochaines" value="oui" data-optin><label for="inscription-optin">Me prévenir de la prochaine matinale</label></div>
+            <button type="submit" class="btn btn--block s-evreg__cta btn--primary" data-cta-position="inscription" data-cta="primaire" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>M’inscrire</button>
+            <p class="s-evreg__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au mercredi 2 juin</span><span aria-hidden="true">·</span><span>120 places sur place</span></p>
+          </div>
+          <p class="s-evreg__closed" data-offer-show="closed" hidden>Les inscriptions sont closes. Écrivez à <a href="mailto:matinale@example.com">matinale@example.com</a> pour recevoir le replay.</p>
+          <p class="s-evreg__privacy">Vos données servent à organiser la matinale et à vous envoyer le replay. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Confidentialité<span class="sr-only"> (nouvel onglet)</span></a></p>
+        </div>
+        <p class="form-status s-evreg__status" role="status" data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- /section:inscription -->
 <!-- section:questions -->
 <section id="questions" class="s-faq section" aria-labelledby="questions-titre" data-section="faq">
   <div class="wrap s-faq__grid">
     <div>
       <div class="section-head">
-        <h2 id="questions-titre" class="section-title">Avant de recevoir <span class="hl">le kit</span></h2>
+        <h2 id="questions-titre" class="section-title">Les questions<br><span class="hl">avant de vous inscrire</span></h2>
         
       </div>
       <div class="s-faq__list">
         <details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Le kit est‑il vraiment gratuit ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Oui, et sans abonnement : vous recevez le kit par email. La lettre Encaisse, un email tous les quinze jours, ne part que si vous cochez la case prévue.</p></div>
+          <summary class="s-faq__q"><h3>L’inscription est-elle vraiment gratuite ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui, sur place comme en ligne. Le déjeuner est offert aux participants présents à Bordeaux.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Et si je coche la case de la lettre ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Un email vous demande de confirmer l’abonnement. Sans clic sur son lien, aucune lettre ne part. Vous pouvez vous désinscrire à tout moment et garder le kit.</p></div>
+          <summary class="s-faq__q"><h3>Puis-je changer de mode de participation ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui, jusqu’à la veille. Répondez à l’email de confirmation et nous basculons votre inscription.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Dans quel format arrive le kit ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Un PDF de quatorze pages, avec les modèles en document modifiable à ouvrir dans votre traitement de texte.</p></div>
+          <summary class="s-faq__q"><h3>Le replay est-il envoyé à tout le monde ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui, à tous les inscrits sous 48 heures, avec les supports des intervenants. Il reste en ligne trois mois.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Les modèles conviennent‑ils à des clients particuliers ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Ils sont écrits pour des clients professionnels. L’indemnité forfaitaire de 40 € et plusieurs mentions ne s’appliquent pas à un particulier.</p></div>
+          <summary class="s-faq__q"><h3>Le lieu est-il accessible en fauteuil ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui, la salle est de plain-pied. Signalez un besoin particulier dans le champ question du formulaire : nous l’organisons avant votre arrivée.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Que devient mon adresse email ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Elle sert à vous envoyer le kit, et la lettre si vous l’avez demandée, rien d’autre. Elle n’est ni vendue ni prêtée, et la politique de confidentialité détaille le reste.</p></div>
+          <summary class="s-faq__q"><h3>Puis-je venir avec un collègue ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui. Chaque personne s’inscrit avec son propre email, pour recevoir son badge ou son lien.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Vais-je recevoir des emails commerciaux ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Seulement si vous cochez la case prévue. Sinon, nous vous écrivons pour la matinale et le replay, puis plus rien.</p></div>
         </details>
       </div>
     </div>
     <aside class="s-faq__card card" aria-labelledby="questions-carte">
-      <p class="label">La ressource</p>
-      <p id="questions-carte" class="s-faq__card-title">Le kit de relance</p>
-      <p class="s-faq__card-meta">Gratuit · 14 pages · modèles modifiables</p>
-      <a class="btn btn--secondary btn--block" href="#recevoir" data-track="cta_click" data-cta-position="faq">Recevoir le kit</a>
-      <p class="s-faq__contact">Une autre question : <a href="mailto:bonjour@example.com">bonjour@example.com</a></p>
+      <p class="label">Deuxième édition</p>
+      <p id="questions-carte" class="s-faq__card-title">La matinale flotte électrique</p>
+      <p class="s-faq__card-meta">Jeudi 3 juin 2027 · Bordeaux et en ligne · gratuit</p>
+      <a class="btn btn--secondary btn--block" href="#inscription" data-track="cta_click" data-cta-position="faq">M’inscrire</a>
+      <p class="s-faq__contact">Une autre question ? <a href="mailto:matinale@example.com">matinale@example.com</a></p>
     </aside>
   </div>
 </section>
 <!-- /section:questions -->
+<!-- section:pratique -->
+<section id="pratique" class="s-legal section" aria-labelledby="pratique-titre" data-section="legal">
+  <div class="wrap s-legal__inner">
+    <h2 id="pratique-titre" class="s-legal__title">Informations pratiques</h2>
+    <dl class="s-legal__list">
+      <div class="s-legal__row"><dt>Organisateur</dt><dd>Brivalle (entreprise fictive de démonstration), éditeur d’un logiciel de planification de tournées.</dd></div><div class="s-legal__row"><dt>Lieu</dt><dd>Halle Lucine, Bordeaux. <a href="{{URL_ITINERAIRE}}" target="_blank" rel="noopener">Itinéraire<span class="sr-only"> (nouvel onglet)</span></a></dd></div><div class="s-legal__row"><dt>Droit à l’image</dt><dd>La matinale est filmée pour le replay. La salle n’apparaît à l’image que pendant les questions du public.</dd></div><div class="s-legal__row"><dt>Données personnelles</dt><dd>Vos données servent à l’organisation et à l’envoi du replay, puis sont supprimées après trois mois. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a></dd></div><div class="s-legal__row"><dt>Report</dt><dd>Si la matinale devait être déplacée, chaque inscrit est prévenu par email au moins sept jours avant.</dd></div>
+    </dl>
+  </div>
+</section>
+<!-- /section:pratique -->
 <!-- section:final -->
 <section id="final" class="s-final section band-dark" aria-labelledby="final-titre" data-section="final-cta" data-enter="curtain">
-  <div class="s-final__decor s-final__decor--dots" aria-hidden="true" data-qa-decor></div>
+  <div class="s-final__decor s-final__decor--lines" aria-hidden="true" data-qa-decor></div>
   <div class="wrap s-final__inner" data-reveal-group>
-    <h2 id="final-titre" class="s-final__title" data-reveal>Le prochain retard<br><span class="hl">a déjà son email</span></h2>
-    <p class="s-final__text lede" data-reveal>Recevez les six modèles et envoyez le premier dès la prochaine échéance dépassée.</p>
-    <a class="btn btn--light" href="#recevoir" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>Recevoir le kit<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <p class="s-final__note" data-reveal>Gratuit, sans abonnement</p>
+    <h2 id="final-titre" class="s-final__title" data-reveal>Jeudi 3 juin<br><span class="hl">à Bordeaux ou en direct</span></h2>
+    <p class="s-final__text lede" data-reveal>L’inscription prend une minute. Badge ou lien du direct par email, replay sous 48 heures.</p>
+    <a class="btn btn--light" href="#inscription" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>M’inscrire<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    <p class="s-final__note" data-reveal>Inscriptions jusqu’au mercredi 2 juin · 120 places sur place</p>
   </div>
 </section>
 <!-- /section:final -->
@@ -2141,12 +2991,20 @@ textarea.field__input {
 <!-- section:pied -->
 <footer id="pied" class="s-footer" data-section="footer">
   <div class="wrap s-footer__inner">
-    <p class="s-footer__brand"><svg class="s-footer__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="24" height="20" rx="6"/><path d="m11 16.5 3.5 3.5 7-7.5"/></svg><span>Encaisse</span></p>
-    <ul class="s-footer__links" role="list"><li><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a></li><li><a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></li><li><a href="mailto:bonjour@example.com">bonjour@example.com</a></li></ul>
-    <p class="s-footer__legal">© 2026 Encaisse · modèle de démonstration, contenus fictifs</p>
+    <p class="s-footer__brand"><svg class="s-footer__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="25" r="3"/><circle cx="25" cy="7" r="3"/><path d="M10 25h6a4.5 4.5 0 0 0 0-9h-1a4.5 4.5 0 0 1 0-9h7"/></svg><span>Brivalle</span></p>
+    <ul class="s-footer__links" role="list"><li><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a></li><li><a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></li><li><a href="mailto:matinale@example.com">matinale@example.com</a></li></ul>
+    <p class="s-footer__legal">© 2027 Brivalle, marque fictive de démonstration.</p>
   </div>
 </footer>
 <!-- /section:pied -->
+<!-- section:barre-mobile -->
+<aside id="barre-mobile" class="s-sticky" aria-label="S’inscrire à la matinale" data-section="sticky-bar">
+  <div class="s-sticky__inner">
+    <p class="s-sticky__text"><strong>Jeudi 3 juin · gratuit</strong><span>Bordeaux et en ligne</span></p>
+    <a class="btn btn--primary s-sticky__btn" href="#inscription" data-track="cta_click" data-cta-position="barre-mobile" data-cta="primaire">M’inscrire</a>
+  </div>
+</aside>
+<!-- /section:barre-mobile -->
 <script>
 /* ---- reveal.js ---- */
 /* ==========================================================================
@@ -2438,6 +3296,94 @@ textarea.field__input {
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
+})();
+</script>
+<script>
+/* ---- offer.js ---- */
+/* ==========================================================================
+   offer.js · state of the offer, computed in the browser (optional engine)
+   --------------------------------------------------------------------------
+   The static HTML always shows the OPEN state. The real state (waiting list,
+   closed) and the days left are computed here, from ONE configuration that
+   the assembler writes at the top of the page:
+
+     window.LANDING_CONFIG.offer = {
+       state: "open" | "waitlist" | "closed",   // decided by a human
+       closes_at: "2027-03-31T23:59:00+02:00",  // real closing date, or null
+       after_close: "waitlist" | "closed"        // state once the date is past
+     }
+
+   Contract (attributes read in the markup):
+     html[data-offer-state]            written: open | waitlist | closed
+     [data-offer-show="open waitlist"] shown only in the listed states (the
+                                       HTML marks non-open variants hidden)
+     [data-offer-countdown]            text replaced by the days left, from
+                                       data-many ("Clôture dans {n} jours"),
+                                       data-one ("Clôture demain") and
+                                       data-zero ("Clôture ce soir"). Without
+                                       JavaScript the static text (a date)
+                                       stays. Counted in days, never seconds.
+     [data-offer-text-<state>]         textContent in that state
+     [data-offer-href-<state>]         href in that state
+     [data-offer-action-<state>]       form action in that state
+     [data-offer-disabled-<state>]     disabled in that state
+   Event: "landing:offer" on document (detail: { state, days }).
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingOffer) return;
+  window.__landingOffer = true;
+
+  var config = (window.LANDING_CONFIG && window.LANDING_CONFIG.offer) || {};
+  var DAY = 86400000;
+
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+
+  var now = new Date();
+  var closes = config.closes_at ? new Date(config.closes_at) : null;
+  if (closes && isNaN(closes.getTime())) closes = null;
+  var state = config.state || 'open';
+  if (state === 'open' && closes && now > closes) state = config.after_close || 'waitlist';
+  var days = closes && state === 'open' ? Math.round((startOfDay(closes) - startOfDay(now)) / DAY) : null;
+
+  function apply() {
+    document.documentElement.setAttribute('data-offer-state', state);
+
+    document.querySelectorAll('[data-offer-show]').forEach(function (el) {
+      var states = el.getAttribute('data-offer-show').split(/\s+/);
+      el.hidden = states.indexOf(state) === -1;
+    });
+
+    if (days !== null) {
+      document.querySelectorAll('[data-offer-countdown]').forEach(function (el) {
+        var tpl = days <= 0 ? el.getAttribute('data-zero')
+          : days === 1 ? el.getAttribute('data-one')
+          : el.getAttribute('data-many');
+        if (tpl) el.textContent = tpl.replace('{n}', String(days));
+      });
+    }
+
+    if (state !== 'open') {
+      var attr = function (kind) { return 'data-offer-' + kind + '-' + state; };
+      document.querySelectorAll('[' + attr('text') + ']').forEach(function (el) {
+        el.textContent = el.getAttribute(attr('text'));
+      });
+      document.querySelectorAll('[' + attr('href') + ']').forEach(function (el) {
+        el.setAttribute('href', el.getAttribute(attr('href')));
+      });
+      document.querySelectorAll('[' + attr('action') + ']').forEach(function (el) {
+        el.setAttribute('action', el.getAttribute(attr('action')));
+      });
+      document.querySelectorAll('[' + attr('disabled') + ']').forEach(function (el) {
+        el.disabled = true;
+      });
+    }
+
+    document.dispatchEvent(new CustomEvent('landing:offer', { detail: { state: state, days: days } }));
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
 })();
 </script>
 <script>
@@ -2851,6 +3797,30 @@ textarea.field__input {
     }, 2600);
   });
 })();
+/* ---- section : event-registration ---- */
+(function () {
+  document.querySelectorAll('.s-evreg').forEach(function (section) {
+    var form = section.querySelector('form');
+    if (!form) return;
+    var radios = form.querySelectorAll('input[name="participation"][type="radio"]');
+    // The chosen mode travels with the lead (generate_lead: participation).
+    function sync() {
+      var on = form.querySelector('input[name="participation"]:checked');
+      if (on) form.setAttribute('data-track-participation', on.value);
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    // offer.js: "waitlist" means the room is full; the modes marked full
+    // close, the first one still open is selected.
+    document.addEventListener('landing:offer', function (e) {
+      if (!e.detail || e.detail.state !== 'waitlist') return;
+      var current = form.querySelector('input[name="participation"]:checked');
+      if (current && !current.disabled) return;
+      var open = form.querySelector('input[name="participation"][type="radio"]:not(:disabled)');
+      if (open) { open.checked = true; sync(); }
+    });
+    sync();
+  });
+})();
 /* ---- section : faq ---- */
 (function () {
   // FAQPage JSON-LD built from the visible questions (indexed pages only).
@@ -2865,6 +3835,32 @@ textarea.field__input {
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: entities });
     document.head.appendChild(script);
+  });
+})();
+/* ---- section : sticky-bar ---- */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  document.querySelectorAll('.s-sticky').forEach(function (bar) {
+    var link = bar.querySelector('a[href]');
+    var href = link ? link.getAttribute('href') : '';
+    // Shown once the hero has been scrolled past; hidden again while the
+    // conversion block or the footer is on screen.
+    var hero = document.querySelector('main section');
+    var guards = [document.querySelector('footer')];
+    if (href && href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+    guards = guards.filter(Boolean);
+    var onScreen = new Map();
+    var heroPassed = !hero;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
+        else onScreen.set(e.target, e.isIntersecting);
+      });
+      var blocked = guards.some(function (g) { return onScreen.get(g); });
+      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+    });
+    if (hero) io.observe(hero);
+    guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });
   });
 })();
 </script>

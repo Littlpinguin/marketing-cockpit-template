@@ -2,18 +2,18 @@
 {
   "id": "faq",
   "name": "FAQ avec carte collante",
-  "objection": "Les dernières questions avant d'agir",
-  "when": "Avant ou après le bloc de conversion : les vraies questions venues des ventes ou du support, en accordéon natif (<details>), et à côté une carte collante qui rappelle l'offre et ramène au bloc de conversion. JSON-LD FAQPage seulement sur une page indexée (jsonld: true).",
+  "objection": "Les dernières questions avant d’agir",
+  "when": "Avant ou après le bloc de conversion : les vraies questions venues des ventes ou du support, en accordéon natif (<details>), et à côté une carte collante qui rappelle l’offre et ramène au bloc de conversion. JSON-LD FAQPage seulement sur une page indexée (jsonld: true).",
   "avoid": "Questions inventées pour placer un argument, réponses qui renvoient ailleurs que vers la conversion, plus de huit questions, virgule ou point dans une question.",
-  "reduced_motion": "L'accordéon s'ouvre sans animation.",
+  "reduced_motion": "L’accordéon s’ouvre sans animation.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Vos <span class=\"hl\">questions</span>"},
     "intro": {"type": "text", "doc": "Chapô facultatif (vide : rien).", "example": "Les questions qui reviennent le plus avant une inscription."},
     "items": {"type": "list", "doc": "4 à 8 questions. q : question sans virgule, terminée par « ? » ; a : réponse courte et précise.", "fields": {"q": "question", "a": "réponse"}, "example": [
-      {"q": "Faut-il des connaissances en carbone pour suivre le parcours ?", "a": "Non. Le premier atelier pose le vocabulaire et la méthode, et l'animateur vous accompagne poste par poste. Il faut surtout savoir où trouver vos factures et vos achats."},
-      {"q": "Combien de temps faut-il prévoir chaque semaine ?", "a": "Deux heures d'atelier le mardi, puis deux à trois heures pour réunir et saisir vos données. La semaine 3 demande un peu plus, pour les achats."},
+      {"q": "Faut-il des connaissances en carbone pour suivre le parcours ?", "a": "Non. Le premier atelier pose le vocabulaire et la méthode, et l’animateur vous accompagne poste par poste. Il faut surtout savoir où trouver vos factures et vos achats."},
+      {"q": "Combien de temps faut-il prévoir chaque semaine ?", "a": "Deux heures d’atelier le mardi, puis deux à trois heures pour réunir et saisir vos données. La semaine 3 demande un peu plus, pour les achats."},
       {"q": "Que se passe-t-il si je manque un atelier ?", "a": "Chaque atelier est enregistré et mis en ligne sous 24 heures. La permanence du jeudi permet de poser vos questions sur la séance manquée."},
-      {"q": "Le bilan est-il reconnu par mes clients ?", "a": "Le dossier suit une méthode documentée et cite ses facteurs d'émission et leurs sources : c'est ce que demandent les questionnaires fournisseurs courants. Il ne remplace pas un bilan réglementaire audité quand la loi l'exige."},
+      {"q": "Le bilan est-il reconnu par mes clients ?", "a": "Le dossier suit une méthode documentée et cite ses facteurs d’émission et leurs sources : c’est ce que demandent les questionnaires fournisseurs courants. Il ne remplace pas un bilan réglementaire audité quand la loi l’exige."},
       {"q": "Peut-on payer sur facture ?", "a": "Oui, à 30 jours. Choisissez le paiement sur facture au moment de la réservation."}
     ]},
     "jsonld": {"type": "bool", "doc": "Ajoute le JSON-LD FAQPage (page indexée seulement).", "example": false},

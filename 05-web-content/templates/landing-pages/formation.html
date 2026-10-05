@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kit de relance des factures impayées · Encaisse</title>
-<meta name="description" content="Six modèles d’emails et un calendrier de J+1 à J+45 pour être payé par vos clients professionnels sans abîmer la relation.">
+<title>Répondre aux marchés publics en cinq ateliers · Ferlane Formation</title>
+<meta name="description" content="Cinq matinées en petit groupe pour préparer une vraie offre publique, de la lecture du dossier au dépôt, avec votre mémoire technique relu avant l’envoi.">
 <meta name="robots" content="noindex, nofollow">
-<meta property="og:title" content="Le kit de relance des factures impayées">
-<meta property="og:description" content="Six modèles d’emails, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.">
-<meta name="generator" content="assemble-landing.py · sha256:7317cdb37e84c18e3aeffc9c13123c0791e7a814b03bd14ec8ff4c51af95b404">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Répondre aux marchés publics en cinq ateliers">
+<meta property="og:description" content="Cinq mardis matin en visio, huit entreprises par cohorte, votre mémoire relu avant le dépôt.">
+<meta name="generator" content="assemble-landing.py · sha256:d796da44424919828ca4dca70f1970ac209b2fcf78ed576e3b530c83d3168ec8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <script>window.dataLayer = window.dataLayer || [];</script>
-<script>window.LANDING_CONFIG = {"page": "kit-relance", "tracking": {"mode": "datalayer", "utm": true, "page": "kit-relance"}};</script>
+<script>window.LANDING_CONFIG = {"page": "formation", "tracking": {"mode": "datalayer", "utm": true, "page": "formation"}, "offer": {"state": "open", "closes_at": "2027-03-26T18:00:00+01:00", "after_close": "waitlist"}};</script>
 <style>
 /* ---- tokens.css ---- */
 /* ============================================================
@@ -1340,45 +1341,219 @@ textarea.field__input {
     justify-self: start;
   }
 }
-/* ---- section : lead-capture ---- */
-.s-lead__grid {
+/* ---- section : proof-band ---- */
+.s-proof {
+  padding-block: 0 clamp(48px, 2rem + 3vw, 80px);
+}
+
+.s-proof__list {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
-  gap: clamp(32px, 1rem + 4vw, 88px);
-  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-.s-lead__points {
-  margin-top: 8px;
-}
-
-.s-lead__card {
-  padding: clamp(24px, 1rem + 1.6vw, 40px);
-}
-
-.s-lead__form,
-.s-lead__fields {
+.s-proof__item {
   display: grid;
-  gap: 18px;
+  align-content: start;
+  gap: 6px;
+  padding: clamp(20px, 1rem + 1vw, 32px) clamp(16px, 0.6rem + 1.4vw, 32px);
 }
 
-/* What follows the click: a full sentence, so running-text size. */
-.s-lead__after {
+.s-proof__item + .s-proof__item {
+  border-left: 1px solid var(--line);
+}
+
+.s-proof__value {
+  order: -1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: var(--t-number);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-proof__unit {
+  color: var(--hl);
+  font-size: 0.42em;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.s-proof__label {
+  max-width: 18em;
   color: var(--muted);
-  text-align: center;
-  text-wrap: balance;
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.45;
 }
 
-.s-lead__status:not(:empty) {
-  padding: 14px 16px;
-  border-radius: var(--radius-input);
-  background: var(--tint);
+.s-proof__source {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
 }
 
 @media (max-width: 900px) {
-  .s-lead__grid {
+  .s-proof__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s-proof__item + .s-proof__item {
+    border-left: 0;
+  }
+
+  .s-proof__item:nth-child(even) {
+    border-left: 1px solid var(--line);
+  }
+
+  .s-proof__item:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+}
+/* ---- section : problem-pinned ---- */
+.s-problem__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+  align-items: start;
+}
+
+.s-problem__head {
+  margin-bottom: clamp(24px, 1rem + 1.5vw, 40px);
+}
+
+.s-problem__visuals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.s-problem__obj {
+  width: 100%;
+  max-width: 400px;
+}
+
+.s-problem__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-problem__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 0 16px;
+  padding: clamp(18px, 0.8rem + 0.8vw, 26px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-problem__item::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient);
+  transition: width 0.6s var(--ease);
+}
+
+.s-problem__num {
+  padding-top: 0.3em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-problem__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  transition: color 0.4s var(--ease);
+}
+
+.s-problem__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 0.5s var(--ease),
+    opacity 0.4s var(--ease);
+}
+
+.s-problem__body > p {
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 10px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 1100px) {
+  .s-problem__grid {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .s-problem__visuals {
+    display: none;
+  }
+}
+
+/* Pinned (large screen, motion allowed): the stage holds while the
+   constats pass, 55 vh each. Keep in sync with scroll.js (.sc-pin). */
+.sc-pin .s-problem {
+  padding-block: 0;
+}
+
+.sc-pin .s-problem__track {
+  height: calc(100vh + var(--steps, 4) * 55vh);
+}
+
+.sc-pin .s-problem__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  height: calc(100vh - var(--topbar-h));
+}
+
+.sc-pin .s-problem__stage > .wrap {
+  width: var(--wrap);
+}
+
+.sc-pin .s-problem__visuals {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sc-pin .s-problem__visual {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.sc-pin .s-problem__visual[data-active] {
+  opacity: 1;
+  transform: none;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__body {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__title {
+  color: var(--muted);
+}
+
+.sc-pin .s-problem__item[data-active]::before {
+  width: 100%;
 }
 /* ---- section : program ---- */
 .s-program__grid {
@@ -1533,34 +1708,116 @@ textarea.field__input {
     grid-column: 2;
   }
 }
-/* ---- section : for-whom ---- */
-.s-forwhom__grid {
+/* ---- section : showcase-dark ---- */
+.s-showcase__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
-  max-width: 1080px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 1rem + 5vw, 96px);
+  align-items: center;
+}
+
+.s-showcase__object {
+  width: 100%;
+  max-width: 520px;
   margin-inline: auto;
 }
 
-.s-forwhom__col {
-  padding: clamp(24px, 1rem + 1.4vw, 40px);
-  border-radius: var(--radius-card);
+.s-showcase__folder {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  border-radius: 18px;
+  background: var(--brand-band-2);
+  box-shadow: inset 0 0 0 1px var(--brand-line-on-dark);
 }
 
-.s-forwhom__col--no {
-  border: 1.5px dashed var(--line-strong);
+.s-showcase__sheet {
+  --lift: 0px;
+  position: absolute;
+  top: 8%;
+  left: 6%;
+  width: 70%;
+  height: 52%;
+  padding: 18px 20px;
+  transform: translate(calc(var(--k) * 9%), calc(var(--k) * 22% - var(--lift))) rotate(calc((var(--k) - 1.5) * 1.6deg));
+  transition:
+    transform 0.45s var(--ease),
+    opacity 0.35s var(--ease),
+    border-color 0.35s var(--ease);
 }
 
-.s-forwhom__title {
-  margin-bottom: 20px;
-  font-size: var(--t-h3);
+.s-showcase__tab {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--brand-primary-soft);
+  color: var(--brand-primary-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.s-showcase__folder:has([data-on]) .s-showcase__sheet:not([data-on]) {
+  opacity: 0.55;
+}
+
+.s-showcase__sheet[data-on] {
+  --lift: 22px;
+  border-color: var(--brand-accent);
+}
+
+.s-showcase__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.s-showcase__card {
+  padding: 22px;
+  box-shadow: none;
+  transition:
+    border-color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.s-showcase__card[data-on] {
+  border-color: var(--brand-accent);
+  transform: translateY(-3px);
+}
+
+.s-showcase__num {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-showcase__title {
+  font-size: 1.1875rem;
   line-height: var(--lh-snug);
   font-weight: 800;
 }
 
-@media (max-width: 900px) {
-  .s-forwhom__grid {
+.s-showcase__text {
+  margin-top: 8px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 1100px) {
+  .s-showcase__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-showcase__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-showcase__sheet {
+    padding: 12px 14px;
   }
 }
 /* ---- section : people ---- */
@@ -1665,6 +1922,503 @@ textarea.field__input {
 
   .s-people__grid[data-shape="rounded"] .s-people__portrait {
     margin: 12px 12px 0;
+  }
+}
+/* ---- section : testimonials ---- */
+.s-testi__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
+  align-items: start;
+}
+
+.s-testi__card {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 1rem + 1.2vw, 32px);
+}
+
+.s-testi__card:nth-child(2) {
+  margin-top: clamp(0px, 3vw, 40px);
+}
+
+.s-testi__result {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.s-testi__result::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-bottom: 14px;
+  border-radius: 3px;
+  background: var(--gradient);
+}
+
+.s-testi__quote p {
+  text-wrap: pretty;
+}
+
+.s-testi__quote p::before {
+  content: "«\00a0";
+}
+
+.s-testi__quote p::after {
+  content: "\00a0»";
+}
+
+.s-testi__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.s-testi__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--hl);
+  font-size: var(--t-small);
+  font-weight: 800;
+}
+
+.s-testi__name {
+  display: block;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-testi__role {
+  display: block;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+@media (max-width: 1100px) {
+  .s-testi__grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 680px;
+  }
+
+  .s-testi__card:nth-child(2) {
+    margin-top: 0;
+  }
+}
+/* ---- section : for-whom ---- */
+.s-forwhom__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.s-forwhom__col {
+  padding: clamp(24px, 1rem + 1.4vw, 40px);
+  border-radius: var(--radius-card);
+}
+
+.s-forwhom__col--no {
+  border: 1.5px dashed var(--line-strong);
+}
+
+.s-forwhom__title {
+  margin-bottom: 20px;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .s-forwhom__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* ---- section : offer-ticket ---- */
+.s-offer__ticket {
+  --notch: 22px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  max-width: 1100px;
+  margin-inline: auto;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) + 8px);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+  transform: perspective(1600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.6s var(--ease);
+}
+
+.s-offer__ticket::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -1px;
+  left: 32px;
+  right: 32px;
+  height: 5px;
+  border-radius: 0 0 5px 5px;
+  background: var(--gradient);
+}
+
+.s-offer__main {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(28px, 1rem + 2.6vw, 52px);
+}
+
+.s-offer__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.s-offer__name {
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-offer__meta {
+  color: var(--muted);
+}
+
+.s-offer__formulas {
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-offer__legend {
+  margin-bottom: 10px;
+  padding: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-offer__seg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.s-offer__opt {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  min-height: 64px;
+  padding: 12px 44px 12px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.s-offer__opt:has(:checked) {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--brand-primary);
+}
+
+.s-offer__opt:has(:checked)::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--hl);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.s-offer__opt:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.s-offer__opt-label {
+  font-weight: 700;
+}
+
+.s-offer__opt-price {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-offer__pricebox {
+  display: grid;
+  gap: 6px;
+  padding-top: 6px;
+}
+
+.s-offer__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: clamp(2.5rem, 2rem + 1.8vw, 3.5rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-offer__unit {
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.s-offer__note {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-offer__discount {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--tint-accent);
+  text-wrap: pretty;
+}
+
+.s-offer__action {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* Closed: the button stays, visibly unavailable, its label readable at
+   4.5:1 (muted ink on the tinted surface, never an opacity). */
+.s-offer__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* The way out of a closed offer: a real button, same size as the main one. */
+.s-offer__notify {
+  min-height: 56px;
+}
+
+/* Single formula: a horizontal ticket. Price and action side by side, then
+   the stub below with its two columns, so no column is left half empty. */
+.s-offer__ticket--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Rows without gaps: the action spans spare rows that must stay at zero
+   height; the left column keeps its rhythm by margins. */
+.s-offer__ticket--single .s-offer__main {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0 clamp(32px, 1rem + 3vw, 64px);
+}
+
+.s-offer__ticket--single .s-offer__main > * {
+  grid-column: 1;
+}
+
+.s-offer__ticket--single .s-offer__main > * + :not(.s-offer__action) {
+  margin-top: 18px;
+}
+
+.s-offer__ticket--single .s-offer__main > .s-offer__action {
+  grid-column: 2;
+  grid-row: 1 / span 8;
+  align-self: center;
+}
+
+.s-offer__ticket--single .s-offer__stub {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px clamp(32px, 1rem + 3vw, 64px);
+  border-left: 0;
+  border-top: 2px dashed var(--line-strong);
+  border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+}
+
+.s-offer__ticket--single .s-offer__prereq {
+  grid-column: 1 / -1;
+}
+
+.s-offer__ticket--single .s-offer__stub::before,
+.s-offer__ticket--single .s-offer__stub::after {
+  top: calc(var(--notch) / -2 - 1px);
+  bottom: auto;
+}
+
+.s-offer__ticket--single .s-offer__stub::before {
+  left: calc(var(--notch) / -2);
+}
+
+.s-offer__ticket--single .s-offer__stub::after {
+  left: auto;
+  right: calc(var(--notch) / -2);
+}
+
+.s-offer__deadline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+.s-offer__deadline::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-offer__stub {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 28px;
+  padding: clamp(28px, 1rem + 2.6vw, 52px);
+  border-left: 2px dashed var(--line-strong);
+  border-radius: 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px) 0;
+  background: var(--surface-2);
+}
+
+.s-offer__stub::before,
+.s-offer__stub::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--notch) / -2 - 1px);
+  width: var(--notch);
+  height: var(--notch);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.s-offer__stub::before {
+  top: calc(var(--notch) / -2);
+}
+
+.s-offer__stub::after {
+  bottom: calc(var(--notch) / -2);
+}
+
+.s-offer__col-title {
+  margin-bottom: 14px;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.s-offer__steps {
+  display: grid;
+  gap: 12px;
+  counter-reset: suite;
+}
+
+.s-offer__steps > li {
+  position: relative;
+  padding-left: 38px;
+  counter-increment: suite;
+}
+
+.s-offer__steps > li::before {
+  content: counter(suite);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.s-offer__prereq {
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.s-offer__conditions {
+  max-width: 62ch;
+  margin: clamp(24px, 1rem + 1vw, 36px) auto 0;
+  color: var(--muted);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .s-offer__ticket {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main > .s-offer__action {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 18px;
+  }
+
+  .s-offer__ticket--single .s-offer__stub {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__stub {
+    border-left: 0;
+    border-top: 2px dashed var(--line-strong);
+    border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+  }
+
+  .s-offer__stub::before,
+  .s-offer__stub::after {
+    top: calc(var(--notch) / -2 - 1px);
+    bottom: auto;
+  }
+
+  .s-offer__stub::before {
+    left: calc(var(--notch) / -2);
+  }
+
+  .s-offer__stub::after {
+    left: auto;
+    right: calc(var(--notch) / -2);
   }
 }
 /* ---- section : faq ---- */
@@ -1798,6 +2552,56 @@ textarea.field__input {
     max-width: 520px;
   }
 }
+/* ---- section : legal ---- */
+.s-legal__inner {
+  max-width: 980px;
+}
+
+.s-legal__title {
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-legal__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-legal__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.32fr) minmax(0, 1fr);
+  gap: 8px 32px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-legal__row dt {
+  font-weight: 700;
+}
+
+.s-legal__row dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-legal__row a[target="_blank"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.3em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 640px) {
+  .s-legal__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 /* ---- section : final-cta ---- */
 .s-final {
   text-align: center;
@@ -1917,15 +2721,78 @@ textarea.field__input {
   color: var(--muted);
   font-size: var(--t-small);
 }
+/* ---- section : sticky-bar ---- */
+.s-sticky {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body:has(.s-sticky) {
+    padding-bottom: 88px;
+  }
+
+  .s-sticky {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    display: block;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    background: var(--brand-light);
+    box-shadow: 0 -12px 30px -20px var(--brand-shadow);
+    visibility: hidden;
+    transform: translateY(110%);
+    transition:
+      transform 0.35s var(--ease),
+      visibility 0s linear 0.35s;
+  }
+
+  .s-sticky[data-visible] {
+    visibility: visible;
+    transform: none;
+    transition: transform 0.35s var(--ease);
+  }
+}
+
+.s-sticky__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.s-sticky__text {
+  display: grid;
+  line-height: 1.3;
+}
+
+.s-sticky__text strong {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.s-sticky__text span {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-sticky__btn.btn {
+  flex: none;
+  min-height: 48px;
+  padding: 10px 22px;
+}
 </style>
 </head>
-<body data-page-slug="kit-relance">
+<body data-page-slug="formation">
 <a class="skip-link" href="#contenu">Aller au contenu</a>
+<div class="reading-progress" aria-hidden="true"></div>
 <!-- section:topbar -->
 <header id="topbar" class="s-topbar" data-section="topbar">
   <div class="wrap s-topbar__inner">
-    <p class="s-topbar__brand"><svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="24" height="20" rx="6"/><path d="m11 16.5 3.5 3.5 7-7.5"/></svg><span>Encaisse</span></p>
-    <a class="btn btn--secondary s-topbar__cta" href="#recevoir" data-track="cta_click" data-cta-position="topbar" data-cta="primaire">Recevoir le kit</a>
+    <p class="s-topbar__brand"><svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11l7 7v17H8z"/><path d="M19 4v7h7"/><path d="m12.5 19.5 3 3 6-7"/></svg><span>Ferlane</span></p>
+    <a class="btn btn--secondary s-topbar__cta" href="#offre" data-track="cta_click" data-cta-position="topbar" data-cta="primaire">Réserver</a>
   </div>
 </header>
 <!-- /section:topbar -->
@@ -1934,206 +2801,370 @@ textarea.field__input {
 <section id="hero" class="s-hero section" aria-labelledby="hero-titre" data-section="hero">
   <div class="wrap s-hero__grid">
     <div class="s-hero__text">
-      <h1 id="hero-titre" class="s-hero__title">Six emails<br>pour être payé<br><span class="hl">sans conflit</span></h1>
-      <p class="s-hero__lede lede">Le kit de relance des indépendants : six modèles prêts à copier, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.</p>
+      <h1 id="hero-titre" class="s-hero__title">Répondre aux marchés publics<br><span class="hl">en cinq ateliers</span></h1>
+      <p class="s-hero__lede lede">Cinq matinées en petit groupe pour préparer une vraie offre publique, avec votre mémoire technique relu avant l’envoi.</p>
       <div class="s-hero__actions">
-        <a class="btn btn--primary" href="#recevoir" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Recevoir le kit<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span>Gratuit, par email</span><span aria-hidden="true">·</span><span>14 pages</span></p>
+        <a class="btn btn--primary" href="#offre" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Réserver ma place<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <p class="s-hero__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 26 mars 2027</span><span aria-hidden="true">·</span><span>8 entreprises par cohorte</span></p>
       </div>
     </div>
     <div class="s-hero__visual" data-reveal="right">
-      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor> <div class="obj-stack"><div class="obj-sheet"> <div class="obj-head"><span class="obj-mark"></span><b>Kit de relance</b><span class="obj-stamp obj-push">Modèle 3</span></div> <div class="obj-rule"></div> <div class="obj-mail"> <div class="obj-mail__from"><span class="obj-avatar">VD</span><span><b>Facture F-118 · échéance dépassée</b><br>À Julien, studio Halte</span></div> <p class="obj-small">Bonjour Julien, la facture F-118 de <span class="obj-highlight">1 450 €</span> attend toujours son règlement. Pouvez-vous me confirmer un virement d’ici vendredi ?</p> </div> <div class="obj-rule"></div> <div class="obj-check"> <span class="is-done">J+1 · Le rappel aimable</span> <span class="is-done">J+8 · La relance claire</span> <span class="is-done">J+15 · La relance ferme</span> <span>J+22 · L’appel, puis l’email</span> <span>J+30 · Le dernier rappel</span> <span>J+45 · La mise en demeure</span> </div> </div></div> <span class="obj-chip s-hero__chip"><i></i>Réglée à J+17</span> </div>
+      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+  <div class="obj-stack">
+    <div class="obj-sheet">
+      <div class="obj-head"><span class="obj-mark"></span><b>Mémoire technique</b><span class="obj-stamp obj-push">Relu</span></div>
+      <div class="obj-rule"></div>
+      <p class="obj-title">Entretien des espaces verts · lot 2</p>
+      <p class="obj-small">Réponse au critère « valeur technique », 60 % de la note</p>
+      <div class="obj-rule"></div>
+      <div class="obj-check">
+        <span class="is-done">1. Moyens humains et encadrement</span>
+        <span class="is-done">2. Méthode par saison</span>
+        <span class="is-done">3. Planning daté des passages</span>
+        <span>4. Gestion des déchets verts</span>
+      </div>
+      <div class="obj-rule"></div>
+      <div class="obj-lines"><i style="--w:94%"></i><i style="--w:78%"></i><i style="--w:86%"></i></div>
+      <p class="obj-small" style="margin-top:12px">Note de relecture : <span class="obj-highlight">ajoutez les photos du chantier de 2025</span></p>
+      <div class="obj-rule"></div>
+      <div class="obj-head"><span>Remise des offres · 12 mars, 12 h</span><span class="obj-push">p. 4 / 18</span></div>
+    </div>
+  </div>
+  <span class="obj-chip s-hero__chip"><i></i>Atelier 5 · relecture croisée</span>
+</div>
     </div>
   </div>
 </section>
 <!-- /section:hero -->
-<!-- section:recevoir -->
-<section id="recevoir" class="s-lead section" aria-labelledby="recevoir-titre" data-section="lead-capture">
-  <div class="wrap s-lead__grid">
-    <div>
-      <div class="section-head">
-        <h2 id="recevoir-titre" class="section-title">Recevez le kit <span class="hl">dans votre boîte mail</span></h2>
-        <p class="section-intro">Un document de quatorze pages relu par une avocate, avec un lien pour copier les modèles dans votre messagerie.</p>
+<!-- section:preuves -->
+<section id="preuves" class="s-proof section" aria-labelledby="preuves-titre" data-section="proof-band">
+  <div class="wrap">
+    <h2 id="preuves-titre" class="sr-only">La cohorte en chiffres</h2>
+    <dl class="s-proof__list" data-reveal-group>
+      <div class="s-proof__item" data-reveal>
+        <dt class="s-proof__label">ateliers de trois heures, en visio</dt>
+        <dd class="s-proof__value"><span data-count>5</span></dd>
+        
+      </div><div class="s-proof__item" data-reveal>
+        <dt class="s-proof__label">entreprises au plus par cohorte</dt>
+        <dd class="s-proof__value"><span data-count>8</span></dd>
+        
+      </div><div class="s-proof__item" data-reveal>
+        <dt class="s-proof__label">offre réelle, du dossier au dépôt</dt>
+        <dd class="s-proof__value"><span data-count>1</span></dd>
+        
+      </div><div class="s-proof__item" data-reveal>
+        <dt class="s-proof__label">d’accès au groupe de la cohorte</dt>
+        <dd class="s-proof__value"><span data-count>6</span><span class="s-proof__unit">mois</span></dd>
+        
       </div>
-      <ul class="list-check s-lead__points" role="list"><li>Six modèles d’emails, du rappel aimable à la mise en demeure</li><li>Le calendrier d’envoi, de J+1 à J+45</li><li>Le tableau de suivi des relances, en tableur</li><li>Les mentions à ajouter sur vos prochaines factures</li></ul>
-    </div>
-    <div class="s-lead__card card" data-reveal>
-      <form class="s-lead__form" id="recevoir-form" action="{{FORM_ENDPOINT}}" method="post" data-form="lead" data-track="generate_lead" data-error-required="Indiquez l’adresse où envoyer le kit." data-error-email="Cette adresse email semble incomplète." data-error-consent="Cochez la case pour continuer." data-msg-success="C’est envoyé. Le kit arrive dans votre boîte dans la minute." data-msg-failure="L’envoi n’a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n’a été envoyé.">
-        <div class="hp" aria-hidden="true"><label for="recevoir-site">Site web</label><input type="text" id="recevoir-site" name="site" tabindex="-1" autocomplete="off"></div>
-        <div class="s-lead__fields" data-form-fields>
-          <div class="field">
-            <label class="field__label" for="recevoir-email">Votre email professionnel</label>
-            <input class="field__input" type="email" id="recevoir-email" name="email" autocomplete="email" required placeholder="prenom@example.com" aria-describedby="recevoir-email-hint recevoir-email-error">
-            <p class="field__hint" id="recevoir-email-hint">Le kit arrive à cette adresse.</p>
-            <p class="field__error" id="recevoir-email-error" hidden></p>
+    </dl>
+  </div>
+</section>
+<!-- /section:preuves -->
+<!-- section:probleme -->
+<section id="probleme" class="s-problem section" aria-labelledby="probleme-titre" data-section="problem-pinned">
+  <div class="s-problem__track" data-scroll-track>
+    <div class="s-problem__stage">
+      <div class="wrap s-problem__grid">
+        <div class="s-problem__aside">
+          <div class="section-head s-problem__head">
+            <h2 id="probleme-titre" class="section-title">Où se perdent<br><span class="hl">vos offres publiques</span></h2>
+            <p class="section-intro">Ce que racontent les dirigeants à l’appel de cadrage, avant même le premier atelier.</p>
           </div>
-          <div class="consent"><input type="checkbox" id="recevoir-optin" name="newsletter" value="oui" data-optin><label for="recevoir-optin">Recevoir aussi la lettre Encaisse sur la trésorerie des indépendants, un email tous les quinze jours. Désinscription en un clic.</label></div>
-          
-          <button type="submit" class="btn btn--block btn--primary" data-cta-position="capture" data-cta="primaire">Recevoir le kit</button>
-          <p class="s-lead__after">Le kit arrive dans votre boîte dans la minute. La lettre ne part que si vous cochez la case.</p>
+          <div class="s-problem__visuals" aria-hidden="true" data-qa-decor>
+            <div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Avis de marché 27-0412</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:2"><span class="is-head">Étape</span><span class="is-head">Date</span><span>Publication</span><span>2 mars</span><span>Questions à l’acheteur</span><span>avant le 8 mars</span><span class="is-warn">Remise des offres</span><span class="is-warn">12 mars, 12 h</span></div><p class="obj-small" style="margin-top:12px">Dossier de consultation · 142 pages · 7 pièces</p></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>memoire_v6_COPIE.docx</span></div><div class="obj-window__body"><p class="obj-title">3. Méthodologie</p><div class="obj-lines" style="margin-top:10px"><i style="--w:96%"></i><i style="--w:88%"></i><i style="--w:62%"></i></div><div class="obj-rule"></div><p class="obj-small"><span class="obj-strike">Critère : délai d’intervention sous 48 h</span></p><p class="obj-small" style="margin-top:6px">Critère demandé cette fois : <span class="obj-highlight">gestion des déchets verts</span></p></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Analyse des offres</b></div><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar" style="--v:.95"><span>Prix</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>38/40</b></div><div class="obj-bar is-hl" style="--v:.52"><span>Technique</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>31/60</b></div></div><div class="obj-rule"></div><p class="obj-small">Motif : <span class="obj-highlight">méthodologie générale, aucun planning daté</span></p><div class="obj-rule"></div><div class="obj-head"><span>Classement de votre offre</span><span class="obj-push"><b>3 / 5</b></span></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Pièces à déposer</b><span class="obj-stamp obj-push">11 h 58</span></div><div class="obj-rule"></div><div class="obj-check"><span class="is-done">Mémoire technique</span><span class="is-done">Bordereau des prix</span><span>Attestation d’assurance</span><span>Signature électronique</span></div></div></div>
+          </div>
         </div>
-        <p class="form-status s-lead__status" role="status" data-form-status></p>
-      </form>
+        <ol class="s-problem__list" role="list">
+          <li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">01</span>
+            <div>
+              <h3 class="s-problem__title">Dix jours pour un dossier de cent pages</h3>
+              <div class="s-problem__body"><p>Le dossier de consultation arrive un lundi, la date limite tombe la semaine suivante, entre deux chantiers.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">02</span>
+            <div>
+              <h3 class="s-problem__title">Le mémoire de la dernière fois</h3>
+              <div class="s-problem__body"><p>On reprend l’offre du marché précédent et on change le nom de l’acheteur. Les critères, eux, ont changé.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">03</span>
+            <div>
+              <h3 class="s-problem__title">Une note technique qui coule l’offre</h3>
+              <div class="s-problem__body"><p>Le prix était bien placé. Le rapport d’analyse donne 31 points sur 60 en valeur technique, et le marché part ailleurs.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">04</span>
+            <div>
+              <h3 class="s-problem__title">Un dépôt à midi moins deux</h3>
+              <div class="s-problem__body"><p>La signature électronique bloque, une attestation manque, et l’offre arrive incomplète.</p></div>
+            </div>
+          </li>
+        </ol>
+      </div>
     </div>
   </div>
 </section>
-<!-- /section:recevoir -->
-<!-- section:contenu -->
-<section id="contenu" class="s-program section" aria-labelledby="contenu-titre" data-section="program">
+<!-- /section:probleme -->
+<!-- section:programme -->
+<section id="programme" class="s-program section" aria-labelledby="programme-titre" data-section="program">
   <div class="wrap s-program__grid">
     <div>
       <div class="section-head">
-        <h2 id="contenu-titre" class="section-title">Six relances <span class="hl">de J+1 à J+45</span></h2>
-        <p class="section-intro">Chaque modèle monte d’un cran. Le ton reste courtois, la demande devient plus précise.</p>
+        <h2 id="programme-titre" class="section-title">Cinq mardis matin<br><span class="hl">sur votre propre dossier</span></h2>
+        <p class="section-intro">Trois heures en visio, de 9 h à 12 h, enregistrées. Entre deux ateliers, comptez deux heures pour avancer votre offre.</p>
       </div>
       <ol class="s-program__list" role="list" data-rail>
         <li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+1</p>
-          <h3 class="s-program__title">Le rappel aimable</h3>
-          <p class="s-program__duration">4 lignes</p>
-          <p class="s-program__text">Une ligne pour signaler l’échéance, la facture en pièce jointe.</p>
+          <p class="s-program__when">6 avril</p>
+          <h3 class="s-program__title">Lire un dossier en une heure</h3>
+          <p class="s-program__duration">3 h</p>
+          <p class="s-program__text">Règlement, critères et pièces exigées : vous repérez ce qui compte avant d’écrire une ligne.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+8</p>
-          <h3 class="s-program__title">La relance claire</h3>
-          <p class="s-program__duration">6 lignes</p>
-          <p class="s-program__text">Le montant dû et le moyen de paiement, sans un mot de reproche.</p>
+          <p class="s-program__when">13 avril</p>
+          <h3 class="s-program__title">Choisir où répondre</h3>
+          <p class="s-program__duration">3 h</p>
+          <p class="s-program__text">Veille, lots et chances réelles : vous décidez où déposer et où passer votre tour.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+15</p>
-          <h3 class="s-program__title">La relance ferme</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">Une date de règlement précise et le rappel des pénalités prévues à vos conditions générales.</p>
+          <p class="s-program__when">20 avril</p>
+          <h3 class="s-program__title">Écrire le mémoire technique</h3>
+          <p class="s-program__duration">3 h</p>
+          <p class="s-program__text">Une trame qui suit les critères de l’acheteur un par un, avec vos preuves.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+22</p>
-          <h3 class="s-program__title">L’appel et l’email qui le résume</h3>
-          <p class="s-program__duration">1 script</p>
-          <p class="s-program__text">Le déroulé d’un appel de cinq minutes et l’email qui confirme ce qui a été convenu.</p>
+          <p class="s-program__when">27 avril</p>
+          <h3 class="s-program__title">Chiffrer et présenter le prix</h3>
+          <p class="s-program__duration">3 h</p>
+          <p class="s-program__text">Bordereau, détail estimatif et variantes : un prix lisible et cohérent avec le mémoire.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+30</p>
-          <h3 class="s-program__title">Le dernier rappel</h3>
-          <p class="s-program__duration">8 lignes</p>
-          <p class="s-program__text">L’annonce de la mise en demeure et le rappel de l’indemnité forfaitaire de 40 € due par un client professionnel en retard.</p>
-        </li><li class="s-program__item" data-milestone>
-          <span class="s-program__dot" aria-hidden="true"></span>
-          <p class="s-program__when">J+45</p>
-          <h3 class="s-program__title">La mise en demeure</h3>
-          <p class="s-program__duration">1 lettre</p>
-          <p class="s-program__text">La lettre recommandée prête à compléter, dernière étape avant une injonction de payer.</p>
+          <p class="s-program__when">4 mai</p>
+          <h3 class="s-program__title">Relire et déposer</h3>
+          <p class="s-program__duration">3 h</p>
+          <p class="s-program__text">Relecture croisée entre participants, pièces administratives et signature, avant le dépôt.</p>
         </li>
       </ol>
     </div>
     <figure class="s-program__specimen">
       <div class="s-program__figure">
-        <div aria-hidden="true" data-qa-decor><div class="obj"><div class="obj-sheet"> <div class="obj-head"><span class="obj-mark"></span><b>Modèle 3 · La relance ferme</b><span class="obj-push">p. 6</span></div> <div class="obj-rule"></div> <div class="obj-mail"> <p class="obj-small"><b>Objet</b> Facture [numéro] · échéance dépassée de 15 jours</p> <p class="obj-small">Bonjour [prénom],</p> <p class="obj-small">La facture [numéro] de <span class="obj-highlight">[montant]</span>, échue le [date], n’est pas encore réglée.</p> <p class="obj-small">Je vous propose un règlement par virement d’ici le <span class="obj-highlight">[date + 7 jours]</span>. Passé ce délai, les pénalités prévues à nos conditions générales s’appliqueront.</p> <div class="obj-lines"><i style="--w:72%"></i><i style="--w:44%"></i></div> </div> <div class="obj-rule"></div> <div class="obj-head"><span>À joindre : la facture et votre RIB</span></div> </div></div></div>
-        <figcaption><span class="badge">Extrait</span><span>Le modèle 3, page 6 du kit.</span></figcaption>
+        <div aria-hidden="true" data-qa-decor><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Critère 2 sur 4</b><span class="obj-stamp obj-push">Relu</span></div><div class="obj-rule"></div><div class="obj-grid" style="--cols:3"><span class="is-head">Sous-critère</span><span class="is-head">Poids</span><span class="is-head">Votre preuve</span><span>Organisation</span><span>15 %</span><span>Organigramme</span><span>Méthode</span><span>25 %</span><span>Fiche par saison</span><span class="is-warn">Planning</span><span class="is-warn">10 %</span><span class="is-warn">À dater</span><span>Matériel</span><span>10 %</span><span>Liste et photos</span></div><div class="obj-rule"></div><div class="obj-lines"><i style="--w:92%"></i><i style="--w:70%"></i></div><p class="obj-small" style="margin-top:10px">Note de relecture : <span class="obj-highlight">un planning sans dates ne rapporte aucun point</span></p></div></div>
+        <figcaption><span class="badge">Spécimen</span><span>Une page de mémoire relue pendant l’atelier 3, avec des données d’exemple.</span></figcaption>
       </div>
     </figure>
   </div>
 </section>
-<!-- /section:contenu -->
-<!-- section:pour-qui -->
-<section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
+<!-- /section:programme -->
+<!-- section:kit -->
+<section id="kit" class="s-showcase section band-dark" aria-labelledby="kit-titre" data-section="showcase-dark">
   <div class="wrap">
     <div class="section-head section-head--center">
-      <h2 id="pour-qui-titre" class="section-title">Un kit écrit <span class="hl">pour les indépendants</span></h2>
+      <h2 id="kit-titre" class="section-title">Quatre outils<br><span class="hl">pour les offres suivantes</span></h2>
+      <p class="section-intro">Ils servent pendant la cohorte, puis à chaque nouvel appel d’offres.</p>
     </div>
-    <div class="s-forwhom__grid" data-reveal-group>
-      <div class="s-forwhom__col card" data-reveal>
-        <h3 class="s-forwhom__title">Il vous servira si</h3>
-        <ul class="list-check" role="list"><li>Vous facturez d’autres entreprises et certaines paient après l’échéance.</li><li>Vous relancez au jugé, sans calendrier ni trace écrite.</li><li>Vous craignez d’abîmer une relation client en insistant.</li><li>Vous travaillez seul ou à deux, sans service comptable.</li></ul>
+    <div class="s-showcase__grid">
+      <div class="obj s-showcase__object" aria-hidden="true" data-qa-decor data-reveal="scale">
+        <div class="s-showcase__folder">
+          <div class="obj-sheet s-showcase__sheet" data-part="1" style="--k:0"><span class="s-showcase__tab">Trame</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div><div class="obj-sheet s-showcase__sheet" data-part="2" style="--k:1"><span class="s-showcase__tab">Références</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div><div class="obj-sheet s-showcase__sheet" data-part="3" style="--k:2"><span class="s-showcase__tab">Grille</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div><div class="obj-sheet s-showcase__sheet" data-part="4" style="--k:3"><span class="s-showcase__tab">Planning</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div>
+        </div>
       </div>
-      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
-        <h3 class="s-forwhom__title">Il vous servira peu si</h3>
-        <ul class="list-check list-cross" role="list"><li>Vos clients sont des particuliers : les règles et le ton diffèrent.</li><li>Votre client conteste la facture sur le fond : parlez-en d’abord avec lui.</li></ul>
-      </div>
+      <ul class="s-showcase__cards" role="list" data-reveal-group>
+        <li class="s-showcase__card card" data-part="1" data-reveal><span class="s-showcase__num" aria-hidden="true">01</span><h3 class="s-showcase__title">La trame de mémoire</h3><p class="s-showcase__text">Un document modifiable, rangé critère par critère, avec des exemples de réponses.</p></li><li class="s-showcase__card card" data-part="2" data-reveal><span class="s-showcase__num" aria-hidden="true">02</span><h3 class="s-showcase__title">Le tableau de références</h3><p class="s-showcase__text">Vos chantiers, attestations et photos, classés pour être cités en deux minutes.</p></li><li class="s-showcase__card card" data-part="3" data-reveal><span class="s-showcase__num" aria-hidden="true">03</span><h3 class="s-showcase__title">La grille de notation</h3><p class="s-showcase__text">Vous notez votre mémoire comme l’acheteur le fera, avant de l’envoyer.</p></li><li class="s-showcase__card card" data-part="4" data-reveal><span class="s-showcase__num" aria-hidden="true">04</span><h3 class="s-showcase__title">Le rétroplanning de réponse</h3><p class="s-showcase__text">De la publication au dépôt, qui fournit quoi et quand, sur dix jours.</p></li>
+      </ul>
     </div>
   </div>
 </section>
-<!-- /section:pour-qui -->
-<!-- section:auteures -->
-<section id="auteures" class="s-people section" aria-labelledby="auteures-titre" data-section="people">
+<!-- /section:kit -->
+<!-- section:formateurs -->
+<section id="formateurs" class="s-people section" aria-labelledby="formateurs-titre" data-section="people">
   <div class="wrap">
     <div class="section-head">
-      <h2 id="auteures-titre" class="section-title">Écrit par une praticienne <span class="hl">et relu par une avocate</span></h2>
-      
+      <h2 id="formateurs-titre" class="section-title">Deux formateurs<br><span class="hl">des deux côtés du guichet</span></h2>
+      <p class="section-intro">Une ancienne acheteuse publique et un chargé d’affaires relisent vos mémoires.</p>
     </div>
     <ul class="s-people__grid" role="list" data-shape="rounded" data-reveal-group>
       <li class="s-people__card card" data-reveal>
-        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">VD</span></div>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">HM</span></div>
         <div class="s-people__body">
-          <h3 class="s-people__name">Valentine Dorez</h3>
-          <p class="s-people__role">Fondatrice d’Encaisse (personnage fictif)</p>
+          <h3 class="s-people__name">Hélène Marchetti</h3>
+          <p class="s-people__role">Ancienne acheteuse publique</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Comptable de formation, elle suit la trésorerie d’indépendants et de petites agences depuis 2017.</dd></div>
-            <div><dt>Preuve</dt><dd>Les six modèles reprennent les relances qu’elle envoie chaque mois pour ses clients.</dd></div>
-            <div><dt>Dans ce kit</dt><dd>Elle a écrit les six emails et leur calendrier.</dd></div>
+            <div><dt>Parcours</dt><dd>Neuf ans acheteuse dans une collectivité, puis formatrice.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : citer ici une preuve vérifiable.</dd></div>
+            <div><dt>Dans la cohorte</dt><dd>Anime les ateliers 1, 2 et 5 et relit chaque mémoire.</dd></div>
           </dl>
         </div>
       </li><li class="s-people__card card" data-reveal>
-        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">IL</span></div>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">BM</span></div>
         <div class="s-people__body">
-          <h3 class="s-people__name">Inès Labarthe</h3>
-          <p class="s-people__role">Avocate en droit des affaires (personnage fictif)</p>
+          <h3 class="s-people__name">Bastien Morel</h3>
+          <p class="s-people__role">Chargé d’affaires</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Elle conseille des TPE sur leurs conditions générales et leurs litiges de paiement.</dd></div>
-            <div><dt>Preuve</dt><dd>Elle a vérifié chaque mention légale du kit en septembre 2026.</dd></div>
-            <div><dt>Dans ce kit</dt><dd>Elle a rédigé la lettre de mise en demeure.</dd></div>
+            <div><dt>Parcours</dt><dd>Douze ans à préparer les offres d’une entreprise de second œuvre.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : une preuve se cite avec sa source.</dd></div>
+            <div><dt>Dans la cohorte</dt><dd>Anime les ateliers 3 et 4, le mémoire et le prix.</dd></div>
           </dl>
         </div>
       </li>
     </ul>
   </div>
 </section>
-<!-- /section:auteures -->
+<!-- /section:formateurs -->
+<!-- section:avis -->
+<section id="avis" class="s-testi section" aria-labelledby="avis-titre" data-section="testimonials">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="avis-titre" class="section-title">Leurs offres sont parties<br><span class="hl">complètes et à l’heure</span></h2>
+    </div>
+    <div class="s-testi__grid" data-reveal-group>
+      <figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">Retenus au deuxième dépôt</p>
+        <blockquote class="s-testi__quote"><p>Nous avions perdu trois consultations sur la note technique. Avec la trame, le mémoire suit enfin les critères, et le deuxième dépôt a été retenu.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">SL</span><span><span class="s-testi__name">Sophie L.</span><span class="s-testi__role">Gérante, entreprise de peinture, 14 salariés (avis fictif)</span></span></figcaption>
+      </figure><figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">Plus de dépôt à la dernière minute</p>
+        <blockquote class="s-testi__quote"><p>Le rétroplanning a tout changé. Chacun sait ce qu’il fournit et quand, et l’offre part la veille de la date limite.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">TG</span><span><span class="s-testi__name">Thomas G.</span><span class="s-testi__role">Chargé d’affaires, menuiserie, 30 salariés (avis fictif)</span></span></figcaption>
+      </figure><figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">De 31 à 48 points sur 60</p>
+        <blockquote class="s-testi__quote"><p>La grille nous a montré ce que l’acheteur ne trouvait pas. Nous avons ajouté nos références et un planning daté.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">IM</span><span><span class="s-testi__name">Inès M.</span><span class="s-testi__role">Assistante de direction, paysagiste, 9 salariés (avis fictif)</span></span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- /section:avis -->
+<!-- section:pour-qui -->
+<section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="pour-qui-titre" class="section-title">Pour qui <span class="hl">sont ces ateliers</span></h2>
+    </div>
+    <div class="s-forwhom__grid" data-reveal-group>
+      <div class="s-forwhom__col card" data-reveal>
+        <h3 class="s-forwhom__title">Pour vous si</h3>
+        <ul class="list-check" role="list"><li>Vous dirigez une TPE ou une PME et voulez déposer vos premières offres publiques.</li><li>Vous répondez déjà, mais vos offres perdent sur la valeur technique.</li><li>Vous préparez les dossiers pour votre dirigeant et cherchez une méthode.</li></ul>
+      </div>
+      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
+        <h3 class="s-forwhom__title">Pas pour vous si</h3>
+        <ul class="list-check list-cross" role="list"><li>Vous cherchez quelqu’un pour rédiger vos offres à votre place.</li><li>Vous visez des marchés de défense ou de très grands comptes, hors du programme.</li><li>Votre prochain dossier est à rendre avant le 6 avril, date du premier atelier.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:pour-qui -->
+<!-- section:offre -->
+<section id="offre" class="s-offer section" aria-labelledby="offre-titre" data-section="offer-ticket">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="offre-titre" class="section-title">Cinq mardis<br><span class="hl">pour votre prochaine offre</span></h2>
+      <p class="section-intro">Huit entreprises par cohorte, pour que chaque mémoire soit relu en atelier.</p>
+    </div>
+    <div data-reveal="scale">
+    <form class="s-offer__ticket" id="offre-billet" action="{{URL_CHECKOUT}}" method="get" data-track="begin_checkout" data-track-currency="EUR" data-offer-action-waitlist="{{URL_LISTE_ATTENTE}}">
+      <div class="s-offer__main">
+        <div class="s-offer__top">
+          <p class="s-offer__name">Répondre aux marchés publics</p>
+          <p class="badge badge--accent" data-offer-show="waitlist" hidden>Complet</p>
+          <p class="badge" data-offer-show="closed" hidden>Inscriptions closes</p>
+        </div>
+        <p class="s-offer__meta">Cohorte de printemps · 5 mardis, du 6 avril au 4 mai 2027 · en visio, de 9 h à 12 h</p>
+        <fieldset class="s-offer__formulas">
+          <legend class="s-offer__legend">Formule</legend>
+          <div class="s-offer__seg">
+            <label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="solo" data-price="1450" data-price-label="1 450 € HT" data-note="Une personne de l’entreprise. Avec la remise avant le 1er mars : 1 305 € HT." checked><span class="s-offer__opt-label">Solo</span><span class="s-offer__opt-price">1 450 € HT</span></label><label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="binome" data-price="2400" data-price-label="2 400 € HT" data-note="Deux personnes de la même entreprise, un seul mémoire relu. Avec la remise avant le 1er mars : 2 160 € HT."><span class="s-offer__opt-label">Binôme</span><span class="s-offer__opt-price">2 400 € HT</span></label>
+          </div>
+        </fieldset>
+        <div class="s-offer__pricebox">
+          <p class="s-offer__price"><span data-offer-price>1 450 € HT</span><span class="s-offer__unit">pour les cinq ateliers</span></p>
+          <p class="s-offer__note" aria-live="polite" data-offer-note>Une personne de l’entreprise. Avec la remise avant le 1er mars : 1 305 € HT.</p>
+        </div>
+        <p class="s-offer__discount"><strong>Avant le 1er mars</strong> 10 % de remise, appliqués à la commande. Après cette date, le prix affiché s’applique.</p>
+        <div class="s-offer__action">
+          <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre" data-cta="primaire" data-offer-text-waitlist="Rejoindre la liste d’attente" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>Réserver ma place</button>
+          <a class="btn btn--secondary btn--block s-offer__notify" href="{{URL_LISTE_ATTENTE}}" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>Être prévenu de la prochaine cohorte</a>
+          <p class="s-offer__deadline"><span data-offer-countdown data-many="Clôture dans {n} jours" data-one="Clôture demain" data-zero="Clôture ce soir">Clôture le 26 mars 2027</span><span aria-hidden="true">·</span><span>8 entreprises par cohorte</span></p>
+        </div>
+      </div>
+      <div class="s-offer__stub">
+        <div>
+          <h3 class="s-offer__col-title">Compris</h3>
+          <ul class="list-check" role="list"><li>Cinq ateliers de trois heures en visio, enregistrés</li><li>La relecture écrite de votre mémoire avant le dépôt</li><li>La trame, la grille et le rétroplanning, modifiables</li><li>Le groupe d’échange de la cohorte, ouvert six mois</li><li>Une attestation de fin de formation</li></ul>
+        </div>
+        <div>
+          <h3 class="s-offer__col-title">La suite</h3>
+          <ol class="s-offer__steps" role="list"><li>Convention et facture par email sous 24 heures</li><li>Un appel de vingt minutes pour choisir votre appel d’offres</li><li>Premier atelier le mardi 6 avril à 9 h</li></ol>
+        </div>
+        <p class="s-offer__prereq"><strong>Prérequis</strong> Vos références des trois dernières années (chantiers, prestations, attestations), même en vrac.</p>
+      </div>
+    </form>
+    </div>
+    <p class="s-offer__conditions">Paiement à la commande ou sur facture à 30 jours. Prise en charge possible par votre opérateur de compétences : la convention part avec la facture. Annulation sans frais jusqu’à 14 jours avant le premier atelier. La cohorte part à partir de 5 entreprises inscrites, sinon remboursement intégral.</p>
+  </div>
+</section>
+<!-- /section:offre -->
 <!-- section:questions -->
 <section id="questions" class="s-faq section" aria-labelledby="questions-titre" data-section="faq">
   <div class="wrap s-faq__grid">
     <div>
       <div class="section-head">
-        <h2 id="questions-titre" class="section-title">Avant de recevoir <span class="hl">le kit</span></h2>
+        <h2 id="questions-titre" class="section-title">Les questions<br><span class="hl">avant de réserver</span></h2>
         
       </div>
       <div class="s-faq__list">
         <details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Le kit est‑il vraiment gratuit ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Oui, et sans abonnement : vous recevez le kit par email. La lettre Encaisse, un email tous les quinze jours, ne part que si vous cochez la case prévue.</p></div>
+          <summary class="s-faq__q"><h3>Faut-il avoir déjà répondu à un marché public ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Non. Le premier atelier part de la lecture d’un dossier, et l’appel de cadrage sert à choisir un appel d’offres à votre mesure.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Et si je coche la case de la lettre ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Un email vous demande de confirmer l’abonnement. Sans clic sur son lien, aucune lettre ne part. Vous pouvez vous désinscrire à tout moment et garder le kit.</p></div>
+          <summary class="s-faq__q"><h3>Combien de temps prévoir entre deux ateliers ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Environ deux heures par semaine. Les exercices portent sur votre propre offre : ce temps avance votre dossier.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Dans quel format arrive le kit ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Un PDF de quatorze pages, avec les modèles en document modifiable à ouvrir dans votre traitement de texte.</p></div>
+          <summary class="s-faq__q"><h3>Que se passe-t-il si je manque un atelier ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Chaque atelier est enregistré et la vidéo arrive le jour même. Vos questions passent par le groupe d’échange.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Les modèles conviennent‑ils à des clients particuliers ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Ils sont écrits pour des clients professionnels. L’indemnité forfaitaire de 40 € et plusieurs mentions ne s’appliquent pas à un particulier.</p></div>
+          <summary class="s-faq__q"><h3>La formation peut-elle être prise en charge ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Souvent, par votre opérateur de compétences. La convention et le programme partent dès l’inscription ; comptez trois à quatre semaines pour l’accord.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
-          <summary class="s-faq__q"><h3>Que devient mon adresse email ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Elle sert à vous envoyer le kit, et la lettre si vous l’avez demandée, rien d’autre. Elle n’est ni vendue ni prêtée, et la politique de confidentialité détaille le reste.</p></div>
+          <summary class="s-faq__q"><h3>Et si aucun appel d’offres ne tombe pendant la cohorte ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Nous travaillons sur un dossier récent de votre secteur, déjà clos. La méthode est la même, et votre trame sera prête pour le suivant.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Peut-on venir à deux ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui, avec la formule Binôme : deux personnes de la même entreprise et un seul mémoire relu.</p></div>
         </details>
       </div>
     </div>
     <aside class="s-faq__card card" aria-labelledby="questions-carte">
-      <p class="label">La ressource</p>
-      <p id="questions-carte" class="s-faq__card-title">Le kit de relance</p>
-      <p class="s-faq__card-meta">Gratuit · 14 pages · modèles modifiables</p>
-      <a class="btn btn--secondary btn--block" href="#recevoir" data-track="cta_click" data-cta-position="faq">Recevoir le kit</a>
-      <p class="s-faq__contact">Une autre question : <a href="mailto:bonjour@example.com">bonjour@example.com</a></p>
+      <p class="label">Cohorte de printemps</p>
+      <p id="questions-carte" class="s-faq__card-title">Répondre aux marchés publics</p>
+      <p class="s-faq__card-meta">Du 6 avril au 4 mai 2027 · dès 1 450 € HT · 8 places</p>
+      <a class="btn btn--secondary btn--block" href="#offre" data-track="cta_click" data-cta-position="faq">Voir le billet</a>
+      <p class="s-faq__contact">Une autre question ? <a href="mailto:bonjour@example.com">bonjour@example.com</a></p>
     </aside>
   </div>
 </section>
 <!-- /section:questions -->
+<!-- section:mentions -->
+<section id="mentions" class="s-legal section" aria-labelledby="mentions-titre" data-section="legal">
+  <div class="wrap s-legal__inner">
+    <h2 id="mentions-titre" class="s-legal__title">Informations légales</h2>
+    <dl class="s-legal__list">
+      <div class="s-legal__row"><dt>Organisme</dt><dd>Ferlane Formation (organisme fictif de démonstration). Numéro de déclaration d’activité : à indiquer ici.</dd></div><div class="s-legal__row"><dt>Prix</dt><dd>Prix hors taxes, TVA de 20 % en sus. Facture émise à la réservation.</dd></div><div class="s-legal__row"><dt>Annulation</dt><dd>Sans frais jusqu’à 14 jours avant le premier atelier, puis 50 % du prix. Remboursement intégral si la cohorte n’atteint pas 5 entreprises.</dd></div><div class="s-legal__row"><dt>Conditions générales</dt><dd>Envoyées avec la convention de formation, à signer avant le premier atelier.</dd></div><div class="s-legal__row"><dt>Données personnelles</dt><dd>Vos données servent à l’inscription, à la facturation et au suivi de la cohorte. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a></dd></div><div class="s-legal__row"><dt>Accessibilité</dt><dd>Ateliers sous-titrés en direct. Pour un besoin particulier, écrivez à <a href="mailto:bonjour@example.com">bonjour@example.com</a> avant de réserver.</dd></div>
+    </dl>
+  </div>
+</section>
+<!-- /section:mentions -->
 <!-- section:final -->
 <section id="final" class="s-final section band-dark" aria-labelledby="final-titre" data-section="final-cta" data-enter="curtain">
-  <div class="s-final__decor s-final__decor--dots" aria-hidden="true" data-qa-decor></div>
+  <div class="s-final__decor s-final__decor--rings" aria-hidden="true" data-qa-decor></div>
   <div class="wrap s-final__inner" data-reveal-group>
-    <h2 id="final-titre" class="s-final__title" data-reveal>Le prochain retard<br><span class="hl">a déjà son email</span></h2>
-    <p class="s-final__text lede" data-reveal>Recevez les six modèles et envoyez le premier dès la prochaine échéance dépassée.</p>
-    <a class="btn btn--light" href="#recevoir" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>Recevoir le kit<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <p class="s-final__note" data-reveal>Gratuit, sans abonnement</p>
+    <h2 id="final-titre" class="s-final__title" data-reveal>Huit places<br><span class="hl">pour le 6 avril</span></h2>
+    <p class="s-final__text lede" data-reveal>Vous choisissez Solo ou Binôme sur le billet, la convention arrive sous 24 heures.</p>
+    <a class="btn btn--light" href="#offre" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>Réserver ma place<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    <p class="s-final__note" data-reveal>Clôture des inscriptions le 26 mars 2027</p>
   </div>
 </section>
 <!-- /section:final -->
@@ -2141,12 +3172,20 @@ textarea.field__input {
 <!-- section:pied -->
 <footer id="pied" class="s-footer" data-section="footer">
   <div class="wrap s-footer__inner">
-    <p class="s-footer__brand"><svg class="s-footer__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="24" height="20" rx="6"/><path d="m11 16.5 3.5 3.5 7-7.5"/></svg><span>Encaisse</span></p>
+    <p class="s-footer__brand"><svg class="s-footer__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11l7 7v17H8z"/><path d="M19 4v7h7"/><path d="m12.5 19.5 3 3 6-7"/></svg><span>Ferlane</span></p>
     <ul class="s-footer__links" role="list"><li><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a></li><li><a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></li><li><a href="mailto:bonjour@example.com">bonjour@example.com</a></li></ul>
-    <p class="s-footer__legal">© 2026 Encaisse · modèle de démonstration, contenus fictifs</p>
+    <p class="s-footer__legal">© 2027 Ferlane Formation, marque fictive de démonstration.</p>
   </div>
 </footer>
 <!-- /section:pied -->
+<!-- section:barre-mobile -->
+<aside id="barre-mobile" class="s-sticky" aria-label="Réserver une place" data-section="sticky-bar">
+  <div class="s-sticky__inner">
+    <p class="s-sticky__text"><strong>Dès 1 450 € HT</strong><span>Clôture le 26 mars</span></p>
+    <a class="btn btn--primary s-sticky__btn" href="#offre" data-track="cta_click" data-cta-position="barre-mobile" data-cta="primaire">Réserver</a>
+  </div>
+</aside>
+<!-- /section:barre-mobile -->
 <script>
 /* ---- reveal.js ---- */
 /* ==========================================================================
@@ -2441,160 +3480,91 @@ textarea.field__input {
 })();
 </script>
 <script>
-/* ---- forms.js ---- */
+/* ---- offer.js ---- */
 /* ==========================================================================
-   forms.js · validation and sending of capture forms (optional engine)
+   offer.js · state of the offer, computed in the browser (optional engine)
    --------------------------------------------------------------------------
+   The static HTML always shows the OPEN state. The real state (waiting list,
+   closed) and the days left are computed here, from ONE configuration that
+   the assembler writes at the top of the page:
+
+     window.LANDING_CONFIG.offer = {
+       state: "open" | "waitlist" | "closed",   // decided by a human
+       closes_at: "2027-03-31T23:59:00+02:00",  // real closing date, or null
+       after_close: "waitlist" | "closed"        // state once the date is past
+     }
+
    Contract (attributes read in the markup):
-     form[data-form]                 a form this engine handles. Without
-                                     JavaScript it posts natively to its
-                                     action: the page keeps working.
-       data-error-required           message for an empty required field
-       data-error-email              message for a malformed email
-       data-error-consent            message for an unticked consent box
-       data-msg-success              confirmation shown after sending
-       data-msg-failure              shown when sending fails
-       data-msg-unwired              added after the success message when
-                                     the action is still a {{PLACEHOLDER}}
-                                     or empty (demonstration: nothing sent)
-     form[data-demo]                 written on load when the action is
-                                     still a {{PLACEHOLDER}} or empty:
-                                     submissions are demonstrations, never
-                                     sent, counted by tracking.js under
-                                     form_demo_submit instead of the lead
-     .hp input                       honeypot: filled means a robot; the form
-                                     pretends success and sends nothing
-     [data-error-for="<name>"]       error message of a field (else the
-                                     element whose id is <field id>-error)
-     [data-form-fields]              hidden once sent
-     [data-form-status]              live region (role="status"), present
-                                     from the start, receives the messages
-   Behaviour: on submit, every required field is checked; invalid ones get
-   aria-invalid="true" and their message, focus goes to the first one, and
-   the form carries data-invalid (tracking.js then counts nothing). A valid
-   form is sent with fetch (POST, FormData); if fetch fails, the native
-   submission takes over. A demonstration form (data-demo) sends nothing
-   over the network and shows the success state at once. Never a pre-ticked
-   box, never a placeholder used as a label: that is the markup's job.
+     html[data-offer-state]            written: open | waitlist | closed
+     [data-offer-show="open waitlist"] shown only in the listed states (the
+                                       HTML marks non-open variants hidden)
+     [data-offer-countdown]            text replaced by the days left, from
+                                       data-many ("Clôture dans {n} jours"),
+                                       data-one ("Clôture demain") and
+                                       data-zero ("Clôture ce soir"). Without
+                                       JavaScript the static text (a date)
+                                       stays. Counted in days, never seconds.
+     [data-offer-text-<state>]         textContent in that state
+     [data-offer-href-<state>]         href in that state
+     [data-offer-action-<state>]       form action in that state
+     [data-offer-disabled-<state>]     disabled in that state
+   Event: "landing:offer" on document (detail: { state, days }).
    ========================================================================== */
 (function () {
   'use strict';
-  if (window.__landingForms) return;
-  window.__landingForms = true;
+  if (window.__landingOffer) return;
+  window.__landingOffer = true;
 
-  var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var config = (window.LANDING_CONFIG && window.LANDING_CONFIG.offer) || {};
+  var DAY = 86400000;
 
-  function errorBox(form, field) {
-    return form.querySelector('[data-error-for="' + field.name + '"]') ||
-      (field.id ? document.getElementById(field.id + '-error') : null);
-  }
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
 
-  function setError(form, field, message) {
-    var box = errorBox(form, field);
-    if (message) {
-      field.setAttribute('aria-invalid', 'true');
-      if (box) { box.textContent = message; box.hidden = false; }
-    } else {
-      field.removeAttribute('aria-invalid');
-      if (box) { box.textContent = ''; box.hidden = true; }
+  var now = new Date();
+  var closes = config.closes_at ? new Date(config.closes_at) : null;
+  if (closes && isNaN(closes.getTime())) closes = null;
+  var state = config.state || 'open';
+  if (state === 'open' && closes && now > closes) state = config.after_close || 'waitlist';
+  var days = closes && state === 'open' ? Math.round((startOfDay(closes) - startOfDay(now)) / DAY) : null;
+
+  function apply() {
+    document.documentElement.setAttribute('data-offer-state', state);
+
+    document.querySelectorAll('[data-offer-show]').forEach(function (el) {
+      var states = el.getAttribute('data-offer-show').split(/\s+/);
+      el.hidden = states.indexOf(state) === -1;
+    });
+
+    if (days !== null) {
+      document.querySelectorAll('[data-offer-countdown]').forEach(function (el) {
+        var tpl = days <= 0 ? el.getAttribute('data-zero')
+          : days === 1 ? el.getAttribute('data-one')
+          : el.getAttribute('data-many');
+        if (tpl) el.textContent = tpl.replace('{n}', String(days));
+      });
     }
-  }
 
-  function messageFor(form, field) {
-    if (field.type === 'checkbox') {
-      return field.required && !field.checked
-        ? (form.getAttribute('data-error-consent') || form.getAttribute('data-error-required') || '')
-        : '';
+    if (state !== 'open') {
+      var attr = function (kind) { return 'data-offer-' + kind + '-' + state; };
+      document.querySelectorAll('[' + attr('text') + ']').forEach(function (el) {
+        el.textContent = el.getAttribute(attr('text'));
+      });
+      document.querySelectorAll('[' + attr('href') + ']').forEach(function (el) {
+        el.setAttribute('href', el.getAttribute(attr('href')));
+      });
+      document.querySelectorAll('[' + attr('action') + ']').forEach(function (el) {
+        el.setAttribute('action', el.getAttribute(attr('action')));
+      });
+      document.querySelectorAll('[' + attr('disabled') + ']').forEach(function (el) {
+        el.disabled = true;
+      });
     }
-    var value = (field.value || '').trim();
-    if (field.required && !value) return form.getAttribute('data-error-required') || '';
-    if (value && field.type === 'email' && !EMAIL.test(value)) return form.getAttribute('data-error-email') || '';
-    return '';
+
+    document.dispatchEvent(new CustomEvent('landing:offer', { detail: { state: state, days: days } }));
   }
 
-  function checkField(form, field) {
-    var message = messageFor(form, field);
-    setError(form, field, message);
-    return message;
-  }
-
-  function check(form) {
-    var first = null;
-    var fields = form.querySelectorAll('input, select, textarea');
-    Array.prototype.forEach.call(fields, function (field) {
-      if (field.closest('.hp') || field.type === 'hidden' || field.disabled) return;
-      if (checkField(form, field) && !first) first = field;
-    });
-    return first;
-  }
-
-  function status(form, text) {
-    var box = form.querySelector('[data-form-status]');
-    if (box) box.textContent = text || '';
-  }
-
-  function done(form, demo) {
-    var fields = form.querySelector('[data-form-fields]');
-    if (fields) fields.hidden = true;
-    var text = form.getAttribute('data-msg-success') || '';
-    if (demo && form.getAttribute('data-msg-unwired')) text += (text ? ' ' : '') + form.getAttribute('data-msg-unwired');
-    status(form, text);
-  }
-
-  // The endpoint is still a {{PLACEHOLDER}} (or missing): a demonstration.
-  function unwired(form) {
-    var action = form.getAttribute('action') || '';
-    return !action || /\{\{/.test(action);
-  }
-
-  document.querySelectorAll('form[data-form]').forEach(function (form) {
-    form.setAttribute('novalidate', '');
-    if (unwired(form)) form.setAttribute('data-demo', '');
-    form.addEventListener('submit', function (e) {
-      var trap = form.querySelector('.hp input');
-      if (trap && trap.value) {
-        e.preventDefault();
-        form.setAttribute('data-invalid', '');
-        done(form);
-        return;
-      }
-      var first = check(form);
-      if (first) {
-        e.preventDefault();
-        form.setAttribute('data-invalid', '');
-        first.focus();
-        return;
-      }
-      form.removeAttribute('data-invalid');
-      if (unwired(form)) {
-        // Nothing leaves the page; tracking.js counts form_demo_submit.
-        e.preventDefault();
-        form.setAttribute('data-demo', '');
-        done(form, true);
-        return;
-      }
-      var action = form.getAttribute('action');
-      if (!window.fetch || !window.FormData) return;   // native submission
-      e.preventDefault();
-      status(form, '');
-      window.fetch(action, { method: 'POST', body: new FormData(form) })
-        .then(function (r) {
-          if (!r.ok && r.type !== 'opaque') throw new Error(String(r.status));
-          done(form);
-        })
-        .catch(function () {
-          status(form, form.getAttribute('data-msg-failure'));
-          HTMLFormElement.prototype.submit.call(form);
-        });
-    });
-    // Once flagged, a field is re-checked as the visitor corrects it.
-    form.addEventListener('input', function (e) {
-      if (e.target.getAttribute('aria-invalid') === 'true') checkField(form, e.target);
-    });
-    form.addEventListener('change', function (e) {
-      if (e.target.getAttribute('aria-invalid') === 'true') checkField(form, e.target);
-    });
-  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
 })();
 </script>
 <script>
@@ -2851,6 +3821,55 @@ textarea.field__input {
     }, 2600);
   });
 })();
+/* ---- section : showcase-dark ---- */
+(function () {
+  if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+  document.querySelectorAll('.s-showcase').forEach(function (section) {
+    var parts = section.querySelectorAll('[data-part]');
+    function light(n) {
+      parts.forEach(function (el) { el.toggleAttribute('data-on', n !== null && el.getAttribute('data-part') === n); });
+    }
+    parts.forEach(function (el) {
+      el.addEventListener('pointerenter', function () { light(el.getAttribute('data-part')); });
+      el.addEventListener('pointerleave', function () { light(null); });
+    });
+  });
+})();
+/* ---- section : offer-ticket ---- */
+(function () {
+  var tilt = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 901px)');
+  var MAX = 3;
+  document.querySelectorAll('.s-offer__ticket').forEach(function (ticket) {
+    var price = ticket.querySelector('[data-offer-price]');
+    var note = ticket.querySelector('[data-offer-note]');
+    var radios = ticket.querySelectorAll('input[name="formule"][type="radio"]');
+    function sync() {
+      var on = ticket.querySelector('input[name="formule"]:checked');
+      if (!on) return;
+      if (price) price.textContent = on.getAttribute('data-price-label') || price.textContent;
+      if (note) note.textContent = on.getAttribute('data-note') || '';
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    // The choice gate sets the formula.
+    document.addEventListener('landing:choice', function (e) {
+      var match = ticket.querySelector('input[name="formule"][value="' + (e.detail && e.detail.value) + '"]');
+      if (match && !match.checked) { match.checked = true; sync(); }
+    });
+    // Pointer tilt: physical object, fine pointer, motion allowed, 3 degrees at most.
+    ticket.addEventListener('pointermove', function (e) {
+      if (!tilt.matches || e.pointerType !== 'mouse') return;
+      var r = ticket.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      ticket.style.setProperty('--ry', (x * MAX * 2).toFixed(2) + 'deg');
+      ticket.style.setProperty('--rx', (-y * MAX * 2).toFixed(2) + 'deg');
+    });
+    ticket.addEventListener('pointerleave', function () {
+      ticket.style.removeProperty('--rx');
+      ticket.style.removeProperty('--ry');
+    });
+  });
+})();
 /* ---- section : faq ---- */
 (function () {
   // FAQPage JSON-LD built from the visible questions (indexed pages only).
@@ -2865,6 +3884,32 @@ textarea.field__input {
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: entities });
     document.head.appendChild(script);
+  });
+})();
+/* ---- section : sticky-bar ---- */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  document.querySelectorAll('.s-sticky').forEach(function (bar) {
+    var link = bar.querySelector('a[href]');
+    var href = link ? link.getAttribute('href') : '';
+    // Shown once the hero has been scrolled past; hidden again while the
+    // conversion block or the footer is on screen.
+    var hero = document.querySelector('main section');
+    var guards = [document.querySelector('footer')];
+    if (href && href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+    guards = guards.filter(Boolean);
+    var onScreen = new Map();
+    var heroPassed = !hero;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
+        else onScreen.set(e.target, e.isIntersecting);
+      });
+      var blocked = guards.some(function (g) { return onScreen.get(g); });
+      bar.toggleAttribute('data-visible', heroPassed && !blocked);
+    });
+    if (hero) io.observe(hero);
+    guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });
   });
 })();
 </script>

@@ -1,17 +1,17 @@
 <script type="application/json" data-section-meta>
 {
   "id": "for-whom",
-  "name": "Pour qui, et pour qui ce n'est pas",
+  "name": "Pour qui, et pour qui ce n’est pas",
   "objection": "Est-ce pour moi",
   "when": "Toujours utile avant le prix : deux colonnes courtes dans les mots des personas. Le second volet qualifie et rassure.",
   "avoid": "Listes génériques valables pour tout le monde, plus de cinq lignes par colonne, un volet « pas pour vous » qui dénigre.",
   "reduced_motion": "Immobile.",
   "slots": {
     "title": {"type": "html", "doc": "h2 centré sans virgule ni point.", "example": "Pour qui <span class=\"hl\">est ce parcours</span>"},
-    "yes_title": {"type": "text", "doc": "Titre de la colonne positive.", "example": "Pour vous si"},
-    "yes": {"type": "list", "doc": "3 à 5 situations, une phrase chacune.", "example": ["Vous dirigez ou gérez une entreprise de 10 à 250 personnes.", "Un client ou une banque vous demande vos émissions cette année.", "Vous pouvez réunir vos factures et vos achats de l'an passé.", "Vous voulez comprendre vos chiffres pour pouvoir les défendre."]},
-    "no_title": {"type": "text", "doc": "Titre de la colonne négative.", "example": "Pas pour vous si"},
-    "no": {"type": "list", "doc": "2 à 4 situations, une phrase chacune.", "example": ["Votre groupe publie déjà un bilan audité chaque année.", "Vous cherchez un prestataire qui fait tout à votre place.", "Vos données de l'an passé sont impossibles à réunir avant l'été."]}
+    "fit_title": {"type": "text", "doc": "Titre de la colonne positive.", "example": "Pour vous si"},
+    "fit": {"type": "list", "doc": "3 à 5 situations, une phrase chacune. Clé fit et non yes : en YAML, yes et no nus se lisent comme des booléens.", "example": ["Vous dirigez ou gérez une entreprise de 10 à 250 personnes.", "Un client ou une banque vous demande vos émissions cette année.", "Vous pouvez réunir vos factures et vos achats de l’an passé.", "Vous voulez comprendre vos chiffres pour pouvoir les défendre."]},
+    "not_fit_title": {"type": "text", "doc": "Titre de la colonne négative.", "example": "Pas pour vous si"},
+    "not_fit": {"type": "list", "doc": "2 à 4 situations, une phrase chacune.", "example": ["Votre groupe publie déjà un bilan audité chaque année.", "Vous cherchez un prestataire qui fait tout à votre place.", "Vos données de l’an passé sont impossibles à réunir avant l’été."]}
   }
 }
 </script>
@@ -54,12 +54,12 @@
     </div>
     <div class="s-forwhom__grid" data-reveal-group>
       <div class="s-forwhom__col card" data-reveal>
-        <h3 class="s-forwhom__title">{{yes_title}}</h3>
-        <ul class="list-check" role="list">{{#yes}}<li>{{.}}</li>{{/yes}}</ul>
+        <h3 class="s-forwhom__title">{{fit_title}}</h3>
+        <ul class="list-check" role="list">{{#fit}}<li>{{.}}</li>{{/fit}}</ul>
       </div>
       <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
-        <h3 class="s-forwhom__title">{{no_title}}</h3>
-        <ul class="list-check list-cross" role="list">{{#no}}<li>{{.}}</li>{{/no}}</ul>
+        <h3 class="s-forwhom__title">{{not_fit_title}}</h3>
+        <ul class="list-check list-cross" role="list">{{#not_fit}}<li>{{.}}</li>{{/not_fit}}</ul>
       </div>
     </div>
   </div>

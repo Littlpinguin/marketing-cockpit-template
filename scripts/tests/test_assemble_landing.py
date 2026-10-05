@@ -144,7 +144,7 @@ def test_fragment_sans_meta_refuse(tmp_path):
 BIBLIOTHEQUE = al.bibliotheque(LIBRARY)
 NOMS = sorted(BIBLIOTHEQUE)
 CONVERSION = ["topbar", "hero", "final-cta", "sticky-bar", "offer-ticket", "lead-capture", "form",
-              "pricing-table"]
+              "pricing-table", "event-registration"]
 RE_COULEUR = re.compile(r"#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(")
 
 
@@ -153,7 +153,7 @@ def test_la_bibliotheque_couvre_les_mecaniques_attendues():
                  "benefits", "journey", "program", "showcase-dark", "map-pinned", "people",
                  "testimonials", "outcomes", "for-whom", "process", "comparison", "pricing-table",
                  "offer-ticket", "lead-capture", "form", "faq", "legal", "final-cta", "footer",
-                 "sticky-bar"}
+                 "sticky-bar", "event-registration", "cases", "guarantee"}
     assert attendues <= set(NOMS)
 
 
@@ -199,6 +199,45 @@ def test_aucune_couleur_en_dur_ni_pastille(nom):
     assert RE_COULEUR.findall(f.style) == [], f"{nom} : couleur en dur dans le style"
     assert "eyebrow" not in f.balisage.lower() and "eyebrow" not in f.style.lower()
     assert "—" not in f.chemin.read_text(encoding="utf-8"), f"{nom} : tiret cadratin"
+
+
+RE_APOSTROPHE_DROITE = re.compile(r"(?<=[A-Za-zÀ-ÖØ-öø-ÿŒœ])'(?=[A-Za-zÀ-ÖØ-öø-ÿŒœ])")
+
+
+def _textes(valeur):
+    """Every string of a slot example (lists and objects included)."""
+    if isinstance(valeur, str):
+        yield valeur
+    elif isinstance(valeur, list):
+        for v in valeur:
+            yield from _textes(v)
+    elif isinstance(valeur, dict):
+        for v in valeur.values():
+            yield from _textes(v)
+
+
+def _hors_balises(texte: str) -> str:
+    return re.sub(r"<[^>]*>", " ", texte)
+
+
+@pytest.mark.parametrize("nom", NOMS)
+def test_apostrophe_typographique_dans_les_textes_visibles(nom):
+    """Exemples de slots et fiche du catalogue : l'apostrophe française est ’, jamais '."""
+    meta = BIBLIOTHEQUE[nom].meta
+    fiche = [meta.get(c, "") for c in ("name", "objection", "when", "avoid", "reduced_motion")]
+    exemples = [t for spec in meta["slots"].values() for t in _textes(spec["example"])]
+    for texte in fiche + exemples:
+        assert not RE_APOSTROPHE_DROITE.search(_hors_balises(texte)), f"{nom} : apostrophe droite dans « {texte[:70]} »"
+
+
+def test_apostrophe_typographique_dans_les_specs_et_le_catalogue():
+    yaml = pytest.importorskip("yaml")
+    specs = sorted((REPO / "05-web-content" / "templates" / "landing-pages" / "specs").glob("*.yaml"))
+    sources = [(p.name, yaml.safe_load(p.read_text(encoding="utf-8"))) for p in specs]
+    sources.append(("catalogue.json", json.loads((LIBRARY / "catalogue.json").read_text(encoding="utf-8"))))
+    for nom, spec in sources:
+        for texte in _textes(spec):
+            assert not RE_APOSTROPHE_DROITE.search(_hors_balises(texte)), f"{nom} : apostrophe droite dans « {texte[:70]} »"
 
 
 def test_assets_sans_couleur_en_dur():
@@ -270,6 +309,36 @@ def test_avertissement_pour_chaque_slot_non_rempli():
     manquants = [a for a in resultat.avertissements if "non rempli" in a]
     assert len(manquants) == len(BIBLIOTHEQUE["hero"].slots) - 1
     assert not any("« title »" in a for a in manquants)
+
+
+@pytest.mark.parametrize("slots", [
+    {True: ["Pour vous"], "not_fit": ["Pas pour vous"]},
+    {"rows": [{"label": "Prix", "cells": [{False: True, "text": "Non"}]}]},
+])
+def test_cle_booleenne_refusee(slots):
+    """yes / no / on / off nus en YAML deviennent des booléens : l'assembleur le dit clairement."""
+    with pytest.raises(al.ErreurAssemblage, match="clé booléenne : YAML lit yes/no/on/off comme des booléens, "
+                                                 "mettez la clé entre guillemets"):
+        al.assembler(spec_minimale(sections=[{"use": "for-whom", "slots": slots}]))
+
+
+def test_cle_booleenne_dans_une_spec_yaml(tmp_path):
+    pytest.importorskip("yaml")
+    chemin = tmp_path / "page.yaml"
+    chemin.write_text("title: Page\nsamples: true\nsections:\n  - use: for-whom\n    slots:\n"
+                      "      yes:\n        - Pour vous\n      no:\n        - Pas pour vous\n", encoding="utf-8")
+    with pytest.raises(al.ErreurAssemblage, match="clé booléenne") as err:
+        al.lire_spec(chemin)
+    assert "sections[0].slots" in str(err.value) and "yes ou on" in str(err.value)
+    r = run(str(chemin), "-o", str(tmp_path / "index.html"))
+    assert r.returncode == 2 and "mettez la clé entre guillemets" in r.stderr
+    # entre guillemets, ou avec les noms de slots fit / not_fit : accepté
+    chemin.write_text("title: Page\nsamples: true\nsections:\n  - use: for-whom\n    slots:\n"
+                      "      fit:\n        - Pour vous\n      \"no\":\n        - x\n", encoding="utf-8")
+    spec = al.lire_spec(chemin)
+    resultat = al.assembler(spec)
+    assert "Pour vous" in resultat.html
+    assert resultat.avertissements == ["for-whom (for-whom) : slot « no » inconnu du fragment for-whom (ignoré)"]
 
 
 def test_samples_et_slot_inconnu():
@@ -463,6 +532,8 @@ def test_cli_list_et_describe():
     assert r.returncode == 0 and "offer-ticket" in r.stdout
     r = run("--describe", "offer-ticket")
     assert r.returncode == 0 and "formulas (list)" in r.stdout
+    r = run("--describe", "for-whom")
+    assert "    fit (list)" in r.stdout and "    not_fit (list)" in r.stdout and "    yes (list)" not in r.stdout
     assert run("--describe", "inconnu").returncode == 2
 
 
@@ -548,4 +619,140 @@ def test_etat_de_l_offre_calcule_dans_le_navigateur(chromium, tmp_path):
     assert bouton == BIBLIOTHEQUE["offer-ticket"].slots["cta_waitlist"]["example"]
     assert page.evaluate("document.querySelector('#offre-billet').getAttribute('action')") == \
         "https://shop.example.com/waitlist"
+    page.close()
+
+
+# --------------------------------------------------------------------------
+# Mesure des formulaires (Chromium) : formule unique, démo jamais comptée
+# --------------------------------------------------------------------------
+
+def _page(tmp_path: Path, sections: list, nom: str = "index.html") -> str:
+    sortie = tmp_path / nom
+    sortie.write_text(al.assembler(spec_minimale(sections=sections), sortie=sortie).html, encoding="utf-8")
+    return sortie.as_uri()
+
+
+def _contexte_coupe(chromium):
+    """Aucune requête ne quitte la machine : tout ce qui n'est pas un fichier local reçoit un 200 vide."""
+    contexte = chromium.new_context(viewport={"width": 1280, "height": 900})
+    envoyees: list = []
+
+    def router(route):
+        if route.request.url.startswith("file:"):
+            route.continue_()
+            return
+        envoyees.append((route.request.method, route.request.url))
+        route.fulfill(status=200, body="", headers={"Access-Control-Allow-Origin": "*"})
+
+    contexte.route("**/*", router)
+    return contexte, envoyees
+
+
+def test_begin_checkout_formule_unique(chromium, tmp_path):
+    """Une seule formule (champ caché) : begin_checkout porte quand même valeur, formule, devise et UTM."""
+    url = _page(tmp_path, [{"use": "offer-ticket", "id": "offre", "slots": {
+        "action": "https://shop.example.com/checkout", "formula_legend": "", "currency": "EUR",
+        "formulas": [{"value": "saison", "label": "Saison", "price": 69, "price_label": "69 €",
+                      "note": "Paiement unique.", "checked": True}]}}])
+    contexte, envoyees = _contexte_coupe(chromium)
+    page = contexte.new_page()
+    page.goto(url + "?utm_source=lettre&utm_campaign=printemps")
+    page.wait_for_timeout(300)
+    assert page.evaluate("document.querySelector('#offre-billet input[type=hidden][name=formule]').value") == "saison"
+    page.evaluate("document.addEventListener('submit', e => e.preventDefault(), true)")
+    page.evaluate("document.querySelector('#offre-billet').requestSubmit()")
+    evt = page.evaluate("window.dataLayer.filter(e => e.event === 'begin_checkout').pop()")
+    assert evt["value"] == 69 and evt["formula"] == "saison" and evt["currency"] == "EUR"
+    assert evt["utm_source"] == "lettre" and evt["utm_campaign"] == "printemps"
+    contexte.close()
+
+
+def test_envoi_de_demonstration_jamais_compte_comme_lead(chromium, tmp_path):
+    """Endpoint encore en marqueur : rien ne part, l'état de succès s'affiche, form_demo_submit remplace generate_lead."""
+    url = _page(tmp_path, [{"use": "lead-capture", "id": "guide", "slots": {"action": "{{FORM_ENDPOINT}}"}}])
+    contexte, envoyees = _contexte_coupe(chromium)
+    page = contexte.new_page()
+    page.goto(url)
+    page.wait_for_timeout(300)
+    assert page.evaluate("document.querySelector('#guide-form').hasAttribute('data-demo')")
+    avant = list(envoyees)
+    page.fill("#guide-email", "prenom@example.com")
+    page.click("#guide-form button[type=submit]")
+    page.wait_for_timeout(400)
+    noms = page.evaluate("window.dataLayer.filter(e => e.event).map(e => e.event)")
+    assert "form_demo_submit" in noms and "generate_lead" not in noms
+    evt = page.evaluate("window.dataLayer.filter(e => e.event === 'form_demo_submit').pop()")
+    assert evt["form_event"] == "generate_lead" and evt["form_id"] == "guide-form" and evt["optin"] is False
+    assert envoyees == avant                       # aucune requête partie
+    statut = page.evaluate("document.querySelector('#guide [data-form-status]').textContent")
+    exemples = BIBLIOTHEQUE["lead-capture"].slots
+    assert exemples["msg_success"]["example"] in statut and exemples["msg_unwired"]["example"] in statut
+    contexte.close()
+
+
+def test_vrai_endpoint_generate_lead_avec_optin(chromium, tmp_path):
+    """Endpoint réel : envoi en POST (intercepté ici), generate_lead avec optin selon la case."""
+    url = _page(tmp_path, [{"use": "lead-capture", "id": "guide", "slots": {
+        "action": "https://forms.example.com/lead"}}])
+    contexte, envoyees = _contexte_coupe(chromium)
+    page = contexte.new_page()
+    page.goto(url)
+    page.wait_for_timeout(300)
+    assert not page.evaluate("document.querySelector('#guide-form').hasAttribute('data-demo')")
+    assert page.evaluate("document.querySelector('#guide-optin').checked") is False   # jamais pré-cochée
+    assert page.evaluate("document.querySelector('#guide-form input[required][type=checkbox]')") is None
+    page.fill("#guide-email", "prenom@example.com")
+    page.check("#guide-optin")
+    page.click("#guide-form button[type=submit]")
+    page.wait_for_timeout(400)
+    evt = page.evaluate("window.dataLayer.filter(e => e.event === 'generate_lead').pop()")
+    assert evt and evt["optin"] is True and evt["form_id"] == "guide-form"
+    assert ("POST", "https://forms.example.com/lead") in envoyees
+    contexte.close()
+
+
+def test_inscription_evenement_mesure_le_mode(chromium, tmp_path):
+    url = _page(tmp_path, [{"use": "event-registration", "id": "inscription", "slots": {
+        "action": "https://forms.example.com/inscription"}}])
+    contexte, envoyees = _contexte_coupe(chromium)
+    page = contexte.new_page()
+    page.goto(url)
+    page.wait_for_timeout(300)
+    page.click('#inscription label:has(input[value="en-ligne"])')
+    page.fill("#inscription-name", "Prénom Nom")
+    page.fill("#inscription-email", "prenom@example.com")
+    page.fill("#inscription-company", "Entreprise Exemple")
+    page.click("#inscription-form button[type=submit]")
+    page.wait_for_timeout(400)
+    evt = page.evaluate("window.dataLayer.filter(e => e.event === 'generate_lead').pop()")
+    assert evt["participation"] == "en-ligne" and evt["optin"] is False
+    contexte.close()
+
+
+def test_inscription_evenement_salle_complete(chromium, tmp_path):
+    """État waitlist : le mode « sur place » se ferme, le direct reste ouvert et sélectionné."""
+    sortie = tmp_path / "index.html"
+    spec = spec_minimale(sections=[{"use": "event-registration", "id": "inscription"}],
+                         offer={"state": "waitlist"})
+    sortie.write_text(al.assembler(spec, sortie=sortie).html, encoding="utf-8")
+    page = chromium.new_page()
+    page.goto(sortie.as_uri())
+    page.wait_for_timeout(300)
+    assert page.evaluate("document.querySelector('#inscription input[value=sur-place]').disabled") is True
+    assert page.evaluate("document.querySelector('#inscription input[name=participation]:checked').value") == "en-ligne"
+    assert page.evaluate("document.querySelector('#inscription-form').dataset.trackParticipation") == "en-ligne"
+    page.close()
+
+
+def test_grille_sans_prix_annuel_sans_bascule(chromium, tmp_path):
+    plans = [{"key": k, "name": k, "for": "x", "featured": False, "badge": "", "price_prefix": "dès",
+              "price_month": "4 800 €", "unit": "HT", "note": "n", "features": ["a"], "href": "#offre",
+              "cta_label": "Choisir", "primary": False} for k in ("a", "b")]
+    url = _page(tmp_path, [{"use": "pricing-table", "id": "tarifs", "slots": {"plans": plans}},
+                           {"use": "faq", "id": "offre"}])
+    page = chromium.new_page()
+    page.goto(url)
+    page.wait_for_timeout(300)
+    assert page.evaluate("getComputedStyle(document.querySelector('#tarifs .s-pricing__toggle-wrap')).display") == "none"
+    assert page.evaluate("document.querySelector('#tarifs .s-pricing__price').textContent.replace(/\\s+/g, ' ')").startswith("dès 4")
     page.close()

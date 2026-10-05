@@ -6,7 +6,7 @@
 <title>Bibliothèque de sections, le catalogue</title>
 <meta name="description" content="Chaque section de la bibliothèque de landings, avec sa fiche et un contenu fictif.">
 <meta name="robots" content="noindex, nofollow">
-<meta name="generator" content="assemble-landing.py · sha256:0fff76182bcf0e72462975bbf58002aadf04341ee73560c2cdbc7aef42cdff15">
+<meta name="generator" content="assemble-landing.py · sha256:b619dc37f2cf162962accd5c1cbc4abea3778247381db968c1981a5a6556ea2b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap">
@@ -2168,6 +2168,43 @@ textarea.field__input {
   margin-inline: auto;
 }
 
+/* Not pinned (small screen, short screen, reduced motion, no script): each
+   step carries its own scene, static, under its text (beside it on a wide
+   screen). The pinned column of scenes is only for the pinned layout. */
+.s-journey__inline {
+  display: none;
+}
+
+:root:not(.sc-pin) .s-journey__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:root:not(.sc-pin) .s-journey__inline {
+  display: block;
+  grid-column: 2;
+  margin-top: 16px;
+}
+
+:root:not(.sc-pin) .s-journey__inline .obj {
+  width: 100%;
+  max-width: 440px;
+}
+
+@media (min-width: 1101px) {
+  :root:not(.sc-pin) .s-journey__step {
+    grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 clamp(24px, 1rem + 2vw, 56px);
+    padding: 24px 0;
+  }
+
+  :root:not(.sc-pin) .s-journey__inline {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    margin-top: 0;
+  }
+}
+
 /* Not pinned: every step open, dots fill as the reading line passes them. */
 :root:not(.sc-pin) .s-journey__step[data-reached="true"] .s-journey__dot {
   border-color: var(--brand-primary);
@@ -2578,11 +2615,30 @@ textarea.field__input {
 }
 
 .s-map__svg {
+  position: relative;
   width: 100%;
   height: auto;
 }
 
-.s-map__meridian {
+/* Ground of the schema, drawn from the tokens (no geography implied). */
+.s-map__figure[data-decor="lines"] {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 59px, var(--line) 59px 60px),
+    repeating-linear-gradient(90deg, transparent 0 59px, var(--line) 59px 60px);
+  background-position: center;
+}
+
+.s-map__figure[data-decor="dots"] {
+  background-image: radial-gradient(circle, var(--line-strong) 1.3px, transparent 1.8px);
+  background-position: center;
+  background-size: 24px 24px;
+}
+
+.s-map__figure[data-decor="rings"] {
+  background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 71px, var(--line) 71px 72.5px);
+}
+
+.s-map__decor {
   fill: none;
   stroke: var(--brand-line);
   stroke-width: 1.5;
@@ -2622,15 +2678,17 @@ textarea.field__input {
   font-weight: 700;
 }
 
+/* A halo in the colour of the figure keeps each label legible over the
+   ground and the route, whatever its length (no fixed plate). */
 .s-map__mark .s-map__tag {
   fill: var(--brand-dark);
   font-family: var(--font-display);
   font-size: 17px;
   font-weight: 700;
-}
-
-.s-map__tag-bg {
-  fill: var(--brand-white);
+  paint-order: stroke;
+  stroke: var(--brand-white);
+  stroke-width: 7px;
+  stroke-linejoin: round;
 }
 
 @media (max-width: 1100px) {
@@ -2681,13 +2739,27 @@ textarea.field__input {
   overflow: hidden;
 }
 
+/* The portrait fills its column: width is fixed by the column, the 4:5 ratio
+   gives the height, and min-height stretches it to the card when the
+   biography is taller. Without width: 100%, the ratio would size it from the
+   card height and push it out of its column. */
 .s-people__portrait {
   position: relative;
   display: grid;
   place-items: center;
+  width: 100%;
   min-height: 100%;
   aspect-ratio: 4 / 5;
+  overflow: hidden;
   background: var(--tint);
+}
+
+/* rounded: a block set in from the card edge, at the radius of the tokens. */
+.s-people__grid[data-shape="rounded"] .s-people__portrait {
+  width: calc(100% - 24px);
+  min-height: calc(100% - 24px);
+  margin: 12px 0 12px 12px;
+  border-radius: max(8px, calc(var(--radius-card) - 4px));
 }
 
 .s-people__portrait img {
@@ -2696,17 +2768,6 @@ textarea.field__input {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.s-people__portrait::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-color: var(--brand-primary);
-  opacity: 0.08;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='1.2'%3E%3Cpath d='M50 0C20 25 20 75 50 100M50 0c30 25 30 75 0 100M0 35h100M0 65h100'/%3E%3C/svg%3E") center / 140% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='1.2'%3E%3Cpath d='M50 0C20 25 20 75 50 100M50 0c30 25 30 75 0 100M0 35h100M0 65h100'/%3E%3C/svg%3E") center / 140% no-repeat;
 }
 
 .s-people__initials {
@@ -2763,6 +2824,10 @@ textarea.field__input {
 
   .s-people__portrait {
     aspect-ratio: 16 / 9;
+  }
+
+  .s-people__grid[data-shape="rounded"] .s-people__portrait {
+    margin: 12px 12px 0;
   }
 }
 /* ---- section : testimonials ---- */
@@ -2855,6 +2920,118 @@ textarea.field__input {
 
   .s-testi__card:nth-child(2) {
     margin-top: 0;
+  }
+}
+/* ---- section : cases ---- */
+.s-cases__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: clamp(20px, 0.8rem + 1.6vw, 32px);
+}
+
+.s-cases__card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: clamp(24px, 1rem + 1.4vw, 40px);
+}
+
+.s-cases__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.s-cases__scope {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-cases__meter {
+  display: grid;
+  gap: 14px;
+  margin: 10px 0 6px;
+  padding: 20px 0;
+  border-block: 1px solid var(--line);
+}
+
+.s-cases__row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.s-cases__row dt {
+  font-weight: 600;
+}
+
+.s-cases__row dd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.25rem;
+  align-items: center;
+  gap: 14px;
+}
+
+.s-cases__track {
+  display: block;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+.s-cases__fill {
+  display: block;
+  width: calc(var(--v, 0.5) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--muted);
+  transform-origin: 0 50%;
+  transition: transform 0.9s var(--ease) 0.25s;
+}
+
+.s-cases__row--after .s-cases__fill {
+  background: var(--gradient);
+}
+
+/* Entry: the "after" bar fills once its card is on screen (reveal engine on,
+   motion allowed). Otherwise every bar is full from the start. */
+.rv-on .s-cases__card:not(.is-in) .s-cases__row--after .s-cases__fill {
+  transform: scaleX(0);
+}
+
+.s-cases__value {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-cases__row--after .s-cases__value {
+  color: var(--hl);
+}
+
+.s-cases__quote blockquote {
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  text-wrap: pretty;
+}
+
+.s-cases__quote figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+@media (max-width: 640px) {
+  .s-cases__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
   }
 }
 /* ---- section : outcomes ---- */
@@ -3016,19 +3193,66 @@ textarea.field__input {
   }
 }
 /* ---- section : comparison ---- */
+/* A real table in its own scroll region (role="region", focusable): the
+   first column stays fixed while the others slide under it. */
 .s-compare__scroll {
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
 
+.s-compare__scroll:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-card);
+}
+
+.s-compare__hint {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-compare__hint::after {
+  content: "";
+  flex: none;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m13 6 6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m13 6 6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Shown when the table overflows (the script measures it); without script,
+   on screens where it is sure to overflow. */
+.s-compare[data-scrollable="true"] .s-compare__hint {
+  display: flex;
+}
+
 .s-compare__table {
   width: 100%;
   min-width: 640px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-variant-numeric: tabular-nums;
+}
+
+.s-compare__table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.s-compare__table tbody th {
+  background: var(--surface);
+  box-shadow: inset -1px 0 0 var(--line);
 }
 
 .s-compare__table th,
@@ -3091,6 +3315,32 @@ textarea.field__input {
 .s-compare__icon--partial {
   border: 2px solid var(--muted);
   background: linear-gradient(90deg, var(--muted) 50%, transparent 50%);
+}
+
+@media (max-width: 720px) {
+  .s-compare:not([data-scrollable="false"]) .s-compare__hint {
+    display: flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-compare__table {
+    min-width: 540px;
+  }
+
+  .s-compare__table th,
+  .s-compare__table td {
+    padding: 12px 14px;
+  }
+
+  .s-compare__table tbody th {
+    width: 8.5rem;
+    min-width: 7.5rem;
+  }
+
+  .s-compare__cell {
+    gap: 8px;
+  }
 }
 /* ---- section : pricing-table ---- */
 .s-pricing__toggle {
@@ -3174,6 +3424,19 @@ textarea.field__input {
   font-weight: 800;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
+}
+
+.s-pricing__prefix {
+  align-self: baseline;
+  color: var(--muted);
+  font-size: var(--t-lead);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* No plan with a yearly price: the period switch has nothing to switch. */
+.s-pricing:not(:has([data-period-show="year"])) .s-pricing__toggle-wrap {
+  display: none;
 }
 
 .s-pricing__unit {
@@ -3356,13 +3619,81 @@ textarea.field__input {
   text-wrap: pretty;
 }
 
-.s-offer__cta {
+.s-offer__action {
+  display: grid;
+  gap: 12px;
   margin-top: 4px;
 }
 
+/* Closed: the button stays, visibly unavailable, its label readable at
+   4.5:1 (muted ink on the tinted surface, never an opacity). */
 .s-offer__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
   cursor: not-allowed;
   transform: none;
+}
+
+/* The way out of a closed offer: a real button, same size as the main one. */
+.s-offer__notify {
+  min-height: 56px;
+}
+
+/* Single formula: a horizontal ticket. Price and action side by side, then
+   the stub below with its two columns, so no column is left half empty. */
+.s-offer__ticket--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Rows without gaps: the action spans spare rows that must stay at zero
+   height; the left column keeps its rhythm by margins. */
+.s-offer__ticket--single .s-offer__main {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0 clamp(32px, 1rem + 3vw, 64px);
+}
+
+.s-offer__ticket--single .s-offer__main > * {
+  grid-column: 1;
+}
+
+.s-offer__ticket--single .s-offer__main > * + :not(.s-offer__action) {
+  margin-top: 18px;
+}
+
+.s-offer__ticket--single .s-offer__main > .s-offer__action {
+  grid-column: 2;
+  grid-row: 1 / span 8;
+  align-self: center;
+}
+
+.s-offer__ticket--single .s-offer__stub {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px clamp(32px, 1rem + 3vw, 64px);
+  border-left: 0;
+  border-top: 2px dashed var(--line-strong);
+  border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+}
+
+.s-offer__ticket--single .s-offer__prereq {
+  grid-column: 1 / -1;
+}
+
+.s-offer__ticket--single .s-offer__stub::before,
+.s-offer__ticket--single .s-offer__stub::after {
+  top: calc(var(--notch) / -2 - 1px);
+  bottom: auto;
+}
+
+.s-offer__ticket--single .s-offer__stub::before {
+  left: calc(var(--notch) / -2);
+}
+
+.s-offer__ticket--single .s-offer__stub::after {
+  left: auto;
+  right: calc(var(--notch) / -2);
 }
 
 .s-offer__deadline {
@@ -3468,6 +3799,20 @@ textarea.field__input {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .s-offer__ticket--single .s-offer__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main > .s-offer__action {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 18px;
+  }
+
+  .s-offer__ticket--single .s-offer__stub {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .s-offer__stub {
     border-left: 0;
     border-top: 2px dashed var(--line-strong);
@@ -3487,6 +3832,108 @@ textarea.field__input {
   .s-offer__stub::after {
     left: auto;
     right: calc(var(--notch) / -2);
+  }
+}
+/* ---- section : guarantee ---- */
+.s-guarantee__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: center;
+  max-width: 1080px;
+}
+
+.s-guarantee__seal {
+  justify-self: center;
+  width: min(100%, 280px);
+}
+
+.s-guarantee__seal svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  transform: rotate(-8deg);
+}
+
+.s-guarantee__outer {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+}
+
+.s-guarantee__inner {
+  fill: var(--surface);
+  stroke: var(--hl);
+  stroke-width: 2.5;
+}
+
+.s-guarantee__ring {
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.s-guarantee__big {
+  fill: var(--hl);
+  font-family: var(--font-display);
+  font-size: 92px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.s-guarantee__small {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.s-guarantee .section-head {
+  margin-bottom: clamp(24px, 1rem + 1vw, 36px);
+}
+
+.s-guarantee__terms {
+  border-top: 1px solid var(--line);
+}
+
+/* The term column holds a long word (« Remboursement ») without touching
+   the condition beside it. */
+.s-guarantee__row {
+  display: grid;
+  grid-template-columns: minmax(9.75rem, 0.22fr) minmax(0, 1fr);
+  gap: 6px 28px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-guarantee__row dt {
+  font-weight: 700;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.s-guarantee__row dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .s-guarantee__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-guarantee__seal {
+    justify-self: start;
+    width: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-guarantee__row {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 /* ---- section : lead-capture ---- */
@@ -3511,9 +3958,9 @@ textarea.field__input {
   gap: 18px;
 }
 
+/* What follows the click: a full sentence, so running-text size. */
 .s-lead__after {
   color: var(--muted);
-  font-size: var(--t-small);
   text-align: center;
   text-wrap: balance;
 }
@@ -3601,6 +4048,265 @@ textarea.field__input {
 @media (max-width: 640px) {
   .s-form__row {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* ---- section : event-registration ---- */
+.s-evreg__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-evreg__facts {
+  display: grid;
+  gap: 16px;
+  margin-bottom: clamp(28px, 1rem + 2vw, 40px);
+  padding-block: 22px;
+  border-block: 1px solid var(--line);
+}
+
+.s-evreg__facts > div {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+}
+
+.s-evreg__facts dt {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-evreg__facts dd {
+  font-weight: 600;
+  text-wrap: pretty;
+}
+
+.s-evreg__next-title {
+  margin-bottom: 16px;
+  font-size: var(--t-h3);
+  font-weight: 800;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.015em;
+}
+
+.s-evreg__next {
+  display: grid;
+  gap: 14px;
+  counter-reset: next;
+}
+
+.s-evreg__next > li {
+  position: relative;
+  padding-left: 44px;
+  counter-increment: next;
+  text-wrap: pretty;
+}
+
+.s-evreg__next > li::before {
+  content: counter(next);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+/* The form card is paper, on a dark band too: the semantic layer is pointed
+   back at the light palette (tokens only, no new colour). */
+.s-evreg__card {
+  --ink: var(--brand-dark);
+  --surface: var(--brand-white);
+  --surface-2: var(--brand-surface-2);
+  --muted: var(--brand-muted);
+  --hl: var(--brand-primary-text);
+  --tint: var(--brand-primary-soft);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-field-border);
+  --focus: var(--brand-dark);
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+  color: var(--ink);
+}
+
+.s-evreg__form,
+.s-evreg__fields,
+.s-evreg__open {
+  display: grid;
+  gap: 20px;
+}
+
+.s-evreg__row,
+.s-evreg__seg {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.s-evreg__modes {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-evreg__legend {
+  margin-bottom: 12px;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.s-evreg__opt {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-height: 76px;
+  padding: 14px 48px 14px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.s-evreg__opt:hover {
+  border-color: var(--ink);
+}
+
+.s-evreg__opt::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.s-evreg__opt:has(input:checked) {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--brand-primary);
+}
+
+.s-evreg__opt:has(input:checked)::after {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  box-shadow: inset 0 0 0 4px var(--surface);
+}
+
+.s-evreg__opt:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.s-evreg__opt:has(input:disabled) {
+  border-style: dashed;
+  background: var(--surface-2);
+  cursor: not-allowed;
+}
+
+.s-evreg__opt-label {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-evreg__opt-meta {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+.s-evreg__opt .badge {
+  justify-self: start;
+  margin-top: 4px;
+}
+
+.s-evreg__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.s-evreg__deadline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.s-evreg__deadline::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-evreg__closed {
+  font-weight: 600;
+}
+
+.s-evreg__privacy {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-evreg__status:not(:empty) {
+  padding: 14px 16px;
+  border-radius: var(--radius-input);
+  background: var(--tint);
+}
+
+@media (max-width: 1100px) {
+  .s-evreg__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-evreg__row,
+  .s-evreg__seg {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-evreg__opt {
+    min-height: 64px;
+  }
+
+  .s-evreg__facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
   }
 }
 /* ---- section : faq ---- */
@@ -3789,14 +4495,41 @@ textarea.field__input {
   text-align: center;
 }
 
+/* Decor: drawn from the tokens of the band (--line, --line-strong) and
+   faded towards the edges. A custom SVG (decor_html) takes the colour of the
+   lines through currentColor. */
 .s-final__decor {
   position: absolute;
   inset: 0;
   z-index: -1;
+  color: var(--line);
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(closest-side, black 35%, transparent);
+  mask-image: radial-gradient(closest-side, black 35%, transparent);
+}
+
+.s-final__decor > svg {
   width: 100%;
   height: 100%;
-  color: var(--brand-line-on-dark);
-  pointer-events: none;
+}
+
+.s-final__decor--rings {
+  background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 87px, var(--line) 87px 88.5px);
+}
+
+.s-final__decor--lines {
+  background-image: repeating-linear-gradient(90deg, transparent 0 79px, var(--line) 79px 80.5px);
+  background-position: center;
+}
+
+.s-final__decor--dots {
+  background-image: radial-gradient(circle, var(--line-strong) 1.6px, transparent 2.2px);
+  background-position: center;
+  background-size: 40px 40px;
+}
+
+.s-final__decor--none {
+  display: none;
 }
 
 .s-final__inner {
@@ -3955,14 +4688,14 @@ textarea.field__input {
 <div class="lib-intro">
   <div class="wrap lib-intro__inner">
     <p class="lib-intro__title">Bibliothèque de sections : le catalogue</p>
-    <p class="lib-intro__text">Toutes les sections de la bibliothèque, dans un ordre de récit plausible, remplies avec le contenu d&#x27;exemple de leurs slots : une marque fictive (Meridian Conseil, cabinet climat inventé) et une offre fictive. Avant chaque section, sa fiche dit l&#x27;objection qu&#x27;elle traite, quand l&#x27;utiliser, quand l&#x27;éviter, ce qui se passe en mouvement réduit et quels slots elle prend. Une vraie page n&#x27;en prend qu&#x27;une dizaine. Page assemblée par 05-web-content/scripts/assemble-landing.py depuis catalogue.json.</p>
-    <nav class="lib-intro__toc" aria-label="Sections du catalogue"><ol role="list"><li><a href="#hero"><code>hero</code> Hero à objet fort</a></li><li><a href="#preuves"><code>proof-band</code> Bande de preuve immédiate</a></li><li><a href="#logos"><code>logos</code> Logos clients</a></li><li><a href="#probleme"><code>problem-pinned</code> Problème épinglé</a></li><li><a href="#pivot"><code>pivot</code> Basculement typographique</a></li><li><a href="#formules"><code>choice-gate</code> Porte de choix</a></li><li><a href="#benefits"><code>benefits</code> Bénéfices</a></li><li><a href="#parcours"><code>journey</code> Parcours en scrollytelling</a></li><li><a href="#programme"><code>program</code> Programme détaillé</a></li><li><a href="#kit"><code>showcase-dark</code> Vitrine d&#x27;un objet tangible (bande sombre)</a></li><li><a href="#rythme"><code>map-pinned</code> Carte ou schéma épinglé</a></li><li><a href="#animateurs"><code>people</code> Personnes (experts, intervenants, équipe)</a></li><li><a href="#avis"><code>testimonials</code> Témoignages</a></li><li><a href="#resultats"><code>outcomes</code> Résultats (respiration)</a></li><li><a href="#pour-qui"><code>for-whom</code> Pour qui, et pour qui ce n&#x27;est pas</a></li><li><a href="#ensuite"><code>process</code> Étapes (ce qui se passe ensuite)</a></li><li><a href="#comparatif"><code>comparison</code> Tableau comparatif</a></li><li><a href="#suivi"><code>pricing-table</code> Grille tarifaire</a></li><li><a href="#offre"><code>offer-ticket</code> Bloc de conversion en billet</a></li><li><a href="#guide"><code>lead-capture</code> Formulaire de capture</a></li><li><a href="#contact"><code>form</code> Formulaire qualifiant (rendez-vous, démo, devis)</a></li><li><a href="#faq"><code>faq</code> FAQ avec carte collante</a></li><li><a href="#mentions"><code>legal</code> Informations légales</a></li><li><a href="#final"><code>final-cta</code> CTA final (bande sombre)</a></li></ol></nav>
+    <p class="lib-intro__text">Toutes les sections de la bibliothèque, dans un ordre de récit plausible, remplies avec le contenu d’exemple de leurs slots : une marque fictive (Meridian Conseil, cabinet climat inventé) et une offre fictive. Avant chaque section, sa fiche dit l’objection qu’elle traite, quand l’utiliser, quand l’éviter, ce qui se passe en mouvement réduit et quels slots elle prend. Une vraie page n’en prend qu’une dizaine. Page assemblée par 05-web-content/scripts/assemble-landing.py depuis catalogue.json.</p>
+    <nav class="lib-intro__toc" aria-label="Sections du catalogue"><ol role="list"><li><a href="#hero"><code>hero</code> Hero à objet fort</a></li><li><a href="#preuves"><code>proof-band</code> Bande de preuve immédiate</a></li><li><a href="#logos"><code>logos</code> Logos clients</a></li><li><a href="#probleme"><code>problem-pinned</code> Problème épinglé</a></li><li><a href="#pivot"><code>pivot</code> Basculement typographique</a></li><li><a href="#formules"><code>choice-gate</code> Porte de choix</a></li><li><a href="#benefits"><code>benefits</code> Bénéfices</a></li><li><a href="#parcours"><code>journey</code> Parcours en scrollytelling</a></li><li><a href="#programme"><code>program</code> Programme détaillé</a></li><li><a href="#kit"><code>showcase-dark</code> Vitrine d’un objet tangible (bande sombre)</a></li><li><a href="#rythme"><code>map-pinned</code> Carte ou schéma épinglé</a></li><li><a href="#animateurs"><code>people</code> Personnes (experts, intervenants, équipe)</a></li><li><a href="#avis"><code>testimonials</code> Témoignages</a></li><li><a href="#cas"><code>cases</code> Cas avant / après</a></li><li><a href="#resultats"><code>outcomes</code> Résultats (respiration)</a></li><li><a href="#pour-qui"><code>for-whom</code> Pour qui, et pour qui ce n’est pas</a></li><li><a href="#ensuite"><code>process</code> Étapes (ce qui se passe ensuite)</a></li><li><a href="#comparatif"><code>comparison</code> Tableau comparatif</a></li><li><a href="#suivi"><code>pricing-table</code> Grille tarifaire</a></li><li><a href="#offre"><code>offer-ticket</code> Bloc de conversion en billet</a></li><li><a href="#garantie"><code>guarantee</code> Garantie (sceau et conditions exactes)</a></li><li><a href="#guide"><code>lead-capture</code> Formulaire de capture</a></li><li><a href="#contact"><code>form</code> Formulaire qualifiant (rendez-vous, démo, devis)</a></li><li><a href="#inscription"><code>event-registration</code> Inscription à un événement (sur place ou en ligne)</a></li><li><a href="#faq"><code>faq</code> FAQ avec carte collante</a></li><li><a href="#mentions"><code>legal</code> Informations légales</a></li><li><a href="#final"><code>final-cta</code> CTA final (bande sombre)</a></li></ol></nav>
   </div>
 </div>
 <aside class="lib-note" aria-label="Fiche de la section Hero à objet fort">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">hero</code><span class="lib-note__name">Hero à objet fort</span><span class="lib-note__anchor">#hero</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>De quoi s&#x27;agit-il, pour qui, combien, jusqu&#x27;à quand</dd></div><div><dt>Quand l'utiliser</dt><dd>Toujours, en première section : un h1, une accroche de deux lignes, un seul bouton, une ligne d&#x27;échéance s&#x27;il y en a une, et un objet fort (le produit en situation, un document réel, une illustration de marque). C&#x27;est la section qu&#x27;on fait valider en premier.</dd></div><div><dt>Quand l'éviter</dt><dd>Étiquette au-dessus du h1, carte d&#x27;information posée sur l&#x27;objet, rangée de visages, second bouton concurrent, accroche de trois lignes, hero centré par réflexe.</dd></div><div><dt>Mouvement réduit</dt><dd>L&#x27;accroche tournante montre son premier mot, l&#x27;objet est immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>lede</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code> <code>deadline</code> <code>countdown</code> <code>detail</code> <code>image</code> <code>object</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>De quoi s’agit-il, pour qui, combien, jusqu’à quand</dd></div><div><dt>Quand l’utiliser</dt><dd>Toujours, en première section : un h1, une accroche de deux lignes, un seul bouton, une ligne d’échéance s’il y en a une, et un objet fort (le produit en situation, un document réel, une illustration de marque). C’est la section qu’on fait valider en premier.</dd></div><div><dt>Quand l’éviter</dt><dd>Étiquette au-dessus du h1, carte d’information posée sur l’objet, rangée de visages, second bouton concurrent, accroche de trois lignes, hero centré par réflexe.</dd></div><div><dt>Mouvement réduit</dt><dd>L’accroche tournante montre son premier mot, l’objet est immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>lede</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code> <code>deadline</code> <code>countdown</code> <code>detail</code> <code>image</code> <code>object</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:hero -->
@@ -3973,11 +4706,11 @@ textarea.field__input {
       <p class="s-hero__lede lede">Six ateliers en petit groupe pour mesurer vos émissions et répondre aux questionnaires carbone de vos clients.</p>
       <div class="s-hero__actions">
         <a class="btn btn--primary" href="#offre" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Réserver ma place<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span data-offer-countdown data-many="Clôture des inscriptions dans {n} jours" data-one="Clôture des inscriptions demain" data-zero="Clôture des inscriptions ce soir">Inscriptions jusqu&#x27;au 31 mars 2027</span><span aria-hidden="true">·</span><span>12 entreprises par cohorte</span></p>
+        <p class="s-hero__deadline"><span data-offer-countdown data-many="Clôture des inscriptions dans {n} jours" data-one="Clôture des inscriptions demain" data-zero="Clôture des inscriptions ce soir">Inscriptions jusqu’au 31 mars 2027</span><span aria-hidden="true">·</span><span>12 entreprises par cohorte</span></p>
       </div>
     </div>
     <div class="s-hero__visual" data-reveal="right">
-      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor><div class="obj-stack"><div class="obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Bilan d'émissions 2026</b><span class="obj-stamp obj-push">Prêt</span></div><div class="obj-rule"></div><p class="obj-kpi">412<small>t CO₂e</small></p><p class="obj-small">3 scopes · 214 postes de dépenses analysés</p><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar is-hl" style="--v:.58"><span>Achats</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>58 %</b></div><div class="obj-bar" style="--v:.21"><span>Transport</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>21 %</b></div><div class="obj-bar" style="--v:.12"><span>Énergie</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>12 %</b></div><div class="obj-bar" style="--v:.09"><span>Déplacements</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>9 %</b></div></div><div class="obj-rule"></div><div class="obj-head"><span>Plan d'action · 9 mesures</span><span class="obj-push">p. 1 / 14</span></div></div></div><span class="obj-chip s-hero__chip"><i></i>Semaine 6 sur 6</span></div>
+      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor><div class="obj-stack"><div class="obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Bilan d’émissions 2026</b><span class="obj-stamp obj-push">Prêt</span></div><div class="obj-rule"></div><p class="obj-kpi">412<small>t CO₂e</small></p><p class="obj-small">3 scopes · 214 postes de dépenses analysés</p><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar is-hl" style="--v:.58"><span>Achats</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>58 %</b></div><div class="obj-bar" style="--v:.21"><span>Transport</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>21 %</b></div><div class="obj-bar" style="--v:.12"><span>Énergie</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>12 %</b></div><div class="obj-bar" style="--v:.09"><span>Déplacements</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>9 %</b></div></div><div class="obj-rule"></div><div class="obj-head"><span>Plan d’action · 9 mesures</span><span class="obj-push">p. 1 / 14</span></div></div></div><span class="obj-chip s-hero__chip"><i></i>Semaine 6 sur 6</span></div>
     </div>
   </div>
 </section>
@@ -3985,7 +4718,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Bande de preuve immédiate">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">proof-band</code><span class="lib-note__name">Bande de preuve immédiate</span><span class="lib-note__anchor">#preuves</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Est-ce sérieux</dd></div><div><dt>Quand l'utiliser</dt><dd>Juste sous le hero, dès qu&#x27;on a 3 ou 4 faits vérifiables : un chiffre en grand, un libellé court, une source si le chiffre n&#x27;est pas un fait de l&#x27;offre.</dd></div><div><dt>Quand l'éviter</dt><dd>Chiffres arrondis à la hausse ou sans source, plus de quatre faits, faits qui répètent le hero. Pour des logos clients, utiliser la section logos.</dd></div><div><dt>Mouvement réduit</dt><dd>Les chiffres s&#x27;affichent à leur valeur finale, sans compteur qui monte.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>facts</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Est-ce sérieux</dd></div><div><dt>Quand l’utiliser</dt><dd>Juste sous le hero, dès qu’on a 3 ou 4 faits vérifiables : un chiffre en grand, un libellé court, une source si le chiffre n’est pas un fait de l’offre.</dd></div><div><dt>Quand l’éviter</dt><dd>Chiffres arrondis à la hausse ou sans source, plus de quatre faits, faits qui répètent le hero. Pour des logos clients, utiliser la section logos.</dd></div><div><dt>Mouvement réduit</dt><dd>Les chiffres s’affichent à leur valeur finale, sans compteur qui monte.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>facts</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:preuves -->
@@ -4017,7 +4750,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Logos clients">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">logos</code><span class="lib-note__name">Logos clients</span><span class="lib-note__anchor">#logos</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qui d&#x27;autre leur fait confiance</dd></div><div><dt>Quand l'utiliser</dt><dd>Quand on a 4 à 6 logos dont l&#x27;usage est accordé par écrit (01-brand/droits.md). Sous le hero ou près du bloc de conversion.</dd></div><div><dt>Quand l'éviter</dt><dd>Logos sans accord, logos estompés par opacité (le contraste tombe), défilement infini, plus de six logos. Sans logo autorisé, ne pas poser la section.</dd></div><div><dt>Mouvement réduit</dt><dd>Rien ne bouge.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>logos</code> <code>note</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qui d’autre leur fait confiance</dd></div><div><dt>Quand l’utiliser</dt><dd>Quand on a 4 à 6 logos dont l’usage est accordé par écrit (01-brand/droits.md). Sous le hero ou près du bloc de conversion.</dd></div><div><dt>Quand l’éviter</dt><dd>Logos sans accord, logos estompés par opacité (le contraste tombe), défilement infini, plus de six logos. Sans logo autorisé, ne pas poser la section.</dd></div><div><dt>Mouvement réduit</dt><dd>Rien ne bouge.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>logos</code> <code>note</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:logos -->
@@ -4034,7 +4767,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Problème épinglé">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">problem-pinned</code><span class="lib-note__name">Problème épinglé</span><span class="lib-note__anchor">#probleme</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Pourquoi maintenant</dd></div><div><dt>Quand l'utiliser</dt><dd>Quand le document source porte 3 à 5 vrais constats, dans les mots de l&#x27;audience. Sur grand écran, la section se bloque le temps de parcourir les constats (55 vh par constat) : seul le constat actif déplie son texte, le visuel change avec lui.</dd></div><div><dt>Quand l'éviter</dt><dd>Registre de la peur, constats inventés, plus de cinq constats, deux sections épinglées d&#x27;affilée. Une liste épinglée plus haute que l&#x27;écran.</dd></div><div><dt>Mouvement réduit</dt><dd>Liste illustrée : tous les constats dépliés, visuels en vignettes (masqués sur mobile).</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>items</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Pourquoi maintenant</dd></div><div><dt>Quand l’utiliser</dt><dd>Quand le document source porte 3 à 5 vrais constats, dans les mots de l’audience. Sur grand écran, la section se bloque le temps de parcourir les constats (55 vh par constat) : seul le constat actif déplie son texte, le visuel change avec lui.</dd></div><div><dt>Quand l’éviter</dt><dd>Registre de la peur, constats inventés, plus de cinq constats, deux sections épinglées d’affilée. Une liste épinglée plus haute que l’écran.</dd></div><div><dt>Mouvement réduit</dt><dd>Liste illustrée : tous les constats dépliés, visuels en vignettes (masqués sur mobile).</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>items</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:probleme -->
@@ -4045,36 +4778,36 @@ textarea.field__input {
         <div class="s-problem__aside">
           <div class="section-head s-problem__head">
             <h2 id="probleme-titre" class="section-title">Vos clients demandent<br><span class="hl">vos émissions</span></h2>
-            <p class="section-intro">Les questionnaires carbone arrivent avec les appels d&#x27;offres. Voici ce que nous entendons le plus souvent.</p>
+            <p class="section-intro">Les questionnaires carbone arrivent avec les appels d’offres. Voici ce que nous entendons le plus souvent.</p>
           </div>
           <div class="s-problem__visuals" aria-hidden="true" data-qa-decor>
-            <div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Boîte de réception</span></div><div class="obj-window__body obj-mail"><div class="obj-mail__from"><span class="obj-avatar">SA</span><span><b>Service achats</b><br>Questionnaire fournisseurs 2027</span></div><div class="obj-lines"><i style="--w:92%"></i><i style="--w:70%"></i></div><p class="obj-small">Merci de renseigner vos émissions <span class="obj-highlight">scopes 1, 2 et 3</span> avant le 15.</p><div class="obj-rule"></div><div class="obj-mail__from"><span class="obj-avatar">LG</span><span><b>Logistique groupe</b><br>Relance : données carbone</span></div><div class="obj-mail__from"><span class="obj-avatar">CP</span><span><b>Centrale d'achat</b><br>Nouveau référencement</span></div></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>bilan_v7_final(2).xlsx</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:4"><span class="is-head">Poste</span><span class="is-head">Quantité</span><span class="is-head">Facteur</span><span class="is-head">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span class="is-warn">?</span><span class="is-warn">#REF!</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span class="is-warn">source ?</span><span class="is-warn">?</span><span>Fret</span><span>n.c.</span><span>n.c.</span><span>n.c.</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><b>Devis n° 2027-031</b><span class="obj-push">Bilan complet</span></div><div class="obj-rule"></div><div class="obj-lines"><i style="--w:88%"></i><i style="--w:64%"></i><i style="--w:76%"></i><i style="--w:52%"></i></div><div class="obj-rule"></div><div class="obj-head"><span>Total</span><b class="obj-push">18 400 € HT</b></div><div class="obj-head" style="margin-top:8px"><span>Délai annoncé</span><b class="obj-push obj-highlight">4 mois</b></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><b>Émissions par poste</b><span class="obj-stamp obj-push">Source ?</span></div><div class="obj-rule"></div><div class="obj-chart"><i style="--v:.35"></i><i style="--v:.82" class="is-hl"></i><i style="--v:.5"></i><i style="--v:.62"></i><i style="--v:.28"></i></div><p class="obj-small" style="margin-top:12px">Facteurs d'émission : version inconnue</p></div></div>
+            <div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Boîte de réception</span></div><div class="obj-window__body obj-mail"><div class="obj-mail__from"><span class="obj-avatar">SA</span><span><b>Service achats</b><br>Questionnaire fournisseurs 2027</span></div><div class="obj-lines"><i style="--w:92%"></i><i style="--w:70%"></i></div><p class="obj-small">Merci de renseigner vos émissions <span class="obj-highlight">scopes 1, 2 et 3</span> avant le 15.</p><div class="obj-rule"></div><div class="obj-mail__from"><span class="obj-avatar">LG</span><span><b>Logistique groupe</b><br>Relance : données carbone</span></div><div class="obj-mail__from"><span class="obj-avatar">CP</span><span><b>Centrale d’achat</b><br>Nouveau référencement</span></div></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>bilan_v7_final(2).xlsx</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:4"><span class="is-head">Poste</span><span class="is-head">Quantité</span><span class="is-head">Facteur</span><span class="is-head">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span class="is-warn">?</span><span class="is-warn">#REF!</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span class="is-warn">source ?</span><span class="is-warn">?</span><span>Fret</span><span>n.c.</span><span>n.c.</span><span>n.c.</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><b>Devis n° 2027-031</b><span class="obj-push">Bilan complet</span></div><div class="obj-rule"></div><div class="obj-lines"><i style="--w:88%"></i><i style="--w:64%"></i><i style="--w:76%"></i><i style="--w:52%"></i></div><div class="obj-rule"></div><div class="obj-head"><span>Total</span><b class="obj-push">18 400 € HT</b></div><div class="obj-head" style="margin-top:8px"><span>Délai annoncé</span><b class="obj-push obj-highlight">4 mois</b></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><b>Émissions par poste</b><span class="obj-stamp obj-push">Source ?</span></div><div class="obj-rule"></div><div class="obj-chart"><i style="--v:.35"></i><i style="--v:.82" class="is-hl"></i><i style="--v:.5"></i><i style="--v:.62"></i><i style="--v:.28"></i></div><p class="obj-small" style="margin-top:12px">Facteurs d’émission : version inconnue</p></div></div>
           </div>
         </div>
         <ol class="s-problem__list" role="list">
           <li class="s-problem__item" data-step-item>
             <span class="s-problem__num" aria-hidden="true">01</span>
             <div>
-              <h3 class="s-problem__title">Les questionnaires clients s&#x27;empilent</h3>
-              <div class="s-problem__body"><p>Trois donneurs d&#x27;ordre vous demandent vos émissions cette année, chacun avec son formulaire et sa date limite.</p></div>
+              <h3 class="s-problem__title">Les questionnaires clients s’empilent</h3>
+              <div class="s-problem__body"><p>Trois donneurs d’ordre vous demandent vos émissions cette année, chacun avec son formulaire et sa date limite.</p></div>
             </div>
           </li><li class="s-problem__item" data-step-item>
             <span class="s-problem__num" aria-hidden="true">02</span>
             <div>
               <h3 class="s-problem__title">Le tableur ne suit plus</h3>
-              <div class="s-problem__body"><p>Énergie, achats et déplacements vivent dans quatre fichiers, et personne ne sait plus quels facteurs d&#x27;émission ont servi.</p></div>
+              <div class="s-problem__body"><p>Énergie, achats et déplacements vivent dans quatre fichiers, et personne ne sait plus quels facteurs d’émission ont servi.</p></div>
             </div>
           </li><li class="s-problem__item" data-step-item>
             <span class="s-problem__num" aria-hidden="true">03</span>
             <div>
               <h3 class="s-problem__title">Le devis dépasse le budget</h3>
-              <div class="s-problem__body"><p>Le devis reçu pour un bilan sous-traité dépasse le budget de l&#x27;année, et son délai dépasse la date de vos clients.</p></div>
+              <div class="s-problem__body"><p>Le devis reçu pour un bilan sous-traité dépasse le budget de l’année, et son délai dépasse la date de vos clients.</p></div>
             </div>
           </li><li class="s-problem__item" data-step-item>
             <span class="s-problem__num" aria-hidden="true">04</span>
             <div>
               <h3 class="s-problem__title">Des chiffres difficiles à défendre</h3>
-              <div class="s-problem__body"><p>Quand un acheteur demande d&#x27;où vient un chiffre, la réponse dort dans un fichier que plus personne ne sait relire.</p></div>
+              <div class="s-problem__body"><p>Quand un acheteur demande d’où vient un chiffre, la réponse dort dans un fichier que plus personne ne sait relire.</p></div>
             </div>
           </li>
         </ol>
@@ -4086,7 +4819,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Basculement typographique">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">pivot</code><span class="lib-note__name">Basculement typographique</span><span class="lib-note__anchor">#pivot</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Et donc, quelle réponse</dd></div><div><dt>Quand l'utiliser</dt><dd>Une fois par page, entre le problème et la solution : une phrase géante presque seule à l&#x27;écran, dont les mots s&#x27;encrent l&#x27;un après l&#x27;autre au défilement, puis un trait et la réponse (l&#x27;offre comme solution). Sur grand écran, la scène se bloque, avec un temps de tenue pour lire. Sa sortie est un fondu (data-exit=&quot;fade&quot;).</dd></div><div><dt>Quand l'éviter</dt><dd>Deux basculements sur une page, une phrase de plus de 12 mots, un dégradé de texte sur un élément transformé, une phrase lue mot à mot par les lecteurs d&#x27;écran (une copie sr-only porte la phrase entière).</dd></div><div><dt>Mouvement réduit</dt><dd>La phrase entière, encrée, et la réponse, d&#x27;emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>statement</code> <code>answer_highlight</code> <code>answer_rest</code> <code>answer_body</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Et donc, quelle réponse</dd></div><div><dt>Quand l’utiliser</dt><dd>Une fois par page, entre le problème et la solution : une phrase géante presque seule à l’écran, dont les mots s’encrent l’un après l’autre au défilement, puis un trait et la réponse (l’offre comme solution). Sur grand écran, la scène se bloque, avec un temps de tenue pour lire. Sa sortie est un fondu (data-exit=&quot;fade&quot;).</dd></div><div><dt>Quand l’éviter</dt><dd>Deux basculements sur une page, une phrase de plus de 12 mots, un dégradé de texte sur un élément transformé, une phrase lue mot à mot par les lecteurs d’écran (une copie sr-only porte la phrase entière).</dd></div><div><dt>Mouvement réduit</dt><dd>La phrase entière, encrée, et la réponse, d’emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>statement</code> <code>answer_highlight</code> <code>answer_rest</code> <code>answer_body</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:pivot -->
@@ -4097,7 +4830,7 @@ textarea.field__input {
         <h2 id="pivot-titre" class="s-pivot__statement"><span class="sr-only">Votre bilan carbone peut se faire en interne</span><span class="s-pivot__text" aria-hidden="true">Votre bilan carbone peut se faire en interne</span></h2>
         <span class="s-pivot__rule" aria-hidden="true"></span>
         <div class="s-pivot__answer">
-          <p class="s-pivot__answer-title"><span class="hl">Le parcours Meridian</span> vous guide jusqu&#x27;au bilan remis</p>
+          <p class="s-pivot__answer-title"><span class="hl">Le parcours Meridian</span> vous guide jusqu’au bilan remis</p>
           <p class="s-pivot__answer-body lede">Six ateliers, vos propres données et une méthode que vous gardez pour les bilans suivants.</p>
         </div>
       </div>
@@ -4108,7 +4841,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Porte de choix">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">choice-gate</code><span class="lib-note__name">Porte de choix</span><span class="lib-note__anchor">#formules</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Laquelle est pour moi</dd></div><div><dt>Quand l'utiliser</dt><dd>Seulement pour une offre à variantes réelles (formules, profils). Deux grandes cartes dont toute la surface est cliquable. Le choix révèle la suite de la page (sections marquées « gated: true » dans la spec), règle le billet sur la formule choisie, part en mesure (select_content) et s&#x27;inscrit dans l&#x27;URL (?&lt;param&gt;=&lt;valeur&gt;) : un lien direct ouvre la bonne suite sans glissé.</dd></div><div><dt>Quand l'éviter</dt><dd>Une porte qui cache l&#x27;essentiel à un visiteur pressé, plus de trois options, des options sans différence réelle de prix ou de contenu.</dd></div><div><dt>Mouvement réduit</dt><dd>La suite apparaît sans transition ; le saut vers elle est instantané.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>param</code> <code>options</code> <code>result</code> <code>reset_label</code> <code>noscript</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Laquelle est pour moi</dd></div><div><dt>Quand l’utiliser</dt><dd>Seulement pour une offre à variantes réelles (formules, profils). Deux grandes cartes dont toute la surface est cliquable. Le choix révèle la suite de la page (sections marquées « gated: true » dans la spec), règle le billet sur la formule choisie, part en mesure (select_content) et s’inscrit dans l’URL (?&lt;param&gt;=&lt;valeur&gt;) : un lien direct ouvre la bonne suite sans glissé.</dd></div><div><dt>Quand l’éviter</dt><dd>Une porte qui cache l’essentiel à un visiteur pressé, plus de trois options, des options sans différence réelle de prix ou de contenu.</dd></div><div><dt>Mouvement réduit</dt><dd>La suite apparaît sans transition ; le saut vers elle est instantané.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>param</code> <code>options</code> <code>result</code> <code>reset_label</code> <code>noscript</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:formules -->
@@ -4116,7 +4849,7 @@ textarea.field__input {
   <div class="wrap">
     <div class="section-head section-head--center">
       <h2 id="formules-titre" class="section-title">Vous menez le bilan <span class="hl">seul ou à plusieurs</span></h2>
-      <p class="section-intro">Le contenu est le même. Le prix et l&#x27;accompagnement changent avec le nombre de personnes.</p>
+      <p class="section-intro">Le contenu est le même. Le prix et l’accompagnement changent avec le nombre de personnes.</p>
     </div>
     <div class="s-gate__options" role="group" aria-labelledby="formules-titre">
       <div class="s-gate__card card" data-value="solo">
@@ -4127,7 +4860,7 @@ textarea.field__input {
       </div><div class="s-gate__card card" data-value="equipe">
         <div class="s-gate__art" aria-hidden="true" data-qa-decor><div class="obj s-gate__obj"><div class="obj-sheet"><div class="s-gate__team"><span class="obj-avatar">AB</span><span class="obj-avatar">CM</span><span class="obj-avatar">LR</span><span class="obj-small">3 référents</span></div><div class="obj-rule"></div><div class="obj-check"><span class="is-done">Énergie · AB</span><span class="is-done">Achats · CM</span><span class="is-done">Déplacements · LR</span></div></div></div></div>
         <h3 class="s-gate__title">Nous sommes une équipe</h3>
-        <p class="s-gate__text">Jusqu&#x27;à trois personnes de la même entreprise, chacune sur ses postes.</p>
+        <p class="s-gate__text">Jusqu’à trois personnes de la même entreprise, chacune sur ses postes.</p>
         <button type="button" class="s-gate__choose" data-gate-choice="equipe" data-gate-title="Équipe" aria-pressed="false" data-track="select_content" data-track-content_type="formule" data-track-content_id="equipe">Choisir la formule Équipe<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
       </div>
     </div>
@@ -4143,7 +4876,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Bénéfices">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">benefits</code><span class="lib-note__name">Bénéfices</span><span class="lib-note__anchor">#benefits</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu&#x27;est-ce que j&#x27;y gagne, concrètement</dd></div><div><dt>Quand l'utiliser</dt><dd>Pour 3 ou 4 bénéfices, chacun ancré dans un fait (chiffre du messaging framework, livrable, délai). Le bénéfice avant la fonctionnalité.</dd></div><div><dt>Quand l'éviter</dt><dd>Cartes creuses sans preuve, icônes emoji, plus de quatre cartes, bénéfices génériques valables pour tout le monde. Une section qui redit le hero.</dd></div><div><dt>Mouvement réduit</dt><dd>Cartes visibles d&#x27;emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>items</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu’est-ce que j’y gagne, concrètement</dd></div><div><dt>Quand l’utiliser</dt><dd>Pour 3 ou 4 bénéfices, chacun ancré dans un fait (chiffre du messaging framework, livrable, délai). Le bénéfice avant la fonctionnalité.</dd></div><div><dt>Quand l’éviter</dt><dd>Cartes creuses sans preuve, icônes emoji, plus de quatre cartes, bénéfices génériques valables pour tout le monde. Une section qui redit le hero.</dd></div><div><dt>Mouvement réduit</dt><dd>Cartes visibles d’emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>items</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:benefits -->
@@ -4167,13 +4900,13 @@ textarea.field__input {
       </li><li class="s-benefits__item card" data-reveal>
         <span class="s-benefits__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span>
         <h3 class="s-benefits__title">Une méthode réutilisable</h3>
-        <p class="s-benefits__text">Le modèle de collecte et le calcul restent chez vous : l&#x27;an prochain, vous refaites le bilan en deux jours.</p>
+        <p class="s-benefits__text">Le modèle de collecte et le calcul restent chez vous : l’an prochain, vous refaites le bilan en deux jours.</p>
         <p class="s-benefits__proof">Fichiers ouverts, sans abonnement</p>
       </li><li class="s-benefits__item card" data-reveal>
         <span class="s-benefits__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
         <h3 class="s-benefits__title">Des pairs qui avancent avec vous</h3>
         <p class="s-benefits__text">Douze entreprises au plus par cohorte : vous comparez vos méthodes avec des dirigeants dans la même situation.</p>
-        <p class="s-benefits__proof">Un groupe d&#x27;échange qui reste ouvert</p>
+        <p class="s-benefits__proof">Un groupe d’échange qui reste ouvert</p>
       </li>
     </ul>
   </div>
@@ -4182,7 +4915,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Parcours en scrollytelling">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">journey</code><span class="lib-note__name">Parcours en scrollytelling</span><span class="lib-note__anchor">#parcours</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Concrètement, qu&#x27;est-ce que je fais et qu&#x27;est-ce que j&#x27;en tire</dd></div><div><dt>Quand l'utiliser</dt><dd>Programme, méthode ou parcours client en 3 à 6 étapes. Sur grand écran, un bloc collant d&#x27;un écran : à gauche « Étape n sur N », un rail qui se remplit et l&#x27;étape active dépliée ; à droite une scène décorative qui change avec l&#x27;étape (60 vh par étape).</dd></div><div><dt>Quand l'éviter</dt><dd>Plus de six étapes, une scène qui porte une information absente du texte, deux sections épinglées d&#x27;affilée sans respiration.</dd></div><div><dt>Mouvement réduit</dt><dd>Liste simple des étapes, toutes dépliées, rail plein ; scènes masquées.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>counter_label</code> <code>outcome_label</code> <code>steps</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Concrètement, qu’est-ce que je fais et qu’est-ce que j’en tire</dd></div><div><dt>Quand l’utiliser</dt><dd>Programme, méthode ou parcours client en 3 à 6 étapes. Sur grand écran, un bloc collant d’un écran : à gauche « Étape n sur N », un rail qui se remplit et l’étape active dépliée ; à droite une scène décorative qui change avec l’étape (60 vh par étape).</dd></div><div><dt>Quand l’éviter</dt><dd>Plus de six étapes, une scène qui porte une information absente du texte, deux sections épinglées d’affilée sans respiration.</dd></div><div><dt>Mouvement réduit</dt><dd>Liste simple des étapes, toutes dépliées, rail plein ; chaque scène sous son étape, immobile. Même rendu sur petit écran et sans script.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>counter_label</code> <code>outcome_label</code> <code>steps</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:parcours -->
@@ -4205,20 +4938,22 @@ textarea.field__input {
                 <p class="s-journey__when">Semaines 1 et 2</p>
                 <h3 class="s-journey__title">Collecter vos données</h3>
                 <div class="s-journey__body"><div>
-                  <p class="s-journey__text">Factures d&#x27;énergie, achats et déplacements : une liste par poste et un modèle de collecte prêt à remplir.</p>
+                  <p class="s-journey__text">Factures d’énergie, achats et déplacements : une liste par poste et un modèle de collecte prêt à remplir.</p>
                   <p class="s-journey__outcome"><strong>Vous repartez avec</strong> vos données rangées dans un seul fichier</p>
                 </div></div>
               </div>
+              <div class="s-journey__inline" aria-hidden="true" data-qa-decor><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Collecte · 34 / 41 postes</span></div><div class="obj-window__body"><div class="obj-check"><span class="is-done">Factures de gaz 2026</span><span class="is-done">Électricité, deux sites</span><span class="is-done">Grand livre des achats</span><span class="is-done">Notes de frais</span><span>Fret amont, à demander</span><span>Déchets, à estimer</span></div></div></div></div>
             </li><li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
                 <p class="s-journey__when">Semaine 3</p>
                 <h3 class="s-journey__title">Calculer vos émissions</h3>
                 <div class="s-journey__body"><div>
-                  <p class="s-journey__text">Vous appliquez les facteurs d&#x27;émission de la base publique de référence, poste par poste, avec l&#x27;animateur.</p>
+                  <p class="s-journey__text">Vous appliquez les facteurs d’émission de la base publique de référence, poste par poste, avec l’animateur.</p>
                   <p class="s-journey__outcome"><strong>Vous repartez avec</strong> un total par scope et sa source</p>
                 </div></div>
               </div>
+              <div class="s-journey__inline" aria-hidden="true" data-qa-decor><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Calcul</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:4"><span class="is-head">Poste</span><span class="is-head">Quantité</span><span class="is-head">Facteur</span><span class="is-head">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span>0,227</span><span>10,9</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span>1,9</span><span>68,4</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div></div>
             </li><li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
@@ -4226,9 +4961,10 @@ textarea.field__input {
                 <h3 class="s-journey__title">Choisir vos priorités</h3>
                 <div class="s-journey__body"><div>
                   <p class="s-journey__text">Vous classez les mesures possibles par tonnes évitées et par coût, puis vous en retenez une dizaine.</p>
-                  <p class="s-journey__outcome"><strong>Vous repartez avec</strong> un plan d&#x27;action chiffré</p>
+                  <p class="s-journey__outcome"><strong>Vous repartez avec</strong> un plan d’action chiffré</p>
                 </div></div>
               </div>
+              <div class="s-journey__inline" aria-hidden="true" data-qa-decor><div class="obj obj-sheet"><div class="obj-head"><b>Mesures classées</b><span class="obj-push">t évitées / an</span></div><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar is-hl" style="--v:.9"><span>Fournisseur acier</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>41</b></div><div class="obj-bar" style="--v:.55"><span>Fret mutualisé</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>24</b></div><div class="obj-bar" style="--v:.32"><span>Pompe à chaleur</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>14</b></div><div class="obj-bar" style="--v:.18"><span>Visio d’abord</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>8</b></div></div></div></div>
             </li><li class="s-journey__step" data-step-item data-milestone>
               <span class="s-journey__dot" aria-hidden="true"></span>
               <div>
@@ -4239,11 +4975,12 @@ textarea.field__input {
                   <p class="s-journey__outcome"><strong>Vous repartez avec</strong> un bilan de quatorze pages, sources comprises</p>
                 </div></div>
               </div>
+              <div class="s-journey__inline" aria-hidden="true" data-qa-decor><div class="obj obj-stack"><div class="obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Bilan d’émissions 2026</b><span class="obj-stamp obj-push">Envoyé</span></div><div class="obj-rule"></div><p class="obj-kpi">412<small>t CO₂e</small></p><div class="obj-rule"></div><div class="obj-lines"><i style="--w:94%"></i><i style="--w:80%"></i><i style="--w:86%"></i></div></div></div></div>
             </li>
           </ol>
         </div>
         <div class="s-journey__scenes" aria-hidden="true" data-qa-decor>
-          <div class="s-journey__scene" data-step-visual><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Collecte · 34 / 41 postes</span></div><div class="obj-window__body"><div class="obj-check"><span class="is-done">Factures de gaz 2026</span><span class="is-done">Électricité, deux sites</span><span class="is-done">Grand livre des achats</span><span class="is-done">Notes de frais</span><span>Fret amont, à demander</span><span>Déchets, à estimer</span></div></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Calcul</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:4"><span class="is-head">Poste</span><span class="is-head">Quantité</span><span class="is-head">Facteur</span><span class="is-head">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span>0,227</span><span>10,9</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span>1,9</span><span>68,4</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><b>Mesures classées</b><span class="obj-push">t évitées / an</span></div><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar is-hl" style="--v:.9"><span>Fournisseur acier</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>41</b></div><div class="obj-bar" style="--v:.55"><span>Fret mutualisé</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>24</b></div><div class="obj-bar" style="--v:.32"><span>Pompe à chaleur</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>14</b></div><div class="obj-bar" style="--v:.18"><span>Visio d'abord</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>8</b></div></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-stack"><div class="obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Bilan d'émissions 2026</b><span class="obj-stamp obj-push">Envoyé</span></div><div class="obj-rule"></div><p class="obj-kpi">412<small>t CO₂e</small></p><div class="obj-rule"></div><div class="obj-lines"><i style="--w:94%"></i><i style="--w:80%"></i><i style="--w:86%"></i></div></div></div></div>
+          <div class="s-journey__scene" data-step-visual><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Collecte · 34 / 41 postes</span></div><div class="obj-window__body"><div class="obj-check"><span class="is-done">Factures de gaz 2026</span><span class="is-done">Électricité, deux sites</span><span class="is-done">Grand livre des achats</span><span class="is-done">Notes de frais</span><span>Fret amont, à demander</span><span>Déchets, à estimer</span></div></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Calcul</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:4"><span class="is-head">Poste</span><span class="is-head">Quantité</span><span class="is-head">Facteur</span><span class="is-head">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span>0,227</span><span>10,9</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span>1,9</span><span>68,4</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-sheet"><div class="obj-head"><b>Mesures classées</b><span class="obj-push">t évitées / an</span></div><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar is-hl" style="--v:.9"><span>Fournisseur acier</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>41</b></div><div class="obj-bar" style="--v:.55"><span>Fret mutualisé</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>24</b></div><div class="obj-bar" style="--v:.32"><span>Pompe à chaleur</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>14</b></div><div class="obj-bar" style="--v:.18"><span>Visio d’abord</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>8</b></div></div></div></div><div class="s-journey__scene" data-step-visual><div class="obj obj-stack"><div class="obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Bilan d’émissions 2026</b><span class="obj-stamp obj-push">Envoyé</span></div><div class="obj-rule"></div><p class="obj-kpi">412<small>t CO₂e</small></p><div class="obj-rule"></div><div class="obj-lines"><i style="--w:94%"></i><i style="--w:80%"></i><i style="--w:86%"></i></div></div></div></div>
         </div>
       </div>
     </div>
@@ -4253,7 +4990,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Programme détaillé">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">program</code><span class="lib-note__name">Programme détaillé</span><span class="lib-note__anchor">#programme</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu&#x27;est-ce qu&#x27;il y a dedans, exactement</dd></div><div><dt>Quand l'utiliser</dt><dd>Formation, accompagnement, événement ou produit à plusieurs composantes : la liste des modules avec leur durée et ce qu&#x27;ils produisent, un rail qui se remplit au défilement, et à côté un spécimen réel (page de cours, extrait de livrable, capture) étiqueté comme tel.</dd></div><div><dt>Quand l'éviter</dt><dd>Liste exhaustive qui noie l&#x27;essentiel, spécimen non étiqueté, durée absente. Pour un agenda minuté d&#x27;événement, garder les mêmes champs (when = l&#x27;heure).</dd></div><div><dt>Mouvement réduit</dt><dd>Rail plein, tous les jalons atteints, spécimen immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>modules</code> <code>specimen</code> <code>specimen_badge</code> <code>specimen_caption</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu’est-ce qu’il y a dedans, exactement</dd></div><div><dt>Quand l’utiliser</dt><dd>Formation, accompagnement, événement ou produit à plusieurs composantes : la liste des modules avec leur durée et ce qu’ils produisent, un rail qui se remplit au défilement, et à côté un spécimen réel (page de cours, extrait de livrable, capture) étiqueté comme tel.</dd></div><div><dt>Quand l’éviter</dt><dd>Liste exhaustive qui noie l’essentiel, spécimen non étiqueté, durée absente. Pour un agenda minuté d’événement, garder les mêmes champs (when = l’heure).</dd></div><div><dt>Mouvement réduit</dt><dd>Rail plein, tous les jalons atteints, spécimen immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>modules</code> <code>specimen</code> <code>specimen_badge</code> <code>specimen_caption</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:programme -->
@@ -4276,13 +5013,13 @@ textarea.field__input {
           <p class="s-program__when">21 avril</p>
           <h3 class="s-program__title">Énergie et bâtiments</h3>
           <p class="s-program__duration">2 h</p>
-          <p class="s-program__text">Les factures de l&#x27;année converties en émissions, site par site.</p>
+          <p class="s-program__text">Les factures de l’année converties en émissions, site par site.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
           <p class="s-program__when">28 avril</p>
           <h3 class="s-program__title">Achats et fret</h3>
           <p class="s-program__duration">2 h</p>
-          <p class="s-program__text">Le grand livre trié par famille d&#x27;achats, le poste le plus lourd pour la plupart des PME.</p>
+          <p class="s-program__text">Le grand livre trié par famille d’achats, le poste le plus lourd pour la plupart des PME.</p>
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
           <p class="s-program__when">5 mai</p>
@@ -4292,7 +5029,7 @@ textarea.field__input {
         </li><li class="s-program__item" data-milestone>
           <span class="s-program__dot" aria-hidden="true"></span>
           <p class="s-program__when">12 mai</p>
-          <h3 class="s-program__title">Plan d&#x27;action</h3>
+          <h3 class="s-program__title">Plan d’action</h3>
           <p class="s-program__duration">2 h</p>
           <p class="s-program__text">Les mesures classées par tonnes évitées et par coût, puis votre sélection.</p>
         </li><li class="s-program__item" data-milestone>
@@ -4307,16 +5044,16 @@ textarea.field__input {
     <figure class="s-program__specimen">
       <div class="s-program__figure">
         <div aria-hidden="true" data-qa-decor><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Fiche atelier 3 · Achats et fret</b></div><div class="obj-rule"></div><div class="obj-grid" style="--cols:3"><span class="is-head">Famille</span><span class="is-head">Dépense</span><span class="is-head">t CO₂e</span><span>Acier</span><span>148 000 €</span><span>68,4</span><span>Emballages</span><span>36 500 €</span><span>21,2</span><span>Transport</span><span>52 000 €</span><span>44,0</span><span>Services</span><span>81 000 €</span><span>9,7</span></div><div class="obj-rule"></div><div class="obj-lines"><i style="--w:90%"></i><i style="--w:72%"></i></div><p class="obj-small" style="margin-top:10px">Exercice : classer vos cinq premières familles</p></div></div>
-        <figcaption><span class="badge">Spécimen</span><span>Une page de la fiche de l&#x27;atelier 3, avec des données d&#x27;exemple.</span></figcaption>
+        <figcaption><span class="badge">Spécimen</span><span>Une page de la fiche de l’atelier 3, avec des données d’exemple.</span></figcaption>
       </div>
     </figure>
   </div>
 </section>
 <!-- /section:programme -->
-<aside class="lib-note" aria-label="Fiche de la section Vitrine d&#x27;un objet tangible (bande sombre)">
+<aside class="lib-note" aria-label="Fiche de la section Vitrine d’un objet tangible (bande sombre)">
   <div class="wrap lib-note__inner">
-    <p class="lib-note__head"><code class="lib-note__id">showcase-dark</code><span class="lib-note__name">Vitrine d&#x27;un objet tangible (bande sombre)</span><span class="lib-note__anchor">#kit</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu&#x27;est-ce que j&#x27;emporte de concret</dd></div><div><dt>Quand l'utiliser</dt><dd>Un bonus ou un livrable qui mérite sa propre section : dans une bande sombre, un objet composé (dossier, kit, carte) dont chaque partie répond à une carte. Le survol d&#x27;une carte soulève la partie de l&#x27;objet qui lui correspond, et inversement.</dd></div><div><dt>Quand l'éviter</dt><dd>Lueurs, ressorts, texte en opacité sur le fond sombre, deux bandes sombres d&#x27;affilée, plus de cinq parties.</dd></div><div><dt>Mouvement réduit</dt><dd>Tout est allumé, immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>parts</code></dd></div></dl>
+    <p class="lib-note__head"><code class="lib-note__id">showcase-dark</code><span class="lib-note__name">Vitrine d’un objet tangible (bande sombre)</span><span class="lib-note__anchor">#kit</span></p>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu’est-ce que j’emporte de concret</dd></div><div><dt>Quand l’utiliser</dt><dd>Un bonus ou un livrable qui mérite sa propre section : dans une bande sombre, un objet composé (dossier, kit, carte) dont chaque partie répond à une carte. Le survol d’une carte soulève la partie de l’objet qui lui correspond, et inversement.</dd></div><div><dt>Quand l’éviter</dt><dd>Lueurs, ressorts, texte en opacité sur le fond sombre, deux bandes sombres d’affilée, plus de cinq parties.</dd></div><div><dt>Mouvement réduit</dt><dd>Tout est allumé, immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>parts</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:kit -->
@@ -4342,7 +5079,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Carte ou schéma épinglé">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">map-pinned</code><span class="lib-note__name">Carte ou schéma épinglé</span><span class="lib-note__anchor">#rythme</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Est-ce compatible avec ma vie (lieux, fuseaux, rythme, rattrapage)</dd></div><div><dt>Quand l'utiliser</dt><dd>Quand le format se comprend mieux sur un schéma : lieux, fuseaux, rythme, rattrapage. Un tracé se découvre au défilement (stroke-dashoffset), les repères se posent quand il les atteint, puis une fin immobile pour lire. La légende, à gauche, porte toute l&#x27;information en texte.</dd></div><div><dt>Quand l'éviter</dt><dd>Tête de tracé qui ressemble à un repère, ondes qui pulsent sans fin, information portée par le schéma seul, deux épinglages d&#x27;affilée.</dd></div><div><dt>Mouvement réduit</dt><dd>Le schéma complet, d&#x27;emblée, tous les repères posés.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>path</code> <code>marks</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Est-ce compatible avec ma vie (lieux, fuseaux, rythme, rattrapage)</dd></div><div><dt>Quand l’utiliser</dt><dd>Quand le format se comprend mieux sur un schéma : lieux, fuseaux, rythme, rattrapage. Un tracé se découvre au défilement (stroke-dashoffset), les repères se posent quand il les atteint, puis une fin immobile pour lire. La légende, à gauche, porte toute l’information en texte.</dd></div><div><dt>Quand l’éviter</dt><dd>Tête de tracé qui ressemble à un repère, ondes qui pulsent sans fin, information portée par le schéma seul, deux épinglages d’affilée.</dd></div><div><dt>Mouvement réduit</dt><dd>Le schéma complet, d’emblée, tous les repères posés.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>decor</code> <code>decor_svg</code> <code>path</code> <code>marks</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>scroll</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:rythme -->
@@ -4372,7 +5109,7 @@ textarea.field__input {
               <span class="s-map__key" aria-hidden="true"><span>3</span></span>
               <div>
                 <h3 class="s-map__item-title">Une demi-journée à Lyon</h3>
-                <p class="s-map__item-text">En semaine 3, le groupe se retrouve pour l&#x27;atelier achats. La visio reste possible.</p>
+                <p class="s-map__item-text">En semaine 3, le groupe se retrouve pour l’atelier achats. La visio reste possible.</p>
               </div>
             </li><li class="s-map__item" style="--at:0.98">
               <span class="s-map__key" aria-hidden="true"><span>4</span></span>
@@ -4383,28 +5120,24 @@ textarea.field__input {
             </li>
           </ol>
         </div>
-        <div class="s-map__figure" aria-hidden="true" data-qa-decor>
+        <div class="s-map__figure" aria-hidden="true" data-qa-decor data-decor="lines">
           <svg class="s-map__svg" viewBox="0 0 600 480" role="presentation" focusable="false">
-            <path class="s-map__meridian" d="M300 -20 C 120 120 120 360 300 500 M300 -20 C 480 120 480 360 300 500 M300 -20 V 500 M-20 160 C 200 130 400 130 620 160 M-20 320 C 200 350 400 350 620 320"/>
+            
             <path class="s-map__base" d="M70 400 C 150 392 172 302 250 292 S 398 318 420 232 S 360 128 450 92"/>
             <path class="s-map__route" d="M70 400 C 150 392 172 302 250 292 S 398 318 420 232 S 360 128 450 92" pathLength="1"/>
             <g class="s-map__mark" style="--at:0.02" transform="translate(70 400)">
-              <rect class="s-map__tag-bg" x="15" y="-15" width="115" height="30" rx="8"/>
               <circle r="14"/>
               <text class="s-map__num" text-anchor="middle" dy="5">1</text>
               <text class="s-map__tag" x="30" dy="6">Mardi 9 h</text>
             </g><g class="s-map__mark" style="--at:0.36" transform="translate(250 292)">
-              <rect class="s-map__tag-bg" x="15" y="-15" width="115" height="30" rx="8"/>
               <circle r="14"/>
               <text class="s-map__num" text-anchor="middle" dy="5">2</text>
               <text class="s-map__tag" x="30" dy="6">Jeudi</text>
             </g><g class="s-map__mark" style="--at:0.69" transform="translate(420 232)">
-              <rect class="s-map__tag-bg" x="15" y="-15" width="115" height="30" rx="8"/>
               <circle r="14"/>
               <text class="s-map__num" text-anchor="middle" dy="5">3</text>
               <text class="s-map__tag" x="30" dy="6">Lyon</text>
             </g><g class="s-map__mark" style="--at:0.98" transform="translate(450 92)">
-              <rect class="s-map__tag-bg" x="15" y="-15" width="115" height="30" rx="8"/>
               <circle r="14"/>
               <text class="s-map__num" text-anchor="middle" dy="5">4</text>
               <text class="s-map__tag" x="30" dy="6">Replay</text>
@@ -4419,7 +5152,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Personnes (experts, intervenants, équipe)">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">people</code><span class="lib-note__name">Personnes (experts, intervenants, équipe)</span><span class="lib-note__anchor">#animateurs</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Avec qui, et sont-ils crédibles</dd></div><div><dt>Quand l'utiliser</dt><dd>Quand l&#x27;offre repose sur des personnes : un portrait (ou ses initiales) et une biographie en trois temps, qui, la preuve, le rôle dans l&#x27;offre. Faits tirés de sources validées seulement, portrait avec l&#x27;accord de la personne.</dd></div><div><dt>Quand l'éviter</dt><dd>Faits venus de transcriptions ou de notes internes, portraits sans accord, photo de banque d&#x27;images, plus de quatre personnes, biographies qui listent des titres sans preuve.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>label_who</code> <code>label_proof</code> <code>label_part</code> <code>people</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Avec qui, et sont-ils crédibles</dd></div><div><dt>Quand l’utiliser</dt><dd>Quand l’offre repose sur des personnes : un portrait (ou ses initiales) et une biographie en trois temps, qui, la preuve, le rôle dans l’offre. Faits tirés de sources validées seulement, portrait avec l’accord de la personne.</dd></div><div><dt>Quand l’éviter</dt><dd>Faits venus de transcriptions ou de notes internes, portraits sans accord, photo de banque d’images, plus de quatre personnes, biographies qui listent des titres sans preuve.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>label_who</code> <code>label_proof</code> <code>label_part</code> <code>shape</code> <code>people</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:animateurs -->
@@ -4429,16 +5162,16 @@ textarea.field__input {
       <h2 id="animateurs-titre" class="section-title">Deux animateurs <span class="hl">qui ont fait le chemin</span></h2>
       <p class="section-intro">Ils animent chaque atelier et relisent votre bilan avant la restitution.</p>
     </div>
-    <ul class="s-people__grid" role="list" data-reveal-group>
+    <ul class="s-people__grid" role="list" data-shape="rounded" data-reveal-group>
       <li class="s-people__card card" data-reveal>
         <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">NF</span></div>
         <div class="s-people__body">
           <h3 class="s-people__name">Nadia Ferrand</h3>
           <p class="s-people__role">Ingénieure énergie, animatrice</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Douze ans d&#x27;audits énergétiques dans l&#x27;industrie, puis le pilotage carbone d&#x27;un groupe de transport.</dd></div>
+            <div><dt>Parcours</dt><dd>Douze ans d’audits énergétiques dans l’industrie, puis le pilotage carbone d’un groupe de transport.</dd></div>
             <div><dt>Preuve</dt><dd>Personnage fictif de démonstration : remplacer par une preuve vérifiable (certification, bilans menés).</dd></div>
-            <div><dt>Dans le parcours</dt><dd>Anime les ateliers sur l&#x27;énergie, le fret et le plan d&#x27;action.</dd></div>
+            <div><dt>Dans le parcours</dt><dd>Anime les ateliers sur l’énergie, le fret et le plan d’action.</dd></div>
           </dl>
         </div>
       </li><li class="s-people__card card" data-reveal>
@@ -4447,9 +5180,9 @@ textarea.field__input {
           <h3 class="s-people__name">Olivier Brunet</h3>
           <p class="s-people__role">Acheteur industriel, animateur</p>
           <dl class="s-people__bio">
-            <div><dt>Parcours</dt><dd>Quinze ans aux achats, dont six à construire des politiques d&#x27;achats responsables.</dd></div>
+            <div><dt>Parcours</dt><dd>Quinze ans aux achats, dont six à construire des politiques d’achats responsables.</dd></div>
             <div><dt>Preuve</dt><dd>Personnage fictif de démonstration : une preuve se cite avec sa source.</dd></div>
-            <div><dt>Dans le parcours</dt><dd>Anime l&#x27;atelier achats et relit chaque bilan avant la restitution.</dd></div>
+            <div><dt>Dans le parcours</dt><dd>Anime l’atelier achats et relit chaque bilan avant la restitution.</dd></div>
           </dl>
         </div>
       </li>
@@ -4460,7 +5193,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Témoignages">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">testimonials</code><span class="lib-note__name">Témoignages</span><span class="lib-note__anchor">#avis</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>D&#x27;autres comme moi l&#x27;ont-ils fait</dd></div><div><dt>Quand l'utiliser</dt><dd>Avec de vrais avis signés (nom, rôle, contexte) et leur accord. Trois avis choisis, chacun porteur d&#x27;un résultat, de préférence près du bloc de conversion.</dd></div><div><dt>Quand l'éviter</dt><dd>Avis inventés ou anonymes, compliments sans résultat, carrousel automatique, initiales sur un dégradé illisible, étoiles sans source.</dd></div><div><dt>Mouvement réduit</dt><dd>Statique.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>quotes</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>D’autres comme moi l’ont-ils fait</dd></div><div><dt>Quand l’utiliser</dt><dd>Avec de vrais avis signés (nom, rôle, contexte) et leur accord. Trois avis choisis, chacun porteur d’un résultat, de préférence près du bloc de conversion.</dd></div><div><dt>Quand l’éviter</dt><dd>Avis inventés ou anonymes, compliments sans résultat, carrousel automatique, initiales sur un dégradé illisible, étoiles sans source.</dd></div><div><dt>Mouvement réduit</dt><dd>Statique.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>quotes</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:avis -->
@@ -4472,25 +5205,80 @@ textarea.field__input {
     <div class="s-testi__grid" data-reveal-group>
       <figure class="s-testi__card card" data-reveal>
         <p class="s-testi__result">Questionnaire client rendu en cinq semaines</p>
-        <blockquote class="s-testi__quote"><p>Notre plus gros client nous avait donné jusqu&#x27;à fin mai. Nous avons envoyé le bilan le 19, avec les sources, et il n&#x27;est revenu avec aucune question.</p></blockquote>
+        <blockquote class="s-testi__quote"><p>Notre plus gros client nous avait donné jusqu’à fin mai. Nous avons envoyé le bilan le 19, avec les sources, et il n’est revenu avec aucune question.</p></blockquote>
         <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">HV</span><span><span class="s-testi__name">Hélène V.</span><span class="s-testi__role">Dirigeante, fabricant de mobilier, 42 salariés (avis fictif)</span></span></figcaption>
       </figure><figure class="s-testi__card card" data-reveal>
         <p class="s-testi__result">Le fret identifié comme premier poste</p>
-        <blockquote class="s-testi__quote"><p>Je pensais que l&#x27;énergie pesait le plus. Le calcul de l&#x27;atelier 3 a montré que le transport amont comptait trois fois plus.</p></blockquote>
+        <blockquote class="s-testi__quote"><p>Je pensais que l’énergie pesait le plus. Le calcul de l’atelier 3 a montré que le transport amont comptait trois fois plus.</p></blockquote>
         <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">MT</span><span><span class="s-testi__name">Marc T.</span><span class="s-testi__role">Responsable des achats, négoce alimentaire (avis fictif)</span></span></figcaption>
       </figure><figure class="s-testi__card card" data-reveal>
-        <p class="s-testi__result">Bilan refait seule l&#x27;année suivante</p>
-        <blockquote class="s-testi__quote"><p>Le modèle de collecte m&#x27;a resservi douze mois plus tard. Deux jours de travail au lieu de six semaines.</p></blockquote>
+        <p class="s-testi__result">Bilan refait seule l’année suivante</p>
+        <blockquote class="s-testi__quote"><p>Le modèle de collecte m’a resservi douze mois plus tard. Deux jours de travail au lieu de six semaines.</p></blockquote>
         <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">SR</span><span><span class="s-testi__name">Sonia R.</span><span class="s-testi__role">Directrice administrative, agence de 18 personnes (avis fictif)</span></span></figcaption>
       </figure>
     </div>
   </div>
 </section>
 <!-- /section:avis -->
+<aside class="lib-note" aria-label="Fiche de la section Cas avant / après">
+  <div class="wrap lib-note__inner">
+    <p class="lib-note__head"><code class="lib-note__id">cases</code><span class="lib-note__name">Cas avant / après</span><span class="lib-note__anchor">#cas</span></p>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Est-ce que ça a marché pour d’autres, et de combien</dd></div><div><dt>Quand l’utiliser</dt><dd>Prestation, accompagnement, conseil : deux ou trois missions réelles, chacune avec son contexte, son périmètre, une même mesure avant et après (barres à la même échelle, valeurs écrites à côté) et une phrase du client signée. La mesure se dit dans le chapô, avec sa source.</dd></div><div><dt>Quand l’éviter</dt><dd>Cas inventés présentés comme réels, mesures différentes d’une carte à l’autre, barres sans valeur écrite, pourcentages sans base, plus de trois cas, client nommé sans son accord.</dd></div><div><dt>Mouvement réduit</dt><dd>Barres pleines d’emblée, rien ne bouge. Avec le mouvement permis, la barre « après » se remplit une fois, quand la carte entre à l’écran.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>dark</code> <code>before_label</code> <code>after_label</code> <code>cases</code></dd></div></dl>
+  </div>
+</aside>
+<!-- section:cas -->
+<section id="cas" class="s-cases section band-dark" aria-labelledby="cas-titre" data-section="cases">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="cas-titre" class="section-title">Deux entreprises<br><span class="hl">avant et après le&nbsp;parcours</span></h2>
+      <p class="section-intro">Part des émissions calculées sur des données réelles plutôt qu’estimées, au premier bilan puis après le parcours.</p>
+    </div>
+    <ul class="s-cases__grid" role="list" data-reveal-group>
+      <li class="s-cases__card card" data-reveal>
+        <h3 class="s-cases__title">Un fabricant de mobilier de bureau</h3>
+        <p class="label">Industrie, 140 salariés · cas d’exemple</p>
+        <p class="s-cases__scope">Deux sites et la logistique amont, bilan refait en six semaines avec l’équipe achats.</p>
+        <dl class="s-cases__meter">
+          <div class="s-cases__row">
+            <dt>Premier bilan</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.35"></span></span><span class="s-cases__value">35 %</span></dd>
+          </div>
+          <div class="s-cases__row s-cases__row--after">
+            <dt>Après le parcours</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.88"></span></span><span class="s-cases__value">88 %</span></dd>
+          </div>
+        </dl>
+        <figure class="s-cases__quote">
+          <blockquote><p>« Nous savons enfin quels fournisseurs pèsent, et nous avons pu le prouver à notre banque. »</p></blockquote>
+          <figcaption>Directrice financière (avis fictif)</figcaption>
+        </figure>
+      </li><li class="s-cases__card card" data-reveal>
+        <h3 class="s-cases__title">Un réseau de laboratoires d’analyses</h3>
+        <p class="label">Santé, 12 sites · cas d’exemple</p>
+        <p class="s-cases__scope">Énergie, déplacements et consommables, collectés site par site en cinq semaines.</p>
+        <dl class="s-cases__meter">
+          <div class="s-cases__row">
+            <dt>Premier bilan</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.52"></span></span><span class="s-cases__value">52 %</span></dd>
+          </div>
+          <div class="s-cases__row s-cases__row--after">
+            <dt>Après le parcours</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:0.81"></span></span><span class="s-cases__value">81 %</span></dd>
+          </div>
+        </dl>
+        <figure class="s-cases__quote">
+          <blockquote><p>« Les responsables de site ont rempli leurs données eux-mêmes, et le chiffre tient à la relecture. »</p></blockquote>
+          <figcaption>Responsable qualité (avis fictif)</figcaption>
+        </figure>
+      </li>
+    </ul>
+  </div>
+</section>
+<!-- /section:cas -->
 <aside class="lib-note" aria-label="Fiche de la section Résultats (respiration)">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">outcomes</code><span class="lib-note__name">Résultats (respiration)</span><span class="lib-note__anchor">#resultats</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu&#x27;est-ce que ça change</dd></div><div><dt>Quand l'utiliser</dt><dd>Après une section dense, pour faire respirer la page : une rangée sans carte, pour chaque résultat un filet qui se trace, un grand numéro, un titre court et une phrase.</dd></div><div><dt>Quand l'éviter</dt><dd>Cartes, icônes, plus de quatre résultats, chiffres inventés (le numéro est un rang, pas une statistique, sauf chiffre sourcé).</dd></div><div><dt>Mouvement réduit</dt><dd>Filets tracés d&#x27;emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>items</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu’est-ce que ça change</dd></div><div><dt>Quand l’utiliser</dt><dd>Après une section dense, pour faire respirer la page : une rangée sans carte, pour chaque résultat un filet qui se trace, un grand numéro, un titre court et une phrase.</dd></div><div><dt>Quand l’éviter</dt><dd>Cartes, icônes, plus de quatre résultats, chiffres inventés (le numéro est un rang, pas une statistique, sauf chiffre sourcé).</dd></div><div><dt>Mouvement réduit</dt><dd>Filets tracés d’emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>items</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:resultats -->
@@ -4520,10 +5308,10 @@ textarea.field__input {
   </div>
 </section>
 <!-- /section:resultats -->
-<aside class="lib-note" aria-label="Fiche de la section Pour qui, et pour qui ce n&#x27;est pas">
+<aside class="lib-note" aria-label="Fiche de la section Pour qui, et pour qui ce n’est pas">
   <div class="wrap lib-note__inner">
-    <p class="lib-note__head"><code class="lib-note__id">for-whom</code><span class="lib-note__name">Pour qui, et pour qui ce n&#x27;est pas</span><span class="lib-note__anchor">#pour-qui</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Est-ce pour moi</dd></div><div><dt>Quand l'utiliser</dt><dd>Toujours utile avant le prix : deux colonnes courtes dans les mots des personas. Le second volet qualifie et rassure.</dd></div><div><dt>Quand l'éviter</dt><dd>Listes génériques valables pour tout le monde, plus de cinq lignes par colonne, un volet « pas pour vous » qui dénigre.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>yes_title</code> <code>yes</code> <code>no_title</code> <code>no</code></dd></div></dl>
+    <p class="lib-note__head"><code class="lib-note__id">for-whom</code><span class="lib-note__name">Pour qui, et pour qui ce n’est pas</span><span class="lib-note__anchor">#pour-qui</span></p>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Est-ce pour moi</dd></div><div><dt>Quand l’utiliser</dt><dd>Toujours utile avant le prix : deux colonnes courtes dans les mots des personas. Le second volet qualifie et rassure.</dd></div><div><dt>Quand l’éviter</dt><dd>Listes génériques valables pour tout le monde, plus de cinq lignes par colonne, un volet « pas pour vous » qui dénigre.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>fit_title</code> <code>fit</code> <code>not_fit_title</code> <code>not_fit</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:pour-qui -->
@@ -4535,11 +5323,11 @@ textarea.field__input {
     <div class="s-forwhom__grid" data-reveal-group>
       <div class="s-forwhom__col card" data-reveal>
         <h3 class="s-forwhom__title">Pour vous si</h3>
-        <ul class="list-check" role="list"><li>Vous dirigez ou gérez une entreprise de 10 à 250 personnes.</li><li>Un client ou une banque vous demande vos émissions cette année.</li><li>Vous pouvez réunir vos factures et vos achats de l&#x27;an passé.</li><li>Vous voulez comprendre vos chiffres pour pouvoir les défendre.</li></ul>
+        <ul class="list-check" role="list"><li>Vous dirigez ou gérez une entreprise de 10 à 250 personnes.</li><li>Un client ou une banque vous demande vos émissions cette année.</li><li>Vous pouvez réunir vos factures et vos achats de l’an passé.</li><li>Vous voulez comprendre vos chiffres pour pouvoir les défendre.</li></ul>
       </div>
       <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
         <h3 class="s-forwhom__title">Pas pour vous si</h3>
-        <ul class="list-check list-cross" role="list"><li>Votre groupe publie déjà un bilan audité chaque année.</li><li>Vous cherchez un prestataire qui fait tout à votre place.</li><li>Vos données de l&#x27;an passé sont impossibles à réunir avant l&#x27;été.</li></ul>
+        <ul class="list-check list-cross" role="list"><li>Votre groupe publie déjà un bilan audité chaque année.</li><li>Vous cherchez un prestataire qui fait tout à votre place.</li><li>Vos données de l’an passé sont impossibles à réunir avant l’été.</li></ul>
       </div>
     </div>
   </div>
@@ -4548,7 +5336,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Étapes (ce qui se passe ensuite)">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">process</code><span class="lib-note__name">Étapes (ce qui se passe ensuite)</span><span class="lib-note__anchor">#ensuite</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Et après le clic, que se passe-t-il</dd></div><div><dt>Quand l'utiliser</dt><dd>Sur une page à formulaire ou à rendez-vous engageant : 3 ou 4 étapes numérotées, avec le délai de chacune. Rassure juste avant ou juste après le bloc de conversion.</dd></div><div><dt>Quand l'éviter</dt><dd>Plus de quatre étapes, étapes sans délai, processus interne qui ne concerne pas le visiteur.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>steps</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Et après le clic, que se passe-t-il</dd></div><div><dt>Quand l’utiliser</dt><dd>Sur une page à formulaire ou à rendez-vous engageant : 3 ou 4 étapes numérotées, avec le délai de chacune. Rassure juste avant ou juste après le bloc de conversion.</dd></div><div><dt>Quand l’éviter</dt><dd>Plus de quatre étapes, étapes sans délai, processus interne qui ne concerne pas le visiteur.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>steps</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:ensuite -->
@@ -4562,8 +5350,8 @@ textarea.field__input {
       <li class="s-process__step" data-reveal>
         <span class="s-process__num" aria-hidden="true">1</span>
         <h3 class="s-process__title">Confirmation</h3>
-        <p class="s-process__text">Vous recevez la confirmation, la facture et le lien de l&#x27;espace de travail.</p>
-        <p class="s-process__delay label">Dans l&#x27;heure</p>
+        <p class="s-process__text">Vous recevez la confirmation, la facture et le lien de l’espace de travail.</p>
+        <p class="s-process__delay label">Dans l’heure</p>
       </li><li class="s-process__step" data-reveal>
         <span class="s-process__num" aria-hidden="true">2</span>
         <h3 class="s-process__title">Appel de cadrage</h3>
@@ -4582,7 +5370,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Tableau comparatif">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">comparison</code><span class="lib-note__name">Tableau comparatif</span><span class="lib-note__anchor">#comparatif</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Pourquoi cette option plutôt qu&#x27;une autre</dd></div><div><dt>Quand l'utiliser</dt><dd>Trafic en phase d&#x27;évaluation (requêtes « alternative à », comparaison de formules) : un vrai tableau, daté, factuel, dont la première colonne de données est l&#x27;offre de la page. Chaque cellule dit oui, non ou partiel en texte, jamais par la couleur seule.</dd></div><div><dt>Quand l'éviter</dt><dd>Comparaisons invérifiables ou non datées, concurrents nommés sans base factuelle, plus de quatre colonnes, plus de huit lignes.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>caption</code> <code>criteria_label</code> <code>columns</code> <code>rows</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Pourquoi cette option plutôt qu’une autre</dd></div><div><dt>Quand l’utiliser</dt><dd>Trafic en phase d’évaluation (requêtes « alternative à », comparaison de formules) : un vrai tableau, daté, factuel, dont la première colonne de données est l’offre de la page. Chaque cellule dit oui, non ou partiel en texte, jamais par la couleur seule.</dd></div><div><dt>Quand l’éviter</dt><dd>Comparaisons invérifiables ou non datées, concurrents nommés sans base factuelle, plus de quatre colonnes, plus de huit lignes.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile. Sur petit écran, le tableau défile à l’horizontale dans sa propre région, première colonne fixe, avec une indication de défilement.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>caption</code> <code>criteria_label</code> <code>scroll_hint</code> <code>columns</code> <code>rows</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:comparatif -->
@@ -4590,14 +5378,15 @@ textarea.field__input {
   <div class="wrap">
     <div class="section-head">
       <h2 id="comparatif-titre" class="section-title">Trois façons de faire <span class="hl">votre bilan</span></h2>
-      <p class="section-intro">Comparaison établie en janvier 2027, à partir de devis et d&#x27;offres publiques de prestataires de bilan.</p>
+      <p class="section-intro">Comparaison établie en janvier 2027, à partir de devis et d’offres publiques de prestataires de bilan.</p>
     </div>
-    <div class="s-compare__scroll" role="region" aria-label="Comparaison du parcours Meridian, d&#x27;un bilan mené seul et d&#x27;un bilan sous-traité" tabindex="0" data-reveal>
+    <p class="s-compare__hint" aria-hidden="true">Faites glisser le tableau pour voir les autres colonnes</p>
+    <div class="s-compare__scroll" role="region" aria-label="Comparaison du parcours Meridian, d’un bilan mené seul et d’un bilan sous-traité" tabindex="0" data-reveal>
       <table class="s-compare__table">
-        <caption class="sr-only">Comparaison du parcours Meridian, d&#x27;un bilan mené seul et d&#x27;un bilan sous-traité</caption>
+        <caption class="sr-only">Comparaison du parcours Meridian, d’un bilan mené seul et d’un bilan sous-traité</caption>
         <thead><tr><th scope="col">Critère</th><th scope="col">Parcours Meridian</th><th scope="col">Seul avec un tableur</th><th scope="col">Bilan sous-traité</th></tr></thead>
         <tbody>
-          <tr><th scope="row">Délai jusqu&#x27;au bilan</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>6 semaines</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>Variable</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>3 à 5 mois</span></td></tr><tr><th scope="row">Méthode documentée</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Oui</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--no" aria-hidden="true"></span>Rarement</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Oui</span></td></tr><tr><th scope="row">Vous savez refaire le calcul</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Oui</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>En partie</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--no" aria-hidden="true"></span>Non</span></td></tr><tr><th scope="row">Plan d&#x27;action chiffré</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Inclus</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--no" aria-hidden="true"></span>Non</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>En option</span></td></tr><tr><th scope="row">Prix indicatif</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>1 900 € HT</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Votre temps</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>Sur devis</span></td></tr>
+          <tr><th scope="row">Délai jusqu’au bilan</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>6 semaines</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>Variable</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>3 à 5 mois</span></td></tr><tr><th scope="row">Méthode documentée</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Oui</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--no" aria-hidden="true"></span>Rarement</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Oui</span></td></tr><tr><th scope="row">Vous savez refaire le calcul</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Oui</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>En partie</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--no" aria-hidden="true"></span>Non</span></td></tr><tr><th scope="row">Plan d’action chiffré</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Inclus</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--no" aria-hidden="true"></span>Non</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>En option</span></td></tr><tr><th scope="row">Prix indicatif</th><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>1 900 € HT</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--yes" aria-hidden="true"></span>Votre temps</span></td><td><span class="s-compare__cell"><span class="s-compare__icon s-compare__icon--partial" aria-hidden="true"></span>Sur devis</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -4607,7 +5396,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Grille tarifaire">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">pricing-table</code><span class="lib-note__name">Grille tarifaire</span><span class="lib-note__anchor">#suivi</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Quelle formule, à quel prix</dd></div><div><dt>Quand l'utiliser</dt><dd>Page de tarifs ou offre à plusieurs plans : 2 ou 3 plans, le plan recommandé en carte sombre, ce que chaque prix comprend, un bascule mensuel / annuel si les deux existent. Prix = offre validée uniquement.</dd></div><div><dt>Quand l'éviter</dt><dd>Plus de trois plans, prix barrés fictifs, plan « entreprise » sans prix ni contenu, bascule qui change autre chose que le prix. Pour vendre une seule offre datée, préférer le billet (offer-ticket).</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>toggle</code> <code>plans</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Quelle formule, à quel prix</dd></div><div><dt>Quand l’utiliser</dt><dd>Page de tarifs ou offre à plusieurs plans : 2 ou 3 plans, le plan recommandé en carte sombre, ce que chaque prix comprend, un bascule mensuel / annuel si les deux existent. Prix = offre validée uniquement.</dd></div><div><dt>Quand l’éviter</dt><dd>Plus de trois plans, prix barrés fictifs, plan « entreprise » sans prix ni contenu, bascule qui change autre chose que le prix. Pour vendre une seule offre datée, préférer le billet (offer-ticket).</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>toggle</code> <code>plans</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:suivi -->
@@ -4623,28 +5412,28 @@ textarea.field__input {
         
         <h3 class="s-pricing__name">Essentiel</h3>
         <p class="s-pricing__for">Mettre le bilan à jour seul</p>
-        <p class="s-pricing__price"><span data-period-show="month">49 €</span><span data-period-show="year" hidden>490 €</span><span class="s-pricing__unit"><span data-period-show="month">par mois</span><span data-period-show="year" hidden>par an</span></span></p>
+        <p class="s-pricing__price"><span data-period-show="month">49 €</span><span data-period-show="year" hidden>490 €</span> <span class="s-pricing__unit"><span data-period-show="month">par mois</span><span data-period-show="year" hidden>par an</span></span></p>
         <p class="s-pricing__note">Sans engagement</p>
         <div>
           <a class="btn btn--block s-pricing__cta btn--secondary" href="https://inscription.example.com/meridian/suivi?plan=essentiel" data-track="cta_click" data-cta-position="tarifs-essentiel">Choisir Essentiel</a>
-          <ul class="list-check" role="list"><li>Mise à jour annuelle des facteurs</li><li>Modèle de collecte de l&#x27;année</li><li>Une séance de questions par trimestre</li></ul>
+          <ul class="list-check" role="list"><li>Mise à jour annuelle des facteurs</li><li>Modèle de collecte de l’année</li><li>Une séance de questions par trimestre</li></ul>
         </div>
       </li><li class="s-pricing__plan card band-dark s-pricing__plan--featured" data-reveal>
         <p class="badge badge--accent s-pricing__badge">Le plus choisi</p>
         <h3 class="s-pricing__name">Suivi</h3>
         <p class="s-pricing__for">Mettre à jour et avancer sur le plan</p>
-        <p class="s-pricing__price"><span data-period-show="month">129 €</span><span data-period-show="year" hidden>1 290 €</span><span class="s-pricing__unit"><span data-period-show="month">par mois</span><span data-period-show="year" hidden>par an</span></span></p>
+        <p class="s-pricing__price"><span data-period-show="month">129 €</span><span data-period-show="year" hidden>1 290 €</span> <span class="s-pricing__unit"><span data-period-show="month">par mois</span><span data-period-show="year" hidden>par an</span></span></p>
         <p class="s-pricing__note">Engagement de 12 mois</p>
         <div>
           <a class="btn btn--block s-pricing__cta btn--primary" href="https://inscription.example.com/meridian/suivi?plan=suivi" data-track="cta_click" data-cta-position="tarifs-suivi">Choisir Suivi</a>
-          <ul class="list-check" role="list"><li>Tout l&#x27;Essentiel</li><li>Relecture du bilan mis à jour</li><li>Un point plan d&#x27;action par trimestre</li><li>Accès aux ateliers de la cohorte suivante</li></ul>
+          <ul class="list-check" role="list"><li>Tout l’Essentiel</li><li>Relecture du bilan mis à jour</li><li>Un point plan d’action par trimestre</li><li>Accès aux ateliers de la cohorte suivante</li></ul>
         </div>
       </li><li class="s-pricing__plan card" data-reveal>
         
         <h3 class="s-pricing__name">Groupe</h3>
         <p class="s-pricing__for">Plusieurs sites ou filiales</p>
-        <p class="s-pricing__price"><span data-period-show="month">290 €</span><span data-period-show="year" hidden>2 900 €</span><span class="s-pricing__unit"><span data-period-show="month">par mois</span><span data-period-show="year" hidden>par an</span></span></p>
-        <p class="s-pricing__note">Jusqu&#x27;à cinq entités</p>
+        <p class="s-pricing__price"><span class="s-pricing__prefix">dès</span> <span data-period-show="month">290 €</span><span data-period-show="year" hidden>2 900 €</span> <span class="s-pricing__unit"><span data-period-show="month">par mois</span><span data-period-show="year" hidden>par an</span></span></p>
+        <p class="s-pricing__note">Prix pour deux entités, puis 90 € par entité de plus</p>
         <div>
           <a class="btn btn--block s-pricing__cta btn--secondary" href="https://inscription.example.com/meridian/suivi?plan=groupe" data-track="cta_click" data-cta-position="tarifs-groupe">Choisir Groupe</a>
           <ul class="list-check" role="list"><li>Tout le Suivi</li><li>Consolidation multi-sites</li><li>Restitution au comité de direction</li></ul>
@@ -4657,7 +5446,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Bloc de conversion en billet">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">offer-ticket</code><span class="lib-note__name">Bloc de conversion en billet</span><span class="lib-note__anchor">#offre</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Combien, qu&#x27;est-ce qui est compris, comment je réserve, et ensuite</dd></div><div><dt>Quand l'utiliser</dt><dd>Toute page qui vend ou inscrit : l&#x27;offre comme un objet (billet). Le prix avec ce qu&#x27;il comprend, les formules en contrôle segmenté (vraies radios), une remise expliquée, le seul bouton à l&#x27;accent fort de la page, l&#x27;échéance en jours, puis « Compris », « La suite » et les prérequis. Le billet est un formulaire GET vers l&#x27;outil de vente : les ancres #&lt;id&gt; de la page et son bouton mènent à la même conversion. L&#x27;état réel (ouvert, liste d&#x27;attente, clos) vient de la configuration « offer » de la spec.</dd></div><div><dt>Quand l'éviter</dt><dd>Prix sans ce qu&#x27;il comprend, remise dont on ne dit pas ce qui se passe après sa date, compte à rebours en secondes, compteur de places sans vrai chiffre, prix dans le bouton, second bouton accentué.</dd></div><div><dt>Mouvement réduit</dt><dd>Billet immobile (pas d&#x27;inclinaison), prix lisible d&#x27;emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>action</code> <code>action_waitlist</code> <code>currency</code> <code>primary</code> <code>name</code> <code>meta</code> <code>badge_waitlist</code> <code>badge_closed</code> <code>formula_legend</code> <code>formulas</code> <code>price_unit</code> <code>discount_title</code> <code>discount</code> <code>cta_label</code> <code>cta_waitlist</code> <code>cta_closed</code> <code>deadline</code> <code>countdown</code> <code>seats</code> <code>included_title</code> <code>included</code> <code>next_title</code> <code>next_steps</code> <code>prereq_title</code> <code>prerequisites</code> <code>conditions</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>offer</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Combien, qu’est-ce qui est compris, comment je réserve, et ensuite</dd></div><div><dt>Quand l’utiliser</dt><dd>Toute page qui vend ou inscrit : l’offre comme un objet (billet). Le prix avec ce qu’il comprend, les formules en contrôle segmenté (vraies radios), une remise expliquée, le seul bouton à l’accent fort de la page, l’échéance en jours, puis « Compris », « La suite » et les prérequis. Le billet est un formulaire GET vers l’outil de vente : les ancres #&lt;id&gt; de la page et son bouton mènent à la même conversion. L’état réel (ouvert, liste d’attente, clos) vient de la configuration « offer » de la spec.</dd></div><div><dt>Quand l’éviter</dt><dd>Prix sans ce qu’il comprend, remise dont on ne dit pas ce qui se passe après sa date, compte à rebours en secondes, compteur de places sans vrai chiffre, prix dans le bouton, second bouton accentué.</dd></div><div><dt>Mouvement réduit</dt><dd>Billet immobile (pas d’inclinaison), prix lisible d’emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>action</code> <code>action_waitlist</code> <code>currency</code> <code>primary</code> <code>name</code> <code>meta</code> <code>badge_waitlist</code> <code>badge_closed</code> <code>formula_legend</code> <code>formulas</code> <code>price_unit</code> <code>discount_title</code> <code>discount</code> <code>cta_label</code> <code>cta_waitlist</code> <code>cta_closed</code> <code>cta_notify</code> <code>notify_href</code> <code>deadline</code> <code>countdown</code> <code>seats</code> <code>included_title</code> <code>included</code> <code>next_title</code> <code>next_steps</code> <code>prereq_title</code> <code>prerequisites</code> <code>conditions</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>offer</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:offre -->
@@ -4679,38 +5468,72 @@ textarea.field__input {
         <fieldset class="s-offer__formulas">
           <legend class="s-offer__legend">Formule</legend>
           <div class="s-offer__seg">
-            <label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="solo" data-price="1900" data-price-label="1 900 € HT" data-note="Une personne de l&#x27;entreprise. Avec la remise fondateur : 1 615 € HT." checked><span class="s-offer__opt-label">Solo</span><span class="s-offer__opt-price">1 900 € HT</span></label><label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="equipe" data-price="2900" data-price-label="2 900 € HT" data-note="Jusqu&#x27;à trois personnes de la même entreprise. Avec la remise fondateur : 2 465 € HT."><span class="s-offer__opt-label">Équipe</span><span class="s-offer__opt-price">2 900 € HT</span></label>
+            <label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="solo" data-price="1900" data-price-label="1 900 € HT" data-note="Une personne de l’entreprise. Avec la remise fondateur : 1 615 € HT." checked><span class="s-offer__opt-label">Solo</span><span class="s-offer__opt-price">1 900 € HT</span></label><label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="equipe" data-price="2900" data-price-label="2 900 € HT" data-note="Jusqu’à trois personnes de la même entreprise. Avec la remise fondateur : 2 465 € HT."><span class="s-offer__opt-label">Équipe</span><span class="s-offer__opt-price">2 900 € HT</span></label>
           </div>
         </fieldset>
         <div class="s-offer__pricebox">
           <p class="s-offer__price"><span data-offer-price>1 900 € HT</span><span class="s-offer__unit">par entreprise</span></p>
-          <p class="s-offer__note" aria-live="polite" data-offer-note>Une personne de l&#x27;entreprise. Avec la remise fondateur : 1 615 € HT.</p>
+          <p class="s-offer__note" aria-live="polite" data-offer-note>Une personne de l’entreprise. Avec la remise fondateur : 1 615 € HT.</p>
         </div>
-        <p class="s-offer__discount"><strong>Tarif fondateur</strong> 15 % de remise jusqu&#x27;au 31 janvier 2027, appliqués à la commande. Après cette date, le prix affiché s&#x27;applique.</p>
-        <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre" data-cta="primaire" data-offer-text-waitlist="Rejoindre la liste d&#x27;attente" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>Réserver ma place</button>
-        <p class="s-offer__deadline"><span data-offer-countdown data-many="Clôture dans {n} jours" data-one="Clôture demain" data-zero="Clôture ce soir">Clôture le 31 mars 2027</span><span aria-hidden="true">·</span><span>12 places par cohorte</span></p>
+        <p class="s-offer__discount"><strong>Tarif fondateur</strong> 15 % de remise jusqu’au 31 janvier 2027, appliqués à la commande. Après cette date, le prix affiché s’applique.</p>
+        <div class="s-offer__action">
+          <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre" data-cta="primaire" data-offer-text-waitlist="Rejoindre la liste d’attente" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>Réserver ma place</button>
+          <a class="btn btn--secondary btn--block s-offer__notify" href="https://inscription.example.com/meridian/prochaine-cohorte" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>Être prévenu de la prochaine cohorte</a>
+          <p class="s-offer__deadline"><span data-offer-countdown data-many="Clôture dans {n} jours" data-one="Clôture demain" data-zero="Clôture ce soir">Clôture le 31 mars 2027</span><span aria-hidden="true">·</span><span>12 places par cohorte</span></p>
+        </div>
       </div>
       <div class="s-offer__stub">
         <div>
           <h3 class="s-offer__col-title">Compris</h3>
-          <ul class="list-check" role="list"><li>Six ateliers de deux heures en visio, enregistrés</li><li>Une demi-journée en présentiel à Lyon</li><li>Le modèle de collecte et la table de facteurs</li><li>La relecture de votre bilan avant la restitution</li><li>Le groupe d&#x27;échange de la cohorte, ouvert un an</li></ul>
+          <ul class="list-check" role="list"><li>Six ateliers de deux heures en visio, enregistrés</li><li>Une demi-journée en présentiel à Lyon</li><li>Le modèle de collecte et la table de facteurs</li><li>La relecture de votre bilan avant la restitution</li><li>Le groupe d’échange de la cohorte, ouvert un an</li></ul>
         </div>
         <div>
           <h3 class="s-offer__col-title">La suite</h3>
-          <ol class="s-offer__steps" role="list"><li>Confirmation et facture par email dans l&#x27;heure</li><li>Un appel de vingt minutes pour cadrer vos données</li><li>Premier atelier le mardi 14 avril à 9 h</li></ol>
+          <ol class="s-offer__steps" role="list"><li>Confirmation et facture par email dans l’heure</li><li>Un appel de vingt minutes pour cadrer vos données</li><li>Premier atelier le mardi 14 avril à 9 h</li></ol>
         </div>
-        <p class="s-offer__prereq"><strong>Prérequis</strong> Les factures d&#x27;énergie et le grand livre des achats de l&#x27;année écoulée.</p>
+        <p class="s-offer__prereq"><strong>Prérequis</strong> Les factures d’énergie et le grand livre des achats de l’année écoulée.</p>
       </div>
     </form>
     </div>
-    <p class="s-offer__conditions">Paiement à la commande ou sur facture à 30 jours. Annulation sans frais jusqu&#x27;à 14 jours avant le premier atelier. La cohorte part à partir de 6 entreprises inscrites, sinon remboursement intégral.</p>
+    <p class="s-offer__conditions">Paiement à la commande ou sur facture à 30 jours. Annulation sans frais jusqu’à 14 jours avant le premier atelier. La cohorte part à partir de 6 entreprises inscrites, sinon remboursement intégral.</p>
   </div>
 </section>
 <!-- /section:offre -->
+<aside class="lib-note" aria-label="Fiche de la section Garantie (sceau et conditions exactes)">
+  <div class="wrap lib-note__inner">
+    <p class="lib-note__head"><code class="lib-note__id">guarantee</code><span class="lib-note__name">Garantie (sceau et conditions exactes)</span><span class="lib-note__anchor">#garantie</span></p>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Et si ça ne me sert pas</dd></div><div><dt>Quand l’utiliser</dt><dd>Juste après le bloc de conversion d’une offre achetée en ligne, quand une vraie garantie existe : un sceau qui la résume en un chiffre (décoratif), puis le titre, une phrase et les conditions exactes en liste de définitions (échéance datée, comment la faire jouer, délai de remboursement).</dd></div><div><dt>Quand l’éviter</dt><dd>Garantie que l’entreprise ne tient pas, conditions floues (« satisfait ou remboursé » sans délai ni démarche), sceau qui porte une information absente du texte, astérisque qui renvoie à des petites lignes.</dd></div><div><dt>Mouvement réduit</dt><dd>Sceau immobile, conditions visibles d’emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>seal</code> <code>terms</code></dd></div></dl>
+  </div>
+</aside>
+<!-- section:garantie -->
+<section id="garantie" class="s-guarantee section" aria-labelledby="garantie-titre" data-section="guarantee">
+  <div class="wrap s-guarantee__grid">
+    <div class="s-guarantee__seal" aria-hidden="true" data-qa-decor data-reveal="scale">
+      <svg viewBox="0 0 240 240" focusable="false">
+        <defs><path id="garantie-pourtour" d="M120 120m-99 0a99 99 0 1 1 198 0a99 99 0 1 1-198 0"/></defs>
+        <circle class="s-guarantee__outer" cx="120" cy="120" r="116"/>
+        <circle class="s-guarantee__inner" cx="120" cy="120" r="84"/>
+        <text class="s-guarantee__ring"><textPath href="#garantie-pourtour" textLength="618" lengthAdjust="spacing">REMBOURSÉ EN ENTIER · OUTILS CONSERVÉS · SANS JUSTIFICATION · </textPath></text>
+        <text class="s-guarantee__big" x="120" y="134" text-anchor="middle">30</text>
+        <text class="s-guarantee__small" x="120" y="162" text-anchor="middle">jours d’essai</text>
+      </svg>
+    </div>
+    <div>
+      <div class="section-head">
+        <h2 id="garantie-titre" class="section-title">Trente jours <span class="hl">pour juger sur pièces</span></h2>
+        <p class="section-intro">Si le parcours ne vous sert pas, écrivez-nous dans les trente jours qui suivent le premier atelier. Vous êtes remboursé en entier et vous gardez les outils.</p>
+      </div>
+      <dl class="s-guarantee__terms" data-reveal-group>
+        <div class="s-guarantee__row" data-reveal><dt>Échéance</dt><dd>Le vendredi 14 mai 2027 à minuit, trente jours après le premier atelier.</dd></div><div class="s-guarantee__row" data-reveal><dt>Comment</dt><dd>Un email à bonjour@example.com suffit, sans justification ni appel.</dd></div><div class="s-guarantee__row" data-reveal><dt>Remboursement</dt><dd>Sous sept jours, sur le moyen de paiement de la commande.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+<!-- /section:garantie -->
 <aside class="lib-note" aria-label="Fiche de la section Formulaire de capture">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">lead-capture</code><span class="lib-note__name">Formulaire de capture</span><span class="lib-note__anchor">#guide</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu&#x27;est-ce que je donne, et qu&#x27;est-ce que je reçois</dd></div><div><dt>Quand l'utiliser</dt><dd>Quand la conversion est un email contre un contenu ou une alerte (guide, liste d&#x27;attente, rappel d&#x27;ouverture). L&#x27;email seul si la suite le permet, consentement explicite quand la loi l&#x27;exige, une phrase sur ce qui arrive après l&#x27;envoi. Circuit complet : skill lead-magnet.</dd></div><div><dt>Quand l'éviter</dt><dd>Placeholder en guise de label, case pré-cochée, champ qui ne paie pas sa friction, promesse d&#x27;envoi que le circuit ne tient pas.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>points</code> <code>action</code> <code>primary</code> <code>position</code> <code>email_label</code> <code>email_placeholder</code> <code>email_hint</code> <code>consent</code> <code>cta_label</code> <code>after</code> <code>error_required</code> <code>error_email</code> <code>error_consent</code> <code>msg_success</code> <code>msg_failure</code> <code>msg_unwired</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>forms</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qu’est-ce que je donne, et qu’est-ce que je reçois</dd></div><div><dt>Quand l’utiliser</dt><dd>Quand la conversion est un email contre un contenu ou une alerte (guide, liste d’attente, rappel d’ouverture). L’email seul : la demande vaut envoi de la ressource, sans case à cocher. L’inscription à la lettre se propose à part, dans une case facultative et décochée, et une phrase sous le bouton dit ce qui arrive ensuite. Circuit complet : skill lead-magnet.</dd></div><div><dt>Quand l’éviter</dt><dd>Case obligatoire pour recevoir la ressource, lettre d’information imposée avec le contenu, case pré-cochée, placeholder en guise de label, champ qui ne paie pas sa friction, promesse d’envoi que le circuit ne tient pas.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>points</code> <code>action</code> <code>primary</code> <code>position</code> <code>email_label</code> <code>email_placeholder</code> <code>email_hint</code> <code>optin</code> <code>consent_required</code> <code>cta_label</code> <code>after</code> <code>error_required</code> <code>error_email</code> <code>error_consent</code> <code>msg_success</code> <code>msg_failure</code> <code>msg_unwired</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>forms</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:guide -->
@@ -4721,24 +5544,22 @@ textarea.field__input {
         <h2 id="guide-titre" class="section-title">Recevez la liste des <span class="hl">données à réunir</span></h2>
         <p class="section-intro">Une liste de 41 postes, avec pour chacun la pièce à demander et la personne qui la détient en général.</p>
       </div>
-      <ul class="list-check s-lead__points" role="list"><li>Format tableur, prêt à partager en interne</li><li>Les postes classés par poids moyen dans une PME</li><li>Un modèle d&#x27;email à envoyer à votre comptable</li></ul>
+      <ul class="list-check s-lead__points" role="list"><li>Format tableur, prêt à partager en interne</li><li>Les postes classés par poids moyen dans une PME</li><li>Un modèle d’email à envoyer à votre comptable</li></ul>
     </div>
     <div class="s-lead__card card" data-reveal>
-      <form class="s-lead__form" id="guide-form" action="https://formulaires.example.com/meridian/liste-donnees" method="post" data-form="lead" data-track="generate_lead" data-error-required="Ce champ est nécessaire pour vous envoyer la liste." data-error-email="Cette adresse email semble incomplète." data-error-consent="Cochez la case pour recevoir la liste." data-msg-success="C&#x27;est envoyé. Vérifiez votre boîte de réception." data-msg-failure="L&#x27;envoi n&#x27;a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n&#x27;a été envoyé.">
+      <form class="s-lead__form" id="guide-form" action="https://formulaires.example.com/meridian/liste-donnees" method="post" data-form="lead" data-track="generate_lead" data-error-required="Ce champ est nécessaire pour vous envoyer la liste." data-error-email="Cette adresse email semble incomplète." data-error-consent="Cochez la case pour continuer." data-msg-success="C’est envoyé. Vérifiez votre boîte de réception." data-msg-failure="L’envoi n’a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n’a été envoyé.">
         <div class="hp" aria-hidden="true"><label for="guide-site">Site web</label><input type="text" id="guide-site" name="site" tabindex="-1" autocomplete="off"></div>
         <div class="s-lead__fields" data-form-fields>
           <div class="field">
             <label class="field__label" for="guide-email">Votre email professionnel</label>
             <input class="field__input" type="email" id="guide-email" name="email" autocomplete="email" required placeholder="prenom@example.com" aria-describedby="guide-email-hint guide-email-error">
-            <p class="field__hint" id="guide-email-hint">Un seul envoi, puis un email par mois au plus.</p>
+            <p class="field__hint" id="guide-email-hint">La liste part à cette adresse.</p>
             <p class="field__error" id="guide-email-error" hidden></p>
           </div>
-          <div>
-            <div class="consent"><input type="checkbox" id="guide-consent" name="consent" value="oui" required aria-describedby="guide-consent-error"><label for="guide-consent">J&#x27;accepte de recevoir la liste et les nouvelles du parcours. Désinscription en un clic.</label></div>
-            <p class="field__error" id="guide-consent-error" hidden></p>
-          </div>
+          <div class="consent"><input type="checkbox" id="guide-optin" name="newsletter" value="oui" data-optin><label for="guide-optin">Recevoir aussi la lettre de Meridian, un email par mois sur le bilan carbone. Désinscription en un clic.</label></div>
+          
           <button type="submit" class="btn btn--block btn--secondary" data-cta-position="capture">Recevoir la liste</button>
-          <p class="s-lead__after">La liste arrive dans votre boîte dans la minute.</p>
+          <p class="s-lead__after">La liste arrive dans votre boîte dans la minute. Aucun autre email sans votre accord.</p>
         </div>
         <p class="form-status s-lead__status" role="status" data-form-status></p>
       </form>
@@ -4749,7 +5570,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Formulaire qualifiant (rendez-vous, démo, devis)">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">form</code><span class="lib-note__name">Formulaire qualifiant (rendez-vous, démo, devis)</span><span class="lib-note__anchor">#contact</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Comment je prends contact, et qui me répond</dd></div><div><dt>Quand l'utiliser</dt><dd>Vente assistée : demande de démo, rendez-vous découverte, devis. Quatre ou cinq champs qui paient leur friction en qualification, à côté de ce qui se passe ensuite et de la personne qui répond.</dd></div><div><dt>Quand l'éviter</dt><dd>Plus de six champs, téléphone obligatoire sans raison, menu déroulant à rallonge, placeholder en guise de label, case pré-cochée.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>next</code> <code>action</code> <code>primary</code> <code>position</code> <code>labels</code> <code>size_options</code> <code>consent</code> <code>cta_label</code> <code>privacy</code> <code>error_required</code> <code>error_email</code> <code>error_consent</code> <code>msg_success</code> <code>msg_failure</code> <code>msg_unwired</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>forms</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Comment je prends contact, et qui me répond</dd></div><div><dt>Quand l’utiliser</dt><dd>Vente assistée : demande de démo, rendez-vous découverte, devis. Quatre ou cinq champs qui paient leur friction en qualification, à côté de ce qui se passe ensuite et de la personne qui répond. Pas de case de consentement : la demande fonde le traitement (mesures précontractuelles) ; la mention de confidentialité, avec son lien, est toujours sous le bouton.</dd></div><div><dt>Quand l’éviter</dt><dd>Plus de six champs, téléphone obligatoire sans raison, menu déroulant à rallonge, placeholder en guise de label, case de consentement pour une simple demande, inscription à une lettre glissée dans la demande.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>next</code> <code>action</code> <code>primary</code> <code>position</code> <code>labels</code> <code>select_name</code> <code>size_options</code> <code>url_field</code> <code>cta_label</code> <code>privacy</code> <code>error_required</code> <code>error_email</code> <code>msg_success</code> <code>msg_failure</code> <code>msg_unwired</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>forms</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:contact -->
@@ -4763,7 +5584,7 @@ textarea.field__input {
       <ol class="s-form__next" role="list"><li>Une réponse écrite sous deux jours ouvrés</li><li>Un appel de trente minutes avec un animateur</li><li>Une proposition chiffrée dans la semaine</li></ol>
     </div>
     <div class="s-form__card card" data-reveal>
-      <form class="s-form__form" id="contact-form" action="https://formulaires.example.com/meridian/contact" method="post" data-form="contact" data-track="generate_lead" data-error-required="Ce champ est nécessaire pour vous répondre." data-error-email="Cette adresse email semble incomplète." data-error-consent="Cochez la case pour que nous puissions vous répondre." data-msg-success="Merci, votre demande est partie. Réponse sous deux jours ouvrés." data-msg-failure="L&#x27;envoi n&#x27;a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n&#x27;a été envoyé.">
+      <form class="s-form__form" id="contact-form" action="https://formulaires.example.com/meridian/contact" method="post" data-form="contact" data-track="generate_lead" data-error-required="Ce champ est nécessaire pour vous répondre." data-error-email="Cette adresse email semble incomplète." data-msg-success="Merci, votre demande est partie. Réponse sous deux jours ouvrés." data-msg-failure="L’envoi n’a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n’a été envoyé.">
         <div class="hp" aria-hidden="true"><label for="contact-site">Site web</label><input type="text" id="contact-site" name="site" tabindex="-1" autocomplete="off"></div>
         <div class="s-form__fields" data-form-fields>
           <div class="s-form__row">
@@ -4787,7 +5608,7 @@ textarea.field__input {
             <div class="field">
               <label class="field__label" for="contact-size">Effectif</label>
               <div class="field__select">
-                <select class="field__input" id="contact-size" name="size" required aria-describedby="contact-size-error">
+                <select class="field__input" id="contact-size" name="effectif" required aria-describedby="contact-size-error">
                   <option value="">Choisir</option><option>Moins de 50 personnes</option><option>50 à 250 personnes</option><option>Plus de 250 personnes</option>
                 </select>
               </div>
@@ -4795,12 +5616,13 @@ textarea.field__input {
             </div>
           </div>
           <div class="field">
+            <label class="field__label" for="contact-url">Adresse de votre site <span class="field__optional">(facultatif)</span></label>
+            <input class="field__input" type="text" inputmode="url" id="contact-url" name="site_url" autocomplete="url" spellcheck="false" placeholder="https://www.example.com">
+            
+          </div>
+          <div class="field">
             <label class="field__label" for="contact-message">Votre contexte <span class="field__optional">(facultatif)</span></label>
             <textarea class="field__input" id="contact-message" name="message" rows="4"></textarea>
-          </div>
-          <div>
-            <div class="consent"><input type="checkbox" id="contact-consent" name="consent" value="oui" required aria-describedby="contact-consent-error"><label for="contact-consent">J&#x27;accepte d&#x27;être recontacté au sujet de ma demande.</label></div>
-            <p class="field__error" id="contact-consent-error" hidden></p>
           </div>
           <button type="submit" class="btn btn--block btn--secondary" data-cta-position="formulaire">Envoyer ma demande</button>
           <p class="s-form__privacy">Vos données servent seulement à répondre à cette demande. <a href="https://www.example.com/confidentialite" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a></p>
@@ -4811,10 +5633,75 @@ textarea.field__input {
   </div>
 </section>
 <!-- /section:contact -->
+<aside class="lib-note" aria-label="Fiche de la section Inscription à un événement (sur place ou en ligne)">
+  <div class="wrap lib-note__inner">
+    <p class="lib-note__head"><code class="lib-note__id">event-registration</code><span class="lib-note__name">Inscription à un événement (sur place ou en ligne)</span><span class="lib-note__anchor">#inscription</span></p>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Comment je m’inscris, et comment je participe</dd></div><div><dt>Quand l’utiliser</dt><dd>Événement gratuit ou sur invitation, hybride ou non : la conversion est une inscription, pas un paiement. À gauche, les faits (quand, où) et ce qui arrive après l’inscription ; à droite, le choix du mode de participation en vraies radios, quatre champs au plus, une case facultative pour la prochaine édition, le bouton et l’échéance en jours. L’état réel vient de la configuration « offer » de la spec : liste d’attente = salle complète (le mode marqué full_on_waitlist se désactive, le direct reste ouvert), clos = message de clôture.</dd></div><div><dt>Quand l’éviter</dt><dd>Événement payant (préférer le billet offer-ticket), compteur de places sans vrai chiffre, case obligatoire pour s’inscrire, inscription à une lettre glissée dans le formulaire, plus de cinq champs.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile : la carte du formulaire est là d’emblée.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>dark</code> <code>facts</code> <code>next_title</code> <code>next_steps</code> <code>action</code> <code>primary</code> <code>position</code> <code>modes_legend</code> <code>modes</code> <code>badge_full</code> <code>labels</code> <code>optin</code> <code>cta_label</code> <code>cta_closed</code> <code>deadline</code> <code>countdown</code> <code>seats</code> <code>closed_text</code> <code>privacy</code> <code>error_required</code> <code>error_email</code> <code>msg_success</code> <code>msg_failure</code> <code>msg_unwired</code></dd></div><div><dt>Moteurs</dt><dd class="lib-note__codes"><code>forms</code> <code>offer</code></dd></div></dl>
+  </div>
+</aside>
+<!-- section:inscription -->
+<section id="inscription" class="s-evreg section band-dark" aria-labelledby="inscription-titre" data-section="event-registration">
+  <div class="wrap s-evreg__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="inscription-titre" class="section-title">Votre place<br><span class="hl">sur place ou en&nbsp;ligne</span></h2>
+        <p class="section-intro">L’inscription est gratuite. Elle vous réserve une place à Lyon ou le lien du direct, et le replay dans les deux cas.</p>
+      </div>
+      <dl class="s-evreg__facts">
+        <div><dt>Quand</dt><dd>Jeudi 10 juin 2027, de 8 h 30 à 12 h</dd></div><div><dt>Où</dt><dd>Dans nos locaux de Lyon, et en direct de 9 h à 11 h 30</dd></div>
+      </dl>
+      <h3 class="s-evreg__next-title">Après l’inscription</h3>
+      <ol class="s-evreg__next" role="list"><li>Un email de confirmation tout de suite, avec l’invitation pour votre agenda</li><li>La veille à 17 h, le plan d’accès ou le lien du direct</li><li>Sous 48 heures, le replay et les supports des intervenants</li></ol>
+    </div>
+    <div class="s-evreg__card card" data-reveal>
+      <form class="s-evreg__form" id="inscription-form" action="https://formulaires.example.com/meridian/matinale" method="post" data-form="inscription" data-track="generate_lead" data-track-participation="sur-place" data-error-required="Ce champ est nécessaire à votre inscription." data-error-email="Cette adresse email semble incomplète." data-msg-success="C’est noté. La confirmation et l’invitation pour votre agenda arrivent par email dans quelques minutes." data-msg-failure="L’envoi n’a pas abouti. Nouvel essai en cours." data-msg-unwired="Formulaire de démonstration : rien n’a été envoyé.">
+        <div class="hp" aria-hidden="true"><label for="inscription-site">Site web</label><input type="text" id="inscription-site" name="site" tabindex="-1" autocomplete="off"></div>
+        <div class="s-evreg__fields" data-form-fields>
+          <div class="s-evreg__open" data-offer-show="open waitlist">
+            <fieldset class="s-evreg__modes">
+              <legend class="s-evreg__legend">Comment participez-vous ?</legend>
+              <div class="s-evreg__seg">
+                <label class="s-evreg__opt"><input class="sr-only" type="radio" name="participation" value="sur-place" checked data-offer-disabled-waitlist data-full><span class="s-evreg__opt-label">Sur place</span><span class="s-evreg__opt-meta">À Lyon, café d’accueil compris</span><span class="badge badge--accent" data-offer-show="waitlist" hidden>Salle complète</span></label><label class="s-evreg__opt"><input class="sr-only" type="radio" name="participation" value="en-ligne"><span class="s-evreg__opt-label">En ligne</span><span class="s-evreg__opt-meta">En direct, lien envoyé la veille</span></label>
+              </div>
+            </fieldset>
+            <div class="s-evreg__row">
+              <div class="field">
+                <label class="field__label" for="inscription-name">Prénom et nom</label>
+                <input class="field__input" type="text" id="inscription-name" name="name" autocomplete="name" required aria-describedby="inscription-name-error">
+                <p class="field__error" id="inscription-name-error" hidden></p>
+              </div>
+              <div class="field">
+                <label class="field__label" for="inscription-email">Email professionnel</label>
+                <input class="field__input" type="email" id="inscription-email" name="email" autocomplete="email" required aria-describedby="inscription-email-error">
+                <p class="field__error" id="inscription-email-error" hidden></p>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="inscription-company">Entreprise</label>
+              <input class="field__input" type="text" id="inscription-company" name="company" autocomplete="organization" required aria-describedby="inscription-company-error">
+              <p class="field__error" id="inscription-company-error" hidden></p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="inscription-question">Une question pour les intervenants <span class="field__optional">(facultatif)</span></label>
+              <textarea class="field__input" id="inscription-question" name="question" rows="3"></textarea>
+            </div>
+            <div class="consent"><input type="checkbox" id="inscription-optin" name="prochaines" value="oui" data-optin><label for="inscription-optin">Me prévenir de la prochaine matinale</label></div>
+            <button type="submit" class="btn btn--block s-evreg__cta btn--secondary" data-cta-position="inscription" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>M’inscrire</button>
+            <p class="s-evreg__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au mercredi 9 juin</span><span aria-hidden="true">·</span><span>60 places sur place</span></p>
+          </div>
+          <p class="s-evreg__closed" data-offer-show="closed" hidden>Les inscriptions sont closes. Écrivez à <a href="mailto:bonjour@example.com">bonjour@example.com</a> pour recevoir le replay.</p>
+          <p class="s-evreg__privacy">Vos données servent à organiser la matinale et à vous envoyer le replay. <a href="https://www.example.com/confidentialite" target="_blank" rel="noopener">Confidentialité<span class="sr-only"> (nouvel onglet)</span></a></p>
+        </div>
+        <p class="form-status s-evreg__status" role="status" data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- /section:inscription -->
 <aside class="lib-note" aria-label="Fiche de la section FAQ avec carte collante">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">faq</code><span class="lib-note__name">FAQ avec carte collante</span><span class="lib-note__anchor">#faq</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Les dernières questions avant d&#x27;agir</dd></div><div><dt>Quand l'utiliser</dt><dd>Avant ou après le bloc de conversion : les vraies questions venues des ventes ou du support, en accordéon natif (&lt;details&gt;), et à côté une carte collante qui rappelle l&#x27;offre et ramène au bloc de conversion. JSON-LD FAQPage seulement sur une page indexée (jsonld: true).</dd></div><div><dt>Quand l'éviter</dt><dd>Questions inventées pour placer un argument, réponses qui renvoient ailleurs que vers la conversion, plus de huit questions, virgule ou point dans une question.</dd></div><div><dt>Mouvement réduit</dt><dd>L&#x27;accordéon s&#x27;ouvre sans animation.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>items</code> <code>jsonld</code> <code>card_label</code> <code>card_title</code> <code>card_meta</code> <code>cta_label</code> <code>cta_href</code> <code>contact</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Les dernières questions avant d’agir</dd></div><div><dt>Quand l’utiliser</dt><dd>Avant ou après le bloc de conversion : les vraies questions venues des ventes ou du support, en accordéon natif (&lt;details&gt;), et à côté une carte collante qui rappelle l’offre et ramène au bloc de conversion. JSON-LD FAQPage seulement sur une page indexée (jsonld: true).</dd></div><div><dt>Quand l’éviter</dt><dd>Questions inventées pour placer un argument, réponses qui renvoient ailleurs que vers la conversion, plus de huit questions, virgule ou point dans une question.</dd></div><div><dt>Mouvement réduit</dt><dd>L’accordéon s’ouvre sans animation.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>intro</code> <code>items</code> <code>jsonld</code> <code>card_label</code> <code>card_title</code> <code>card_meta</code> <code>cta_label</code> <code>cta_href</code> <code>contact</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:faq -->
@@ -4828,16 +5715,16 @@ textarea.field__input {
       <div class="s-faq__list">
         <details class="s-faq__item" data-track="faq_open">
           <summary class="s-faq__q"><h3>Faut-il des connaissances en carbone pour suivre le parcours ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Non. Le premier atelier pose le vocabulaire et la méthode, et l&#x27;animateur vous accompagne poste par poste. Il faut surtout savoir où trouver vos factures et vos achats.</p></div>
+          <div class="s-faq__a"><p>Non. Le premier atelier pose le vocabulaire et la méthode, et l’animateur vous accompagne poste par poste. Il faut surtout savoir où trouver vos factures et vos achats.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
           <summary class="s-faq__q"><h3>Combien de temps faut-il prévoir chaque semaine ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Deux heures d&#x27;atelier le mardi, puis deux à trois heures pour réunir et saisir vos données. La semaine 3 demande un peu plus, pour les achats.</p></div>
+          <div class="s-faq__a"><p>Deux heures d’atelier le mardi, puis deux à trois heures pour réunir et saisir vos données. La semaine 3 demande un peu plus, pour les achats.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
           <summary class="s-faq__q"><h3>Que se passe-t-il si je manque un atelier ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
           <div class="s-faq__a"><p>Chaque atelier est enregistré et mis en ligne sous 24 heures. La permanence du jeudi permet de poser vos questions sur la séance manquée.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
           <summary class="s-faq__q"><h3>Le bilan est-il reconnu par mes clients ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
-          <div class="s-faq__a"><p>Le dossier suit une méthode documentée et cite ses facteurs d&#x27;émission et leurs sources : c&#x27;est ce que demandent les questionnaires fournisseurs courants. Il ne remplace pas un bilan réglementaire audité quand la loi l&#x27;exige.</p></div>
+          <div class="s-faq__a"><p>Le dossier suit une méthode documentée et cite ses facteurs d’émission et leurs sources : c’est ce que demandent les questionnaires fournisseurs courants. Il ne remplace pas un bilan réglementaire audité quand la loi l’exige.</p></div>
         </details><details class="s-faq__item" data-track="faq_open">
           <summary class="s-faq__q"><h3>Peut-on payer sur facture ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
           <div class="s-faq__a"><p>Oui, à 30 jours. Choisissez le paiement sur facture au moment de la réservation.</p></div>
@@ -4857,7 +5744,7 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Informations légales">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">legal</code><span class="lib-note__name">Informations légales</span><span class="lib-note__anchor">#mentions</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qui vend, à quelles conditions</dd></div><div><dt>Quand l'utiliser</dt><dd>Vente directe, formation, événement payant : une fiche sobre, liste de définitions en deux colonnes (organisateur, conditions, rétractation, données, accessibilité). Les liens qui ouvrent un nouvel onglet l&#x27;annoncent.</dd></div><div><dt>Quand l'éviter</dt><dd>Texte juridique intégral (lien vers les conditions), mise en avant visuelle, titre accrocheur.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>items</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qui vend, à quelles conditions</dd></div><div><dt>Quand l’utiliser</dt><dd>Vente directe, formation, événement payant : une fiche sobre, liste de définitions en deux colonnes (organisateur, conditions, rétractation, données, accessibilité). Les liens qui ouvrent un nouvel onglet l’annoncent.</dd></div><div><dt>Quand l’éviter</dt><dd>Texte juridique intégral (lien vers les conditions), mise en avant visuelle, titre accrocheur.</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>items</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:mentions -->
@@ -4865,7 +5752,7 @@ textarea.field__input {
   <div class="wrap s-legal__inner">
     <h2 id="mentions-titre" class="s-legal__title">Informations pratiques et légales</h2>
     <dl class="s-legal__list">
-      <div class="s-legal__row"><dt>Organisateur</dt><dd>Meridian Conseil (entreprise fictive de démonstration), 10 rue de l'Exemple, 69000 Lyon.</dd></div><div class="s-legal__row"><dt>Prix</dt><dd>Prix hors taxes, TVA de 20 % en sus. Facture émise à la réservation.</dd></div><div class="s-legal__row"><dt>Annulation</dt><dd>Sans frais jusqu'à 14 jours avant le premier atelier, puis 50 % du prix. Remboursement intégral si la cohorte n'atteint pas 6 entreprises.</dd></div><div class="s-legal__row"><dt>Conditions générales</dt><dd>Les <a href="https://www.example.com/conditions" target="_blank" rel="noopener">conditions générales de vente<span class="sr-only"> (nouvel onglet)</span></a> s'appliquent à toute réservation.</dd></div><div class="s-legal__row"><dt>Données personnelles</dt><dd>Vos données servent à l'inscription et au suivi du parcours. <a href="https://www.example.com/confidentialite" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a></dd></div><div class="s-legal__row"><dt>Accessibilité</dt><dd>Ateliers sous-titrés en direct. Pour un besoin particulier, écrivez à <a href="mailto:bonjour@example.com">bonjour@example.com</a>.</dd></div>
+      <div class="s-legal__row"><dt>Organisateur</dt><dd>Meridian Conseil (entreprise fictive de démonstration), 10 rue de l’Exemple, 69000 Lyon.</dd></div><div class="s-legal__row"><dt>Prix</dt><dd>Prix hors taxes, TVA de 20 % en sus. Facture émise à la réservation.</dd></div><div class="s-legal__row"><dt>Annulation</dt><dd>Sans frais jusqu’à 14 jours avant le premier atelier, puis 50 % du prix. Remboursement intégral si la cohorte n’atteint pas 6 entreprises.</dd></div><div class="s-legal__row"><dt>Conditions générales</dt><dd>Les <a href="https://www.example.com/conditions" target="_blank" rel="noopener">conditions générales de vente<span class="sr-only"> (nouvel onglet)</span></a> s’appliquent à toute réservation.</dd></div><div class="s-legal__row"><dt>Données personnelles</dt><dd>Vos données servent à l’inscription et au suivi du parcours. <a href="https://www.example.com/confidentialite" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a></dd></div><div class="s-legal__row"><dt>Accessibilité</dt><dd>Ateliers sous-titrés en direct. Pour un besoin particulier, écrivez à <a href="mailto:bonjour@example.com">bonjour@example.com</a>.</dd></div>
     </dl>
   </div>
 </section>
@@ -4873,15 +5760,15 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section CTA final (bande sombre)">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">final-cta</code><span class="lib-note__name">CTA final (bande sombre)</span><span class="lib-note__anchor">#final</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Je passe à l&#x27;action</dd></div><div><dt>Quand l'utiliser</dt><dd>Dernière section avant les mentions : une bande sombre, une composition centrée, un titre sur deux lignes (le chiffre fort ou l&#x27;échéance), une phrase et le CTA primaire en variante claire. Sur grand écran, entrée en rideau (data-enter=&quot;curtain&quot;).</dd></div><div><dt>Quand l'éviter</dt><dd>Un nouvel argument introduit à la fin, un second objectif, deux bandes sombres d&#x27;affilée.</dd></div><div><dt>Mouvement réduit</dt><dd>La bande est là, sans rideau.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>text</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code> <code>note</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Je passe à l’action</dd></div><div><dt>Quand l’utiliser</dt><dd>Dernière section avant les mentions : une bande sombre, une composition centrée, un titre sur deux lignes (le chiffre fort ou l’échéance), une phrase et le CTA primaire en variante claire. Sur grand écran, entrée en rideau (data-enter=&quot;curtain&quot;).</dd></div><div><dt>Quand l’éviter</dt><dd>Un nouvel argument introduit à la fin, un second objectif, deux bandes sombres d’affilée.</dd></div><div><dt>Mouvement réduit</dt><dd>La bande est là, sans rideau.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>title</code> <code>text</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code> <code>note</code> <code>decor</code> <code>decor_html</code></dd></div></dl>
   </div>
 </aside>
 <!-- section:final -->
 <section id="final" class="s-final section band-dark" aria-labelledby="final-titre" data-section="final-cta" data-enter="curtain">
-  <svg class="s-final__decor" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M600 -80C330 80 330 520 600 680M600 -80c270 160 270 600 0 760M600 -80C120 80 120 520 600 680M600 -80c480 160 480 600 0 760M-40 200c400-60 880-60 1280 0M-40 400c400 60 880 60 1280 0"/></svg>
+  <div class="s-final__decor s-final__decor--rings" aria-hidden="true" data-qa-decor></div>
   <div class="wrap s-final__inner" data-reveal-group>
     <h2 id="final-titre" class="s-final__title" data-reveal>Douze places<br><span class="hl">pour le printemps</span></h2>
-    <p class="s-final__text lede" data-reveal>Vous choisissez votre formule sur le billet, la confirmation arrive dans l&#x27;heure.</p>
+    <p class="s-final__text lede" data-reveal>Vous choisissez votre formule sur le billet, la confirmation arrive dans l’heure.</p>
     <a class="btn btn--light" href="#offre" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>Réserver ma place<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
     <p class="s-final__note" data-reveal>Clôture des inscriptions le 31 mars 2027</p>
   </div>
@@ -4890,19 +5777,19 @@ textarea.field__input {
 <aside class="lib-note" aria-label="Fiche de la section Barre du haut">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">topbar</code><span class="lib-note__name">Barre du haut</span><span class="lib-note__anchor">#topbar</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Où agir, à tout moment de la lecture</dd></div><div><dt>Quand l'utiliser</dt><dd>Toute landing : le logo et un seul bouton, qui mène à la même conversion que le CTA primaire. Collante, elle garde l&#x27;action à portée sur toute la page.</dd></div><div><dt>Quand l'éviter</dt><dd>Un menu complet, des liens vers le reste du site ou un second bouton : chaque lien de sortie est une fuite. Le logo n&#x27;est pas un lien.</dd></div><div><dt>Mouvement réduit</dt><dd>Rien ne bouge.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>brand</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Où agir, à tout moment de la lecture</dd></div><div><dt>Quand l’utiliser</dt><dd>Toute landing : le logo et un seul bouton, qui mène à la même conversion que le CTA primaire. Collante, elle garde l’action à portée sur toute la page.</dd></div><div><dt>Quand l’éviter</dt><dd>Un menu complet, des liens vers le reste du site ou un second bouton : chaque lien de sortie est une fuite. Le logo n’est pas un lien.</dd></div><div><dt>Mouvement réduit</dt><dd>Rien ne bouge.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>brand</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code></dd></div></dl>
   </div>
 </aside>
 <aside class="lib-note" aria-label="Fiche de la section Pied de page">
   <div class="wrap lib-note__inner">
     <p class="lib-note__head"><code class="lib-note__id">footer</code><span class="lib-note__name">Pied de page</span><span class="lib-note__anchor">#pied</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qui est derrière, et où sont les mentions</dd></div><div><dt>Quand l'utiliser</dt><dd>Toute landing : la marque, les mentions légales, la confidentialité, un contact. Rien qui concurrence la conversion.</dd></div><div><dt>Quand l'éviter</dt><dd>Plan du site, liens vers les réseaux sociaux ou le blog, inscription à la newsletter (second objectif).</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>brand</code> <code>links</code> <code>legal</code></dd></div></dl>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Qui est derrière, et où sont les mentions</dd></div><div><dt>Quand l’utiliser</dt><dd>Toute landing : la marque, les mentions légales, la confidentialité, un contact. Rien qui concurrence la conversion.</dd></div><div><dt>Quand l’éviter</dt><dd>Plan du site, liens vers les réseaux sociaux ou le blog, inscription à la newsletter (second objectif).</dd></div><div><dt>Mouvement réduit</dt><dd>Immobile.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>brand</code> <code>links</code> <code>legal</code></dd></div></dl>
   </div>
 </aside>
-<aside class="lib-note" aria-label="Fiche de la section Barre d&#x27;action mobile collante">
+<aside class="lib-note" aria-label="Fiche de la section Barre d’action mobile collante">
   <div class="wrap lib-note__inner">
-    <p class="lib-note__head"><code class="lib-note__id">sticky-bar</code><span class="lib-note__name">Barre d&#x27;action mobile collante</span><span class="lib-note__anchor">#barre-mobile</span></p>
-    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Agir sans remonter la page (mobile)</dd></div><div><dt>Quand l'utiliser</dt><dd>Pages longues sur mobile, ou page locale (le bouton appelle). Sous 768 px seulement : une barre fixe en bas porte le CTA primaire. Elle apparaît une fois le hero passé et s&#x27;efface devant le bloc de conversion et le pied de page, pour ne rien masquer.</dd></div><div><dt>Quand l'éviter</dt><dd>Une barre sur bureau, une barre visible dès le chargement, une destination différente du CTA primaire, un bouton sous 44 px.</dd></div><div><dt>Mouvement réduit</dt><dd>La barre apparaît et disparaît sans glissement.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>label</code> <code>title</code> <code>detail</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code></dd></div></dl>
+    <p class="lib-note__head"><code class="lib-note__id">sticky-bar</code><span class="lib-note__name">Barre d’action mobile collante</span><span class="lib-note__anchor">#barre-mobile</span></p>
+    <dl class="lib-note__grid"><div><dt>Objection traitée</dt><dd>Agir sans remonter la page (mobile)</dd></div><div><dt>Quand l’utiliser</dt><dd>Pages longues sur mobile, ou page locale (le bouton appelle). Sous 768 px seulement : une barre fixe en bas porte le CTA primaire. Elle apparaît une fois le hero passé et s’efface devant le bloc de conversion et le pied de page, pour ne rien masquer.</dd></div><div><dt>Quand l’éviter</dt><dd>Une barre sur bureau, une barre visible dès le chargement, une destination différente du CTA primaire, un bouton sous 44 px.</dd></div><div><dt>Mouvement réduit</dt><dd>La barre apparaît et disparaît sans glissement.</dd></div><div><dt>Slots</dt><dd class="lib-note__codes"><code>label</code> <code>title</code> <code>detail</code> <code>cta_label</code> <code>cta_href</code> <code>primary</code></dd></div></dl>
   </div>
 </aside>
 </main>
@@ -5319,8 +6206,14 @@ textarea.field__input {
        data-error-consent            message for an unticked consent box
        data-msg-success              confirmation shown after sending
        data-msg-failure              shown when sending fails
-       data-msg-unwired              shown when the action is still a
-                                     {{PLACEHOLDER}} or empty (nothing sent)
+       data-msg-unwired              added after the success message when
+                                     the action is still a {{PLACEHOLDER}}
+                                     or empty (demonstration: nothing sent)
+     form[data-demo]                 written on load when the action is
+                                     still a {{PLACEHOLDER}} or empty:
+                                     submissions are demonstrations, never
+                                     sent, counted by tracking.js under
+                                     form_demo_submit instead of the lead
      .hp input                       honeypot: filled means a robot; the form
                                      pretends success and sends nothing
      [data-error-for="<name>"]       error message of a field (else the
@@ -5332,8 +6225,9 @@ textarea.field__input {
    aria-invalid="true" and their message, focus goes to the first one, and
    the form carries data-invalid (tracking.js then counts nothing). A valid
    form is sent with fetch (POST, FormData); if fetch fails, the native
-   submission takes over. Never a pre-ticked consent, never a placeholder
-   used as a label: that is the markup's job.
+   submission takes over. A demonstration form (data-demo) sends nothing
+   over the network and shows the success state at once. Never a pre-ticked
+   box, never a placeholder used as a label: that is the markup's job.
    ========================================================================== */
 (function () {
   'use strict';
@@ -5391,14 +6285,23 @@ textarea.field__input {
     if (box) box.textContent = text || '';
   }
 
-  function done(form) {
+  function done(form, demo) {
     var fields = form.querySelector('[data-form-fields]');
     if (fields) fields.hidden = true;
-    status(form, form.getAttribute('data-msg-success'));
+    var text = form.getAttribute('data-msg-success') || '';
+    if (demo && form.getAttribute('data-msg-unwired')) text += (text ? ' ' : '') + form.getAttribute('data-msg-unwired');
+    status(form, text);
+  }
+
+  // The endpoint is still a {{PLACEHOLDER}} (or missing): a demonstration.
+  function unwired(form) {
+    var action = form.getAttribute('action') || '';
+    return !action || /\{\{/.test(action);
   }
 
   document.querySelectorAll('form[data-form]').forEach(function (form) {
     form.setAttribute('novalidate', '');
+    if (unwired(form)) form.setAttribute('data-demo', '');
     form.addEventListener('submit', function (e) {
       var trap = form.querySelector('.hp input');
       if (trap && trap.value) {
@@ -5415,12 +6318,14 @@ textarea.field__input {
         return;
       }
       form.removeAttribute('data-invalid');
-      var action = form.getAttribute('action') || '';
-      if (!action || /\{\{/.test(action)) {
+      if (unwired(form)) {
+        // Nothing leaves the page; tracking.js counts form_demo_submit.
         e.preventDefault();
-        status(form, form.getAttribute('data-msg-unwired'));
+        form.setAttribute('data-demo', '');
+        done(form, true);
         return;
       }
+      var action = form.getAttribute('action');
       if (!window.fetch || !window.FormData) return;   // native submission
       e.preventDefault();
       status(form, '');
@@ -5474,17 +6379,25 @@ textarea.field__input {
      generate_lead    valid submit of a form[data-track="generate_lead"]
                       (a form that forms.js refused carries data-invalid and
                       is not counted). form_id (form id), lead_source (page
-                      slug)
+                      slug), optin (true when an input[data-optin] box is
+                      ticked, false otherwise)
      begin_checkout   submit of a form[data-track="begin_checkout"] (the
                       conversion ticket). value, currency, formula
+     form_demo_submit sent INSTEAD of the form's own event when its action
+                      is still a {{MARKER}} (or the form carries data-demo,
+                      written by forms.js, which then sends nothing): a
+                      demonstration submission never counts as a lead or a
+                      checkout. form_event (the event it replaces),
+                      form_id, and the parameters of that event
      select_content   choice gate: content_type, content_id
      faq_open         a details[data-track="faq_open"] opened: question
      <any name>       any other data-track value on a link or button: pushed
                       on click under that name
    Extra parameters: every data-track-<name>="value" attribute on the tracked
-   element is sent as <name>: value (dashes become underscores). A form may
-   expose its current formula through a checked input[name="formule"] or
-   [data-track-formula].
+   element is sent as <name>: value (dashes become underscores). A form
+   exposes its current formula through a checked radio input[name="formule"]
+   (or "formula"), a hidden input of that name (single formula), or
+   [data-track-formula]; the formula input's data-price gives value.
 
    UTM pass-through: utm_* (and gclid) of the landing URL are kept for the
    visit (sessionStorage) and appended to (a) every outbound conversion link
@@ -5577,6 +6490,17 @@ textarea.field__input {
   });
 
   /* ---- forms ---- */
+  // A form whose action is still a {{MARKER}} is a demonstration (forms.js
+  // also marks data-demo a form it handles with an empty action): nothing is
+  // sent, and the submission is counted under form_demo_submit, never as a
+  // lead or a checkout.
+  function isDemo(form) {
+    return form.hasAttribute('data-demo') || /\{\{/.test(form.getAttribute('action') || '');
+  }
+
+  var FORMULA = 'input[name="formule"]:checked, input[name="formula"]:checked, '
+    + 'input[type="hidden"][name="formule"], input[type="hidden"][name="formula"]';
+
   // Bubble phase: the form's own handler (forms.js) has validated it first,
   // and marked it data-invalid when it refused the submission.
   document.addEventListener('submit', function (e) {
@@ -5585,14 +6509,21 @@ textarea.field__input {
     if (form.hasAttribute('data-invalid')) return;
     var name = form.getAttribute('data-track');
     var data = extras(form);
-    var checked = form.querySelector('input[name="formule"]:checked, input[name="formula"]:checked');
-    if (checked) data.formula = checked.value;
+    var formula = form.querySelector(FORMULA);
+    if (formula) data.formula = formula.value;
     if (name === 'generate_lead') {
       data.form_id = form.id || '';
       data.lead_source = pageSlug();
+      var optin = form.querySelector('input[data-optin]');
+      data.optin = !!(optin && optin.checked);
     }
-    if (name === 'begin_checkout' && checked && checked.getAttribute('data-price')) {
-      data.value = Number(checked.getAttribute('data-price'));
+    if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
+      data.value = Number(formula.getAttribute('data-price'));
+    }
+    if (isDemo(form)) {
+      data.form_event = name;
+      if (!data.form_id) data.form_id = form.id || '';
+      name = 'form_demo_submit';
     }
     send(name, data);
   });
@@ -5778,9 +6709,25 @@ textarea.field__input {
     });
   });
 })();
+/* ---- section : comparison ---- */
+(function () {
+  document.querySelectorAll('.s-compare').forEach(function (section) {
+    var region = section.querySelector('.s-compare__scroll');
+    if (!region) return;
+    function measure() {
+      section.setAttribute('data-scrollable', region.scrollWidth > region.clientWidth + 1 ? 'true' : 'false');
+    }
+    measure();
+    window.addEventListener('resize', measure);
+    if ('ResizeObserver' in window) new ResizeObserver(measure).observe(region);
+  });
+})();
 /* ---- section : pricing-table ---- */
 (function () {
   document.querySelectorAll('.s-pricing').forEach(function (section) {
+    // No yearly price anywhere: no switch (CSS :has() does it too).
+    var wrap = section.querySelector('.s-pricing__toggle-wrap');
+    if (wrap && !section.querySelector('[data-period-show="year"]')) wrap.hidden = true;
     section.querySelectorAll('.s-pricing__toggle input').forEach(function (input) {
       input.addEventListener('change', function () {
         if (!input.checked) return;
@@ -5825,6 +6772,30 @@ textarea.field__input {
       ticket.style.removeProperty('--rx');
       ticket.style.removeProperty('--ry');
     });
+  });
+})();
+/* ---- section : event-registration ---- */
+(function () {
+  document.querySelectorAll('.s-evreg').forEach(function (section) {
+    var form = section.querySelector('form');
+    if (!form) return;
+    var radios = form.querySelectorAll('input[name="participation"][type="radio"]');
+    // The chosen mode travels with the lead (generate_lead: participation).
+    function sync() {
+      var on = form.querySelector('input[name="participation"]:checked');
+      if (on) form.setAttribute('data-track-participation', on.value);
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    // offer.js: "waitlist" means the room is full; the modes marked full
+    // close, the first one still open is selected.
+    document.addEventListener('landing:offer', function (e) {
+      if (!e.detail || e.detail.state !== 'waitlist') return;
+      var current = form.querySelector('input[name="participation"]:checked');
+      if (current && !current.disabled) return;
+      var open = form.querySelector('input[name="participation"][type="radio"]:not(:disabled)');
+      if (open) { open.checked = true; sync(); }
+    });
+    sync();
   });
 })();
 /* ---- section : faq ---- */

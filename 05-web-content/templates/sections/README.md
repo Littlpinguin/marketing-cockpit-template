@@ -47,14 +47,17 @@ Une page prend une dizaine de sections, une objection par section, dans l'ordre 
 | `map-pinned` | Carte ou schéma tracé au défilement | Compatible avec ma vie | scroll | clair, épinglé |
 | `people` | Personnes, biographie en trois temps | Avec qui | | clair |
 | `testimonials` | Trois avis signés, chacun avec un résultat | D'autres l'ont-ils fait | | clair |
+| `cases` | Cas avant / après, même mesure sur chaque carte | Ça a marché pour d'autres, de combien | | bande sombre ou clair (`dark`) |
 | `outcomes` | Résultats en respiration, filets tracés | Qu'est-ce que ça change | | clair |
-| `for-whom` | Pour qui, et pour qui ce n'est pas | Est-ce pour moi | | clair |
+| `for-whom` | Pour qui (`fit`), et pour qui ce n'est pas (`not_fit`) | Est-ce pour moi | | clair |
 | `process` | Étapes après le clic | Et après | | clair |
 | `comparison` | Tableau comparatif daté | Pourquoi cette option | | clair |
 | `pricing-table` | Grille de 2 ou 3 plans, bascule mensuel / annuel | Quelle formule | | clair, plan recommandé sombre |
 | `offer-ticket` | Bloc de conversion en billet (formulaire GET) | Combien, compris, comment, ensuite | offer | clair |
+| `guarantee` | Garantie : sceau et conditions exactes | Et si ça ne me sert pas | | clair |
 | `lead-capture` | Formulaire de capture (email) | Que je donne, que je reçois | forms | clair |
 | `form` | Formulaire qualifiant (démo, rendez-vous, devis) | Comment je prends contact | forms | clair |
+| `event-registration` | Inscription à un événement, sur place ou en ligne | Comment je m'inscris, comment je participe | forms, offer | bande sombre ou clair (`dark`) |
 | `faq` | FAQ en accordéon natif, carte collante | Dernières questions | | clair |
 | `legal` | Informations légales | Qui vend, à quelles conditions | | clair |
 | `final-cta` | CTA final | Je passe à l'action | | bande sombre, rideau |
@@ -67,14 +70,18 @@ Une page prend une dizaine de sections, une objection par section, dans l'ordre 
 
 | Type de page | Sections, dans l'ordre |
 |---|---|
-| Formation, cohorte, atelier payant | topbar, hero, proof-band, problem-pinned, pivot, journey ou program, people, testimonials, for-whom, offer-ticket, faq, legal, final-cta, footer, sticky-bar |
+| Formation, cohorte, atelier payant | topbar, hero, proof-band, problem-pinned, pivot, showcase-dark ou outcomes (respiration non épinglée), journey ou program, people, testimonials, for-whom, offer-ticket, faq, legal, final-cta, footer, sticky-bar |
+| Offre achetée en ligne (vente longue) | … offer-ticket (une formule : billet horizontal), guarantee juste après, faq, final-cta … |
 | Offre à formules réelles | … pivot, choice-gate, puis les sections de la suite marquées `gated`, offer-ticket (la porte règle sa formule) … |
 | Capture d'un contenu (guide, liste) | hero (lede court), lead-capture tôt, benefits, people ou testimonials, faq, footer |
 | Démo B2B, rendez-vous, devis | topbar, hero, logos, problem-pinned, benefits, testimonials, process, form, faq, final-cta, footer |
-| Événement, webinar | topbar, hero (countdown), program (agenda minuté), people, map-pinned (lieux, fuseaux), offer-ticket ou lead-capture, faq, final-cta |
+| Prestation, accompagnement | topbar, hero, problem-pinned, program, cases, people, for-whom, pricing-table (prix « dès »), form, faq, final-cta |
+| Événement, webinar | topbar, hero (countdown), program (agenda minuté), people, map-pinned (lieux, fuseaux), event-registration (gratuit) ou offer-ticket (payant), faq, final-cta |
 | Tarifs, essai | topbar, hero, logos, pricing-table (`primary` sur le plan recommandé), comparison, testimonials, faq, final-cta |
 
-Règles de page : trois épinglages au plus et jamais deux d'affilée ; une ou deux bandes sombres plus le CTA final, jamais deux d'affilée ; un seul accent fort (le bouton de conversion) ; une seule conversion (tous les `data-cta="primaire"` mènent au même endroit : l'ancre du bloc de conversion ou son bouton d'envoi). Le catalogue enfreint volontairement ces règles pour tout montrer.
+Les six modèles de `05-web-content/templates/landing-pages/specs/` (formation, vente-longue, lead-magnet, demo-b2b, prestation, evenement) sont ces compositions remplies : partir de l'un d'eux plutôt que d'une page vide.
+
+Règles de page : trois épinglages au plus, et jamais deux d'affilée, avec une seule exception, le couple `problem-pinned` → `pivot`, conçu pour s'enchaîner (le pivot, une phrase seule à l'écran, sert de respiration) ; après ce couple, une section non épinglée avant tout autre épinglage ; une ou deux bandes sombres plus le CTA final, jamais deux d'affilée ; un seul accent fort (le bouton de conversion) ; une seule conversion (tous les `data-cta="primaire"` mènent au même endroit : l'ancre du bloc de conversion ou son bouton d'envoi). Le catalogue enfreint volontairement ces règles pour tout montrer.
 
 ## 2. La spec d'une page
 
@@ -124,6 +131,8 @@ sections:
 Notes libres sur la page (ignorées par l'assembleur).
 ```
 
+**Clés booléennes.** En YAML 1.1 (PyYAML), une clé nue `yes`, `no`, `on` ou `off` devient `true` ou `false` : le slot visé ne serait jamais rempli. L'assembleur refuse donc toute spec qui porte une clé booléenne (« clé booléenne : YAML lit yes/no/on/off comme des booléens, mettez la clé entre guillemets ») ; c'est pourquoi les colonnes de `for-whom` s'appellent `fit` et `not_fit`, et les cellules du tableau comparatif s'écrivent `{"yes": true, text: …}`.
+
 Clés de section : `use` (nom du fragment) ou `file` (fragment sur mesure, avec `id` obligatoire), `id` (unique sur la page, minuscules et tirets, défaut : le nom du fragment ; c'est l'ancre et la base des `aria-labelledby`), `slots`, `gated` (caché jusqu'au choix de la porte), `samples` (texte d'exemple admis pour cette section). Autres clés de page : `samples` (tout le texte d'exemple admis, pour une démo), `annotate` et `intro` (fiches du catalogue), `engines` (forcer un moteur), `skip_link` (libellé du lien d'évitement), `library` (autre dossier de fragments).
 
 ## 3. Les slots
@@ -142,9 +151,11 @@ Les fragments lisent leurs valeurs par un sous-ensemble de Mustache, en minuscul
 
 Une valeur cherchée dans une boucle remonte au contexte de la section si l'élément ne la porte pas (`{{outcome_label}}` dans `{{#steps}}`). Les marqueurs du dépôt en majuscules (`{{FORM_ENDPOINT}}`, `{{URL_CHECKOUT}}`) ne sont jamais interprétés : ils restent dans la page, la QA et `lint-placeholders.py` les signalent jusqu'à ce qu'ils soient remplacés.
 
+**Marqueurs ou adresses d'exemple.** Les modèles (`landing-pages/specs/`) écrivent en marqueur chaque lien qui reste à brancher : liens légaux (`{{URL_MENTIONS_LEGALES}}`, `{{URL_CGV}}`, `{{URL_CONFIDENTIALITE}}`), paiement (`{{URL_CHECKOUT}}`), liste d'attente (`{{URL_LISTE_ATTENTE}}`), itinéraire, endpoint de formulaire (`{{FORM_ENDPOINT}}`). La QA les signale jusqu'à la publication, et un formulaire dont l'action est encore un marqueur ne compte jamais de lead (§ 4). Les exemples de la bibliothèque (slots des fragments, `catalogue.json`) gardent des adresses du domaine réservé `https://www.example.com/…` (et ses sous-domaines), pour que le catalogue montre des liens complets ; seul l'exemple d'un endpoint de fragment (`action`) reste un marqueur, pour qu'un slot oublié n'envoie jamais rien.
+
 Chaque slot est documenté dans la fiche du fragment : `type` (`text`, `html`, `url`, `bool`, `list`, `object`, `number`), `doc`, `fields` (pour une liste ou un objet) et `example`. **Un slot non rempli prend son exemple et l'assembleur le signale** : le texte fictif ne part jamais en production par oubli. `--strict` transforme chaque avertissement en échec.
 
-Règles de contenu tenues par les exemples et à tenir dans les vrais textes : titres sans virgule ni point, aucun mot seul en fin de titre (coupures en `<br>` décidées), espaces insécables du français (` ` avant `:` et `€`, ` ` avant `?`, `!`, `;` et dans `1 900`), aucun tiret cadratin, un texte de 12 mots ou plus jamais dans une étiquette ou une note en petit corps (plancher de 16 px, 18 px sur bureau), aucun chiffre, avis, logo ni fait sur une personne inventé hors démonstration.
+Règles de contenu tenues par les exemples et à tenir dans les vrais textes : titres sans virgule ni point, aucun mot seul en fin de titre (coupures en `<br>` décidées), apostrophe typographique `’` dans tout texte visible (jamais dans un attribut, une URL ou du code ; dans un YAML entre apostrophes, `l’heure` plutôt que `l''heure`), espaces insécables du français (` ` avant `:` et `€`, ` ` avant `?`, `!`, `;` et dans `1 900`), aucun tiret cadratin, un texte de 12 mots ou plus jamais dans une étiquette ou une note en petit corps (plancher de 16 px, 18 px sur bureau), aucun chiffre, avis, logo ni fait sur une personne inventé hors démonstration.
 
 ## 4. Les moteurs
 
@@ -189,7 +200,11 @@ Lit `LANDING_CONFIG.offer` (spec `offer`). Le HTML montre toujours l'état ouver
 
 ### forms.js (formulaires de capture)
 
-Sur `form[data-form]` : contrôle des champs requis, de l'email et du consentement au submit, messages liés (`aria-invalid`, `aria-describedby`, `#<champ>-error`), focus sur la première erreur, `data-invalid` sur le formulaire refusé ; puis envoi en `fetch` (POST, FormData), confirmation dans la région `role="status"` (`[data-form-status]`), repli sur l'envoi natif si `fetch` échoue. Champ piège `.hp` : rempli, rien ne part. Endpoint encore en `{{…}}` : rien ne part, message `data-msg-unwired`. Messages : `data-error-required`, `data-error-email`, `data-error-consent`, `data-msg-success`, `data-msg-failure`.
+Sur `form[data-form]` : contrôle des champs requis, de l'email et des cases obligatoires au submit, messages liés (`aria-invalid`, `aria-describedby`, `#<champ>-error`), focus sur la première erreur, `data-invalid` sur le formulaire refusé ; puis envoi en `fetch` (POST, FormData), confirmation dans la région `role="status"` (`[data-form-status]`), repli sur l'envoi natif si `fetch` échoue. Champ piège `.hp` : rempli, rien ne part. Messages : `data-error-required`, `data-error-email`, `data-error-consent`, `data-msg-success`, `data-msg-failure`, `data-msg-unwired`.
+
+**Envoi de démonstration.** Un formulaire dont l'action est encore un marqueur `{{…}}` (ou vide) est marqué `data-demo` dès le chargement. À l'envoi valide, rien ne part sur le réseau, l'état de succès s'affiche (message `data-msg-success` suivi de `data-msg-unwired`) et la mesure compte `form_demo_submit` à la place de `generate_lead` : une démo ou un modèle pas encore branché ne gonfle jamais les leads.
+
+**Consentement.** Recevoir la ressource demandée ne demande aucune case : l'envoi du formulaire vaut demande. Une inscription en plus (lettre, prochaine édition) passe par une case facultative, jamais pré-cochée, marquée `data-optin` (slot `optin` de `lead-capture` et `event-registration`) ; `generate_lead` porte alors `optin: true` ou `false`. Une case obligatoire (`consent_required` de `lead-capture`) ne sert que quand un consentement conditionne vraiment l'envoi. Les formulaires de démo, de rendez-vous ou de devis (`form`) n'ont pas de case : la demande fonde le traitement, et la mention de confidentialité, avec son lien, est toujours sous le bouton.
 
 ### tracking.js (mesure)
 
@@ -198,8 +213,9 @@ Sur `form[data-form]` : contrôle des champs requis, de l'email et du consenteme
 | Événement | Déclencheur | Paramètres |
 |---|---|---|
 | `cta_click` | clic sur `data-track="cta_click"` (ou tout `data-cta` / `data-cta-position` sans `data-track`) | `cta_position`, `cta_label`, `cta_primary`, `link_url` |
-| `generate_lead` | envoi valide d'un `form[data-track="generate_lead"]` | `form_id`, `lead_source` |
-| `begin_checkout` | envoi du billet (`form[data-track="begin_checkout"]`) | `formula`, `value`, `currency` |
+| `generate_lead` | envoi valide d'un `form[data-track="generate_lead"]` | `form_id`, `lead_source`, `optin` (case `data-optin` cochée ou non), ses `data-track-<param>` (`participation`…) |
+| `begin_checkout` | envoi du billet (`form[data-track="begin_checkout"]`) | `formula` (radio cochée, ou champ caché d'une formule unique), `value` (son `data-price`), `currency` |
+| `form_demo_submit` | envoi d'un formulaire dont l'action est encore un marqueur (`data-demo`), **à la place** de son événement | `form_event` (l'événement remplacé), `form_id`, et les paramètres de cet événement |
 | `select_content` | choix dans la porte | `content_type`, `content_id` |
 | `faq_open` | ouverture d'une question | `question` |
 | tout autre nom | clic sur un lien ou bouton `data-track="<nom>"` | ses `data-track-<param>` |
@@ -264,8 +280,12 @@ Un besoin qui revient sur deux pages devient un fragment (règle « réutiliser 
 
 Conventions : style et script valent pour toutes les instances de la page (ils sont émis une fois) ; aucune couleur ni police en dur (`grep -nE "#[0-9a-fA-F]{3,8}|rgba?\("` vide) ; en-tête en `<div class="section-head">`, sans pastille de sur-titre ; listes stylées en `role="list"` ; entrées par `data-reveal` ; mise en page épinglée sous `.sc-pin`, état final visible sans script et en mouvement réduit ; CTA avec `data-track` et `data-cta-position`, `{{#primary}} data-cta="primaire"{{/primary}}` sur un CTA de conversion ; textes de 12 mots et plus au corps courant. Puis : ajouter la section à `catalogue.json`, réassembler le catalogue, `qa-landing.py` à zéro erreur, `python3 -m pytest scripts/tests/test_assemble_landing.py -q`.
 
-## 8. QA du catalogue
+## 8. QA du catalogue et des modèles
 
-`python3 05-web-content/scripts/qa-landing.py 05-web-content/templates/sections/catalogue.html` : **0 erreur**, 5 avertissements assumés, tous `cta-hors-objectif` : le catalogue montre côte à côte des conversions qu'une vraie page n'aurait pas ensemble (les trois boutons de la grille tarifaire, le formulaire de capture, le formulaire qualifiant). Une page réelle n'en garde qu'une.
+`python3 05-web-content/scripts/qa-landing.py 05-web-content/templates/sections/catalogue.html` : **0 erreur**, 6 avertissements assumés, tous `cta-hors-objectif` : le catalogue montre côte à côte des conversions qu'une vraie page n'aurait pas ensemble (les trois boutons de la grille tarifaire, le formulaire de capture, le formulaire qualifiant, l'inscription à l'événement). Une page réelle n'en garde qu'une.
+
+Les six modèles (`landing-pages/specs/*.yaml`) s'assemblent avec `--strict` sans avertissement et passent la QA à **0 erreur** ; leurs avertissements restants sont les marqueurs à brancher (`placeholder`, `cta-destination`).
+
+**Passe de mesure de la QA.** Quand la page déclare un suivi, la QA clique chaque CTA primaire ; pour un bouton d'envoi, elle remplit les champs requis avec des valeurs de test (`prenom@example.com`, nom, URL, première option d'une liste), coche les cases requises et envoie le formulaire. Toute requête qui quitte la page est interceptée par Playwright et reçoit un 200 vide : rien ne part réellement. Elle attend `generate_lead` (ou `begin_checkout`) d'un endpoint réel, `form_demo_submit` d'un endpoint en marqueur, et signale en erreur une démo comptée comme lead ou partie sur le réseau.
 
 Ce que la bibliothèque ne couvre pas encore (à construire sur mesure, puis à verser ici) : le démonstrateur (une demande s'écrit, le résultat apparaît), le mur de témoignages qui se déplie, le sommaire des chapitres sur grand écran.

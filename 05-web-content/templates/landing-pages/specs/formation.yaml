@@ -1,0 +1,450 @@
+# ============================================================================
+# Modèle de landing : FORMATION (formation payante, atelier, cohorte datée)
+# ----------------------------------------------------------------------------
+# Assemblage :
+#   python3 05-web-content/scripts/assemble-landing.py \
+#     05-web-content/templates/landing-pages/specs/formation.yaml
+#   python3 05-web-content/scripts/qa-landing.py \
+#     05-web-content/templates/landing-pages/formation.html
+#
+# Pour une vraie page : copier ce fichier vers
+# 05-web-content/landing-pages/<slug>/pilotage/page.yaml, changer « output »
+# et « page », réécrire chaque texte (skills copywriting puis copy-editing),
+# remplacer chaque objet composé par un vrai document de la formation, puis
+# dérouler la skill landing-page (brief, charte, QA, quatre revues,
+# brand-check). Les polices de « fonts » suivent 01-brand/tokens.json.
+#
+# Marque d'exemple : Ferlane Formation, organisme FICTIF qui forme les TPE et
+# PME à répondre aux marchés publics. Prix, dates, noms, fonctions et avis
+# sont inventés pour montrer le ton et les longueurs : rien ne part en ligne
+# tel quel. Les personnes et les avis sont marqués comme fictifs sur la page.
+#
+# À brancher avant publication (marqueurs du dépôt, signalés par la QA) :
+#   {{URL_CHECKOUT}}          outil de vente ou d'inscription : le billet y
+#                             part en GET avec ?formule=solo|binome et les UTM
+#   {{URL_LISTE_ATTENTE}}     liste d'attente (état « waitlist » de l'offre),
+#                             et lien « Être prévenu » de l'état « closed »
+#   {{URL_MENTIONS_LEGALES}}  page des mentions légales
+#   {{URL_CONFIDENTIALITE}}   page de politique de confidentialité
+# Le contact bonjour@example.com (FAQ, mentions, pied) se remplace par la
+# vraie adresse.
+#
+# État de l'offre : une seule configuration, « offer » ci-dessous. Ouverte
+# jusqu'à closes_at, puis liste d'attente ; « state: waitlist » ou
+# « state: closed » à la main quand la cohorte est pleine. Les jours restants
+# se calculent dans le navigateur (jamais de secondes).
+#
+# Mesure : mode datalayer. Événements cta_click (positions topbar, hero, faq,
+# final, barre-mobile), begin_checkout à l'envoi du billet (formule, valeur,
+# devise), faq_open ; UTM de la visite ajoutés au billet. Pour GA4 :
+# tracking.mode gtag et tracking.ga4 ; pour GTM : mode gtm et gtm. Marquer
+# begin_checkout comme conversion clé côté GA4 (action manuelle).
+#
+# Récit : une objection par section, dans l'ordre de la pensée du dirigeant.
+#   hero        De quoi s'agit-il, pour qui, jusqu'à quand : le mémoire relu
+#   preuves     Est-ce sérieux : quatre faits de l'offre, aucun chiffre gonflé
+#   probleme    Pourquoi maintenant : quatre scènes vécues (seul épinglage)
+#   programme   Qu'y a-t-il dedans : cinq mardis datés, un spécimen relu (rail)
+#   kit         Qu'est-ce que j'emporte : quatre outils (bande sombre)
+#   formateurs  Avec qui : l'acheteuse et le chargé d'affaires
+#   avis        D'autres l'ont-ils fait : trois résultats signés (fictifs)
+#   pour-qui    Est-ce pour moi : et pour qui ce n'est pas
+#   offre       Combien, compris, la suite, prérequis : le billet
+#   questions   Dernières questions, carte collante qui ramène au billet
+#   mentions    Qui vend, à quelles conditions
+#   final       Je passe à l'action (bande sombre)
+# Un épinglage et un rail ; deux bandes sombres, jamais d'affilée ; une seule
+# conversion (#offre) pour tous les boutons ; le seul accent fort est le
+# bouton du billet.
+# ============================================================================
+output: 05-web-content/templates/landing-pages/formation.html
+title: "Répondre aux marchés publics en cinq ateliers · Ferlane Formation"
+description: >-
+  Cinq matinées en petit groupe pour préparer une vraie offre publique, de la
+  lecture du dossier au dépôt, avec votre mémoire technique relu avant l’envoi.
+lang: fr
+page: formation
+robots: "noindex, nofollow"
+og:
+  type: website
+  title: "Répondre aux marchés publics en cinq ateliers"
+  description: "Cinq mardis matin en visio, huit entreprises par cohorte, votre mémoire relu avant le dépôt."
+fonts: ["Inter:wght@400;500;600;700;800", "JetBrains Mono:wght@500;600"]
+ground: dots
+theatre: {progress: true}
+tracking: {mode: datalayer, utm: true}
+offer: {state: open, closes_at: "2027-03-26T18:00:00+01:00", after_close: waitlist}
+skip_link: "Aller au contenu"
+
+sections:
+  - use: topbar
+    slots:
+      brand: >-
+        <svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11l7 7v17H8z"/><path
+        d="M19 4v7h7"/><path d="m12.5 19.5 3 3 6-7"/></svg><span>Ferlane</span>
+      cta_label: "Réserver"
+      cta_href: "#offre"
+      primary: true
+
+  - use: hero
+    slots:
+      title: 'Répondre aux marchés publics<br><span class="hl">en cinq ateliers</span>'
+      lede: >-
+        Cinq matinées en petit groupe pour préparer une vraie offre publique,
+        avec votre mémoire technique relu avant l’envoi.
+      cta_label: "Réserver ma place"
+      cta_href: "#offre"
+      primary: true
+      deadline: "Inscriptions jusqu’au 26 mars 2027"
+      countdown:
+        many: "Inscriptions closes dans {n} jours"
+        one: "Inscriptions closes demain"
+        zero: "Inscriptions closes ce soir"
+      detail: "8 entreprises par cohorte"
+      image: null
+      object: |-
+        <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+          <div class="obj-stack">
+            <div class="obj-sheet">
+              <div class="obj-head"><span class="obj-mark"></span><b>Mémoire technique</b><span class="obj-stamp obj-push">Relu</span></div>
+              <div class="obj-rule"></div>
+              <p class="obj-title">Entretien des espaces verts · lot 2</p>
+              <p class="obj-small">Réponse au critère « valeur technique », 60 % de la note</p>
+              <div class="obj-rule"></div>
+              <div class="obj-check">
+                <span class="is-done">1. Moyens humains et encadrement</span>
+                <span class="is-done">2. Méthode par saison</span>
+                <span class="is-done">3. Planning daté des passages</span>
+                <span>4. Gestion des déchets verts</span>
+              </div>
+              <div class="obj-rule"></div>
+              <div class="obj-lines"><i style="--w:94%"></i><i style="--w:78%"></i><i style="--w:86%"></i></div>
+              <p class="obj-small" style="margin-top:12px">Note de relecture : <span class="obj-highlight">ajoutez les photos du chantier de 2025</span></p>
+              <div class="obj-rule"></div>
+              <div class="obj-head"><span>Remise des offres · 12 mars, 12 h</span><span class="obj-push">p. 4 / 18</span></div>
+            </div>
+          </div>
+          <span class="obj-chip s-hero__chip"><i></i>Atelier 5 · relecture croisée</span>
+        </div>
+
+  - use: proof-band
+    id: preuves
+    slots:
+      title: "La cohorte en chiffres"
+      facts:
+        - {value: "5", unit: "", label: "ateliers de trois heures, en visio", source: ""}
+        - {value: "8", unit: "", label: "entreprises au plus par cohorte", source: ""}
+        - {value: "1", unit: "", label: "offre réelle, du dossier au dépôt", source: ""}
+        - {value: "6", unit: "mois", label: "d’accès au groupe de la cohorte", source: ""}
+
+  - use: problem-pinned
+    id: probleme
+    slots:
+      title: 'Où se perdent<br><span class="hl">vos offres publiques</span>'
+      intro: >-
+        Ce que racontent les dirigeants à l’appel de cadrage, avant même le
+        premier atelier.
+      items:
+        - title: "Dix jours pour un dossier de cent pages"
+          text: >-
+            Le dossier de consultation arrive un lundi, la date limite tombe
+            la semaine suivante, entre deux chantiers.
+          visual: |-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Avis de marché 27-0412</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:2"><span class="is-head">Étape</span><span class="is-head">Date</span><span>Publication</span><span>2 mars</span><span>Questions à l’acheteur</span><span>avant le 8 mars</span><span class="is-warn">Remise des offres</span><span class="is-warn">12 mars, 12 h</span></div><p class="obj-small" style="margin-top:12px">Dossier de consultation · 142 pages · 7 pièces</p></div></div>
+        - title: "Le mémoire de la dernière fois"
+          text: >-
+            On reprend l’offre du marché précédent et on change le nom de
+            l’acheteur. Les critères, eux, ont changé.
+          visual: |-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>memoire_v6_COPIE.docx</span></div><div class="obj-window__body"><p class="obj-title">3. Méthodologie</p><div class="obj-lines" style="margin-top:10px"><i style="--w:96%"></i><i style="--w:88%"></i><i style="--w:62%"></i></div><div class="obj-rule"></div><p class="obj-small"><span class="obj-strike">Critère : délai d’intervention sous 48 h</span></p><p class="obj-small" style="margin-top:6px">Critère demandé cette fois : <span class="obj-highlight">gestion des déchets verts</span></p></div></div>
+        - title: "Une note technique qui coule l’offre"
+          text: >-
+            Le prix était bien placé. Le rapport d’analyse donne 31 points sur
+            60 en valeur technique, et le marché part ailleurs.
+          visual: |-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Analyse des offres</b></div><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar" style="--v:.95"><span>Prix</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>38/40</b></div><div class="obj-bar is-hl" style="--v:.52"><span>Technique</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>31/60</b></div></div><div class="obj-rule"></div><p class="obj-small">Motif : <span class="obj-highlight">méthodologie générale, aucun planning daté</span></p><div class="obj-rule"></div><div class="obj-head"><span>Classement de votre offre</span><span class="obj-push"><b>3 / 5</b></span></div></div>
+        - title: "Un dépôt à midi moins deux"
+          text: >-
+            La signature électronique bloque, une attestation manque, et
+            l’offre arrive incomplète.
+          visual: |-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Pièces à déposer</b><span class="obj-stamp obj-push">11 h 58</span></div><div class="obj-rule"></div><div class="obj-check"><span class="is-done">Mémoire technique</span><span class="is-done">Bordereau des prix</span><span>Attestation d’assurance</span><span>Signature électronique</span></div></div>
+
+  - use: program
+    id: programme
+    slots:
+      title: 'Cinq mardis matin<br><span class="hl">sur votre propre dossier</span>'
+      intro: >-
+        Trois heures en visio, de 9 h à 12 h, enregistrées. Entre deux
+        ateliers, comptez deux heures pour avancer votre offre.
+      modules:
+        - when: "6 avril"
+          title: "Lire un dossier en une heure"
+          text: "Règlement, critères et pièces exigées : vous repérez ce qui compte avant d’écrire une ligne."
+          duration: "3 h"
+        - when: "13 avril"
+          title: "Choisir où répondre"
+          text: "Veille, lots et chances réelles : vous décidez où déposer et où passer votre tour."
+          duration: "3 h"
+        - when: "20 avril"
+          title: "Écrire le mémoire technique"
+          text: "Une trame qui suit les critères de l’acheteur un par un, avec vos preuves."
+          duration: "3 h"
+        - when: "27 avril"
+          title: "Chiffrer et présenter le prix"
+          text: "Bordereau, détail estimatif et variantes : un prix lisible et cohérent avec le mémoire."
+          duration: "3 h"
+        - when: "4 mai"
+          title: "Relire et déposer"
+          text: "Relecture croisée entre participants, pièces administratives et signature, avant le dépôt."
+          duration: "3 h"
+      specimen: |-
+        <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Critère 2 sur 4</b><span class="obj-stamp obj-push">Relu</span></div><div class="obj-rule"></div><div class="obj-grid" style="--cols:3"><span class="is-head">Sous-critère</span><span class="is-head">Poids</span><span class="is-head">Votre preuve</span><span>Organisation</span><span>15 %</span><span>Organigramme</span><span>Méthode</span><span>25 %</span><span>Fiche par saison</span><span class="is-warn">Planning</span><span class="is-warn">10 %</span><span class="is-warn">À dater</span><span>Matériel</span><span>10 %</span><span>Liste et photos</span></div><div class="obj-rule"></div><div class="obj-lines"><i style="--w:92%"></i><i style="--w:70%"></i></div><p class="obj-small" style="margin-top:10px">Note de relecture : <span class="obj-highlight">un planning sans dates ne rapporte aucun point</span></p></div>
+      specimen_badge: "Spécimen"
+      specimen_caption: "Une page de mémoire relue pendant l’atelier 3, avec des données d’exemple."
+
+  - use: showcase-dark
+    id: kit
+    slots:
+      title: 'Quatre outils<br><span class="hl">pour les offres suivantes</span>'
+      intro: "Ils servent pendant la cohorte, puis à chaque nouvel appel d’offres."
+      parts:
+        - tab: "Trame"
+          title: "La trame de mémoire"
+          text: "Un document modifiable, rangé critère par critère, avec des exemples de réponses."
+        - tab: "Références"
+          title: "Le tableau de références"
+          text: "Vos chantiers, attestations et photos, classés pour être cités en deux minutes."
+        - tab: "Grille"
+          title: "La grille de notation"
+          text: "Vous notez votre mémoire comme l’acheteur le fera, avant de l’envoyer."
+        - tab: "Planning"
+          title: "Le rétroplanning de réponse"
+          text: "De la publication au dépôt, qui fournit quoi et quand, sur dix jours."
+
+  - use: people
+    id: formateurs
+    slots:
+      title: 'Deux formateurs<br><span class="hl">des deux côtés du guichet</span>'
+      intro: "Une ancienne acheteuse publique et un chargé d’affaires relisent vos mémoires."
+      label_who: "Parcours"
+      label_proof: "Preuve"
+      label_part: "Dans la cohorte"
+      shape: rounded
+      people:
+        - name: "Hélène Marchetti"
+          role: "Ancienne acheteuse publique"
+          initials: "HM"
+          photo: ""
+          photo_alt: ""
+          who: "Neuf ans acheteuse dans une collectivité, puis formatrice."
+          proof: "Personnage fictif : citer ici une preuve vérifiable."
+          part: "Anime les ateliers 1, 2 et 5 et relit chaque mémoire."
+        - name: "Bastien Morel"
+          role: "Chargé d’affaires"
+          initials: "BM"
+          photo: ""
+          photo_alt: ""
+          who: "Douze ans à préparer les offres d’une entreprise de second œuvre."
+          proof: "Personnage fictif : une preuve se cite avec sa source."
+          part: "Anime les ateliers 3 et 4, le mémoire et le prix."
+
+  - use: testimonials
+    id: avis
+    slots:
+      title: 'Leurs offres sont parties<br><span class="hl">complètes et à l’heure</span>'
+      quotes:
+        - result: "Retenus au deuxième dépôt"
+          quote: >-
+            Nous avions perdu trois consultations sur la note technique. Avec
+            la trame, le mémoire suit enfin les critères, et le deuxième dépôt
+            a été retenu.
+          name: "Sophie L."
+          role: "Gérante, entreprise de peinture, 14 salariés (avis fictif)"
+          initials: "SL"
+        - result: "Plus de dépôt à la dernière minute"
+          quote: >-
+            Le rétroplanning a tout changé. Chacun sait ce qu’il fournit et
+            quand, et l’offre part la veille de la date limite.
+          name: "Thomas G."
+          role: "Chargé d’affaires, menuiserie, 30 salariés (avis fictif)"
+          initials: "TG"
+        - result: "De 31 à 48 points sur 60"
+          quote: >-
+            La grille nous a montré ce que l’acheteur ne trouvait pas. Nous
+            avons ajouté nos références et un planning daté.
+          name: "Inès M."
+          role: "Assistante de direction, paysagiste, 9 salariés (avis fictif)"
+          initials: "IM"
+
+  - use: for-whom
+    id: pour-qui
+    slots:
+      title: 'Pour qui <span class="hl">sont ces ateliers</span>'
+      fit_title: "Pour vous si"
+      fit:
+        - "Vous dirigez une TPE ou une PME et voulez déposer vos premières offres publiques."
+        - "Vous répondez déjà, mais vos offres perdent sur la valeur technique."
+        - "Vous préparez les dossiers pour votre dirigeant et cherchez une méthode."
+      not_fit_title: "Pas pour vous si"
+      not_fit:
+        - "Vous cherchez quelqu’un pour rédiger vos offres à votre place."
+        - "Vous visez des marchés de défense ou de très grands comptes, hors du programme."
+        - "Votre prochain dossier est à rendre avant le 6 avril, date du premier atelier."
+
+  - use: offer-ticket
+    id: offre
+    slots:
+      title: 'Cinq mardis<br><span class="hl">pour votre prochaine offre</span>'
+      intro: "Huit entreprises par cohorte, pour que chaque mémoire soit relu en atelier."
+      action: "{{URL_CHECKOUT}}"
+      action_waitlist: "{{URL_LISTE_ATTENTE}}"
+      currency: "EUR"
+      primary: true
+      name: "Répondre aux marchés publics"
+      meta: "Cohorte de printemps · 5 mardis, du 6 avril au 4 mai 2027 · en visio, de 9 h à 12 h"
+      badge_waitlist: "Complet"
+      badge_closed: "Inscriptions closes"
+      formula_legend: "Formule"
+      formulas:
+        - value: "solo"
+          label: "Solo"
+          price: 1450
+          price_label: "1 450 € HT"
+          note: "Une personne de l’entreprise. Avec la remise avant le 1er mars : 1 305 € HT."
+          checked: true
+        - value: "binome"
+          label: "Binôme"
+          price: 2400
+          price_label: "2 400 € HT"
+          note: "Deux personnes de la même entreprise, un seul mémoire relu. Avec la remise avant le 1er mars : 2 160 € HT."
+          checked: false
+      price_unit: "pour les cinq ateliers"
+      discount_title: "Avant le 1er mars"
+      discount: "10 % de remise, appliqués à la commande. Après cette date, le prix affiché s’applique."
+      cta_label: "Réserver ma place"
+      cta_waitlist: "Rejoindre la liste d’attente"
+      cta_closed: "Inscriptions closes"
+      cta_notify: "Être prévenu de la prochaine cohorte"
+      notify_href: "{{URL_LISTE_ATTENTE}}"
+      deadline: "Clôture le 26 mars 2027"
+      countdown:
+        many: "Clôture dans {n} jours"
+        one: "Clôture demain"
+        zero: "Clôture ce soir"
+      seats: "8 entreprises par cohorte"
+      included_title: "Compris"
+      included:
+        - "Cinq ateliers de trois heures en visio, enregistrés"
+        - "La relecture écrite de votre mémoire avant le dépôt"
+        - "La trame, la grille et le rétroplanning, modifiables"
+        - "Le groupe d’échange de la cohorte, ouvert six mois"
+        - "Une attestation de fin de formation"
+      next_title: "La suite"
+      next_steps:
+        - "Convention et facture par email sous 24 heures"
+        - "Un appel de vingt minutes pour choisir votre appel d’offres"
+        - "Premier atelier le mardi 6 avril à 9 h"
+      prereq_title: "Prérequis"
+      prerequisites: "Vos références des trois dernières années (chantiers, prestations, attestations), même en vrac."
+      conditions: >-
+        Paiement à la commande ou sur facture à 30 jours. Prise en charge
+        possible par votre opérateur de compétences : la convention part avec
+        la facture. Annulation sans frais jusqu’à 14 jours avant le premier
+        atelier. La cohorte part à partir de 5 entreprises inscrites, sinon
+        remboursement intégral.
+
+  - use: faq
+    id: questions
+    slots:
+      title: 'Les questions<br><span class="hl">avant de réserver</span>'
+      intro: ""
+      jsonld: false
+      items:
+        - q: "Faut-il avoir déjà répondu à un marché public ?"
+          a: >-
+            Non. Le premier atelier part de la lecture d’un dossier, et l’appel
+            de cadrage sert à choisir un appel d’offres à votre mesure.
+        - q: "Combien de temps prévoir entre deux ateliers ?"
+          a: >-
+            Environ deux heures par semaine. Les exercices portent sur votre
+            propre offre : ce temps avance votre dossier.
+        - q: "Que se passe-t-il si je manque un atelier ?"
+          a: >-
+            Chaque atelier est enregistré et la vidéo arrive le jour même. Vos
+            questions passent par le groupe d’échange.
+        - q: "La formation peut-elle être prise en charge ?"
+          a: >-
+            Souvent, par votre opérateur de compétences. La convention et le
+            programme partent dès l’inscription ; comptez trois à quatre
+            semaines pour l’accord.
+        - q: "Et si aucun appel d’offres ne tombe pendant la cohorte ?"
+          a: >-
+            Nous travaillons sur un dossier récent de votre secteur, déjà clos.
+            La méthode est la même, et votre trame sera prête pour le suivant.
+        - q: "Peut-on venir à deux ?"
+          a: >-
+            Oui, avec la formule Binôme : deux personnes de la même entreprise
+            et un seul mémoire relu.
+      card_label: "Cohorte de printemps"
+      card_title: "Répondre aux marchés publics"
+      card_meta: "Du 6 avril au 4 mai 2027 · dès 1 450 € HT · 8 places"
+      cta_label: "Voir le billet"
+      cta_href: "#offre"
+      contact: 'Une autre question ? <a href="mailto:bonjour@example.com">bonjour@example.com</a>'
+
+  - use: legal
+    id: mentions
+    slots:
+      title: "Informations légales"
+      items:
+        - term: "Organisme"
+          text: "Ferlane Formation (organisme fictif de démonstration). Numéro de déclaration d’activité : à indiquer ici."
+        - term: "Prix"
+          text: "Prix hors taxes, TVA de 20 % en sus. Facture émise à la réservation."
+        - term: "Annulation"
+          text: "Sans frais jusqu’à 14 jours avant le premier atelier, puis 50 % du prix. Remboursement intégral si la cohorte n’atteint pas 5 entreprises."
+        - term: "Conditions générales"
+          text: "Envoyées avec la convention de formation, à signer avant le premier atelier."
+        - term: "Données personnelles"
+          text: 'Vos données servent à l’inscription, à la facturation et au suivi de la cohorte. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a>'
+        - term: "Accessibilité"
+          text: 'Ateliers sous-titrés en direct. Pour un besoin particulier, écrivez à <a href="mailto:bonjour@example.com">bonjour@example.com</a> avant de réserver.'
+
+  - use: final-cta
+    id: final
+    slots:
+      title: 'Huit places<br><span class="hl">pour le 6 avril</span>'
+      text: "Vous choisissez Solo ou Binôme sur le billet, la convention arrive sous 24 heures."
+      cta_label: "Réserver ma place"
+      cta_href: "#offre"
+      primary: true
+      note: "Clôture des inscriptions le 26 mars 2027"
+      decor: rings
+      decor_html: ""
+
+  - use: footer
+    id: pied
+    slots:
+      brand: >-
+        <svg class="s-footer__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11l7 7v17H8z"/><path
+        d="M19 4v7h7"/><path d="m12.5 19.5 3 3 6-7"/></svg><span>Ferlane</span>
+      links:
+        - {label: "Mentions légales", href: "{{URL_MENTIONS_LEGALES}}"}
+        - {label: "Confidentialité", href: "{{URL_CONFIDENTIALITE}}"}
+        - {label: "bonjour@example.com", href: "mailto:bonjour@example.com"}
+      legal: "© 2027 Ferlane Formation, marque fictive de démonstration."
+
+  - use: sticky-bar
+    id: barre-mobile
+    slots:
+      label: "Réserver une place"
+      title: "Dès 1 450 € HT"
+      detail: "Clôture le 26 mars"
+      cta_label: "Réserver"
+      cta_href: "#offre"
+      primary: true

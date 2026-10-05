@@ -2,40 +2,88 @@
 {
   "id": "comparison",
   "name": "Tableau comparatif",
-  "objection": "Pourquoi cette option plutôt qu'une autre",
-  "when": "Trafic en phase d'évaluation (requêtes « alternative à », comparaison de formules) : un vrai tableau, daté, factuel, dont la première colonne de données est l'offre de la page. Chaque cellule dit oui, non ou partiel en texte, jamais par la couleur seule.",
+  "objection": "Pourquoi cette option plutôt qu’une autre",
+  "when": "Trafic en phase d’évaluation (requêtes « alternative à », comparaison de formules) : un vrai tableau, daté, factuel, dont la première colonne de données est l’offre de la page. Chaque cellule dit oui, non ou partiel en texte, jamais par la couleur seule.",
   "avoid": "Comparaisons invérifiables ou non datées, concurrents nommés sans base factuelle, plus de quatre colonnes, plus de huit lignes.",
-  "reduced_motion": "Immobile.",
+  "reduced_motion": "Immobile. Sur petit écran, le tableau défile à l’horizontale dans sa propre région, première colonne fixe, avec une indication de défilement.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Trois façons de faire <span class=\"hl\">votre bilan</span>"},
-    "intro": {"type": "text", "doc": "Chapô : base de la comparaison et date.", "example": "Comparaison établie en janvier 2027, à partir de devis et d'offres publiques de prestataires de bilan."},
-    "caption": {"type": "text", "doc": "Légende du tableau (lue par les lecteurs d'écran).", "example": "Comparaison du parcours Meridian, d'un bilan mené seul et d'un bilan sous-traité"},
+    "intro": {"type": "text", "doc": "Chapô : base de la comparaison et date.", "example": "Comparaison établie en janvier 2027, à partir de devis et d’offres publiques de prestataires de bilan."},
+    "caption": {"type": "text", "doc": "Légende du tableau (lue par les lecteurs d'écran).", "example": "Comparaison du parcours Meridian, d’un bilan mené seul et d’un bilan sous-traité"},
     "criteria_label": {"type": "text", "doc": "En-tête de la colonne des critères.", "example": "Critère"},
+    "scroll_hint": {"type": "text", "doc": "Indication affichée quand le tableau déborde de l'écran (moins de 12 mots).", "example": "Faites glisser le tableau pour voir les autres colonnes"},
     "columns": {"type": "list", "doc": "2 ou 3 colonnes ; la première est l'offre de la page.", "fields": {"name": "nom de la colonne"}, "example": [{"name": "Parcours Meridian"}, {"name": "Seul avec un tableur"}, {"name": "Bilan sous-traité"}]},
     "rows": {"type": "list", "doc": "Lignes. label : critère ; cells : une cellule par colonne, {yes|no|partial: true, text}.", "fields": {"label": "critère", "cells": "[{yes: true, text}, {no: true, text}, {partial: true, text}]"}, "example": [
-      {"label": "Délai jusqu'au bilan", "cells": [{"yes": true, "text": "6 semaines"}, {"partial": true, "text": "Variable"}, {"partial": true, "text": "3 à 5 mois"}]},
+      {"label": "Délai jusqu’au bilan", "cells": [{"yes": true, "text": "6 semaines"}, {"partial": true, "text": "Variable"}, {"partial": true, "text": "3 à 5 mois"}]},
       {"label": "Méthode documentée", "cells": [{"yes": true, "text": "Oui"}, {"no": true, "text": "Rarement"}, {"yes": true, "text": "Oui"}]},
       {"label": "Vous savez refaire le calcul", "cells": [{"yes": true, "text": "Oui"}, {"partial": true, "text": "En partie"}, {"no": true, "text": "Non"}]},
-      {"label": "Plan d'action chiffré", "cells": [{"yes": true, "text": "Inclus"}, {"no": true, "text": "Non"}, {"partial": true, "text": "En option"}]},
+      {"label": "Plan d’action chiffré", "cells": [{"yes": true, "text": "Inclus"}, {"no": true, "text": "Non"}, {"partial": true, "text": "En option"}]},
       {"label": "Prix indicatif", "cells": [{"yes": true, "text": "1 900 € HT"}, {"yes": true, "text": "Votre temps"}, {"partial": true, "text": "Sur devis"}]}
     ]}
   }
 }
 </script>
 <style data-section-style="comparison">
+/* A real table in its own scroll region (role="region", focusable): the
+   first column stays fixed while the others slide under it. */
 .s-compare__scroll {
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
 
+.s-compare__scroll:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-card);
+}
+
+.s-compare__hint {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-compare__hint::after {
+  content: "";
+  flex: none;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m13 6 6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m13 6 6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Shown when the table overflows (the script measures it); without script,
+   on screens where it is sure to overflow. */
+.s-compare[data-scrollable="true"] .s-compare__hint {
+  display: flex;
+}
+
 .s-compare__table {
   width: 100%;
   min-width: 640px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-variant-numeric: tabular-nums;
+}
+
+.s-compare__table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.s-compare__table tbody th {
+  background: var(--surface);
+  box-shadow: inset -1px 0 0 var(--line);
 }
 
 .s-compare__table th,
@@ -99,6 +147,32 @@
   border: 2px solid var(--muted);
   background: linear-gradient(90deg, var(--muted) 50%, transparent 50%);
 }
+
+@media (max-width: 720px) {
+  .s-compare:not([data-scrollable="false"]) .s-compare__hint {
+    display: flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-compare__table {
+    min-width: 540px;
+  }
+
+  .s-compare__table th,
+  .s-compare__table td {
+    padding: 12px 14px;
+  }
+
+  .s-compare__table tbody th {
+    width: 8.5rem;
+    min-width: 7.5rem;
+  }
+
+  .s-compare__cell {
+    gap: 8px;
+  }
+}
 </style>
 <!-- section:{{id}} -->
 <section id="{{id}}" class="s-compare section" aria-labelledby="{{id}}-titre" data-section="comparison">
@@ -107,6 +181,7 @@
       <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
       <p class="section-intro">{{intro}}</p>
     </div>
+    <p class="s-compare__hint" aria-hidden="true">{{scroll_hint}}</p>
     <div class="s-compare__scroll" role="region" aria-label="{{caption}}" tabindex="0" data-reveal>
       <table class="s-compare__table">
         <caption class="sr-only">{{caption}}</caption>
@@ -119,3 +194,17 @@
   </div>
 </section>
 <!-- /section:{{id}} -->
+<script data-section-script="comparison">
+(function () {
+  document.querySelectorAll('.s-compare').forEach(function (section) {
+    var region = section.querySelector('.s-compare__scroll');
+    if (!region) return;
+    function measure() {
+      section.setAttribute('data-scrollable', region.scrollWidth > region.clientWidth + 1 ? 'true' : 'false');
+    }
+    measure();
+    window.addEventListener('resize', measure);
+    if ('ResizeObserver' in window) new ResizeObserver(measure).observe(region);
+  });
+})();
+</script>

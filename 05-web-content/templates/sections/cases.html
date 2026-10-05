@@ -1,0 +1,162 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "cases",
+  "name": "Cas avant / après",
+  "objection": "Est-ce que ça a marché pour d’autres, et de combien",
+  "when": "Prestation, accompagnement, conseil : deux ou trois missions réelles, chacune avec son contexte, son périmètre, une même mesure avant et après (barres à la même échelle, valeurs écrites à côté) et une phrase du client signée. La mesure se dit dans le chapô, avec sa source.",
+  "avoid": "Cas inventés présentés comme réels, mesures différentes d’une carte à l’autre, barres sans valeur écrite, pourcentages sans base, plus de trois cas, client nommé sans son accord.",
+  "reduced_motion": "Barres pleines d’emblée, rien ne bouge. Avec le mouvement permis, la barre « après » se remplit une fois, quand la carte entre à l’écran.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, coupure décidée par <br>.", "example": "Deux entreprises<br><span class=\"hl\">avant et après le&nbsp;parcours</span>"},
+    "intro": {"type": "text", "doc": "Chapô : la mesure comparée, sa base et sa source.", "example": "Part des émissions calculées sur des données réelles plutôt qu’estimées, au premier bilan puis après le parcours."},
+    "dark": {"type": "bool", "doc": "true : bande sombre ; false : fond clair.", "example": true},
+    "before_label": {"type": "text", "doc": "Libellé de la mesure avant.", "example": "Premier bilan"},
+    "after_label": {"type": "text", "doc": "Libellé de la mesure après.", "example": "Après le parcours"},
+    "cases": {"type": "list", "doc": "2 ou 3 cas. title : h3 (le client décrit, sans le nommer sans accord) ; context : secteur et mention « cas d'exemple » tant qu'il l'est ; scope : périmètre et durée, une phrase ; before, after : valeurs écrites ; before_v, after_v : longueur des barres, de 0 à 1, sur la même échelle pour tous les cas ; quote : phrase du client (vide : pas de citation) ; author : fonction, et « (avis fictif) » tant qu'il l'est.", "fields": {"title": "titre", "context": "secteur · statut", "scope": "périmètre", "before": "valeur avant", "before_v": "0 à 1", "after": "valeur après", "after_v": "0 à 1", "quote": "citation ou vide", "author": "fonction"}, "example": [{"title": "Un fabricant de mobilier de bureau", "context": "Industrie, 140 salariés · cas d’exemple", "scope": "Deux sites et la logistique amont, bilan refait en six semaines avec l’équipe achats.", "before": "35 %", "before_v": 0.35, "after": "88 %", "after_v": 0.88, "quote": "« Nous savons enfin quels fournisseurs pèsent, et nous avons pu le prouver à notre banque. »", "author": "Directrice financière (avis fictif)"}, {"title": "Un réseau de laboratoires d’analyses", "context": "Santé, 12 sites · cas d’exemple", "scope": "Énergie, déplacements et consommables, collectés site par site en cinq semaines.", "before": "52 %", "before_v": 0.52, "after": "81 %", "after_v": 0.81, "quote": "« Les responsables de site ont rempli leurs données eux-mêmes, et le chiffre tient à la relecture. »", "author": "Responsable qualité (avis fictif)"}]}
+  }
+}
+</script>
+<style data-section-style="cases">
+.s-cases__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: clamp(20px, 0.8rem + 1.6vw, 32px);
+}
+
+.s-cases__card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: clamp(24px, 1rem + 1.4vw, 40px);
+}
+
+.s-cases__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.s-cases__scope {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-cases__meter {
+  display: grid;
+  gap: 14px;
+  margin: 10px 0 6px;
+  padding: 20px 0;
+  border-block: 1px solid var(--line);
+}
+
+.s-cases__row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.s-cases__row dt {
+  font-weight: 600;
+}
+
+.s-cases__row dd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.25rem;
+  align-items: center;
+  gap: 14px;
+}
+
+.s-cases__track {
+  display: block;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+.s-cases__fill {
+  display: block;
+  width: calc(var(--v, 0.5) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--muted);
+  transform-origin: 0 50%;
+  transition: transform 0.9s var(--ease) 0.25s;
+}
+
+.s-cases__row--after .s-cases__fill {
+  background: var(--gradient);
+}
+
+/* Entry: the "after" bar fills once its card is on screen (reveal engine on,
+   motion allowed). Otherwise every bar is full from the start. */
+.rv-on .s-cases__card:not(.is-in) .s-cases__row--after .s-cases__fill {
+  transform: scaleX(0);
+}
+
+.s-cases__value {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-cases__row--after .s-cases__value {
+  color: var(--hl);
+}
+
+.s-cases__quote blockquote {
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  text-wrap: pretty;
+}
+
+.s-cases__quote figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+@media (max-width: 640px) {
+  .s-cases__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-cases section{{#dark}} band-dark{{/dark}}" aria-labelledby="{{id}}-titre" data-section="cases">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+    <ul class="s-cases__grid" role="list" data-reveal-group>
+      {{#cases}}<li class="s-cases__card card" data-reveal>
+        <h3 class="s-cases__title">{{title}}</h3>
+        <p class="label">{{context}}</p>
+        <p class="s-cases__scope">{{scope}}</p>
+        <dl class="s-cases__meter">
+          <div class="s-cases__row">
+            <dt>{{before_label}}</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:{{before_v}}"></span></span><span class="s-cases__value">{{before}}</span></dd>
+          </div>
+          <div class="s-cases__row s-cases__row--after">
+            <dt>{{after_label}}</dt>
+            <dd><span class="s-cases__track" aria-hidden="true"><span class="s-cases__fill" style="--v:{{after_v}}"></span></span><span class="s-cases__value">{{after}}</span></dd>
+          </div>
+        </dl>
+        {{#quote}}<figure class="s-cases__quote">
+          <blockquote><p>{{quote}}</p></blockquote>
+          <figcaption>{{author}}</figcaption>
+        </figure>{{/quote}}
+      </li>{{/cases}}
+    </ul>
+  </div>
+</section>
+<!-- /section:{{id}} -->

@@ -4,8 +4,8 @@
   "name": "Formulaire qualifiant (rendez-vous, démo, devis)",
   "objection": "Comment je prends contact, et qui me répond",
   "engines": ["forms"],
-  "when": "Vente assistée : demande de démo, rendez-vous découverte, devis. Quatre ou cinq champs qui paient leur friction en qualification, à côté de ce qui se passe ensuite et de la personne qui répond.",
-  "avoid": "Plus de six champs, téléphone obligatoire sans raison, menu déroulant à rallonge, placeholder en guise de label, case pré-cochée.",
+  "when": "Vente assistée : demande de démo, rendez-vous découverte, devis. Quatre ou cinq champs qui paient leur friction en qualification, à côté de ce qui se passe ensuite et de la personne qui répond. Pas de case de consentement : la demande fonde le traitement (mesures précontractuelles) ; la mention de confidentialité, avec son lien, est toujours sous le bouton.",
+  "avoid": "Plus de six champs, téléphone obligatoire sans raison, menu déroulant à rallonge, placeholder en guise de label, case de consentement pour une simple demande, inscription à une lettre glissée dans la demande.",
   "reduced_motion": "Immobile.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Parlons de <span class=\"hl\">votre périmètre</span>"},
@@ -14,17 +14,17 @@
     "action": {"type": "url", "doc": "Endpoint POST du formulaire.", "example": "{{FORM_ENDPOINT}}"},
     "primary": {"type": "bool", "doc": "true : le formulaire est la conversion de la page (data-cta=\"primaire\", accent fort). false : bouton secondaire.", "example": true},
     "position": {"type": "text", "doc": "Position mesurée du bouton.", "example": "formulaire"},
-    "labels": {"type": "object", "doc": "Labels visibles des champs.", "fields": {"name": "nom", "email": "email", "company": "entreprise", "size": "effectif", "message": "message", "optional": "mention facultatif"}, "example": {"name": "Nom et prénom", "email": "Email professionnel", "company": "Entreprise", "size": "Effectif", "message": "Votre contexte", "optional": "(facultatif)"}},
-    "size_options": {"type": "list", "doc": "Options du champ effectif (la première est l'invite vide).", "example": ["Choisir", "Moins de 50 personnes", "50 à 250 personnes", "Plus de 250 personnes"]},
-    "consent": {"type": "text", "doc": "Phrase de consentement (vide : pas de case).", "example": "J'accepte d'être recontacté au sujet de ma demande."},
+    "labels": {"type": "object", "doc": "Labels visibles des champs. size : label du menu qualifiant (effectif, volume, taille du site…).", "fields": {"name": "nom", "email": "email", "company": "entreprise", "size": "menu qualifiant", "message": "message", "optional": "mention facultatif"}, "example": {"name": "Nom et prénom", "email": "Email professionnel", "company": "Entreprise", "size": "Effectif", "message": "Votre contexte", "optional": "(facultatif)"}},
+    "select_name": {"type": "text", "doc": "Nom du champ envoyé pour le menu qualifiant (minuscules, chiffres, tirets bas) : ce que l'outil de réception attend, par exemple effectif, camions_par_jour, pages_types.", "example": "effectif"},
+    "size_options": {"type": "list", "doc": "Options du menu qualifiant (la première est l'invite vide).", "example": ["Choisir", "Moins de 50 personnes", "50 à 250 personnes", "Plus de 250 personnes"]},
+    "url_field": {"type": "object", "doc": "Champ d'adresse web facultatif (site à auditer, boutique, application). label : label visible ; name : nom du champ envoyé ; placeholder : exemple dans le champ ; required : true si la demande ne se traite pas sans. null : pas de champ.", "fields": {"label": "label visible", "name": "nom du champ", "placeholder": "exemple", "required": "true ou false"}, "example": {"label": "Adresse de votre site", "name": "site_url", "placeholder": "https://www.example.com", "required": false}},
     "cta_label": {"type": "text", "doc": "Verbe du bouton.", "example": "Envoyer ma demande"},
-    "privacy": {"type": "html", "doc": "Mention de confidentialité avec lien (nouvel onglet annoncé).", "example": "Vos données servent seulement à répondre à cette demande. <a href=\"https://www.example.com/confidentialite\" target=\"_blank\" rel=\"noopener\">Politique de confidentialité<span class=\"sr-only\"> (nouvel onglet)</span></a>"},
+    "privacy": {"type": "html", "doc": "Obligatoire : mention de confidentialité sous le bouton, avec le lien vers la politique (nouvel onglet annoncé). Dans une page réelle, le lien est le marqueur {{URL_CONFIDENTIALITE}} jusqu'à son branchement.", "example": "Vos données servent seulement à répondre à cette demande. <a href=\"https://www.example.com/confidentialite\" target=\"_blank\" rel=\"noopener\">Politique de confidentialité<span class=\"sr-only\"> (nouvel onglet)</span></a>"},
     "error_required": {"type": "text", "doc": "Message champ vide.", "example": "Ce champ est nécessaire pour vous répondre."},
     "error_email": {"type": "text", "doc": "Message email mal formé.", "example": "Cette adresse email semble incomplète."},
-    "error_consent": {"type": "text", "doc": "Message consentement.", "example": "Cochez la case pour que nous puissions vous répondre."},
     "msg_success": {"type": "text", "doc": "Confirmation.", "example": "Merci, votre demande est partie. Réponse sous deux jours ouvrés."},
-    "msg_failure": {"type": "text", "doc": "Échec d'envoi.", "example": "L'envoi n'a pas abouti. Nouvel essai en cours."},
-    "msg_unwired": {"type": "text", "doc": "Endpoint non branché.", "example": "Formulaire de démonstration : rien n'a été envoyé."}
+    "msg_failure": {"type": "text", "doc": "Échec d'envoi.", "example": "L’envoi n’a pas abouti. Nouvel essai en cours."},
+    "msg_unwired": {"type": "text", "doc": "Ajouté au message de confirmation quand l'endpoint est encore un marqueur {{…}} : rien ne part, la mesure compte form_demo_submit.", "example": "Formulaire de démonstration : rien n’a été envoyé."}
   }
 }
 </script>
@@ -114,7 +114,7 @@
       <ol class="s-form__next" role="list">{{#next}}<li>{{.}}</li>{{/next}}</ol>
     </div>
     <div class="s-form__card card" data-reveal>
-      <form class="s-form__form" id="{{id}}-form" action="{{action}}" method="post" data-form="contact" data-track="generate_lead" data-error-required="{{error_required}}" data-error-email="{{error_email}}" data-error-consent="{{error_consent}}" data-msg-success="{{msg_success}}" data-msg-failure="{{msg_failure}}" data-msg-unwired="{{msg_unwired}}">
+      <form class="s-form__form" id="{{id}}-form" action="{{action}}" method="post" data-form="contact" data-track="generate_lead" data-error-required="{{error_required}}" data-error-email="{{error_email}}" data-msg-success="{{msg_success}}" data-msg-failure="{{msg_failure}}" data-msg-unwired="{{msg_unwired}}">
         <div class="hp" aria-hidden="true"><label for="{{id}}-site">Site web</label><input type="text" id="{{id}}-site" name="site" tabindex="-1" autocomplete="off"></div>
         <div class="s-form__fields" data-form-fields>
           <div class="s-form__row">
@@ -138,21 +138,22 @@
             <div class="field">
               <label class="field__label" for="{{id}}-size">{{labels.size}}</label>
               <div class="field__select">
-                <select class="field__input" id="{{id}}-size" name="size" required aria-describedby="{{id}}-size-error">
+                <select class="field__input" id="{{id}}-size" name="{{select_name}}" required aria-describedby="{{id}}-size-error">
                   {{#size_options}}<option{{#@first}} value=""{{/@first}}>{{.}}</option>{{/size_options}}
                 </select>
               </div>
               <p class="field__error" id="{{id}}-size-error" hidden></p>
             </div>
           </div>
+          {{#url_field}}<div class="field">
+            <label class="field__label" for="{{id}}-url">{{label}}{{^required}} <span class="field__optional">{{labels.optional}}</span>{{/required}}</label>
+            <input class="field__input" type="text" inputmode="url" id="{{id}}-url" name="{{name}}" autocomplete="url" spellcheck="false" placeholder="{{placeholder}}"{{#required}} required aria-describedby="{{id}}-url-error"{{/required}}>
+            {{#required}}<p class="field__error" id="{{id}}-url-error" hidden></p>{{/required}}
+          </div>{{/url_field}}
           <div class="field">
             <label class="field__label" for="{{id}}-message">{{labels.message}} <span class="field__optional">{{labels.optional}}</span></label>
             <textarea class="field__input" id="{{id}}-message" name="message" rows="4"></textarea>
           </div>
-          {{#consent}}<div>
-            <div class="consent"><input type="checkbox" id="{{id}}-consent" name="consent" value="oui" required aria-describedby="{{id}}-consent-error"><label for="{{id}}-consent">{{consent}}</label></div>
-            <p class="field__error" id="{{id}}-consent-error" hidden></p>
-          </div>{{/consent}}
           <button type="submit" class="btn btn--block {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" data-cta-position="{{position}}"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</button>
           <p class="s-form__privacy">{{{privacy}}}</p>
         </div>

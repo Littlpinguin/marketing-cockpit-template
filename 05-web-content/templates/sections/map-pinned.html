@@ -4,17 +4,19 @@
   "name": "Carte ou schéma épinglé",
   "objection": "Est-ce compatible avec ma vie (lieux, fuseaux, rythme, rattrapage)",
   "engines": ["scroll"],
-  "when": "Quand le format se comprend mieux sur un schéma : lieux, fuseaux, rythme, rattrapage. Un tracé se découvre au défilement (stroke-dashoffset), les repères se posent quand il les atteint, puis une fin immobile pour lire. La légende, à gauche, porte toute l'information en texte.",
-  "avoid": "Tête de tracé qui ressemble à un repère, ondes qui pulsent sans fin, information portée par le schéma seul, deux épinglages d'affilée.",
-  "reduced_motion": "Le schéma complet, d'emblée, tous les repères posés.",
+  "when": "Quand le format se comprend mieux sur un schéma : lieux, fuseaux, rythme, rattrapage. Un tracé se découvre au défilement (stroke-dashoffset), les repères se posent quand il les atteint, puis une fin immobile pour lire. La légende, à gauche, porte toute l’information en texte.",
+  "avoid": "Tête de tracé qui ressemble à un repère, ondes qui pulsent sans fin, information portée par le schéma seul, deux épinglages d’affilée.",
+  "reduced_motion": "Le schéma complet, d’emblée, tous les repères posés.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Un rythme qui tient <span class=\"hl\">dans votre semaine</span>"},
     "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Deux heures fixes par semaine, le reste quand vous voulez."},
+    "decor": {"type": "text", "doc": "Fond du schéma, tracé avec les jetons : lines (quadrillage léger), dots (trame de points), rings (cercles concentriques), none (aplat). Ignoré si decor_svg est rempli.", "example": "lines"},
+    "decor_svg": {"type": "html", "doc": "Fond sur mesure à la place du fond prédéfini : des éléments SVG (path, circle…) dans le viewBox de 600 × 480, dessinés sous le tracé avec la classe s-map__decor (trait fin aux couleurs des jetons). Par exemple le contour simplifié d'une région ou le plan d'un site. Vide : le fond prédéfini.", "example": ""},
     "path": {"type": "text", "doc": "Attribut d du tracé SVG, dans un viewBox de 600 × 480.", "example": "M70 400 C 150 392 172 302 250 292 S 398 318 420 232 S 360 128 450 92"},
     "marks": {"type": "list", "doc": "3 à 5 repères, dans l'ordre du tracé. x, y : position dans le viewBox ; at : avancement du tracé (0 à 1) où le repère se pose ; label : étiquette courte sur le schéma ; title : h3 de la légende ; text : une phrase.", "fields": {"x": "0-600", "y": "0-480", "at": "0-1", "label": "étiquette du schéma", "title": "titre de légende", "text": "une phrase"}, "example": [
       {"x": 70, "y": 400, "at": 0.02, "label": "Mardi 9 h", "title": "Depuis votre bureau", "text": "Chaque mardi de 9 h à 11 h en visio, caméra facultative."},
       {"x": 250, "y": 292, "at": 0.36, "label": "Jeudi", "title": "Une permanence chaque jeudi", "text": "Trente minutes pour débloquer une question sur vos données, sur réservation."},
-      {"x": 420, "y": 232, "at": 0.69, "label": "Lyon", "title": "Une demi-journée à Lyon", "text": "En semaine 3, le groupe se retrouve pour l'atelier achats. La visio reste possible."},
+      {"x": 420, "y": 232, "at": 0.69, "label": "Lyon", "title": "Une demi-journée à Lyon", "text": "En semaine 3, le groupe se retrouve pour l’atelier achats. La visio reste possible."},
       {"x": 450, "y": 92, "at": 0.98, "label": "Replay", "title": "Le replay sous 24 heures", "text": "Chaque atelier est enregistré : une séance manquée se rattrape dans la semaine."}
     ]}
   }
@@ -93,11 +95,30 @@
 }
 
 .s-map__svg {
+  position: relative;
   width: 100%;
   height: auto;
 }
 
-.s-map__meridian {
+/* Ground of the schema, drawn from the tokens (no geography implied). */
+.s-map__figure[data-decor="lines"] {
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 59px, var(--line) 59px 60px),
+    repeating-linear-gradient(90deg, transparent 0 59px, var(--line) 59px 60px);
+  background-position: center;
+}
+
+.s-map__figure[data-decor="dots"] {
+  background-image: radial-gradient(circle, var(--line-strong) 1.3px, transparent 1.8px);
+  background-position: center;
+  background-size: 24px 24px;
+}
+
+.s-map__figure[data-decor="rings"] {
+  background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 71px, var(--line) 71px 72.5px);
+}
+
+.s-map__decor {
   fill: none;
   stroke: var(--brand-line);
   stroke-width: 1.5;
@@ -137,15 +158,17 @@
   font-weight: 700;
 }
 
+/* A halo in the colour of the figure keeps each label legible over the
+   ground and the route, whatever its length (no fixed plate). */
 .s-map__mark .s-map__tag {
   fill: var(--brand-dark);
   font-family: var(--font-display);
   font-size: 17px;
   font-weight: 700;
-}
-
-.s-map__tag-bg {
-  fill: var(--brand-white);
+  paint-order: stroke;
+  stroke: var(--brand-white);
+  stroke-width: 7px;
+  stroke-linejoin: round;
 }
 
 @media (max-width: 1100px) {
@@ -204,13 +227,12 @@
             </li>{{/marks}}
           </ol>
         </div>
-        <div class="s-map__figure" aria-hidden="true" data-qa-decor>
+        <div class="s-map__figure" aria-hidden="true" data-qa-decor{{^decor_svg}} data-decor="{{decor}}"{{/decor_svg}}>
           <svg class="s-map__svg" viewBox="0 0 600 480" role="presentation" focusable="false">
-            <path class="s-map__meridian" d="M300 -20 C 120 120 120 360 300 500 M300 -20 C 480 120 480 360 300 500 M300 -20 V 500 M-20 160 C 200 130 400 130 620 160 M-20 320 C 200 350 400 350 620 320"/>
+            {{#decor_svg}}<g class="s-map__decor-custom">{{{decor_svg}}}</g>{{/decor_svg}}
             <path class="s-map__base" d="{{path}}"/>
             <path class="s-map__route" d="{{path}}" pathLength="1"/>
             {{#marks}}<g class="s-map__mark" style="--at:{{at}}" transform="translate({{x}} {{y}})">
-              <rect class="s-map__tag-bg" x="15" y="-15" width="115" height="30" rx="8"/>
               <circle r="14"/>
               <text class="s-map__num" text-anchor="middle" dy="5">{{@index}}</text>
               <text class="s-map__tag" x="30" dy="6">{{label}}</text>

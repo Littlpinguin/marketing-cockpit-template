@@ -52,6 +52,10 @@ A slot the spec does not fill takes the fragment's sample value and is
 reported (fictional copy must never ship); `samples: true` silences that for
 a demo, `--strict` turns every warning into a failure.
 
+YAML 1.1 reads the bare keys yes / no / on / off as booleans: a spec whose
+mapping has a boolean key is refused with a clear message (quote the key, or
+use the fragment's own slot names, such as fit / not_fit for for-whom).
+
 Safety: the output is one file. The script never writes or deletes anything
 in a `pilotage/` folder and refuses an output path inside one (it may read a
 spec or a builder's fragment from there). It
@@ -81,7 +85,7 @@ LIBRARY_DEFAUT = TEMPLATES / "sections"
 ASSETS_DEFAUT = TEMPLATES / "assets"
 TOKENS_DEFAUT = ASSETS_DEFAUT / "tokens.css"
 
-ENGINES = ("reveal", "scroll", "offer", "forms", "tracking")     # load order
+ENGINES = ("reveal", "scroll", "offer", "forms", "viewer", "annotate", "tracking")     # load order
 ENGINES_TOUJOURS = ("reveal", "tracking")
 REGIONS = ("header", "main", "footer", "after")
 TYPES_SLOT = {"text", "html", "url", "bool", "list", "number", "object"}
@@ -297,6 +301,37 @@ def bibliotheque(dossier: Path) -> dict[str, Fragment]:
 # Spec
 # --------------------------------------------------------------------------
 
+MESSAGE_CLE_BOOLEENNE = ("clé booléenne : YAML lit yes/no/on/off comme des booléens, "
+                         "mettez la clé entre guillemets")
+
+
+def cles_booleennes(valeur: Any, chemin: str = "") -> list[str]:
+    """Where a mapping key is a boolean, as a readable path.
+
+    YAML 1.1 (PyYAML) reads the bare keys yes / no / on / off as true / false:
+    `yes:` in a spec silently becomes the key True, and the slot it meant to
+    fill falls back to its sample copy. JSON cannot produce such a key.
+    """
+    trouves: list[str] = []
+    if isinstance(valeur, dict):
+        for cle, sous in valeur.items():
+            if isinstance(cle, bool):
+                lu = "yes ou on" if cle else "no ou off"
+                trouves.append(f"{chemin or 'racine'} → {str(cle).lower()} (écrit {lu})")
+                continue
+            trouves += cles_booleennes(sous, f"{chemin}.{cle}" if chemin else str(cle))
+    elif isinstance(valeur, list):
+        for i, sous in enumerate(valeur):
+            trouves += cles_booleennes(sous, f"{chemin}[{i}]")
+    return trouves
+
+
+def verifier_cles(valeur: Any, origine: str, chemin: str = "") -> None:
+    trouves = cles_booleennes(valeur, chemin)
+    if trouves:
+        raise ErreurAssemblage(f"{origine} : {MESSAGE_CLE_BOOLEENNE} ({' ; '.join(trouves)})")
+
+
 def lire_spec(chemin: Path) -> dict:
     if not chemin.is_file():
         raise ErreurAssemblage(f"spec introuvable : {chemin}")
@@ -326,6 +361,7 @@ def lire_spec(chemin: Path) -> dict:
         raise ErreurAssemblage(f"{chemin.name} : format de spec inconnu (.json, .yaml, .yml, .md)")
     if not isinstance(spec, dict):
         raise ErreurAssemblage(f"{chemin.name} : la spec doit être un objet")
+    verifier_cles(spec, chemin.name)
     if not spec.get("title"):
         raise ErreurAssemblage(f"{chemin.name} : « title » manquant")
     if not isinstance(spec.get("sections"), list) or not spec["sections"]:
@@ -371,6 +407,7 @@ def valeurs_slots(fragment: Fragment, instance: dict, origine: str, samples: boo
     fournis = instance.get("slots") or {}
     if not isinstance(fournis, dict):
         raise ErreurAssemblage(f"{origine} : « slots » doit être un objet")
+    verifier_cles(fournis, origine, "slots")
     contexte: dict = {}
     for nom, spec in fragment.slots.items():
         if nom in fournis:
@@ -391,8 +428,8 @@ def note_catalogue(fragment: Fragment, instance_id: str) -> str:
     e = lambda s: html.escape(str(s or ""), quote=True)  # noqa: E731
     lignes = [
         ("Objection traitée", meta.get("objection")),
-        ("Quand l'utiliser", meta.get("when")),
-        ("Quand l'éviter", meta.get("avoid")),
+        ("Quand l’utiliser", meta.get("when")),
+        ("Quand l’éviter", meta.get("avoid")),
         ("Mouvement réduit", meta.get("reduced_motion")),
     ]
     blocs = "".join(f"<div><dt>{t}</dt><dd>{e(v)}</dd></div>" for t, v in lignes if v)

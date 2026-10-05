@@ -2,30 +2,31 @@
 {
   "id": "lead-capture",
   "name": "Formulaire de capture",
-  "objection": "Qu'est-ce que je donne, et qu'est-ce que je reçois",
+  "objection": "Qu’est-ce que je donne, et qu’est-ce que je reçois",
   "engines": ["forms"],
-  "when": "Quand la conversion est un email contre un contenu ou une alerte (guide, liste d'attente, rappel d'ouverture). L'email seul si la suite le permet, consentement explicite quand la loi l'exige, une phrase sur ce qui arrive après l'envoi. Circuit complet : skill lead-magnet.",
-  "avoid": "Placeholder en guise de label, case pré-cochée, champ qui ne paie pas sa friction, promesse d'envoi que le circuit ne tient pas.",
+  "when": "Quand la conversion est un email contre un contenu ou une alerte (guide, liste d’attente, rappel d’ouverture). L’email seul : la demande vaut envoi de la ressource, sans case à cocher. L’inscription à la lettre se propose à part, dans une case facultative et décochée, et une phrase sous le bouton dit ce qui arrive ensuite. Circuit complet : skill lead-magnet.",
+  "avoid": "Case obligatoire pour recevoir la ressource, lettre d’information imposée avec le contenu, case pré-cochée, placeholder en guise de label, champ qui ne paie pas sa friction, promesse d’envoi que le circuit ne tient pas.",
   "reduced_motion": "Immobile.",
   "slots": {
     "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Recevez la liste des <span class=\"hl\">données à réunir</span>"},
     "intro": {"type": "text", "doc": "Ce que contient l'envoi, en une ou deux phrases.", "example": "Une liste de 41 postes, avec pour chacun la pièce à demander et la personne qui la détient en général."},
-    "points": {"type": "list", "doc": "2 à 4 points concrets sur le contenu.", "example": ["Format tableur, prêt à partager en interne", "Les postes classés par poids moyen dans une PME", "Un modèle d'email à envoyer à votre comptable"]},
+    "points": {"type": "list", "doc": "2 à 4 points concrets sur le contenu.", "example": ["Format tableur, prêt à partager en interne", "Les postes classés par poids moyen dans une PME", "Un modèle d’email à envoyer à votre comptable"]},
     "action": {"type": "url", "doc": "Endpoint POST du formulaire (webhook n8n ou outil d'emailing).", "example": "{{FORM_ENDPOINT}}"},
     "primary": {"type": "bool", "doc": "true : la capture est la conversion de la page (data-cta=\"primaire\", bouton à l'accent fort). false : bouton secondaire.", "example": true},
     "position": {"type": "text", "doc": "Position mesurée du bouton (data-cta-position).", "example": "capture"},
     "email_label": {"type": "text", "doc": "Label visible du champ email.", "example": "Votre email professionnel"},
     "email_placeholder": {"type": "text", "doc": "Exemple dans le champ (jamais à la place du label).", "example": "prenom@example.com"},
-    "email_hint": {"type": "text", "doc": "Aide sous le champ (vide : rien).", "example": "Un seul envoi, puis un email par mois au plus."},
-    "consent": {"type": "text", "doc": "Phrase de consentement (case à cocher, jamais pré-cochée). Vide : pas de case.", "example": "J'accepte de recevoir la liste et les nouvelles du parcours. Désinscription en un clic."},
+    "email_hint": {"type": "text", "doc": "Aide sous le champ (vide : rien).", "example": "La liste part à cette adresse."},
+    "optin": {"type": "object", "doc": "Case facultative et décochée pour s'abonner en plus à la lettre d'information (la ressource part sans elle). label : la phrase, avec le rythme et la désinscription ; name : nom du champ envoyé (valeur oui si cochée). generate_lead porte optin: true ou false. null : pas de case.", "fields": {"label": "phrase de la case", "name": "nom du champ"}, "example": {"label": "Recevoir aussi la lettre de Meridian, un email par mois sur le bilan carbone. Désinscription en un clic.", "name": "newsletter"}},
+    "consent_required": {"type": "text", "doc": "Case obligatoire, seulement quand un consentement conditionne vraiment l'envoi (transmission des données à un partenaire, par exemple). Jamais pré-cochée, jamais pour recevoir la ressource elle-même. Vide : pas de case.", "example": ""},
     "cta_label": {"type": "text", "doc": "Verbe du bouton.", "example": "Recevoir la liste"},
-    "after": {"type": "text", "doc": "Ce qui arrive après l'envoi.", "example": "La liste arrive dans votre boîte dans la minute."},
+    "after": {"type": "text", "doc": "Sous le bouton : ce qui arrive après l'envoi, et ce qui n'arrive pas sans la case.", "example": "La liste arrive dans votre boîte dans la minute. Aucun autre email sans votre accord."},
     "error_required": {"type": "text", "doc": "Message champ vide.", "example": "Ce champ est nécessaire pour vous envoyer la liste."},
     "error_email": {"type": "text", "doc": "Message email mal formé.", "example": "Cette adresse email semble incomplète."},
-    "error_consent": {"type": "text", "doc": "Message consentement non coché.", "example": "Cochez la case pour recevoir la liste."},
-    "msg_success": {"type": "text", "doc": "Confirmation après envoi.", "example": "C'est envoyé. Vérifiez votre boîte de réception."},
-    "msg_failure": {"type": "text", "doc": "Message si l'envoi échoue.", "example": "L'envoi n'a pas abouti. Nouvel essai en cours."},
-    "msg_unwired": {"type": "text", "doc": "Message si l'endpoint n'est pas branché.", "example": "Formulaire de démonstration : rien n'a été envoyé."}
+    "error_consent": {"type": "text", "doc": "Message si la case obligatoire (consent_required) n'est pas cochée.", "example": "Cochez la case pour continuer."},
+    "msg_success": {"type": "text", "doc": "Confirmation après envoi.", "example": "C’est envoyé. Vérifiez votre boîte de réception."},
+    "msg_failure": {"type": "text", "doc": "Message si l'envoi échoue.", "example": "L’envoi n’a pas abouti. Nouvel essai en cours."},
+    "msg_unwired": {"type": "text", "doc": "Ajouté au message de confirmation quand l'endpoint est encore un marqueur {{…}} : rien ne part, la mesure compte form_demo_submit.", "example": "Formulaire de démonstration : rien n’a été envoyé."}
   }
 }
 </script>
@@ -51,9 +52,9 @@
   gap: 18px;
 }
 
+/* What follows the click: a full sentence, so running-text size. */
 .s-lead__after {
   color: var(--muted);
-  font-size: var(--t-small);
   text-align: center;
   text-wrap: balance;
 }
@@ -90,10 +91,11 @@
             {{#email_hint}}<p class="field__hint" id="{{id}}-email-hint">{{email_hint}}</p>{{/email_hint}}
             <p class="field__error" id="{{id}}-email-error" hidden></p>
           </div>
-          {{#consent}}<div>
-            <div class="consent"><input type="checkbox" id="{{id}}-consent" name="consent" value="oui" required aria-describedby="{{id}}-consent-error"><label for="{{id}}-consent">{{consent}}</label></div>
+          {{#optin}}<div class="consent"><input type="checkbox" id="{{id}}-optin" name="{{name}}" value="oui" data-optin><label for="{{id}}-optin">{{label}}</label></div>{{/optin}}
+          {{#consent_required}}<div>
+            <div class="consent"><input type="checkbox" id="{{id}}-consent" name="consent" value="oui" required aria-describedby="{{id}}-consent-error"><label for="{{id}}-consent">{{consent_required}}</label></div>
             <p class="field__error" id="{{id}}-consent-error" hidden></p>
-          </div>{{/consent}}
+          </div>{{/consent_required}}
           <button type="submit" class="btn btn--block {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" data-cta-position="{{position}}"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</button>
           <p class="s-lead__after">{{after}}</p>
         </div>
