@@ -104,13 +104,14 @@ Rappel : `00-intel/` (transcriptions, intel interne/clients/prospects) est **git
 
 ## Divulgation IA lors de la publication
 
+La politique de divulgation IA de la marque vit dans `01-brand/divulgation-ia.md` (créé par `/brand-discover` depuis le gabarit `_templates/brand/divulgation-ia.md`). Elle fait foi : ce qui se mentionne, ce qui ne se mentionne pas, la formulation par canal, les cas limites. Ce qui suit n'en est que le rappel de sécurité.
+
 Pour les visuels et l'audio générés par IA (via la skill `image-generation` ou des outils externes) :
 
-- Livrables finaux publics : suivre la politique de divulgation IA de votre marque. Recommandation par défaut : une courte légende ou une note en alt-text indiquant l'intervention de l'IA.
-- Assets internes / fonctionnels / décoratifs : divulgation optionnelle.
+- Livrables finaux publics : mention selon le tableau par type de contenu de `01-brand/divulgation-ia.md`. Une voix ou une vidéo synthétique se déclare en tête du contenu, jamais en fin de description.
+- Assets internes, fonctionnels ou décoratifs (fond, texture, grain) : aucune mention.
 - Ne jamais faire passer pour authentiques des voix clonées, des visages deepfakés ou des imitations de style d'artistes vivants. Au-delà de la question éthique, c'est un risque légal dans la plupart des juridictions.
-
-Votre politique de divulgation est définie pendant `/brand-discover` et vit dans `01-brand/style-guide.md`.
+- Ne jamais mettre en scène une personne réelle dans un visuel généré : la personne dont un contenu parle est celle qu'on photographie.
 
 ## Staging avant production
 

@@ -48,7 +48,7 @@ Lire `README.md` pour l'outillage complet (Palmier Pro, ffmpeg, génération de 
 - ✅ Hook validé par un humain avant montage (le hook fait 80 % de la performance).
 - ✅ Sous-titres présents sur toute vidéo sociale (majorité de lecture sans le son).
 - ✅ Habillage conforme aux tokens `01-brand` (police, couleurs, pas de tropes bannis `{{BRAND_BANNED_VISUALS}}`).
-- ✅ Disclosure IA selon la politique de la marque pour tout clip généré (Seedance, Kling, Magnific).
+- ✅ Divulgation IA selon `01-brand/divulgation-ia.md` pour tout clip généré (Seedance, Kling, Magnific) ou toute voix de synthèse : mention en tête du contenu.
 
 ## Ce que ce rôle ne fait PAS
 

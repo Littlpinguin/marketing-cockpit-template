@@ -1,0 +1,96 @@
+# Dossiers inventoriés par scripts/build-inventory.py (index anti-répétition).
+#
+# Une [[sources]] par dossier de production :
+#   dossier  chemin relatif à la racine du dépôt
+#   motifs   motifs de fichiers sous ce dossier (« *.md », « */index.html »...) ;
+#            la profondeur du motif est stricte : « *.md » ne descend pas
+#   canal    linkedin, discord, whatsapp, newsletter, email-promo, web, blog,
+#            event, slides, visuel (vocabulaire de _templates/inventory.md)
+#   type     post, carrousel, email, article, landing, deck, image, plan-comm
+#
+# Extensions retenues de fait : .md et .html. Les PDF, images et exports sont
+# ignorés : l'inventaire indexe le livrable source, pas ses dérivés.
+# Un fork qui range ses livrables ailleurs adapte ce fichier, pas le script.
+
+# Fichier tenu par le script.
+inventory = "_templates/inventory.md"
+
+# Fichiers de service présents dans les dossiers de production, jamais des
+# livrables (README.md, CLAUDE.md et .gitkeep le sont toujours).
+exclude_names = ["index.md", "playbook.md", "brief.md"]
+
+[[sources]]
+dossier = "03-social-media/linkedin/examples"
+motifs = ["*.md"]
+canal = "linkedin"
+type = "post"
+
+[[sources]]
+dossier = "03-social-media/discord/examples"
+motifs = ["*.md"]
+canal = "discord"
+type = "post"
+
+[[sources]]
+dossier = "03-social-media/whatsapp/examples"
+motifs = ["*.md"]
+canal = "whatsapp"
+type = "post"
+
+# Carrousels : un dossier par carrousel, source HTML (skill carousel).
+[[sources]]
+dossier = "06-graphic-design/outputs"
+motifs = ["carrousel-*/index.html"]
+canal = "linkedin"
+type = "carrousel"
+
+[[sources]]
+dossier = "04-email/newsletter/editions"
+motifs = ["*.md"]
+canal = "newsletter"
+type = "email"
+
+# Promos, prospection et séquences de nurturing partagent `email-promo` :
+# leur chemin suffit à les distinguer à la lecture.
+[[sources]]
+dossier = "04-email/promos"
+motifs = ["*.md"]
+canal = "email-promo"
+type = "email"
+
+[[sources]]
+dossier = "04-email/sales-outreach"
+motifs = ["*.md"]
+canal = "email-promo"
+type = "email"
+
+[[sources]]
+dossier = "04-email/lead-nurturing"
+motifs = ["*.md", "sequences/*.md"]
+canal = "email-promo"
+type = "email"
+
+[[sources]]
+dossier = "09-seo/articles"
+motifs = ["*.md"]
+canal = "blog"
+type = "article"
+
+[[sources]]
+dossier = "05-web-content/landing-pages"
+motifs = ["*.md", "*.html", "*/index.html"]
+canal = "web"
+type = "landing"
+
+# Les decks vivent à plat ou dans un sous-dossier qui porte leurs assets.
+[[sources]]
+dossier = "06-graphic-design/presentations/decks"
+motifs = ["*.html", "*/*.html"]
+canal = "slides"
+type = "deck"
+
+[[sources]]
+dossier = "07-events"
+motifs = ["*/comm-plan.md"]
+canal = "event"
+type = "plan-comm"

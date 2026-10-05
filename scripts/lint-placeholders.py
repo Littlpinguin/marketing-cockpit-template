@@ -52,6 +52,37 @@ IGNORE_FILE_SUFFIXES = (
 TEXT_SUFFIXES = {".md", ".mdx", ".html", ".htm", ".txt", ".yaml", ".yml", ".json"}
 
 
+# Allowed markers: placeholders intentionally left in place, filled per deliverable,
+# by the modules or at production time, never by the wizard. Public constant:
+# scripts/lint-brand.py reuses it for its "placeholders" rule.
+PLACEHOLDERS_TOLERES = [
+    # generic markers
+    "TODO", "MONTH_YEAR", "MOIS_ANNEE",
+    # mail signature slots (06-graphic-design/mail-signatures/template.html)
+    "NAME", "ROLE", "EMAIL", "PHONE", "LINKEDIN_URL",
+    # per-deliverable markers (see docs/placeholders.json, groups decks / web_page_markers / tracking_acquisition)
+    "DECK_TITLE", "CAMPAIGN_SLUG",
+    "FORM_ENDPOINT", "URL_CONFIDENTIALITE", "LIEN_CONFIDENTIALITE", "MENTION_RGPD",
+    "URL_MENTIONS_LEGALES", "URL_SITE", "URL_ESSAI", "URL_ITINERAIRE", "CONCURRENT",
+    # tool/account IDs resolved by /tools-setup or the modules, referenced in ops docs
+    "GA4_MEASUREMENT_ID", "GA4_PROPERTY_ID", "GOOGLE_ADS_CUSTOMER_ID", "LEMLIST_SIGNUP_URL",
+    # runtime slots — filled per entry at production time, never by the wizard
+    # (calendar rows in 02-strategy/calendar/calendar.md, "signaux 00-intel" rows in 01-brand/personas.md)
+    "DATE", "DATE_ISO", "DATE_LUNDI_ISO", "DATE_LUNDI_ISO_S1",
+    "NUMERO_SEMAINE", "NUMERO_SEMAINE_S1", "ANNEE",
+    "SUJET", "SLUG", "PILIER", "CAMPAGNE", "EXEMPLE_SUJET_BACKLOG",
+    "SIGNAL", "IMPACT",
+    # module import slots — filled at n8n import / module install, never by the wizard
+    # (see docs/placeholders.json, group module_import_slots; scanned via cockpit-setup's extended --paths)
+    "ERROR_WORKFLOW_ID", "N8N_CREDENTIAL_ID_LLM", "N8N_CREDENTIAL_ID_METRIQUES",
+    "N8N_CREDENTIAL_ID_RECHERCHE", "N8N_CREDENTIAL_ID_SMTP",
+    "NOTIFICATION_EMAIL", "SENDER_EMAIL", "VOTRE_DOMAINE",
+    "NOM_DU_WORKFLOW", "WORKFLOW_ID", "MOIS", "POSTIZ_URL",
+    # Drive transcripts feed — filled at install (see _integrations/drive-transcripts/README.md)
+    "INTEL_DRIVE_ID", "INTEL_DRIVE_ACCOUNT", "INTEL_REPORT_EMAIL",
+]
+
+
 def iter_files(paths: Iterable[str]) -> Iterable[Path]:
     for raw in paths:
         p = Path(raw)
@@ -108,33 +139,7 @@ def scan_file(path: Path, allow: set[str]) -> list[tuple[int, str]]:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Lint unresolved {{PLACEHOLDER}} tokens.")
     parser.add_argument("--paths", nargs="*", default=DEFAULT_PATHS, help="Paths to scan (files or directories).")
-    parser.add_argument("--allow", nargs="*",
-                        default=[
-                            # generic markers
-                            "TODO", "MONTH_YEAR", "MOIS_ANNEE",
-                            # mail signature slots (06-graphic-design/mail-signatures/template.html)
-                            "NAME", "ROLE", "EMAIL", "PHONE", "LINKEDIN_URL",
-                            # per-deliverable markers (see docs/placeholders.json, groups decks / web_page_markers / tracking_acquisition)
-                            "DECK_TITLE", "CAMPAIGN_SLUG",
-                            "FORM_ENDPOINT", "URL_CONFIDENTIALITE", "LIEN_CONFIDENTIALITE", "MENTION_RGPD",
-                            "URL_MENTIONS_LEGALES", "URL_SITE", "URL_ESSAI", "URL_ITINERAIRE", "CONCURRENT",
-                            # tool/account IDs resolved by /tools-setup or the modules, referenced in ops docs
-                            "GA4_MEASUREMENT_ID", "GA4_PROPERTY_ID", "GOOGLE_ADS_CUSTOMER_ID", "LEMLIST_SIGNUP_URL",
-                            # runtime slots — filled per entry at production time, never by the wizard
-                            # (calendar rows in 02-strategy/calendar/calendar.md, "signaux 00-intel" rows in 01-brand/personas.md)
-                            "DATE", "DATE_ISO", "DATE_LUNDI_ISO", "DATE_LUNDI_ISO_S1",
-                            "NUMERO_SEMAINE", "NUMERO_SEMAINE_S1", "ANNEE",
-                            "SUJET", "SLUG", "PILIER", "CAMPAGNE", "EXEMPLE_SUJET_BACKLOG",
-                            "SIGNAL", "IMPACT",
-                            # module import slots — filled at n8n import / module install, never by the wizard
-                            # (see docs/placeholders.json, group module_import_slots; scanned via cockpit-setup's extended --paths)
-                            "ERROR_WORKFLOW_ID", "N8N_CREDENTIAL_ID_LLM", "N8N_CREDENTIAL_ID_METRIQUES",
-                            "N8N_CREDENTIAL_ID_RECHERCHE", "N8N_CREDENTIAL_ID_SMTP",
-                            "NOTIFICATION_EMAIL", "SENDER_EMAIL", "VOTRE_DOMAINE",
-                            "NOM_DU_WORKFLOW", "WORKFLOW_ID", "MOIS", "POSTIZ_URL",
-                            # Drive transcripts feed — filled at install (see _integrations/drive-transcripts/README.md)
-                            "INTEL_DRIVE_ID", "INTEL_DRIVE_ACCOUNT", "INTEL_REPORT_EMAIL",
-                        ],
+    parser.add_argument("--allow", nargs="*", default=PLACEHOLDERS_TOLERES,
                         help="Placeholder names to ignore.")
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of human text.")
     args = parser.parse_args(argv)

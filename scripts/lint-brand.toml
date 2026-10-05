@@ -1,0 +1,276 @@
+# Configuration du linter de marque (scripts/lint-brand.py).
+#
+# Le code ne connaît aucune marque : tout ce qui est propre à la marque vit ici
+# ou dans 01-brand/tokens.json (palette et polices, lues directement). Les listes
+# viennent de la doctrine, et rien d'autre :
+#   - 01-brand/voice.md, vocabulaire banni (section charter, remplie par
+#     /brand-discover depuis BRAND_VOCABULARY_BANNED)
+#   - 01-brand/anti-ai-writing-style.md, sections 3A, 3B, 3D, 3E et 3F (sections
+#     ai et negative-parallelism, fournies par le gabarit)
+# Modifier la doctrine d'abord, ce fichier ensuite : il n'a pas vocation à diverger.
+#
+# Chaque règle se désactive pour la marque avec `enabled = false` dans sa section
+# (`--only <règle>` la relance quand même, nommément). Les chemins sont relatifs
+# à la racine du dépôt et se comparent par préfixe.
+
+[general]
+# Palette et polices de marque (format DTCG, créé par /brand-discover).
+tokens = "01-brand/tokens.json"
+extensions = [".md", ".html", ".css", ".svg", ".txt"]
+exclude_dirs = [
+  ".git", ".venv", "venv", "__pycache__", "node_modules",
+  ".setup-archive", "_bootstrap",
+]
+# Chemins jamais parcourus (code tiers vendorisé, site importé, archives...).
+exclude_paths = []
+# Gabarits, corpus d'exemples et démonstrations : leur mise en forme n'obéit pas
+# à la charte de la marque (palettes de démo, polices de démo). Les règles
+# graphiques (off-palette, font-family) s'y réfèrent toutes les deux, la liste
+# n'existe donc qu'ici.
+exclude_paths_production = [
+  "_templates",
+  "_examples",
+  "05-web-content/templates",
+  "06-graphic-design/presentations/templates",
+  "11-reporting/dashboard/demo",
+]
+
+# --------------------------------------------------------------------------
+# 1. forbidden-words
+# --------------------------------------------------------------------------
+
+[forbidden-words]
+# Fichiers qui citent les mots interdits pour les interdire : les scanner n'a pas de sens.
+exclude_paths = [
+  "01-brand/anti-ai-writing-style.md",
+  "_templates/brand/anti-ai-writing-style.md",
+  "scripts",
+]
+# Dossiers de contenu publié : le vocabulaire d'IA y est une erreur, ailleurs un avertissement.
+content_dirs = ["03-social-media", "04-email", "05-web-content", "07-events", "08-video", "09-seo"]
+# Dossiers de doctrine : ils énoncent les règles, donc ils citent les mots qu'ils
+# interdisent (glossaires, exemples de reformulation, consignes de relecture). Les
+# deux listes, charte et anti-style-IA, y descendent au rang d'avertissement.
+# Pendant symétrique de « content_dirs », à l'autre bout de l'échelle de sévérité.
+doctrine_dirs = ["01-brand", "_templates", ".claude", "docs"]
+# Une feuille de style ne contient aucune prose : « align », « transparent » et
+# « dynamic » y sont des mots-clés CSS. Les blocs <style> et les attributs style
+# des autres fichiers sont blanchis pour la même raison.
+skip_extensions = [".css"]
+
+# Charte de la marque : erreur partout (avertissement en doctrine).
+# Rempli par /brand-discover depuis le vocabulaire banni validé (voice.md).
+# Exemple pour une marque fictive :
+#   words = ["synergie", "disruptif", "game-changer"]
+#   phrases = ["clé en main", "leader du marché"]
+[forbidden-words.charter]
+words = []
+phrases = []
+
+# Tolérés selon le contexte : avertissement partout. Pour un mot que la marque
+# évite sans l'interdire (ex. words = ["premium"]).
+[forbidden-words.tolerated]
+words = []
+phrases = []
+
+# Anti-style-IA, sections 3A, 3B, 3D, 3E de anti-ai-writing-style.md.
+# « words » et « phrases » se cherchent tels quels (mot entier, insensible à la
+# casse), « verbs » avec leurs flexions anglaises simples (s, es, ed, ing).
+[forbidden-words.ai]
+words = [
+  "realm", "tapestry", "paradigm", "cutting-edge", "landscape", "intricate",
+  "intricacies", "crucial", "pivotal", "meticulously", "vibrant", "unparalleled",
+  "synergy", "innovative", "game-changer", "testament", "commendable", "meticulous",
+  "groundbreaking", "holistic", "pioneering", "trailblazing", "versatile",
+  "transformative", "seamless", "scalable", "robust", "breakthrough", "frictionless",
+  "adaptive", "effortless", "data-driven", "insightful", "proactive",
+  "mission-critical", "visionary", "disruptive", "unprecedented", "intuitive",
+  "leading-edge", "state-of-the-art", "immersive", "predictive", "proprietary",
+  "plug-and-play", "turnkey", "future-proof", "paradigm-shifting", "enduring",
+  "interplay", "align", "dynamic", "transparent", "integrated", "valuable",
+  # Vocabulaire mort FR (section 3A, liste française)
+  "disruptif", "disruptifs", "disruptives", "incontournable",
+  "incontournables", "révolutionner", "révolutionnaire", "booster",
+]
+verbs = [
+  "delve", "harness", "unlock", "revolutionize", "surpass", "underscore",
+  "leverage", "showcase", "highlight", "emphasize", "boast", "foster", "enhance",
+  "garner", "accentuate", "unleash", "redefine", "optimize", "empower",
+  "streamline", "elevate", "reimagine", "synergize", "democratize", "supercharge",
+  "captivate", "accelerate",
+]
+phrases = [
+  "in today's", "it's important to note", "it's worth noting", "in order to",
+  "let's dive in", "let's explore", "let's unpack", "delve into",
+  "at the end of the day", "moving forward", "to put this in perspective",
+  "what makes this particularly interesting", "the implications here are",
+  "in other words", "it goes without saying", "i'd be happy to help",
+  "let that sink in", "read that again", "full stop", "this changes everything",
+  "are you paying attention", "you're not ready for this",
+  "10x your", "straightforward", "in this article, i will",
+  "what nobody tells you", "most people don't realize",
+  "here's the part nobody's talking about", "challenges and future prospects",
+  # Tournures employées pour éviter « is » ou « has » (section 3A).
+  "serves as a", "stands as a", "marks a", "boasts a", "features a", "offers a",
+  # Tournures mortes FR (sections 3B et 3D, liste française)
+  "plonger dans", "à l'ère de", "dans un monde où", "il est important de noter",
+  "force est de constater", "n'hésitez pas à",
+]
+# Deux entrées de la section 3B restent volontairement hors de cette liste, faute
+# de forme littérale à chercher :
+#   - « Despite its [positive words], [subject] faces challenges » est un gabarit,
+#     pas une chaîne ; le détecter demanderait une analyse syntaxique.
+#   - « Anything with "nobody" » est une consigne de relecture humaine : le seul mot
+#     « nobody » produirait surtout du bruit. Ses deux formulations les plus typiques
+#     sont dans la liste ci-dessus.
+# La section 3C (transitions mortes : furthermore, moreover, de plus, par ailleurs…)
+# n'est pas reprise : trop fréquente en prose correcte, elle relève de la relecture.
+
+# --------------------------------------------------------------------------
+# 2. dashes
+# --------------------------------------------------------------------------
+
+[dashes]
+level = "error"
+# Le tiret cadratin est banni par défaut (anti-ai-writing-style.md, section 2).
+# Une marque qui bannit aussi le demi-cadratin ajoute "–" à la liste.
+characters = ["—"]
+
+# --------------------------------------------------------------------------
+# 3. title-period
+# --------------------------------------------------------------------------
+
+[title-period]
+# Titre markdown ou <h1>-<h3> terminé par un point : interdit par la règle de
+# construction par défaut de voice.md (« Typography rules »). Une marque qui
+# l'autorise passe à `enabled = false`.
+level = "error"
+
+# --------------------------------------------------------------------------
+# 4. hashtags
+# --------------------------------------------------------------------------
+
+[hashtags]
+# Désactivée par défaut : beaucoup de marques emploient des hashtags. Passer à
+# `enabled = true` si la doctrine sociale de la marque les bannit.
+enabled = false
+level = "error"
+extensions = [".md"]
+include_paths = ["03-social-media"]
+
+# --------------------------------------------------------------------------
+# 5. placeholders
+# --------------------------------------------------------------------------
+
+[placeholders]
+level = "error"
+# Les dossiers ignorés par scripts/lint-placeholders.py (templates/, docs/,
+# _examples/...) le sont aussi ici, sans être recopiés. S'y ajoutent les dossiers
+# dont les placeholders sont voulus : gabarits du wizard et skills génériques.
+exclude_paths = ["_templates", ".claude/skills", ".claude/agents", ".claude/commands"]
+
+# --------------------------------------------------------------------------
+# 6. off-palette
+# --------------------------------------------------------------------------
+
+[off-palette]
+extensions = [".html", ".css", ".svg"]
+# Au-delà de ce nombre de hex distincts hors palette dans un même fichier, erreur.
+max_distinct = 3
+# Tolérance par défaut, en ΔE76, quand le token ne porte pas son propre deltaE_max.
+delta_e_max = 2.0
+# Exclusions : voir general.exclude_paths_production
+
+# --------------------------------------------------------------------------
+# 7. font-family
+# --------------------------------------------------------------------------
+
+[font-family]
+extensions = [".html", ".css"]
+# Les familles du groupe « font » de 01-brand/tokens.json sont admises d'office.
+# Ajouter ici les mots-clés CSS neutres, et toute famille tolérée partout.
+allowed = ["inherit", "initial", "unset", "revert"]
+# Familles monospace admises pour les blocs de code et les surtitres de deck.
+monospace = [
+  "monospace", "ui-monospace", "sfmono-regular", "sf mono", "jetbrains mono",
+  "menlo", "monaco", "consolas", "courier new", "courier",
+]
+# Contrainte des clients de messagerie : ces dossiers tolèrent, en avertissement,
+# les seules familles de « mail_allowed ». Toute autre famille y reste une erreur.
+mail_dirs = ["04-email", "06-graphic-design/mail-signatures"]
+mail_allowed = ["arial", "helvetica", "verdana", "georgia", "times new roman"]
+# Sursis : ces familles ne sont un avertissement que dans « mail_warn_dirs », et
+# restent une erreur partout ailleurs. Pour une police historique en cours de
+# migration vers la police de marque (ex. mail_warn = ["ancienne-police"],
+# mail_warn_dirs = ["04-email"]). À vider une fois la migration faite.
+mail_warn = []
+mail_warn_dirs = []
+# Exclusions : voir general.exclude_paths_production
+
+# --------------------------------------------------------------------------
+# 8. negative-parallelism (anti-style-IA, section 3F)
+# --------------------------------------------------------------------------
+
+[negative-parallelism]
+level = "warning"
+exclude_paths = [
+  "01-brand/anti-ai-writing-style.md",
+  "_templates/brand/anti-ai-writing-style.md",
+  "scripts",
+]
+
+[[negative-parallelism.patterns]]
+label = "not X, but Y"
+regex = '(?i)\bnot\s+(?:just\s+|only\s+)?[^.!?\n]{1,60}?,\s*but\s+(?:also\s+)?'
+
+[[negative-parallelism.patterns]]
+label = "it's not about X"
+regex = "(?i)\\bit'?s\\s+not\\s+(?:just\\s+)?about\\b"
+
+[[negative-parallelism.patterns]]
+label = "isn't X. It's Y."
+regex = "(?i)\\bis\\s?n'?t\\s+[^.!?\\n]{1,60}[.!?]\\s+(?:it'?s|this\\s+is|that'?s)\\b"
+
+[[negative-parallelism.patterns]]
+label = "X? No. Y."
+regex = '(?i)\?\s+No[.!]\s'
+
+[[negative-parallelism.patterns]]
+label = "Forget X. This is Y."
+regex = "(?i)\\bforget\\s+[^.!?\\n]{1,60}[.!?]\\s+(?:this\\s+is|it'?s|here'?s)\\b"
+
+[[negative-parallelism.patterns]]
+label = "Less X, more Y"
+regex = '(?i)\bless\s+\w+,\s*more\s+\w+'
+
+[[negative-parallelism.patterns]]
+label = "No X, no Y, just Z"
+regex = '(?i)\bno\s+\w+,\s*no\s+\w+,\s*just\s+\w+'
+
+[[negative-parallelism.patterns]]
+label = "Stop thinking X. Start thinking Y."
+regex = '(?i)\bstop\s+\w+ing\s+[^.!?\n]{1,60}[.!?]\s+start\s+\w+ing\b'
+
+[[negative-parallelism.patterns]]
+label = "The question isn't X"
+regex = "(?i)\\bthe\\s+question\\s+is\\s?n'?t\\b"
+
+[[negative-parallelism.patterns]]
+label = "You don't need X. You need Y."
+regex = "(?i)\\byou\\s+do\\s?n'?t\\s+need\\s+[^.!?\\n]{1,60}[.!?]\\s+you\\s+need\\b"
+
+[[negative-parallelism.patterns]]
+label = "X is dead. Y is the future."
+regex = '(?i)\bis\s+dead[.!]\s+[^.!?\n]{1,60}\bis\s+the\s+future\b'
+
+[[negative-parallelism.patterns]]
+label = "Not X. Y."
+regex = '(?:^|[.!?]\s+)Not\s+[^.!?\n]{1,50}\.\s+[A-Z]'
+
+[[negative-parallelism.patterns]]
+label = "ce n'est pas X, c'est Y"
+regex = "(?i)\\bce\\s+n'\\s?est\\s+pas\\s+[^.!?\\n]{1,60}[,.]\\s*c'\\s?est\\b"
+
+[[negative-parallelism.patterns]]
+label = "non pas X mais Y"
+regex = '(?i)\bnon\s+pas\s+[^.!?\n]{1,60}\bmais\b'

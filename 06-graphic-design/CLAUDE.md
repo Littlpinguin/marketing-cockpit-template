@@ -124,7 +124,7 @@ The skill enforces:
 
 - `presentations/templates/base.html` — deck skeleton (chrome, nav, print mode, QA hooks)
 - `presentations/templates/components.md` — paste-ready slide layouts + selection guide
-- `presentations/tokens.css` — slide-specific CSS variables, derived from `../01-brand/style-guide.md`
+- `presentations/tokens.css` — slide-specific CSS variables; its brand block is generated from `../01-brand/tokens.json` by `python3 scripts/build-tokens.py` (never edit it by hand)
 - `presentations/docs/design-system.md` — principles, anti-patterns, type scale
 - `presentations/docs/engine-parity.md` — canonical engine feature list + parity rule (enforced by `scripts/qa.py`)
 - `presentations/docs/pdf-export.md` — gradient-text rasterisation explained
@@ -180,7 +180,7 @@ Quick summary:
 
 ## AI disclosure
 
-If the brand has a public AI disclosure policy (set during `/brand-discover`), follow it. Default: public-facing AI illustrations and AI-generated deck imagery → small caption or alt-text note. Internal / functional decorative assets → disclosure optional.
+Follow `01-brand/divulgation-ia.md`, the single reference (what gets disclosed, the wording per channel, the `généré-par-ia:` field of the asset catalogue). Before publishing a third-party logo or a photo of a person, check its status in `01-brand/droits.md`.
 
 ## Skills associated
 

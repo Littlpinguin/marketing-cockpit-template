@@ -6,35 +6,46 @@
    or your deck file). Edit them here to retune the entire
    visual system in one place.
 
-   Wizard-filled values: the {{...}} placeholders below are
-   populated by /brand-discover and /tools-setup based on what
-   was extracted from the brand website. The _deep / _soft
-   variants are derived via color-mix() so the wizard only
-   needs to fill the four base colours.
+   Brand values: the lines between the brand-tokens markers are
+   GENERATED from 01-brand/tokens.json by scripts/build-tokens.py
+   (target declared in scripts/build-tokens.toml). Never edit them
+   by hand: change tokens.json, re-run the script, and
+   `python3 scripts/build-tokens.py --check` flags any drift. The
+   _deep / _soft variants below are derived via color-mix(), so
+   tokens.json only carries the base colours.
 
    If you arrive on a fresh template clone and still see {{...}}
    markers, run /start-cockpit before generating any deck.
    ============================================================ */
 
 :root {
-  /* ---------- Colour ---------- */
-  /* Primary brand colour — accents, highlights, hero numbers */
+  /* ---------- Brand values (generated) ----------
+     --brand-primary          accents, highlights, hero numbers
+     --brand-secondary        gradient pair, secondary highlights
+     --brand-neutral-light    primary slide background ("paper")
+     --brand-neutral-dark     alternating background, text on light
+     --brand-gradient         primary → secondary
+     --font-display           headlines, hero numbers, body
+     --font-mono              captions, eyebrows, tag labels (the brand's
+                              secondary font if declared, else system mono) */
+  /* brand-tokens:start */
+  /* Généré depuis 01-brand/tokens.json (python3 scripts/build-tokens.py). Ne pas éditer. */
   --brand-primary: {{BRAND_COLOR_PRIMARY}};
+  --brand-secondary: {{BRAND_COLOR_ACCENT}};
+  --brand-neutral-light: {{BRAND_COLOR_LIGHT}};
+  --brand-neutral-dark: {{BRAND_COLOR_DARK}};
+  --brand-gradient: {{BRAND_GRADIENT}};
+  --font-display: '{{BRAND_FONT_PRIMARY}}', system-ui, sans-serif;
+  --font-mono: '{{BRAND_FONT_SECONDARY}}', ui-monospace, 'Menlo', monospace;
+  /* brand-tokens:end */
+
+  /* ---------- Colour (derived) ---------- */
   --brand-primary-deep: color-mix(in srgb, var(--brand-primary), black 12%);
   --brand-primary-soft: color-mix(in srgb, var(--brand-primary) 12%, transparent);
-
-  /* Accent / secondary colour — gradient pair, secondary highlights */
-  --brand-secondary: {{BRAND_COLOR_ACCENT}};
   --brand-secondary-deep: color-mix(in srgb, var(--brand-secondary), black 12%);
   --brand-secondary-soft: color-mix(in srgb, var(--brand-secondary) 12%, transparent);
-
-  /* Light neutral — primary slide background ("paper") */
-  --brand-neutral-light: {{BRAND_COLOR_LIGHT}};
   --brand-neutral-light-soft: color-mix(in srgb, var(--brand-neutral-light), white 35%);
   --brand-neutral-light-deep: color-mix(in srgb, var(--brand-neutral-light), black 6%);
-
-  /* Dark neutral — alternating slide background, primary text on light */
-  --brand-neutral-dark: {{BRAND_COLOR_DARK}};
   --brand-neutral-dark-soft: color-mix(in srgb, var(--brand-neutral-dark), white 14%);
   --brand-neutral-dark-deep: color-mix(in srgb, var(--brand-neutral-dark), black 18%);
 
@@ -42,18 +53,8 @@
   --rule: rgba(0, 0, 0, 0.10);
   --rule-light: rgba(255, 255, 255, 0.18);
 
-  /* Brand gradient (primary → secondary) */
-  --brand-gradient: {{BRAND_GRADIENT}};
+  /* Vertical variant of the brand gradient */
   --brand-gradient-vertical: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-
-  /* ---------- Type ---------- */
-  /* Display family — used for headlines, hero numbers, body */
-  --font-display: {{BRAND_FONT_PRIMARY}}, system-ui, sans-serif;
-
-  /* Mono family — used for captions, eyebrows, tag labels.
-     Falls back to the brand's secondary font if one was declared,
-     otherwise to the system mono stack. */
-  --font-mono: {{BRAND_FONT_SECONDARY}}, ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
 
   /* ---------- Motion ---------- */
   --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);

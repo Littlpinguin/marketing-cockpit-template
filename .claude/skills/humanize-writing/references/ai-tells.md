@@ -1,6 +1,6 @@
 # AI Writing Tells (EN)
 
-Liste de travail pour les contenus anglais. Pour le français : `01-brand/checklist-pre-composition.md` §2a. Condensé depuis jpeggdev/humanize-writing `references/ai-tells.md` (MIT).
+Liste de travail pour les contenus anglais. Pour le français : `01-brand/checklist-pre-composition.md` §2a. La liste noire qui fait foi pour la marque est `01-brand/anti-ai-writing-style.md` § 3 (vérifiée mécaniquement par `scripts/lint-brand.py`). Condensé depuis jpeggdev/humanize-writing `references/ai-tells.md` (MIT).
 
 ## Vocabulary — Tier 1 (immediate red flags)
 

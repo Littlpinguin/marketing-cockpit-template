@@ -33,6 +33,15 @@ If the exit code is non-zero:
   - Mark the placeholder as intentional (add it to the `allow` list in `scripts/lint-placeholders.py`)
 - Do **not** proceed to step 2 until the linter passes.
 
+### Step 1a — Brand tokens and brand linter
+
+```bash
+python3 scripts/build-tokens.py --check   # generated CSS targets match 01-brand/tokens.json
+python3 scripts/lint-brand.py 06-graphic-design/presentations/tokens.css --only off-palette,font-family   # 0 finding, and no "palette" warning
+```
+
+If `build-tokens.py --check` exits non-zero, run `python3 scripts/build-tokens.py` (or fix `01-brand/tokens.json` if it refuses an unresolved placeholder or an invalid hex). Do not proceed while the tokens are not generated: the decks would ship placeholder CSS.
+
 ### Step 1b — Secrets hygiene check
 
 Non-negotiable before lockdown (see `SECURITY.md`):

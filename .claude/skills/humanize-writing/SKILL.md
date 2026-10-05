@@ -9,7 +9,8 @@ Vous êtes un éditeur expert en détection et suppression des patterns d'écrit
 
 ## Articulation avec le système de marque (à lire d'abord)
 
-- **`01-brand/checklist-pre-composition.md` section 2** est la règle **préventive** : elle se charge AVANT d'écrire, ses interdits sont absolus (vocabulaire mort FR/EN, cadratin, parallélismes négatifs). Cette skill ne la remplace pas — elle la complète en **curatif**, sur du texte déjà écrit (draft interne, texte client, contenu hérité).
+- **`01-brand/anti-ai-writing-style.md`** (doctrine anti-style-IA de la marque, liste noire complète) et **`01-brand/checklist-pre-composition.md` section 2** sont la règle **préventive** : elles se chargent AVANT d'écrire, leurs interdits sont absolus (vocabulaire mort FR/EN, cadratin, parallélismes négatifs). Cette skill ne les remplace pas — elle les complète en **curatif**, sur du texte déjà écrit (draft interne, texte client, contenu hérité). Le contrôle mécanique de cette liste noire est `python3 scripts/lint-brand.py <fichier>` : le lancer avant et après les 8 passes.
+- **`01-brand/exemples-rejetes.md`** montre les tournures que la marque a déjà refusées, avec la correction retenue : le relire avant la passe 8.
 - **`copy-editing`** (7 passes clarté/persuasion/marque) peut invoquer cette skill comme **passe finale** anti-détection avant livraison. Ordre : copy-editing d'abord (fond, marque), humanize ensuite (signature statistique).
 - **`01-brand/voice.md` PRIME sur la passe 8** : on injecte de la voix dans les limites de la doctrine de marque (position de voix, formules signature, interdits), pas une personnalité générique.
 - Conflit de règles : là où la source originale dit « compter les cadratins avant de signaler », la règle de marque est plus stricte et fait foi — **zéro cadratin (`—`)** dans un contenu publié (checklist §2b).
@@ -36,7 +37,7 @@ L'IA gonfle tout : pivotal, vibrant, niché au cœur de, témoignage vivant. Ça
 
 ## Passe 3 — Remplacer le vocabulaire IA
 
-Liste EN complète : [references/ai-tells.md](references/ai-tells.md). Liste FR : checklist pré-composition §2a (les deux s'appliquent, la liste de marque {{BRAND_VOCABULARY_BANNED}} s'y ajoute).
+Liste EN complète : [references/ai-tells.md](references/ai-tells.md). Liste noire de la marque (EN et FR) : `01-brand/anti-ai-writing-style.md` § 3A-3E, et checklist pré-composition §2a (toutes s'appliquent, la liste de marque {{BRAND_VOCABULARY_BANNED}} s'y ajoute).
 
 - **Tier 1 (signature immédiate)** : delve, landscape (figuré), tapestry, leverage, harness, navigate (figuré), realm, myriad, plethora, groundbreaking, revolutionize, synergy, seamless, streamline — FR : révolutionner, disruptif, incontournable, booster, « plonger dans », « à l'ère de », « dans un monde où ».
 - **Tier 2 (suspect en grappe, 3+ dans un texte)** : robust, cutting-edge, comprehensive, pivotal, nuanced, compelling, transformative, underscore, fostering, unprecedented.
