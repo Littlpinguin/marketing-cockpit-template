@@ -6,6 +6,7 @@ then rewrites the three contextual count patterns in README.md:
   - the tagline:      "NN production skills · NN specialist agents"
   - the section head: "**NN skills**, organized by function"
   - the agents head:  "**NN agents** (`.claude/agents/`)"
+  - the shields badges "badge/skills-NN-" and "badge/agents-NN-"
 It also counts the slide layouts of the deck catalogue (one `<section
 class="plate">` per layout in _examples/deck-catalogue/catalogue.html, vendored
 from slides-agent) and their families (distinct `data-family`), and rewrites
@@ -57,6 +58,8 @@ out = re.sub(r"\*\*\d+ skills\*\*, organized by function",
              f"**{skills} skills**, organized by function", out)
 out = re.sub(r"\*\*\d+ agents\*\* \(`\.claude/agents/`\)",
              f"**{agents} agents** (`.claude/agents/`)", out)
+out = re.sub(r"(img\.shields\.io/badge/skills-)\d+(-)", rf"\g<1>{skills}\g<2>", out)
+out = re.sub(r"(img\.shields\.io/badge/agents-)\d+(-)", rf"\g<1>{agents}\g<2>", out)
 
 table_sum = sum(int(n) for n in re.findall(r"\| (\d+) \|", out))
 if table_sum != skills:
