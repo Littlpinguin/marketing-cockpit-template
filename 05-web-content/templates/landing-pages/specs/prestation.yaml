@@ -42,6 +42,8 @@
 #   realisations  Qu'est-ce que ça produit, pour quelqu'un comme moi : huit
 #                 audits en index filtrable par secteur, dossiers à feuilleter
 #                 dans la visionneuse (work-wall, bande sombre)
+#   parole        Qu'en dit un client qui l'a vécu : une phrase en respiration
+#                 sur fond clair, une annotation à main levée (quote-interlude)
 #   equipe        Qui fait le travail : les deux personnes de la mission
 #   pour-qui      Est-ce pour moi : qualifie avant le prix
 #   perimetre     Lequel des trois périmètres : trois questions au plus, puis le
@@ -53,7 +55,8 @@
 # Les cas avant / après (cases) ne sont plus sur la page : les deux sites
 # étaient déjà les deux premiers audits du mur, contre-audit compris. Pour
 # une offre avec peu de réalisations, remettre cases (dark: true) à la place
-# du mur.
+# du mur. La voix du client passe par la citation en respiration (parole),
+# juste après le mur : fond clair, pour ne jamais coller deux bandes sombres.
 # Les colonnes de for-whom s'appellent fit et not_fit : en YAML 1.1, les clés
 # yes et no nues se lisent comme des booléens (l'assembleur refuse alors la
 # spec ; les cellules yes / no du tableau comparatif s'écrivent entre
@@ -370,6 +373,16 @@ sections:
           alt: ''
           caption: L’exemple de correction joint au ticket principal.
           html: <div class="obj s-work__page" aria-hidden="true"><div class="obj-head"><span class="obj-mark"></span><b>Correction proposée</b><span class="obj-push">p. 2 sur 2</span></div><div class="obj-rule"></div><p class="obj-small">Annonce du nombre de résultats</p><p class="obj-small"><span class="obj-highlight">&lt;p role="status"&gt;24 livres&lt;/p&gt;</span></p></div>
+
+  - use: quote-interlude
+    id: parole
+    slots:
+      title: "Ce qu’en dit une cliente"
+      quote: 'Samir, leur testeur, a buté sur notre bouton de paiement en <mark data-annotate="underline">quatre minutes</mark>, alors que nos développeurs l’avaient sous les yeux depuis deux ans.'
+      name: "Nathalie G."
+      role: "Directrice e‑commerce, boutique d’ustensiles de cuisine (avis fictif)"
+      context: "Après le contre‑audit de 2026"
+      dark: false
 
   - use: people
     id: equipe

@@ -283,22 +283,56 @@
 
 .s-offer__deadline {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  gap: 4px 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
+  line-height: 1.4;
 }
 
-.s-offer__deadline::before {
+/* Deadline line, centred: the line shrinks to its text, so the deadline and
+   its detail grow only once the detail has wrapped to a line of its own;
+   each then fills its line and centres its text. The separator sits in the
+   gap before the detail, inside it: on a line of its own the detail starts
+   at the left edge and the separator is clipped with it. Never a dot alone
+   at a line end or start, whatever the width or the text. */
+.s-offer__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  padding-inline: 4px;
+  overflow: hidden;
+}
+
+.s-offer__date,
+.s-offer__detail {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.s-offer__date::before {
   content: "";
+  display: inline-block;
   width: 8px;
   height: 8px;
+  margin-inline-end: 10px;
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+  vertical-align: middle;
+}
+
+.s-offer__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-offer__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-offer__stub {
@@ -450,7 +484,7 @@
         <div class="s-offer__action">
           <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre"{{#primary}} data-cta="primaire"{{/primary}} data-offer-text-waitlist="{{cta_waitlist}}" data-offer-text-closed="{{cta_closed}}" data-offer-disabled-closed>{{cta_label}}</button>
           {{#cta_notify}}<a class="btn btn--secondary btn--block s-offer__notify" href="{{notify_href}}" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>{{cta_notify}}</a>{{/cta_notify}}
-          <p class="s-offer__deadline"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}}<span aria-hidden="true">·</span><span>{{seats}}</span>{{/seats}}</p>
+          <p class="s-offer__deadline"><span class="s-offer__when"><span class="s-offer__date"{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}} <span class="s-offer__detail"><span class="s-offer__sep" aria-hidden="true">·</span>{{seats}}</span>{{/seats}}</span></p>
         </div>
       </div>
       <div class="s-offer__stub">

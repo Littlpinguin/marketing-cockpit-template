@@ -58,8 +58,7 @@
    and viewer_open through the measurement relay (tracking.js) when loaded.
    API: window.landingViewer.open(trigger), window.landingViewer.close().
    Without JavaScript, or without <dialog>: nothing is intercepted, links go
-   to their media. Principle of the paged viewer: jessem.fr proof viewer,
-   rewritten on <dialog>.
+   to their media. Principle: a paged proof viewer, rewritten on <dialog>.
    ========================================================================== */
 (function () {
   'use strict';

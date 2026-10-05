@@ -9,13 +9,14 @@
   "slots": {
     "title": {"type": "html", "doc": "h2, l’objet de la lettre, sans virgule ni point. Segment accentué en <span class=\"hl\">…</span>, coupure décidée en <br>.", "example": "Pourquoi le bilan se fait<br><span class=\"hl\">dans vos fichiers</span>"},
     "salutation": {"type": "text", "doc": "Formule d’appel, en petites capitales. Vide : rien.", "example": "Chère dirigeante, cher dirigeant,"},
-    "paragraphs": {"type": "list", "doc": "4 à 6 paragraphes de deux à quatre phrases. Le premier porte la lettrine. ink : true sur UN paragraphe clé (pas le premier), dont les mots s’encrent au défilement là où le navigateur sait le faire (animation-timeline: view()) ; ailleurs il reste simple. pull : citation détachée affichée après ce paragraphe, reprise mot pour mot du texte (masquée aux lecteurs d’écran, qui l’ont déjà lue) ; vide : rien.", "fields": {"text": "le paragraphe", "ink": "true sur un paragraphe clé, sinon false", "pull": "phrase reprise du texte, ou vide"}, "example": [
+    "paragraphs": {"type": "list", "doc": "4 à 6 paragraphes de deux à quatre phrases. Le premier porte la lettrine. text : HTML de phrase (<em>, <strong>, note en marge), écrit tel quel dans la page : & et < s’écrivent &amp; et &lt;. Note en marge : <span class=\"note\"><span class=\"note__body\" role=\"note\">Source…</span></span> juste après la ponctuation qu’elle documente, une par paragraphe au plus, jamais dans deux paragraphes qui se suivent (dans la marge, deux notes proches se chevaucheraient), jamais dans le paragraphe encré ; une ou deux phrases courtes. ink : true sur UN paragraphe clé (pas le premier), en texte simple, dont les mots s’encrent au défilement là où le navigateur sait le faire (animation-timeline: view()) ; ailleurs, ou s’il porte une balise, il reste simple. pull : citation détachée affichée après ce paragraphe, reprise mot pour mot du texte (masquée aux lecteurs d’écran, qui l’ont déjà lue) ; vide : rien.", "fields": {"text": "le paragraphe, en HTML de phrase (<em>, <strong>, note en marge)", "ink": "true sur un paragraphe clé, sinon false", "pull": "phrase reprise du texte, ou vide"}, "example": [
       {"text": "La première fois qu’un client m’a demandé son bilan carbone, j’ai fait comme la plupart des bureaux d’études : trois semaines de collecte chez lui, puis un rapport de quarante pages. Six mois plus tard, personne dans l’entreprise ne savait le refaire.", "ink": false, "pull": ""},
       {"text": "Les chiffres tenaient. Seulement, ils vivaient dans nos tableurs, avec nos hypothèses, et le jour où un grand client a envoyé son questionnaire fournisseur, il a fallu nous rappeler pour y répondre.", "ink": false, "pull": ""},
       {"text": "Depuis, je travaille dans l’autre sens. Vos factures et vos achats restent chez vous, et c’est vous qui faites le calcul, atelier après atelier. Je relis chaque étape et je vous montre où chercher.", "ink": true, "pull": "C’est vous qui faites le calcul, atelier après atelier"},
       {"text": "La première semaine va moins vite. Au bout de la sixième, vous avez un bilan que vous savez défendre devant un client, et la méthode pour le refaire l’an prochain en deux jours.", "ink": false, "pull": ""},
       {"text": "Nous prenons douze entreprises par cohorte, pour que je puisse lire chaque fichier. Si la vôtre n’est pas prête ce printemps, dites-le-moi : je préfère vous accueillir à la cohorte suivante.", "ink": false, "pull": ""}
     ]},
+    "notes": {"type": "bool", "doc": "Facultatif, faux par défaut. Vrai : dès 1281 px, les notes en marge écrites dans les paragraphes (<span class=\"note\">…) sortent dans la marge droite de la feuille, qui se resserre pour leur faire place ; ailleurs, elles s’ouvrent sous leur ligne. Faux : les notes s’ouvrent toujours sous leur ligne.", "example": false, "default": false},
     "closing": {"type": "text", "doc": "Formule de politesse, une ligne. Vide : rien.", "example": "Bien à vous,"},
     "name": {"type": "text", "doc": "Nom de la personne qui signe (en marge et sous la signature).", "example": "Nadia Ferrand"},
     "role": {"type": "text", "doc": "Sa fonction dans l’offre, en marge.", "example": "Ingénieure énergie, animatrice des ateliers"},
@@ -350,11 +351,42 @@
   .s-letter__sheet {
     grid-area: sheet;
   }
+
+}
+
+@media (min-width: 1281px) {
+  /* Margin notes (slot notes): the sheet narrows and leaves the right
+     margin to the notes. The sheet (position: relative) is the containing
+     block: each note leaves it on the right, without a float that would
+     push the text aside. Declared inline, its static position stays on the
+     line of its call (a block would drop to the next line). One note per
+     paragraph at most, never in two paragraphs in a row: two notes close
+     to each other would overlap (no clear for absolute boxes). From 1281 px
+     only, with narrower notes (16rem), so the letter keeps a readable
+     measure; below, notes open under their line. */
+  .s-letter__grid.s-letter__grid--notes {
+    --note-w: 16rem;
+    grid-template-columns: minmax(0, 12rem) minmax(0, 46rem);
+    justify-content: start;
+    padding-inline-end: calc(var(--note-w) + var(--note-gap));
+    column-gap: clamp(32px, 1rem + 2vw, 56px);
+  }
+
+  .s-letter__grid--notes .note__body {
+    display: inline;
+    position: absolute;
+    left: calc(100% + var(--note-gap));
+    width: var(--note-w);
+    margin: 0;
+    font-family: var(--font-body, var(--font-display));
+    font-size: var(--t-body);
+    line-height: 1.5;
+  }
 }
 </style>
 <!-- section:{{id}} -->
 <section id="{{id}}" class="s-letter section" aria-labelledby="{{id}}-titre" data-section="letter">
-  <div class="wrap s-letter__grid">
+  <div class="wrap s-letter__grid{{#notes}} s-letter__grid--notes{{/notes}}">
     <div class="section-head s-letter__head">
       <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
     </div>
@@ -367,7 +399,7 @@
     <article class="s-letter__sheet" data-reveal>
       <div class="s-letter__text">
         {{#salutation}}<p class="s-letter__salute">{{salutation}}</p>{{/salutation}}
-        {{#paragraphs}}<p class="s-letter__p{{#@first}} s-letter__p--lead{{/@first}}"{{#ink}} data-ink{{/ink}}>{{text}}</p>
+        {{#paragraphs}}<p class="s-letter__p{{#@first}} s-letter__p--lead{{/@first}}"{{#ink}} data-ink{{/ink}}>{{{text}}}</p>
         {{#pull}}<figure class="s-letter__pull" aria-hidden="true"><p>{{pull}}</p></figure>{{/pull}}
         {{/paragraphs}}<div class="s-letter__sign">
           {{#closing}}<p class="s-letter__closing">{{closing}}</p>{{/closing}}
@@ -390,6 +422,9 @@
   var driven = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
   if (!motion || !driven) return;
   document.querySelectorAll('.s-letter__p[data-ink]').forEach(function (p) {
+    // A paragraph that carries markup (emphasis, margin note) is left plain:
+    // splitting its text would drop the markup.
+    if (p.children.length) return;
     var text = (p.textContent || '').trim();
     var words = text.split(/[ \t\n\r]+/);
     if (words.length < 2) return;

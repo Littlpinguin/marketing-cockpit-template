@@ -239,25 +239,56 @@
 
 .s-evreg__deadline {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  gap: 2px 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
   line-height: 1.4;
+}
+
+/* Deadline line, centred: the line shrinks to its text, so the deadline and
+   its detail grow only once the detail has wrapped to a line of its own;
+   each then fills its line and centres its text. The separator sits in the
+   gap before the detail, inside it: on a line of its own the detail starts
+   at the left edge and the separator is clipped with it. Never a dot alone
+   at a line end or start, whatever the width or the text. */
+.s-evreg__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  padding-inline: 4px;
+  overflow: hidden;
+}
+
+.s-evreg__date,
+.s-evreg__detail {
+  flex: 1 1 auto;
   text-align: center;
 }
 
-.s-evreg__deadline::before {
+.s-evreg__date::before {
   content: "";
-  flex: none;
+  display: inline-block;
   width: 8px;
   height: 8px;
+  margin-inline-end: 10px;
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+  vertical-align: middle;
+}
+
+.s-evreg__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-evreg__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-evreg__closed {
@@ -345,7 +376,7 @@
             </div>{{/labels.question}}
             {{#optin}}<div class="consent"><input type="checkbox" id="{{id}}-optin" name="{{name}}" value="oui" data-optin><label for="{{id}}-optin">{{label}}</label></div>{{/optin}}
             <button type="submit" class="btn btn--block s-evreg__cta {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" data-cta-position="{{position}}"{{#primary}} data-cta="primaire"{{/primary}} data-offer-text-closed="{{cta_closed}}" data-offer-disabled-closed>{{cta_label}}</button>
-            <p class="s-evreg__deadline"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}}<span aria-hidden="true">·</span><span>{{seats}}</span>{{/seats}}</p>
+            <p class="s-evreg__deadline"><span class="s-evreg__when"><span class="s-evreg__date"{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}} <span class="s-evreg__detail"><span class="s-evreg__sep" aria-hidden="true">·</span>{{seats}}</span>{{/seats}}</span></p>
           </div>
           <p class="s-evreg__closed" data-offer-show="closed" hidden>{{{closed_text}}}</p>
           <p class="s-evreg__privacy">{{{privacy}}}</p>

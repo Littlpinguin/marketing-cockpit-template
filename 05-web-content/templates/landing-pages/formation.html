@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Répondre aux marchés publics en cinq ateliers">
 <meta property="og:description" content="Cinq mardis matin en visio, huit entreprises par cohorte, votre mémoire relu avant le dépôt.">
-<meta name="generator" content="assemble-landing.py · sha256:810b385ebda6fd016bea197cb4987edcc93675f52857e49a9cd2b0c448623059">
+<meta name="generator" content="assemble-landing.py · sha256:0ef4b5996314309e9ff640bf8435ab0a65950a364808a84807fe004f5e24c7b3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1589,11 +1589,16 @@ mark:where([data-annotate]) {
   margin-top: clamp(28px, 1.4rem + 1.4vw, 40px);
 }
 
+/* Deadline line: a status dot, then the deadline and its detail. The
+   separator sits in the gap before the detail, inside it: when the detail
+   starts a line of its own, the separator is clipped with the edge, so it
+   never ends or starts a line. A wrapped detail lines up with the deadline
+   text, after the dot. */
 .s-hero__deadline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
@@ -1602,12 +1607,32 @@ mark:where([data-annotate]) {
 
 .s-hero__deadline::before {
   content: "";
-  flex: none;
   width: 8px;
   height: 8px;
+  margin-top: calc(0.7em - 4px);
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-hero__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  overflow: hidden;
+}
+
+.s-hero__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-hero__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-hero__visual {
@@ -2293,6 +2318,37 @@ mark:where([data-annotate]) {
 
   .s-letter__sheet {
     grid-area: sheet;
+  }
+
+}
+
+@media (min-width: 1281px) {
+  /* Margin notes (slot notes): the sheet narrows and leaves the right
+     margin to the notes. The sheet (position: relative) is the containing
+     block: each note leaves it on the right, without a float that would
+     push the text aside. Declared inline, its static position stays on the
+     line of its call (a block would drop to the next line). One note per
+     paragraph at most, never in two paragraphs in a row: two notes close
+     to each other would overlap (no clear for absolute boxes). From 1281 px
+     only, with narrower notes (16rem), so the letter keeps a readable
+     measure; below, notes open under their line. */
+  .s-letter__grid.s-letter__grid--notes {
+    --note-w: 16rem;
+    grid-template-columns: minmax(0, 12rem) minmax(0, 46rem);
+    justify-content: start;
+    padding-inline-end: calc(var(--note-w) + var(--note-gap));
+    column-gap: clamp(32px, 1rem + 2vw, 56px);
+  }
+
+  .s-letter__grid--notes .note__body {
+    display: inline;
+    position: absolute;
+    left: calc(100% + var(--note-gap));
+    width: var(--note-w);
+    margin: 0;
+    font-family: var(--font-body, var(--font-display));
+    font-size: var(--t-body);
+    line-height: 1.5;
   }
 }
 /* ---- section : program ---- */
@@ -3161,22 +3217,56 @@ mark:where([data-annotate]) {
 
 .s-offer__deadline {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  gap: 4px 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
+  line-height: 1.4;
 }
 
-.s-offer__deadline::before {
+/* Deadline line, centred: the line shrinks to its text, so the deadline and
+   its detail grow only once the detail has wrapped to a line of its own;
+   each then fills its line and centres its text. The separator sits in the
+   gap before the detail, inside it: on a line of its own the detail starts
+   at the left edge and the separator is clipped with it. Never a dot alone
+   at a line end or start, whatever the width or the text. */
+.s-offer__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  padding-inline: 4px;
+  overflow: hidden;
+}
+
+.s-offer__date,
+.s-offer__detail {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.s-offer__date::before {
   content: "";
+  display: inline-block;
   width: 8px;
   height: 8px;
+  margin-inline-end: 10px;
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+  vertical-align: middle;
+}
+
+.s-offer__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-offer__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-offer__stub {
@@ -3681,7 +3771,7 @@ mark:where([data-annotate]) {
       <p class="s-hero__lede lede">Cinq matinées en petit groupe pour préparer une vraie offre publique, avec votre mémoire technique relu avant l’envoi.</p>
       <div class="s-hero__actions">
         <a class="btn btn--primary" href="#offre" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Réserver ma place<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 26 mars 2027</span><span aria-hidden="true">·</span><span>8 entreprises par cohorte</span></p>
+        <p class="s-hero__deadline"><span class="s-hero__when"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 26 mars 2027</span> <span class="s-hero__detail"><span class="s-hero__sep" aria-hidden="true">·</span>8 entreprises par cohorte</span></span></p>
       </div>
     </div>
     <div class="s-hero__visual" data-reveal="right">
@@ -4024,7 +4114,7 @@ mark:where([data-annotate]) {
         <div class="s-offer__action">
           <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre" data-cta="primaire" data-offer-text-waitlist="Rejoindre la liste d’attente" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>Réserver ma place</button>
           <a class="btn btn--secondary btn--block s-offer__notify" href="{{URL_LISTE_ATTENTE}}" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>Être prévenu de la prochaine cohorte</a>
-          <p class="s-offer__deadline"><span data-offer-countdown data-many="Clôture dans {n} jours" data-one="Clôture demain" data-zero="Clôture ce soir">Clôture le 26 mars 2027</span><span aria-hidden="true">·</span><span>8 entreprises par cohorte</span></p>
+          <p class="s-offer__deadline"><span class="s-offer__when"><span class="s-offer__date" data-offer-countdown data-many="Clôture dans {n} jours" data-one="Clôture demain" data-zero="Clôture ce soir">Clôture le 26 mars 2027</span> <span class="s-offer__detail"><span class="s-offer__sep" aria-hidden="true">·</span>8 entreprises par cohorte</span></span></p>
         </div>
       </div>
       <div class="s-offer__stub">
@@ -5252,6 +5342,9 @@ mark:where([data-annotate]) {
   var driven = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
   if (!motion || !driven) return;
   document.querySelectorAll('.s-letter__p[data-ink]').forEach(function (p) {
+    // A paragraph that carries markup (emphasis, margin note) is left plain:
+    // splitting its text would drop the markup.
+    if (p.children.length) return;
     var text = (p.textContent || '').trim();
     var words = text.split(/[ \t\n\r]+/);
     if (words.length < 2) return;

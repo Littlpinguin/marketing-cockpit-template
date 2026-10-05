@@ -640,8 +640,8 @@ html[data-offer-state="closed"] .s-receipt__switch {
         articles.value = isPack ? '' : ids.join(',');
       }
       form.setAttribute('data-track-item-ids', isPack ? packValue : ids.join(','));
-      // GA4 items, as JSON: read by tracking.js once it learns data-checkout-items
-      // (patch described with the fragment); item_ids is sent today.
+      // GA4 items, as JSON: tracking.js reads data-checkout-items into the
+      // items array of begin_checkout (the articles ticked, or the pack).
       form.setAttribute('data-checkout-items', JSON.stringify(isPack
         ? [{ item_id: packValue, item_name: pack ? pack.querySelector('.s-receipt__pack-head span').textContent : '', price: packPrice, quantity: 1 }]
         : sel.map(function (c) { return { item_id: c.value, item_name: c.getAttribute('data-name') || '', price: price(c), quantity: 1 }; })));

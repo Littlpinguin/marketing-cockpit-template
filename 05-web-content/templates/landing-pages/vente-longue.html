@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Un potager qui donne de mai à octobre">
 <meta property="og:description" content="Le plan de votre carré dessiné pour vous et une lettre chaque lundi pour savoir quoi faire au jardin.">
-<meta name="generator" content="assemble-landing.py · sha256:0ea18a2e40bfc537ab9fc8204f29a1c8c2adfafa5ef240becb63f4ffa20d7ef1">
+<meta name="generator" content="assemble-landing.py · sha256:222e807f305de5d0fb88f38e37810bf07cb94117a7f4d4cb01625ab6da946bb5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1588,11 +1588,16 @@ mark:where([data-annotate]) {
   margin-top: clamp(28px, 1.4rem + 1.4vw, 40px);
 }
 
+/* Deadline line: a status dot, then the deadline and its detail. The
+   separator sits in the gap before the detail, inside it: when the detail
+   starts a line of its own, the separator is clipped with the edge, so it
+   never ends or starts a line. A wrapped detail lines up with the deadline
+   text, after the dot. */
 .s-hero__deadline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
@@ -1601,12 +1606,32 @@ mark:where([data-annotate]) {
 
 .s-hero__deadline::before {
   content: "";
-  flex: none;
   width: 8px;
   height: 8px;
+  margin-top: calc(0.7em - 4px);
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-hero__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  overflow: hidden;
+}
+
+.s-hero__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-hero__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-hero__visual {
@@ -4296,7 +4321,7 @@ html[data-offer-state="closed"] .s-receipt__switch {
       <p class="s-hero__lede lede">Le plan de votre carré dessiné pour vous, puis une lettre chaque lundi de février à septembre pour savoir quoi faire au jardin.</p>
       <div class="s-hero__actions">
         <a class="btn btn--primary" href="#offre" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Réserver ma saison<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 10 février 2027</span><span aria-hidden="true">·</span><span>300 plans par saison</span></p>
+        <p class="s-hero__deadline"><span class="s-hero__when"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 10 février 2027</span> <span class="s-hero__detail"><span class="s-hero__sep" aria-hidden="true">·</span>300 plans par saison</span></span></p>
       </div>
     </div>
     <div class="s-hero__visual" data-reveal="right">
@@ -5304,8 +5329,7 @@ html[data-offer-state="closed"] .s-receipt__switch {
    and viewer_open through the measurement relay (tracking.js) when loaded.
    API: window.landingViewer.open(trigger), window.landingViewer.close().
    Without JavaScript, or without <dialog>: nothing is intercepted, links go
-   to their media. Principle of the paged viewer: jessem.fr proof viewer,
-   rewritten on <dialog>.
+   to their media. Principle: a paged proof viewer, rewritten on <dialog>.
    ========================================================================== */
 (function () {
   'use strict';
@@ -6549,8 +6573,8 @@ html[data-offer-state="closed"] .s-receipt__switch {
         articles.value = isPack ? '' : ids.join(',');
       }
       form.setAttribute('data-track-item-ids', isPack ? packValue : ids.join(','));
-      // GA4 items, as JSON: read by tracking.js once it learns data-checkout-items
-      // (patch described with the fragment); item_ids is sent today.
+      // GA4 items, as JSON: tracking.js reads data-checkout-items into the
+      // items array of begin_checkout (the articles ticked, or the pack).
       form.setAttribute('data-checkout-items', JSON.stringify(isPack
         ? [{ item_id: packValue, item_name: pack ? pack.querySelector('.s-receipt__pack-head span').textContent : '', price: packPrice, quantity: 1 }]
         : sel.map(function (c) { return { item_id: c.value, item_name: c.getAttribute('data-name') || '', price: price(c), quantity: 1 }; })));

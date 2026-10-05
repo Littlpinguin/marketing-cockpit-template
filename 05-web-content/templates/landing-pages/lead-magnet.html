@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Le kit de relance des factures impayées">
 <meta property="og:description" content="Six modèles d’emails, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.">
-<meta name="generator" content="assemble-landing.py · sha256:a5d5e488383a8aa4ccdb574fcbec2294f33a1596f5783d3a73bda836efed9de0">
+<meta name="generator" content="assemble-landing.py · sha256:24f47dcb41c5aa2127f0b2f831389523833885eb2e26c9bcd16d5a6a7aa02d8b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1588,11 +1588,16 @@ mark:where([data-annotate]) {
   margin-top: clamp(28px, 1.4rem + 1.4vw, 40px);
 }
 
+/* Deadline line: a status dot, then the deadline and its detail. The
+   separator sits in the gap before the detail, inside it: when the detail
+   starts a line of its own, the separator is clipped with the edge, so it
+   never ends or starts a line. A wrapped detail lines up with the deadline
+   text, after the dot. */
 .s-hero__deadline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
@@ -1601,12 +1606,32 @@ mark:where([data-annotate]) {
 
 .s-hero__deadline::before {
   content: "";
-  flex: none;
   width: 8px;
   height: 8px;
+  margin-top: calc(0.7em - 4px);
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-hero__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  overflow: hidden;
+}
+
+.s-hero__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-hero__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-hero__visual {
@@ -2479,7 +2504,7 @@ mark:where([data-annotate]) {
       <p class="s-hero__lede lede">Le kit de relance des indépendants : six modèles prêts à copier, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer.</p>
       <div class="s-hero__actions">
         <a class="btn btn--primary" href="#recevoir" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Recevoir le kit<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-        <p class="s-hero__deadline"><span>Gratuit, par email</span><span aria-hidden="true">·</span><span>14 pages</span></p>
+        <p class="s-hero__deadline"><span class="s-hero__when"><span>Gratuit, par email</span> <span class="s-hero__detail"><span class="s-hero__sep" aria-hidden="true">·</span>14 pages</span></span></p>
       </div>
     </div>
     <div class="s-hero__visual" data-reveal="right">

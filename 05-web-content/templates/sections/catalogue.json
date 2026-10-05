@@ -41,7 +41,16 @@
       "intro": "Réglez trois valeurs sur vos questionnaires actuels. Le détail du calcul et la source de chaque hypothèse sont sous le résultat."
     }},
     {"use": "people", "id": "animateurs"},
-    {"use": "letter", "id": "lettre"},
+    {"use": "letter", "id": "lettre", "slots": {
+      "notes": true,
+      "paragraphs": [
+        {"text": "La première fois qu’un client m’a demandé son bilan carbone, j’ai fait comme la plupart des bureaux d’études : trois semaines de collecte chez lui, puis un rapport de quarante pages. Six mois plus tard, personne dans l’entreprise ne savait le refaire.", "ink": false, "pull": ""},
+        {"text": "Les chiffres tenaient. Seulement, ils vivaient dans nos tableurs, avec nos hypothèses, et le jour où un grand client a envoyé son questionnaire fournisseur, il a fallu nous rappeler pour y répondre.", "ink": false, "pull": ""},
+        {"text": "Depuis, je travaille dans l’autre sens. Vos factures et vos achats restent chez vous, et c’est vous qui faites le calcul, atelier après atelier. Je relis chaque étape et je vous montre où chercher.", "ink": true, "pull": "C’est vous qui faites le calcul, atelier après atelier"},
+        {"text": "La première semaine va moins vite. Au bout de la sixième, vous avez un bilan que vous savez défendre devant un client, et la méthode pour le refaire l’an prochain en deux jours.<span class=\"note\"><span class=\"note__body\" role=\"note\">Durée médiane du second bilan, cohortes 2025 et 2026 (source fictive, pour la démonstration).</span></span>", "ink": false, "pull": ""},
+        {"text": "Nous prenons douze entreprises par cohorte, pour que je puisse lire chaque fichier. Si la vôtre n’est pas prête ce printemps, dites-le-moi : je préfère vous accueillir à la cohorte suivante.", "ink": false, "pull": ""}
+      ]
+    }},
     {"use": "testimonials", "id": "avis"},
     {"use": "wall", "id": "mur-avis"},
     {"use": "cases", "id": "cas"},

@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="La matinale flotte électrique, le 3 juin 2027">
 <meta property="og:description" content="À Bordeaux et en direct, gratuit, replay sous 48 heures pour tous les inscrits.">
-<meta name="generator" content="assemble-landing.py · sha256:9c4158bb568ca7ce36bf066d7b24448c15e2a8c9b9badd99d2da725440a4f4dd">
+<meta name="generator" content="assemble-landing.py · sha256:8e6a84d26411ccba4b7578e51333121e75673d26d2f76c027e73ffbc89c89963">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
@@ -1628,11 +1628,16 @@ mark:where([data-annotate]) {
   gap: 12px 28px;
 }
 
+/* Deadline line: a status dot, then the deadline and its detail. The
+   separator sits in the gap before the detail, inside it: when the detail
+   starts a line of its own, the separator is clipped with the edge, so it
+   never ends or starts a line. A wrapped detail lines up with the deadline
+   text, after the dot. */
 .s-hedit__deadline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
@@ -1641,12 +1646,32 @@ mark:where([data-annotate]) {
 
 .s-hedit__deadline::before {
   content: "";
-  flex: none;
   width: 8px;
   height: 8px;
+  margin-top: calc(0.7em - 4px);
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-hedit__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  overflow: hidden;
+}
+
+.s-hedit__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-hedit__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-hedit__proof {
@@ -2598,25 +2623,56 @@ mark:where([data-annotate]) {
 
 .s-evreg__deadline {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  gap: 2px 10px;
   color: var(--muted);
   font-size: var(--t-small);
   font-weight: 500;
   line-height: 1.4;
+}
+
+/* Deadline line, centred: the line shrinks to its text, so the deadline and
+   its detail grow only once the detail has wrapped to a line of its own;
+   each then fills its line and centres its text. The separator sits in the
+   gap before the detail, inside it: on a line of its own the detail starts
+   at the left edge and the separator is clipped with it. Never a dot alone
+   at a line end or start, whatever the width or the text. */
+.s-evreg__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  padding-inline: 4px;
+  overflow: hidden;
+}
+
+.s-evreg__date,
+.s-evreg__detail {
+  flex: 1 1 auto;
   text-align: center;
 }
 
-.s-evreg__deadline::before {
+.s-evreg__date::before {
   content: "";
-  flex: none;
+  display: inline-block;
   width: 8px;
   height: 8px;
+  margin-inline-end: 10px;
   border-radius: 50%;
   background: var(--brand-accent);
   box-shadow: 0 0 0 4px var(--tint-accent);
+  vertical-align: middle;
+}
+
+.s-evreg__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-evreg__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
 }
 
 .s-evreg__closed {
@@ -3042,7 +3098,7 @@ mark:where([data-annotate]) {
         <a class="btn btn--primary" href="#inscription" data-track="cta_click" data-cta-position="hero" data-cta="primaire">M’inscrire<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
         
       </div>
-      <p class="s-hedit__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au mercredi 2 juin 2027</span><span aria-hidden="true">·</span><span>120 places sur place</span></p>
+      <p class="s-hedit__deadline"><span class="s-hedit__when"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au mercredi 2 juin 2027</span> <span class="s-hedit__detail"><span class="s-hedit__sep" aria-hidden="true">·</span>120 places sur place</span></span></p>
       
     </div>
     <dl class="s-hedit__facts">
@@ -3348,7 +3404,7 @@ mark:where([data-annotate]) {
             </div>
             <div class="consent"><input type="checkbox" id="inscription-optin" name="prochaines" value="oui" data-optin><label for="inscription-optin">Me prévenir de la prochaine matinale</label></div>
             <button type="submit" class="btn btn--block s-evreg__cta btn--primary" data-cta-position="inscription" data-cta="primaire" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>M’inscrire</button>
-            <p class="s-evreg__deadline"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au mercredi 2 juin</span><span aria-hidden="true">·</span><span>120 places sur place</span></p>
+            <p class="s-evreg__deadline"><span class="s-evreg__when"><span class="s-evreg__date" data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au mercredi 2 juin</span> <span class="s-evreg__detail"><span class="s-evreg__sep" aria-hidden="true">·</span>120 places sur place</span></span></p>
           </div>
           <p class="s-evreg__closed" data-offer-show="closed" hidden>Les inscriptions sont closes. Écrivez à <a href="mailto:matinale@example.com">matinale@example.com</a> pour recevoir le replay.</p>
           <p class="s-evreg__privacy">Vos données servent à organiser la matinale et à vous envoyer le replay. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Confidentialité<span class="sr-only"> (nouvel onglet)</span></a></p>

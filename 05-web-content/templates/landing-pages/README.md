@@ -52,9 +52,9 @@ Les sections sont données dans l'ordre de la page, sous la forme `fragment #id`
 
 ### prestation
 
-- **Sections** : topbar, hero-image-title, problem-evidence #probleme, program #methode, work-wall #realisations (bande sombre), people #equipe, for-whom #pour-qui, recommender #perimetre, pricing-table #tarifs, form #devis, faq #questions, final-cta #final, footer #pied, sticky-bar #barre-mobile.
+- **Sections** : topbar, hero-image-title, problem-evidence #probleme, program #methode, work-wall #realisations (bande sombre), quote-interlude #parole, people #equipe, for-whom #pour-qui, recommender #perimetre, pricing-table #tarifs, form #devis, faq #questions, final-cta #final, footer #pied, sticky-bar #barre-mobile.
 - **À brancher** : `{{FORM_ENDPOINT}}`, `{{URL_MENTIONS_LEGALES}}`, `{{URL_CONFIDENTIALITE}}`, l'adresse de contact.
-- **Mécaniques** : hero dont le titre porte une pastille, ici la voix d'un lecteur d'écran ; problème en pièces à conviction, titre collant et tampon de verdict, avec une note en marge qui cite la référence légale de la déclaration d'accessibilité ; mur de huit réalisations en index filtrable par secteur, dossiers à feuilleter dans la visionneuse ; recommandeur en trois questions au plus, puis grille de trois périmètres avec prix « dès » ; aucune section épinglée.
+- **Mécaniques** : hero dont le titre porte une pastille, ici la voix d'un lecteur d'écran ; problème en pièces à conviction, titre collant et tampon de verdict, avec une note en marge qui cite la référence légale de la déclaration d'accessibilité ; mur de huit réalisations en index filtrable par secteur, dossiers à feuilleter dans la visionneuse ; citation d’une cliente en respiration, sur fond clair, juste après le mur ; recommandeur en trois questions au plus, puis grille de trois périmètres avec prix « dès » ; aucune section épinglée.
 
 ### evenement
 
