@@ -157,7 +157,7 @@ La régénération ne touche que les `CLAUDE.md` de rôle — jamais les fichier
 
 > Je régénère les CLAUDE.md de rôle. Revue fichier par fichier, ou en bloc ? (revue / bloc / annuler)
 
-Les `CLAUDE.md` des **modules** (08, 10, 11, 12) ne sont pas régénérés ici — ils sont gérés par `/modules`.
+Les `CLAUDE.md` des **modules** (08, 10, 11, 12, 14) ne sont pas régénérés ici — ils sont gérés par `/modules`.
 
 ### Étape 6 — Mettre à jour le tableau d'état du README
 
@@ -178,7 +178,7 @@ L'écriture réelle du fichier se fait dans `/validate-setup`.
 > Outils configurés. Vos CLAUDE.md de rôle référencent vos vrais outils et `.env.example` ne liste que les clés utiles.
 >
 > Suite :
->   - `/modules` pour activer les modules optionnels (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client)
+>   - `/modules` pour activer les modules optionnels (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print)
 >   - `/validate-setup` pour valider et verrouiller le setup
 >
 > Vous pouvez relancer `/tools-setup` à tout moment pour changer d'outils.

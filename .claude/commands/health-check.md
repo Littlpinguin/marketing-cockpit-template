@@ -60,12 +60,13 @@ Pour chaque module `enabled: true` dans `.setup-completed.modules` :
 | `veille` | `00-intel/` présent avec ses sous-dossiers |
 | `publication-sociale` | `POSTIZ_API_KEY` set + API joignable |
 | `espace-client` | `FTP_*` sets + listing FTP OK |
+| `print` | Chrome/Chromium détecté, `gs --version` ≥ 10, `python3 -c "import fitz, PIL, numpy"` OK, au moins un `.icc` dans `14-print/icc/` |
 
 Un module actif dont un prérequis a disparu = 🟠 avec suggestion (`/modules` pour re-vérifier ou désactiver).
 
 ### 6. Présence des `CLAUDE.md`
 
-- Vérifier qu'un `CLAUDE.md` existe : à la racine, dans chaque dossier du cœur (`01-brand` → `07-events`, `09-seo`, `02-strategy/calendar`, `00-intel`) et dans chaque dossier de module **actif** (`08-video`, `10-automatisations`, `11-reporting`, `12-acquisition`).
+- Vérifier qu'un `CLAUDE.md` existe : à la racine, dans chaque dossier du cœur (`01-brand` → `07-events`, `09-seo`, `02-strategy/calendar`, `00-intel`) et dans chaque dossier de module **actif** (`08-video`, `10-automatisations`, `11-reporting`, `12-acquisition`, `14-print`).
 - Un `CLAUDE.md` manquant = 🔴 (le rôle opérera sans doctrine).
 
 ### 7. `00-intel/inbox/` non traité

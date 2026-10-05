@@ -1,0 +1,13 @@
+%!
+% Intention de sortie PDF/X-4 pour Ghostscript. Profil, condition et titre substitués par build.sh.
+[ /GTS_PDFXVersion (PDF/X-4) /Title (@TITRE@) /Trapped /False /DOCINFO pdfmark
+/ICCProfile (@ICC@) def
+[/_objdef {icc_PDFX} /type /stream /OBJ pdfmark
+[{icc_PDFX} << /N 4 >> /PUT pdfmark
+[{icc_PDFX} ICCProfile (r) file /PUT pdfmark
+[/_objdef {OutputIntent_PDFX} /type /dict /OBJ pdfmark
+[{OutputIntent_PDFX} << /Type /OutputIntent /S /GTS_PDFX
+  /OutputCondition (@COND@)
+  /Info (@INFO@) /OutputConditionIdentifier (@ID@)
+  /RegistryName (http://www.color.org) /DestOutputProfile {icc_PDFX} >> /PUT pdfmark
+[{Catalog} <</OutputIntents [ {OutputIntent_PDFX} ]>> /PUT pdfmark

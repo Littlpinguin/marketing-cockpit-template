@@ -54,7 +54,7 @@
     },
     "modules": {
       "type": "object",
-      "description": "État des modules optionnels. Un module absent ou {enabled: false} est inactif : ne pas charger son CLAUDE.md ni proposer ses workflows (règle universelle 9 du CLAUDE.md racine). Écrit par /validate-setup, mis à jour par /modules.",
+      "description": "État des modules optionnels. Un module absent ou {enabled: false} est inactif : ne pas charger son CLAUDE.md ni proposer ses workflows (règle universelle 9 du CLAUDE.md racine). Écrit par /validate-setup, mis à jour par /modules. 'print' n'est pas requis, pour rester compatible avec les .setup-completed écrits avant son ajout : absent = inactif.",
       "additionalProperties": false,
       "required": ["video", "automatisations", "reporting", "acquisition", "veille", "publication-sociale", "espace-client"],
       "properties": {
@@ -64,7 +64,8 @@
         "acquisition":         { "$ref": "#/$defs/moduleEntry" },
         "veille":              { "$ref": "#/$defs/moduleEntry" },
         "publication-sociale": { "$ref": "#/$defs/moduleEntry" },
-        "espace-client":       { "$ref": "#/$defs/moduleEntry" }
+        "espace-client":       { "$ref": "#/$defs/moduleEntry" },
+        "print":               { "$ref": "#/$defs/moduleEntry" }
       }
     },
     "veille": {

@@ -58,6 +58,7 @@ Three principles drive every design decision.
 │  10-automatisations/ → n8n workflows                             │
 │  11-reporting/       → performance-report skill                  │
 │  12-acquisition/     → scraping + outreach (n8n, Apify, Lemlist) │
+│  14-print/           → print skill, PDF/X-4 CMYK chain, prepress │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
