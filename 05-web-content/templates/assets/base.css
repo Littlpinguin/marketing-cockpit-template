@@ -1088,3 +1088,9 @@ textarea.field__input {
     scroll-behavior: auto !important;
   }
 }
+
+/* === notes en marge : bloc réservé (chapters, notes, jauge) === */
+/* === fin notes en marge === */
+
+/* === annotations à main levée : bloc réservé (annotate.js) === */
+/* === fin annotations === */
