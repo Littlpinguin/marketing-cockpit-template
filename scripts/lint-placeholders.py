@@ -132,6 +132,8 @@ def main(argv: list[str]) -> int:
                             "N8N_CREDENTIAL_ID_RECHERCHE", "N8N_CREDENTIAL_ID_SMTP",
                             "NOTIFICATION_EMAIL", "SENDER_EMAIL", "VOTRE_DOMAINE",
                             "NOM_DU_WORKFLOW", "WORKFLOW_ID", "MOIS", "POSTIZ_URL",
+                            # Drive transcripts feed — filled at install (see _integrations/drive-transcripts/README.md)
+                            "INTEL_DRIVE_ID", "INTEL_DRIVE_ACCOUNT", "INTEL_REPORT_EMAIL",
                         ],
                         help="Placeholder names to ignore.")
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of human text.")
