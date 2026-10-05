@@ -66,7 +66,7 @@ See `SECURITY.md` for the full rules. The short list:
 3. **Dry-run before production push.** Any connector that writes to Notion / Airtable / Mailchimp / MailerLite / HubSpot / etc. must first emit the payload to stdout via `scripts/dry-run-push.py` and wait for confirmation.
 4. **Verify, do not trust.** Claude can hallucinate API endpoints, field names, package names. Check docs before invoking a new API.
 5. **Do not share transcripts publicly** if they contain internal URLs, paths, draft content, or customer data.
-6. **Disclosure for AI-generated visuals and audio.** When publishing, declare AI involvement per the brand's disclosure policy (set during `/brand-discover`).
+6. **Disclosure for AI-generated visuals and audio.** When publishing, declare AI involvement per `01-brand/divulgation-ia.md` (single reference, created by `/brand-discover`).
 
 ---
 
@@ -127,7 +127,7 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 2. **Defer to `01-brand/`** for voice, vocabulary, colors, typography.
 3. **Follow the brand language configured at setup.** Monolingual or bilingual is a per-project decision, recorded in `.setup-completed`.
 4. **No claim without a source.** Every factual statement must map to a number in `01-brand/messaging-framework.md` or a cited external reference.
-5. **Never use banned vocabulary** listed in `01-brand/voice.md`.
+5. **Never use banned vocabulary** listed in `01-brand/voice.md` and `01-brand/anti-ai-writing-style.md` (checked by `python3 scripts/lint-brand.py`).
 6. **Check the central editorial calendar** (`02-strategy/calendar/calendar.md`) before proposing content, and update entry statuses (`idée → brouillon → à-valider → validé → publié`) as work progresses.
 7. **Brand-check is mandatory** before delivery for any content in `03-`, `04-`, `05-`, `07-`, `08-`, `09-`, and for any HTML deck produced under `06-graphic-design/presentations/`. The PostToolUse hook fires a reminder; do not bypass it.
 8. **Anti-repetition is file-based**: scan the calendar, per-channel archives (`examples/`, `editions/`, `articles/`) and the inventory files maintained by production skills before drafting. No external vector database is involved.
@@ -182,13 +182,13 @@ See `docs/setup-completed.schema.json` for the full schema.
 | `sync-template` / `backport-to-template` | Template ↔ fork Git flow | Update from upstream / contribute back sanitized |
 | `n8n-builder` | End-to-end n8n workflow creation | 5-phase method: libraries → plan → build (MCP) → QA → REX |
 | `n8n-audit` | Review an existing n8n workflow | Against module conventions (architecture, errors, naming, vault) |
-| `inventory` | Deliverables index | Maintains `_templates/inventory.md` (anti-repetition) |
+| `inventory` | Deliverables index | Maintains `_templates/inventory.md` (anti-repetition) via `scripts/build-inventory.py` |
 
 ### Quality gates & review
 
 | Skill | Role | Notes |
 |---|---|---|
-| `brand-check` | Quality gate before delivery | Mandatory for content in production folders |
+| `brand-check` | Quality gate before delivery | Mandatory for content in production folders; step 0 = `scripts/lint-brand.py`, feeds `01-brand/exemples-rejetes.md` |
 | `strategy-challenger` | Devil's advocate on a strategy | Stress-tests a positioning, offer, funnel or campaign before commit; used by `02-strategy`, produces a critique not a plan |
 | `copy-editing` | 7-pass review | Data / vocab / tone / clarity / structure / brand / format |
 | `humanize-writing` | 8-pass anti-AI-detection rewrite | Curative pass for text that "sounds AI"; invoked by `copy-editing` as final pass |
@@ -263,6 +263,22 @@ See `docs/setup-completed.schema.json` for the full schema.
 | `performance-report` | Monthly performance snapshot (module `reporting`) | Feeds the `11-reporting` dashboard; analysis by agent `performance-analyst` |
 
 **Rule**: always prefer this project's skills over generic skills from external plugins. They are tailored to this repo.
+
+### Ce que les skills n'ont pas à juger de mémoire
+
+La marque est vérifiable par script ; ces contrôles priment sur toute appréciation.
+
+| Question | Fichier ou commande |
+|---|---|
+| Valeur exacte d'une couleur, d'une police, d'un rayon ? | `01-brand/tokens.json` ; `python3 scripts/build-tokens.py --check` |
+| Ce texte respecte-t-il la charte (mots interdits, tirets, titres, hashtags, placeholders, palette, police) ? | `python3 scripts/lint-brand.py <fichier>`, étape 0 de `brand-check` |
+| Ce deck tient-il le cadre et les planchers ? | `python3 06-graphic-design/presentations/scripts/qa.py <deck.html>` |
+| A-t-on déjà traité ce sujet, sur quel canal, quand ? | `_templates/inventory.md` ; `python3 scripts/build-inventory.py --check` |
+| A-t-on le droit de publier cette police, ce logo, cette photo ? | `01-brand/droits.md` |
+| Faut-il mentionner que c'est généré par IA, et comment ? | `01-brand/divulgation-ia.md` |
+| Cette formulation a-t-elle déjà été refusée ? | `01-brand/exemples-rejetes.md` |
+
+Réglages propres à la marque : `scripts/lint-brand.toml` (vocabulaire, tirets, règles actives), `scripts/build-tokens.toml` (fichiers CSS générés), `scripts/build-inventory.toml` (dossiers inventoriés). Tests : `python3 -m pytest scripts/tests -q`.
 
 ## Agents (in `.claude/agents/`)
 

@@ -196,7 +196,7 @@ Pour tout visuel **avec texte, data ou logo** (la majorité des cas) :
 
 ## Divulgation IA
 
-Si la marque a une politique de divulgation (définie pendant `/brand-discover`), la suivre. Par défaut pour un visuel IA public : mention discrète en légende ou alt-text.
+La politique de divulgation IA de la marque vit dans `01-brand/divulgation-ia.md` : la lire avant de livrer un visuel destiné à la publication. Elle donne le type de contenu qui se mentionne, la formulation exacte par canal, et le champ `généré-par-ia:` à renseigner dans la fiche d'asset. Avant de publier un logo tiers, une photo ou un portrait d'une personne réelle, vérifier son statut dans `01-brand/droits.md`.
 
 ## Après livraison
 

@@ -2,6 +2,8 @@
 
 Source of truth for colors, typography, illustration style, and visual constraints. Read by `05-web-content/`, `06-graphic-design/`, and the `image-generation` skill.
 
+**Machine-readable values live in `01-brand/tokens.json`** (DTCG format: palette, gradient, fonts, type scale, radii, logo clear space). It is the single source for every hex code and font stack: CSS consumers are generated from it by `python3 scripts/build-tokens.py`, and `scripts/lint-brand.py` checks deliverables against it. This page explains the intent; when a value here and `tokens.json` disagree, `tokens.json` wins.
+
 ## Colors
 
 | Role | Hex | Notes |
@@ -94,3 +96,12 @@ Common UI patterns used on landing pages and decks. Each should exist as HTML sn
 The `image-generation` skill reads this file and injects the palette, typography, illustration style, and banned tropes into every prompt. No need to repeat them in individual briefs — just describe the subject.
 
 {{IMAGE_GEN_SPECIFIC_RULES}}
+
+## Appendix: CSS variables (generated)
+
+Generated from `01-brand/tokens.json` by `python3 scripts/build-tokens.py`. Do not edit the block below: change `tokens.json` and re-run the script (`--check` reports any drift).
+
+```css
+/* brand-tokens:start */
+/* brand-tokens:end */
+```

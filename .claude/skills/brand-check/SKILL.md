@@ -26,16 +26,37 @@ Tu es le brand manager de {{COMPANY_NAME}}. Ton travail : lire un draft **avant*
 
 ## Procédure
 
+### Étape 0 — Lint déterministe (avant toute lecture)
+
+Avant de lire quoi que ce soit, passer le draft au linter de marque :
+
+```bash
+python3 scripts/lint-brand.py <chemin-du-draft>
+```
+
+Le linter contrôle ce qui est mécaniquement contrôlable : vocabulaire interdit (charte de `01-brand/voice.md` et liste noire de `01-brand/anti-ai-writing-style.md`), tirets longs, point final sur un titre, hashtags (si la marque les bannit), placeholders `{{…}}` non résolus, couleurs hors palette et polices hors marque (lues dans `01-brand/tokens.json`), parallélismes négatifs. Cibler une règle avec `--only` (par exemple `--only dashes,forbidden-words`), en écarter une avec `--skip`, obtenir la liste des règles avec `--help`. Les listes et réglages de la marque vivent dans `scripts/lint-brand.toml`.
+
+Lecture du résultat :
+
+- **Une erreur = 🔴 BLOCK.** Corriger, relancer le linter, et ne passer à l'étape 1 qu'une fois la sortie propre. Une erreur ne se justifie pas dans le rapport : elle se corrige.
+- **Un avertissement ne bloque pas, mais se lit.** Chaque avertissement est soit corrigé, soit justifié en une ligne dans le rapport final. Ne jamais l'ignorer en silence.
+- **Avertissement `palette`** : `01-brand/tokens.json` manque ou n'est pas rempli, les règles graphiques n'ont pas tourné. Contrôler couleurs et police à la main au point 5, et le signaler.
+- **Aucun constat** : noter « lint déterministe ✅ » et continuer.
+
+Le hook PostToolUse joint déjà ce constat au contexte après une écriture : s'il est sous les yeux, le reprendre au lieu de relancer la commande. Ce que le linter ne voit pas reste à ta charge : le ton, la preuve, l'audience, la répétition, la cohérence des chiffres, les mots orphelins d'un rendu. C'est l'objet des étapes suivantes.
+
 ### Étape 1 — Charger les références de marque
 
-Lire dans l'ordre :
-1. `01-brand/CLAUDE.md` — règles universelles condensées
+Ne pas recharger un fichier déjà lu dans la session. Lire dans l'ordre :
+1. `01-brand/CLAUDE.md` — règles universelles condensées et routeur par tâche
 2. `01-brand/voice.md` — vocabulaire interdit, ton, règles par canal
 3. `01-brand/messaging-framework.md` — chiffres clés, messages par audience
+4. `01-brand/anti-ai-writing-style.md` et `01-brand/exemples-rejetes.md` — tells IA et rejets passés, pour juger le ton au point 2
 
 Si le draft cible un persona précis ou contient des visuels, lire aussi :
-4. `01-brand/personas.md`
-5. `01-brand/style-guide.md`
+5. `01-brand/personas.md`
+6. `01-brand/style-guide.md` et `01-brand/tokens.json` (valeurs exactes)
+7. `01-brand/divulgation-ia.md` si un visuel, une voix ou une vidéo est généré, `01-brand/droits.md` si un logo tiers, une photo de personne ou un portrait apparaît
 
 ### Étape 2 — Lire le draft
 
@@ -43,7 +64,7 @@ Lire le fichier en entier. Identifier le canal (post / email / page / événemen
 
 ### Étape 2.5 — Contrôle anti-répétition (scan de fichiers + inventaire)
 
-1. Lire `_templates/inventory.md` et chercher les lignes proches du draft (même sujet, même canal, < 8 semaines).
+1. Lire `_templates/inventory.md` : garder les lignes du même canal sur les 90 derniers jours, lire leur colonne Sujet, puis relire en entier les 3 contenus les plus proches du draft. Si l'inventaire paraît en retard sur les dossiers, `python3 scripts/build-inventory.py --check` liste les écarts et `python3 scripts/build-inventory.py` les rattrape : un inventaire périmé rend cette étape aveugle.
 2. Consulter le calendrier éditorial (`02-strategy/calendar/calendar.md`) pour les sujets déjà planifiés ou publiés.
 3. Scanner les archives du canal concerné (`03-social-media/*/examples/`, `04-email/newsletter/editions/`, `09-seo/articles/`...).
 
@@ -64,7 +85,7 @@ Si le chiffre n'apparaît dans aucune source de marque et qu'aucune référence 
 Pour chaque point : ✅ PASS / 🟠 FIX / 🔴 BLOCK.
 
 **1. Vocabulaire**
-- Aucun mot interdit (voir la section vocabulaire interdit de `01-brand/voice.md`)
+- Mots interdits et tirets longs : **déjà traités à l'étape 0**. La liste vit dans `scripts/lint-brand.toml` (miroir de `01-brand/voice.md`) : si un mot manque, l'ajouter à la doctrine puis à la configuration, ne pas le recopier ici
 - Vocabulaire préféré présent là où c'est pertinent
 - Règles typographiques respectées ({{TYPOGRAPHY_RULES}} — ex. pas de tiret cadratin s'il est banni, politique emoji, etc.)
 
@@ -99,6 +120,10 @@ Pour chaque point : ✅ PASS / 🟠 FIX / 🔴 BLOCK.
 
 **Verdict global** : ✅ PASS | 🟠 FIX NEEDED | 🔴 BLOCKED
 
+### Lint déterministe (étape 0)
+`python3 scripts/lint-brand.py <draft>` → 0 erreur, N avertissement(s)
+- ligne X [règle] avertissement : ... → corrigé / justifié parce que ...
+
 ### Filtre 5 points
 | Point | Statut | Détail |
 |---|---|---|
@@ -125,6 +150,10 @@ Pour chaque point : ✅ PASS / 🟠 FIX / 🔴 BLOCK.
 - ✅ **PASS** → livrer avec la note « Brand check ✅ passé »
 - 🟠 **FIX** → appliquer les corrections via Edit, relancer le check (2 itérations max), puis livrer en ✅
 - 🔴 **BLOCK** → corriger ce qui peut l'être, remonter les blocages non résolus. **Ne jamais livrer en contournant un blocage.**
+
+**Tout 🔴 BLOCK non purement factuel alimente le corpus de rejets.** Dès qu'un blocage porte sur la forme, la voix ou la construction (parallélisme négatif, tiret long, message de marque au lieu d'un fait, point final sur un titre, répétition d'un contenu récent…), ajouter une entrée à `01-brand/exemples-rejetes.md` au format défini dans ce fichier (titre `### AAAA-MM-JJ · canal · motif en trois mots`, extrait fautif dans un bloc de code, motif, règle avec sa section exacte, correction retenue hors bloc de code). Les blocages purement factuels (chiffre qui contredit la doctrine, date fausse, lien mort) restent hors corpus. Reprendre l'extrait tel qu'il a été produit, ne l'attribuer à personne, puis contrôler : `python3 scripts/lint-brand.py 01-brand/exemples-rejetes.md`. Le rapport le dit en une ligne : « Entrée ajoutée à 01-brand/exemples-rejetes.md : <titre> ».
+
+Après livraison validée, indexer le livrable : `python3 scripts/build-inventory.py --add <chemin>`.
 
 ## Règle d'escalade
 

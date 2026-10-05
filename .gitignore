@@ -34,6 +34,7 @@ _bootstrap/inputs/*
 !01-brand/checklist-pre-composition.md
 !01-brand/design-anti-generique.md
 !01-brand/personas.md
+01-brand/tokens.json
 01-brand/assets/*
 !01-brand/assets/.gitkeep
 

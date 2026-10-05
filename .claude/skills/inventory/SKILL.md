@@ -7,6 +7,16 @@ description: Tient l'inventaire central des livrables de {{COMPANY_NAME}} dans _
 
 Tu maintiens **`_templates/inventory.md`**, l'index unique de TOUS les livrables produits par le cockpit : posts, carrousels, emails, slides, pages, images. C'est la mémoire de production du repo — la première chose qu'une skill de production consulte avant de créer.
 
+**Le tableau est tenu par un script**, pas à la main : `scripts/build-inventory.py`. Les dossiers scannés, leurs motifs de fichiers, leur canal et leur type sont déclarés dans `scripts/build-inventory.toml` (un fork qui range ses livrables ailleurs adapte ce fichier, pas le code).
+
+```bash
+python3 scripts/build-inventory.py                  # reconstruction complète
+python3 scripts/build-inventory.py --add <chemin>   # incrément : ajoute ou met à jour une ligne
+python3 scripts/build-inventory.py --check          # sort 1 si le tableau a dérivé, signale les fichiers sans date
+```
+
+Les modes ci-dessous décrivent ce que le script applique ; ne réécrire le tableau à la main que si le script est indisponible.
+
 ## Format du fichier
 
 `_templates/inventory.md` est un tableau Markdown trié **du plus récent au plus ancien** :
@@ -43,7 +53,7 @@ Conventions de valeurs :
    - `07-events/` — plans de comm, scripts
    - `09-seo/` — articles, briefs
 2. **Exclure** : `CLAUDE.md`, `README.md`, `templates/`, `briefs/`, scripts (`.py`, `.js`, `.sh`), fichiers marqués `[WIP]`.
-3. Pour chaque fichier retenu, déduire date (frontmatter ou nom de fichier, sinon date de modification), canal, type, sujet (titre ou première ligne), statut (dossier `drafts/` → `brouillon` ; `editions/`, `examples/`, `decks/` → `publié` ; `archives/` → `archivé` ; sinon `validé`).
+3. Pour chaque fichier retenu, déduire date (champ `date` du frontmatter, sinon motif `AAAA-MM-JJ` du nom de fichier, sinon du dossier parent ; jamais la date de modification, qui change au moindre clone), canal et type (ceux de la source déclarée dans `scripts/build-inventory.toml`), sujet (`subject` du frontmatter, titre, premiers mots, nom du dossier), statut (`statut` du frontmatter s'il existe, `rejeté`/`abandonné` → `archivé` ; sinon `publié` dès qu'un champ de diffusion `sent`, `url` ou `likes` est renseigné, et `validé` sinon).
 4. Réécrire `_templates/inventory.md` en entier (créer le fichier s'il n'existe pas), trié par date décroissante.
 5. Annoncer le bilan : N livrables indexés, répartition par canal, anomalies (fichiers sans date identifiable).
 
@@ -61,7 +71,7 @@ Quand un livrable change de statut (brouillon → publié, publié → archivé)
 
 Les skills de production (`social-content`, `email`, `copywriting`, `seo`, `event-marketing`, `slides`, `image-generation`) **consultent l'inventaire avant de créer** :
 
-1. Lire `_templates/inventory.md` et chercher les lignes proches du sujet demandé (même sujet, même canal, < 8 semaines).
+1. Lire `_templates/inventory.md` : garder les lignes du même canal sur les 90 derniers jours, lire leur colonne Sujet, puis relire en entier les 3 contenus les plus proches du sujet demandé (élargir la fenêtre si elle en compte moins de 3).
 2. Si un livrable similaire existe → le signaler à l'utilisateur avec son chemin, et proposer : réutiliser, décliner sous un autre angle, ou créer quand même.
 3. Ce contrôle est le mécanisme d'anti-répétition de référence : l'inventaire est exhaustif, purement fichiers, et sans dépendance externe.
 

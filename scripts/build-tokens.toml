@@ -1,0 +1,47 @@
+# Cibles générées depuis 01-brand/tokens.json par scripts/build-tokens.py.
+#
+# Chaque [[targets]] décrit un fichier qui consomme les tokens de marque :
+#   path     chemin relatif à la racine du dépôt
+#   mode     "block" (défaut) : seul le bloc entre /* brand-tokens:start */ et
+#            /* brand-tokens:end */ est régénéré, le reste du fichier est conservé ;
+#            "file" : le fichier entier est réécrit
+#   indent   indentation des lignes du bloc (défaut : aucune)
+#   selector sélecteur qui enveloppe les déclarations (ex. ":root") ; sans
+#            sélecteur, le bloc ne contient que des déclarations, à poser dans
+#            une règle existante. Un fichier en mode "file" prend ":root" par défaut.
+#   comment  texte ajouté en tête du commentaire généré (facultatif)
+#   vars     table « --variable » -> chemin de token, ou table en ligne
+#            { token = "color.primary", alpha = 0.12 } (couleur en rgba)
+#            { token = "gradient.signature", angle = "180deg" } (autre angle)
+#   auto     groupes exportés d'office sous le nom « --<groupe>-<chemin> »,
+#            parmi "color", "gradient", "font", "radius"
+#
+# Un fork qui ajoute un consommateur (feuille de composition, gabarit de CV,
+# signature email...) y pose les deux marqueurs, puis déclare ici sa cible.
+# Vérifier ensuite : python3 scripts/build-tokens.py --check
+
+# Source des tokens (défaut : 01-brand/tokens.json).
+tokens = "01-brand/tokens.json"
+
+# Tokens des decks HTML : le bloc vit dans le :root existant de tokens.css,
+# les variantes _deep / _soft restent calculées par color-mix() en dessous.
+[[targets]]
+path = "06-graphic-design/presentations/tokens.css"
+mode = "block"
+indent = "  "
+
+[targets.vars]
+"--brand-primary" = "color.primary"
+"--brand-secondary" = "color.accent"
+"--brand-neutral-light" = "color.light"
+"--brand-neutral-dark" = "color.dark"
+"--brand-gradient" = "gradient.signature"
+"--font-display" = "font.display"
+"--font-mono" = "font.mono"
+
+# Annexe CSS du style-guide : la référence lisible de toutes les variables.
+[[targets]]
+path = "01-brand/style-guide.md"
+mode = "block"
+selector = ":root"
+auto = ["color", "gradient", "font", "radius"]

@@ -145,7 +145,7 @@ Les cinq pièges, dans l'ordre où ils piègent :
 - [ ] Sous-titres présents (skill `captions`), hors zones de sécurité
 - [ ] Habillage 100 % tokens de marque, zéro trope banni
 - [ ] Un export conforme par plateforme (`formats.md`)
-- [ ] Disclosure IA si clips générés (politique de la marque)
+- [ ] Divulgation IA selon `01-brand/divulgation-ia.md` si clips générés ou voix de synthèse : mention en tête du contenu (carton d'ouverture ou première ligne de description)
 - [ ] `brand-check` sur le script + textes à l'écran
 - [ ] Statut mis à jour dans le calendrier éditorial
 
