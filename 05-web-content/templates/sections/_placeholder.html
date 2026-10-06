@@ -1,0 +1,41 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "_placeholder",
+  "name": "Section provisoire (outil)",
+  "objection": "Celle de la section qui viendra",
+  "when": "Dans le socle d’une page sur mesure : réserve la place d’une section qu’un builder construira dans pilotage/sections/<nn>-<id>.html. La page s’affiche à chaque étape, les marqueurs sont posés. Hors catalogue (nom en _).",
+  "avoid": "À la livraison : aucune section provisoire ne doit rester.",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "title": {"type": "text", "doc": "Titre provisoire (h2).", "example": "Section à construire"},
+    "note": {"type": "text", "doc": "Ce que la section fera (objection traitée, mécanique).", "example": "Mécanique et textes à venir, voir pilotage/spec.md."}
+  }
+}
+</script>
+<style data-section-style="_placeholder">
+.s-placeholder__box {
+  display: grid;
+  gap: 10px;
+  padding: 56px 32px;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius-card);
+  color: var(--muted);
+  text-align: center;
+}
+
+.s-placeholder__title {
+  color: var(--ink);
+  font-size: var(--t-h3);
+  font-weight: 800;
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-placeholder section" aria-labelledby="{{id}}-titre" data-section="_placeholder">
+  <div class="wrap">
+    <div class="s-placeholder__box">
+      <h2 id="{{id}}-titre" class="s-placeholder__title">{{title}}</h2>
+      <p>{{note}}</p>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

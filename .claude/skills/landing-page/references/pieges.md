@@ -58,6 +58,7 @@ Les pièges qui reviennent sur toute landing, avec leur parade. Quand un piège 
 | Piège | Parade |
 |---|---|
 | Plusieurs agents écrivent dans le même fichier : des modifications se perdent | Un fragment par agent (`pilotage/sections/<nn>-<id>.html`), le socle au contrôleur, assemblage par script |
+| Réassembler une page retouchée à la main efface les retouches | `assemble-landing.py` refuse d'écraser une page dont l'empreinte a changé ; reporter la retouche dans la spec ou le fragment, et `--force` seulement pour perdre volontairement la retouche |
 | Une limite d'usage coupe plusieurs agents d'un coup | Assembler et commiter ce qui est fini, puis reprendre chaque agent par `SendMessage` avec « relis d'abord l'état actuel de ton fichier » |
 | Une action refusée à un agent (suppression, navigation) est proposée par un autre | La soumettre à l'humain ; personne ne la refait sans son accord |
 | Navigation vers les galeries d'inspiration refusée aux agents de section | Recherche faite en amont par `landing-researcher`, consignée dans `research-notes.md` |

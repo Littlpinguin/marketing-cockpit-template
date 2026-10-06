@@ -1,0 +1,234 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "topbar",
+  "name": "Barre du haut",
+  "region": "header",
+  "objection": "Où agir, à tout moment de la lecture",
+  "when": "Toute landing : le logo et un seul bouton, qui mène à la même conversion que le CTA primaire. Collante, elle s’efface quand on descend et revient dès qu’on remonte (ou qu’on recule au clavier par Maj+Tab) ; cachée, elle est inerte, donc hors du clavier et des lecteurs d’écran. Elle reste là en haut de page et pendant une section épinglée. Sous 768 px, son bouton se retire tant que la barre mobile (sticky-bar) est visible : jamais deux fois le même bouton à l’écran. Option désactivée par défaut (slot cta_after_hero) : son bouton attend que celui du hero soit sorti de l’écran, et se retire devant le bloc de conversion et le CTA final. Le lien d’évitement est hors de la barre : il reste toujours atteignable.",
+  "avoid": "Un menu complet, des liens vers le reste du site ou un second bouton : chaque lien de sortie est une fuite. Le logo n’est pas un lien.",
+  "reduced_motion": "Rien ne glisse : la barre et son bouton apparaissent et disparaissent d’un coup.",
+  "slots": {
+    "brand": {"type": "html", "doc": "Logo : un <img> dont l'alt est le nom de la marque, ou un logotype HTML (marque SVG en currentColor + nom). Aucun halo ni aplat derrière.", "example": "<svg class=\"s-topbar__mark\" viewBox=\"0 0 32 32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"16\" cy=\"16\" r=\"13\"/><path d=\"M16 3c-5 4-5 22 0 26M16 3c5 4 5 22 0 26M3.5 12h25M3.5 20h25\"/></svg><span>Meridian</span>"},
+    "cta_label": {"type": "text", "doc": "Libellé du bouton : un verbe court, sans prix.", "example": "Réserver"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion (#offre) ou URL de la conversion.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" : la barre mène à la conversion de la page.", "example": true},
+    "cta_after_hero": {"type": "bool", "doc": "Facultatif, faux par défaut. Vrai : pose data-cta-after-hero sur la barre, dont le bouton reste retiré tant que le bouton du hero, le bloc de conversion (l’ancre de cta_href) ou le CTA final est à l’écran : jamais deux fois la même action sous les yeux.", "example": true, "default": false}
+  }
+}
+</script>
+<style data-section-style="topbar">
+.s-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--line);
+  background: var(--brand-light);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+/* Scrolled: the bar lifts off the page (M10, without blur). */
+.s-topbar[data-scrolled] {
+  box-shadow: 0 12px 28px -24px var(--brand-shadow);
+}
+
+/* Hidden while reading down: off screen, and inert (script), so that neither
+   the logo nor the button can take the focus or reach a screen reader. */
+.s-topbar[data-hidden] {
+  transform: translateY(calc(-100% - 16px));
+  box-shadow: none;
+}
+
+.s-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 100%;
+}
+
+.s-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-topbar__brand img {
+  height: 32px;
+  width: auto;
+}
+
+.s-topbar__mark {
+  width: 30px;
+  height: 30px;
+  color: var(--hl);
+}
+
+.s-topbar__cta.btn {
+  min-height: 44px;
+  padding: 8px 22px;
+  font-size: 0.9375rem;
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+/* The button steps aside (hero button, conversion block or final CTA on
+   screen; on a small screen, the mobile bar shown): transparent AND inert
+   (script), never just transparent. */
+.s-topbar[data-cta-off] .s-topbar__cta.btn {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-topbar,
+  .s-topbar__cta.btn {
+    transition: none;
+  }
+
+  .s-topbar[data-cta-off] .s-topbar__cta.btn {
+    transform: none;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<header id="{{id}}" class="s-topbar" data-section="topbar"{{#cta_after_hero}} data-cta-after-hero{{/cta_after_hero}}>
+  <div class="wrap s-topbar__inner">
+    <p class="s-topbar__brand">{{{brand}}}</p>
+    <a class="btn btn--secondary s-topbar__cta" href="{{cta_href}}" data-track="cta_click" data-cta-position="topbar"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}</a>
+  </div>
+</header>
+<!-- /section:{{id}} -->
+<script data-section-script="topbar">
+(function () {
+  /* principe : Headroom.js (Nick Williams), MIT ; réécrit sans dépendance. */
+  var root = document.documentElement;
+  var small = window.matchMedia('(max-width: 768px)');
+  document.querySelectorAll('.s-topbar').forEach(function (bar) {
+    var cta = bar.querySelector('.s-topbar__cta');
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+
+    /* ---- 1. Hide while reading down, come back when going up ---- */
+    var hidden = false;
+    var lastY = window.scrollY;
+    var ticking = false;
+    var DELTA = 8;
+    var tracks = [];
+
+    function collect() { tracks = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-track]')); }
+    collect();
+    document.addEventListener('landing:revealed', collect);
+
+    function setHidden(on) {
+      if (on === hidden) return;
+      hidden = on;
+      bar.toggleAttribute('data-hidden', on);
+      bar.inert = on;
+    }
+
+    // A pinned stage sits right under the bar (scroll.js, top: --topbar-h):
+    // the bar stays while one is stuck, so no gap opens above it.
+    function pinnedStage() {
+      if (!root.classList.contains('sc-pin')) return false;
+      var top = bar.offsetHeight + 1;
+      var vh = window.innerHeight;
+      return tracks.some(function (t) {
+        var r = t.getBoundingClientRect();
+        return r.top <= top && r.bottom >= vh - 1;
+      });
+    }
+
+    function keyboardInside() {
+      var a = document.activeElement;
+      if (!a || !bar.contains(a)) return false;
+      try { return a.matches(':focus-visible'); } catch (e) { return true; }
+    }
+
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      bar.toggleAttribute('data-scrolled', y > 2);
+      if (y <= bar.offsetHeight * 2 || pinnedStage() || keyboardInside()) {
+        setHidden(false);
+        lastY = y;
+        return;
+      }
+      var dy = y - lastY;
+      if (Math.abs(dy) < DELTA) return;
+      setHidden(dy > 0);
+      lastY = y;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+
+    // Going back up the page with the keyboard brings the bar back before the
+    // focus moves, so Shift+Tab can reach it.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' && e.shiftKey) setHidden(false);
+    }, true);
+
+    update();
+
+    /* ---- 2. The button steps aside ---- */
+    if (!cta) return;
+    var guardOff = false;
+    var stickyOn = root.getAttribute('data-sticky-bar') === 'on';
+    function applyCta() {
+      var off = guardOff || (small.matches && stickyOn);
+      bar.toggleAttribute('data-cta-off', off);
+      cta.inert = off;
+    }
+    // Small screens: the mobile bar (sticky-bar) carries the button while it
+    // is visible; never the same button twice on screen.
+    document.addEventListener('landing:sticky-bar', function (e) {
+      stickyOn = !!(e.detail && e.detail.visible);
+      applyCta();
+    });
+    if (small.addEventListener) small.addEventListener('change', applyCta);
+
+    // Opt-in (slot cta_after_hero: data-cta-after-hero on the bar, off by
+    // default): hidden while the hero's button, the conversion block (the
+    // anchor of the button) or the final CTA is on screen.
+    var guards = [];
+    if (bar.hasAttribute('data-cta-after-hero') && 'IntersectionObserver' in window) {
+      var href = cta.getAttribute('href') || '';
+      guards = [
+        document.querySelector('main [data-cta-position="hero"]'),
+        document.querySelector('main [data-cta-position="final"]')
+      ];
+      if (href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+      guards = guards.filter(function (g, i, list) { return g && list.indexOf(g) === i; });
+    }
+    if (guards.length) {
+      var onScreen = new Map();
+      var below = bar.offsetHeight;
+      var measure = function () { guardOff = guards.some(function (g) { return onScreen.get(g); }); applyCta(); };
+      // First state measured at once: no flash of the button on load.
+      guards.forEach(function (g) {
+        var r = g.getBoundingClientRect();
+        onScreen.set(g, r.width > 0 && r.bottom > below && r.top < window.innerHeight);
+      });
+      measure();
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { onScreen.set(e.target, e.isIntersecting); });
+        measure();
+      }, { rootMargin: '-' + below + 'px 0px 0px 0px' });
+      guards.forEach(function (g) { io.observe(g); });
+    } else {
+      applyCta();
+    }
+  });
+})();
+</script>

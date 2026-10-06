@@ -1,0 +1,1376 @@
+/* ==========================================================================
+   base.css · common base of every landing built from the section library
+   --------------------------------------------------------------------------
+   Reads the brand from tokens.css (generated from 01-brand/tokens.json) and
+   lays down, once for the whole page:
+     1. the semantic layer (ink, paper, muted, highlight, lines, focus), which
+        a dark band re-points so that every section works on both grounds;
+     2. rhythm and the fluid type scale, which meets the floors measured by
+        05-web-content/scripts/qa-landing.py (12 px labels, 16 px running
+        text, 18 px running text from 1024 px wide);
+     3. reset, page ground, focus ring, skip link, screen-reader utilities;
+     4. shared components: section head, buttons, cards, labels, badges,
+        check lists, form fields;
+     5. initial states of the reveal engine (reveal.js) and of the scroll
+        theatre (scroll.js). Nothing is hidden unless the engine has started
+        AND motion is allowed (class set on <html> by the script).
+   No colour is written here: everything goes through var(--brand-*).
+   Breakpoints (hard-coded, @media cannot read variables), the same in every
+   section: 1280 · 1100 (two columns become one; pinning from 1101 × 720) ·
+   900 (card pairs stack) · 768 (mobile type and gutter) · 640.
+   ========================================================================== */
+
+/* ---------- 1. Semantic layer ---------- */
+:root {
+  --ink: var(--brand-dark);
+  --paper: var(--brand-light);
+  --surface: var(--brand-white);
+  --surface-2: var(--brand-surface-2);
+  --muted: var(--brand-muted);
+  --hl: var(--brand-primary-text);
+  --tint: var(--brand-primary-soft);
+  --tint-accent: var(--brand-accent-soft);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-field-border);
+  --focus: var(--brand-dark);
+  --gradient: var(--brand-gradient);
+  --gradient-v: var(--brand-gradient-vertical);
+  --danger: var(--brand-danger);
+  --shadow: 0 1px 2px var(--brand-shadow-soft), 0 18px 40px -22px var(--brand-shadow);
+  --shadow-lift: 0 2px 4px var(--brand-shadow-soft), 0 28px 56px -26px var(--brand-shadow);
+
+  /* ---------- 2. Rhythm and type ---------- */
+  --wrap: min(1240px, 100% - 96px);
+  --wrap-narrow: min(820px, 100% - 96px);
+  --section-gap: clamp(64px, 3.2rem + 5vw, 120px);
+  --band-gap: clamp(80px, 4rem + 5vw, 128px);
+  --head-gap: clamp(36px, 1.6rem + 2.4vw, 56px);
+  --intro-gap: clamp(14px, 0.7rem + 0.6vw, 20px);
+  --gutter: clamp(16px, 0.6rem + 1.6vw, 32px);
+  --topbar-h: 0px;
+
+  --t-h1: clamp(2.75rem, 1.5rem + 3.6vw, 4.5rem);
+  --t-display: clamp(2.25rem, 1.2rem + 3.4vw, 4.25rem);
+  --t-h2: clamp(2rem, 1.45rem + 2.2vw, 3.25rem);
+  --t-h3: clamp(1.25rem, 1.12rem + 0.45vw, 1.5rem);
+  --t-number: clamp(2.5rem, 1.9rem + 2.4vw, 4rem);
+  --t-lead: 1.125rem;
+  --t-body: 1rem;
+  --t-small: 0.875rem;
+  --t-label: 0.8125rem;
+  --lh-title: 1.06;
+  --lh-snug: 1.3;
+  --lh-body: 1.6;
+  --w-title: 800;
+  --track-title: -0.03em;
+
+  /* ---------- Motion vocabulary (charter § 5) ---------- */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 0.8s;
+  --dur-fast: 0.25s;
+  --rv-step: 0.1s;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --t-body: 1.125rem;
+    --t-lead: 1.3125rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --wrap: calc(100% - 40px);
+    --wrap-narrow: calc(100% - 40px);
+  }
+}
+
+/* A page that carries the sticky top bar offsets anchors and pinned stages. */
+:root:has(.s-topbar) {
+  --topbar-h: 68px;
+}
+
+/* Dark band: the same semantic names, pointed at the dark palette. */
+.band-dark {
+  --ink: var(--brand-light);
+  --paper: var(--brand-dark);
+  --surface: var(--brand-band-2);
+  --surface-2: var(--brand-band-3);
+  --muted: var(--brand-muted-on-dark);
+  --hl: var(--brand-accent-on-dark);
+  --tint: var(--brand-band-3);
+  --line: var(--brand-line-on-dark);
+  --line-strong: var(--brand-field-border-on-dark);
+  --focus: var(--brand-light);
+  background-color: var(--brand-dark);
+  color: var(--ink);
+}
+
+/* ---------- 3. Reset and page ground ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--topbar-h) + 16px);
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--brand-light);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* The brand matter of the page ground: a fine dot grid, drawn by a masked
+   layer so that its colour comes from the tokens. Light sections never
+   cover it; only dark bands and cards paint. body[data-ground="plain"]
+   removes it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--brand-dark);
+  opacity: 0.07;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  -webkit-mask-size: 24px 24px;
+  mask-size: 24px 24px;
+}
+
+body[data-ground="plain"]::before {
+  content: none;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd,
+ol,
+ul {
+  margin: 0;
+}
+
+ol[role="list"],
+ul[role="list"] {
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--hl);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+/* Titles: balanced lines, never a lone word on the last one. */
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--brand-accent-soft);
+}
+
+/* Focus: a 3 px ring with an offset, dark on light grounds, light in bands. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Skip link: off screen and unpainted until focused (it is not an action of
+   the page, and the landing QA must not count it as a CTA). */
+.skip-link {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 12px 20px;
+  border-radius: var(--radius-input);
+  color: var(--brand-light);
+  font-weight: 600;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  background: var(--brand-dark);
+  transform: none;
+  outline-color: var(--brand-accent);
+}
+
+/* ---------- Layout ---------- */
+.wrap {
+  width: var(--wrap);
+  margin-inline: auto;
+}
+
+.wrap--narrow {
+  width: var(--wrap-narrow);
+  margin-inline: auto;
+}
+
+.section {
+  position: relative;
+  padding-block: var(--section-gap);
+  scroll-margin-top: calc(var(--topbar-h) + 8px);
+}
+
+.section.band-dark {
+  padding-block: var(--band-gap);
+}
+
+/* The ground of a dark band carries the same dot grid, in light ink. */
+.band-dark.section {
+  isolation: isolate;
+  overflow: clip;
+}
+
+.band-dark.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--brand-light);
+  opacity: 0.06;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  -webkit-mask-size: 24px 24px;
+  mask-size: 24px 24px;
+}
+
+/* ---------- 4. Section head (the same everywhere) ---------- */
+.section-head {
+  display: grid;
+  gap: var(--intro-gap);
+  max-width: 46rem;
+  margin-bottom: var(--head-gap);
+}
+
+.section-head--center {
+  margin-inline: auto;
+  text-align: center;
+  justify-items: center;
+}
+
+.section-title {
+  font-size: var(--t-h2);
+  line-height: var(--lh-title);
+  font-weight: var(--w-title);
+  letter-spacing: var(--track-title);
+  text-wrap: balance;
+}
+
+/* One title structure for the whole page: a strong segment, then the rest. */
+.hl {
+  color: var(--hl);
+}
+
+.section-intro {
+  max-width: 38em;
+  color: var(--muted);
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.lede {
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Labels: short, mono, never a sentence (12 px floor; 13 px here). */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* State badges ("Complet", "Spécimen", "Votre formule"). Never above a title. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 2px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  font-size: var(--t-label);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.badge--accent {
+  border-color: transparent;
+  background: var(--tint-accent);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  --btn-bg: transparent;
+  --btn-ink: var(--ink);
+  --btn-border: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 28px;
+  border: 2px solid var(--btn-border);
+  border-radius: var(--radius-cta);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  text-wrap: balance;
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* The conversion button: the only strong accent of the page. 19 px bold, so
+   that its label is "large text" for WCAG whatever the accent colour. */
+.btn--primary {
+  --btn-bg: var(--brand-accent);
+  --btn-ink: var(--brand-on-accent);
+  --btn-border: var(--brand-accent);
+  min-height: 56px;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px -14px var(--brand-shadow);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 16px 30px -14px var(--brand-shadow);
+}
+
+/* On a dark band, the primary action in its light variant. */
+.btn--light {
+  --btn-bg: var(--brand-light);
+  --btn-ink: var(--brand-dark);
+  --btn-border: var(--brand-light);
+  min-height: 56px;
+  font-size: 1.1875rem;
+  font-weight: 700;
+}
+
+.btn--secondary {
+  --btn-bg: transparent;
+  --btn-ink: var(--ink);
+  --btn-border: var(--line-strong);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn__icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.btn:hover .btn__icon {
+  transform: translateX(3px);
+}
+
+/* Inline action link (reading guide, never a second objective). */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.3em;
+}
+
+/* ---------- Cards (one family) ---------- */
+.card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.card--lift {
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.card--lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+
+/* ---------- Check list (icon drawn by a mask: no colour in the SVG) ---------- */
+.list-check {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.list-check > li {
+  position: relative;
+  padding-left: 34px;
+}
+
+.list-check > li::before {
+  content: "";
+  position: absolute;
+  top: 0.2em;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--tint);
+}
+
+.list-check > li::after {
+  content: "";
+  position: absolute;
+  top: calc(0.2em + 5px);
+  left: 5px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--hl);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.list-cross > li::after {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  background-color: var(--muted);
+}
+
+.list-cross > li::before {
+  background: var(--surface-2);
+}
+
+/* ---------- Form fields ---------- */
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.field__optional {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.field__input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+textarea.field__input {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Select: native control, chevron drawn by the wrapper (no image under the text). */
+.field__select {
+  position: relative;
+}
+
+.field__select select.field__input {
+  appearance: none;
+  padding-right: 48px;
+}
+
+.field__select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  pointer-events: none;
+  background-color: var(--ink);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.field__input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.field__input:focus-visible {
+  outline-offset: 1px;
+}
+
+.field__input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.field__hint {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.field__error {
+  color: var(--danger);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* Consent box: the label makes the whole row a 44 px target. */
+.consent {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  align-items: start;
+  min-height: 44px;
+  font-size: var(--t-body);
+  line-height: 1.5;
+}
+
+.consent input {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  accent-color: var(--brand-primary);
+}
+
+/* Honeypot: off screen, out of the tab order, hidden from assistive tech. */
+.hp {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-status {
+  font-weight: 600;
+}
+
+/* ---------- 5a. Reveal engine (reveal.js) ----------
+   Hidden only once the script has started AND motion is allowed: the
+   script sets .rv-on on <html>. Opacity and position only: never
+   visibility, which would take titles and buttons out of the keyboard and
+   the accessibility tree until the scroll reaches them. */
+.rv-on [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+  transition-delay: calc(var(--rv-i, 0) * var(--rv-step));
+}
+
+.rv-on [data-reveal="left"] {
+  transform: translate3d(-40px, 0, 0);
+}
+
+.rv-on [data-reveal="right"] {
+  transform: translate3d(40px, 0, 0);
+}
+
+.rv-on [data-reveal="scale"] {
+  transform: scale(0.96);
+}
+
+.rv-on [data-reveal="fade"] {
+  transform: none;
+}
+
+.rv-on [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 5b. Scroll theatre (scroll.js) ----------
+   .sc-motion on <html>: motion allowed. .sc-pin: motion allowed AND at
+   least 1101 × 720 px (the only case where sections pin). */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 120;
+  height: 3px;
+  pointer-events: none;
+  background: var(--gradient);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--read, 0));
+  display: none;
+}
+
+.sc-pin .reading-progress {
+  display: block;
+}
+
+.sc-pin [data-exit="fade"] {
+  opacity: calc(1 - var(--exit, 0));
+  transform: translate3d(0, calc(var(--exit, 0) * -5vh), 0);
+}
+
+.sc-pin [data-enter="fade"] {
+  opacity: var(--enter, 1);
+}
+
+.sc-pin [data-enter="curtain"] {
+  clip-path: inset(0 calc((1 - var(--enter, 1)) * 7%) round calc((1 - var(--enter, 1)) * 56px));
+}
+
+/* ---------- 6. Composed objects kit ----------
+   Decorative compositions for hero objects, problem visuals, journey scenes
+   and showcases. ALWAYS inside a container marked aria-hidden="true" and
+   data-qa-decor: the meaning is carried by the real text next to it, and the
+   QA leaves these texts out of the type floors. Physical objects keep their
+   paper colours inside a dark band too. Compose new objects from these parts
+   before writing new CSS. */
+.obj {
+  --obj-ink: var(--brand-dark);
+  --obj-muted: var(--brand-muted);
+  --obj-paper: var(--brand-white);
+  --obj-line: var(--brand-line);
+  position: relative;
+  color: var(--obj-ink);
+  font-family: var(--font-display);
+  line-height: 1.3;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.obj-sheet,
+.obj-window {
+  position: relative;
+  border: 1px solid var(--obj-line);
+  border-radius: 14px;
+  background: var(--obj-paper);
+  color: var(--obj-ink);
+  box-shadow: 0 1px 2px var(--brand-shadow-soft), 0 30px 60px -30px var(--brand-shadow);
+}
+
+.obj-sheet {
+  padding: 22px;
+}
+
+.obj-stack {
+  position: relative;
+  isolation: isolate;
+}
+
+.obj-stack::before,
+.obj-stack::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid var(--obj-line);
+  border-radius: 14px;
+  background: var(--obj-paper);
+  box-shadow: 0 20px 40px -28px var(--brand-shadow);
+}
+
+.obj-stack::before {
+  transform: rotate(-4deg) translate(-10px, 12px);
+}
+
+.obj-stack::after {
+  transform: rotate(2.5deg) translate(8px, 6px);
+}
+
+.obj-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--obj-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.obj-head b {
+  color: var(--obj-ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.obj-mark {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+}
+
+.obj-push {
+  margin-left: auto;
+}
+
+.obj-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.obj-kpi {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.obj-kpi small {
+  margin-left: 6px;
+  color: var(--obj-muted);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.obj-small {
+  color: var(--obj-muted);
+  font-size: 12px;
+}
+
+.obj-rule {
+  height: 1px;
+  margin: 14px 0;
+  background: var(--obj-line);
+}
+
+.obj-lines {
+  display: grid;
+  gap: 8px;
+}
+
+.obj-lines i {
+  display: block;
+  width: var(--w, 100%);
+  height: 8px;
+  border-radius: 4px;
+  background: var(--obj-line);
+}
+
+.obj-bars {
+  display: grid;
+  gap: 10px;
+}
+
+.obj-bar {
+  display: grid;
+  grid-template-columns: 78px 1fr 38px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.obj-bar b {
+  text-align: right;
+  font-weight: 700;
+}
+
+.obj-bar__track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--brand-surface-2);
+}
+
+.obj-bar__fill {
+  display: block;
+  width: calc(var(--v, 0.5) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand-primary);
+}
+
+.obj-bar.is-hl .obj-bar__fill {
+  background: var(--brand-gradient);
+}
+
+.obj-chip {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 14px 30px -16px var(--brand-shadow);
+}
+
+.obj-chip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+}
+
+.obj-stamp {
+  display: inline-block;
+  padding: 3px 9px;
+  border: 2px solid var(--brand-primary-text);
+  border-radius: 6px;
+  color: var(--brand-primary-text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-5deg);
+}
+
+.obj-window {
+  overflow: hidden;
+}
+
+.obj-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--obj-line);
+  background: var(--brand-surface-2);
+  color: var(--obj-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.obj-window__bar i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--brand-field-border);
+}
+
+.obj-window__bar span {
+  margin-left: 8px;
+}
+
+.obj-window__body {
+  padding: 18px;
+}
+
+.obj-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  border-top: 1px solid var(--obj-line);
+  border-left: 1px solid var(--obj-line);
+  font-size: 11px;
+}
+
+.obj-grid span {
+  overflow: hidden;
+  padding: 5px 7px;
+  border-right: 1px solid var(--obj-line);
+  border-bottom: 1px solid var(--obj-line);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.obj-grid .is-head {
+  background: var(--brand-surface-2);
+  font-weight: 700;
+}
+
+.obj-grid .is-warn {
+  background: var(--brand-accent-soft);
+}
+
+.obj-check {
+  display: grid;
+  gap: 10px;
+}
+
+.obj-check span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.obj-check span::before {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--brand-field-border);
+  border-radius: 4px;
+}
+
+.obj-check .is-done::before {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  box-shadow: inset 0 0 0 3px var(--obj-paper);
+}
+
+.obj-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 120px;
+}
+
+.obj-chart i {
+  flex: 1;
+  height: calc(var(--v, 0.5) * 100%);
+  border-radius: 6px 6px 2px 2px;
+  background: var(--brand-primary-soft);
+}
+
+.obj-chart i.is-hl {
+  background: var(--brand-primary);
+}
+
+.obj-mail {
+  display: grid;
+  gap: 8px;
+}
+
+.obj-mail__from {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.obj-avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--brand-surface-2);
+  color: var(--obj-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.obj-highlight {
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--brand-accent-soft);
+}
+
+.obj-strike {
+  color: var(--obj-muted);
+  text-decoration: line-through;
+}
+
+/* ---------- Reduced motion: nothing moves, everything is visible ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === notes en marge : bloc réservé (chapters, notes, jauge) === */
+
+/* ---------- 7. Margin notes: the source of a figure, in the margin ----------
+   principe : Tufte CSS (Dave Liepmann et contributeurs), MIT. The note is
+   written inside the sentence it documents and floats into the right
+   margin, aligned with the line of its call; the checkbox toggle of Tufte
+   CSS (badly announced by screen readers) is not taken.
+   Markup, inside a paragraph or a list item, right after the figure or at
+   the end of the sentence (phrasing content only, links allowed):
+     <span class="note"><span class="note__body" role="note">Source…</span></span>
+   The call (in the text) and the number (in front of the note) are drawn
+   by one page-wide counter, hidden from assistive tech (alt text ""):
+   the note itself is read in place, announced as a note.
+   - From 1101 px, inside a .wrap--notes: the text column keeps a measure
+     of --note-measure and the note sits beside it, at running-text size
+     (a note is often 12 words or more: never in small type).
+   - Elsewhere (narrow screens, or a section without .wrap--notes): the
+     note opens as a numbered block right under the line of its call.
+   No script, nothing moves, identical in reduced motion. */
+:root {
+  --note-w: 20rem;
+  --note-gap: 2.5rem;
+  --note-measure: 44rem;
+}
+
+body {
+  counter-reset: landing-note;
+}
+
+.note {
+  counter-increment: landing-note;
+}
+
+.note::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  position: relative;
+  top: -0.5em;
+  margin-inline: 0.12em 0.18em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: max(12px, 0.7em);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.note__body {
+  display: block;
+  margin-block: 0.5em 0.75em;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: start;
+  text-transform: none;
+  text-wrap: pretty;
+}
+
+.note__body::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  margin-inline-end: 0.6em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+@media (min-width: 1101px) {
+  /* The column leaves room: the text keeps its measure on the left, the
+     notes run beside it. Text blocks that carry their own max-width
+     (intro, lede) take the full column so that every note lines up. */
+  .wrap--notes {
+    padding-inline-end: max(calc(var(--note-w) + var(--note-gap)), calc(var(--wrap) - var(--note-measure)));
+  }
+
+  .wrap--notes .section-head,
+  .wrap--notes .section-intro,
+  .wrap--notes .lede {
+    max-width: none;
+  }
+
+  .wrap--notes .note__body {
+    float: right;
+    clear: right;
+    width: var(--note-w);
+    margin-block: 0.15em 0.9em;
+    margin-inline: 0 calc(-1 * (var(--note-w) + var(--note-gap)));
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    line-height: var(--lh-body);
+  }
+}
+
+/* ---------- 8. Narrative gauge (journey, program: field gauge) ----------
+   Where the reader is, in the unit of the story (« Semaine 3 sur 6 »).
+   Each step carries its label (HTML of a phrase, the value in <b>).
+   Decorative double of the step's moment and title: always in a container
+   marked aria-hidden="true" data-qa-decor, never the only carrier of an
+   information.
+   - .gauge--step: the label of one step, before its moment, in the list.
+     Shown wherever the scroll theatre does not run (small screen, reduced
+     motion, short screen, no script); the section hides it under .sc-pin.
+   - .gauge--live: one label in the left margin, read bottom to top like
+     the spine of a book, holding one .gauge__label per step. Hidden by
+     default; under .sc-pin the section shows it and reveals the label of
+     the current step (data-active or data-reached, written by scroll.js),
+     matched by rank in CSS: no script of its own. */
+.gauge {
+  display: none;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.gauge b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.gauge--step {
+  display: inline;
+  color: var(--ink);
+}
+
+.gauge--step::after {
+  content: "·";
+  content: "·" / "";
+  margin-inline: 0.6em;
+  color: var(--muted);
+}
+
+.gauge--live {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.gauge--live .gauge__label {
+  display: none;
+}
+
+.gauge--live b {
+  margin-inline: 0.2em;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* The hairline that carries the label, as on an altimeter. */
+.gauge--live::after {
+  content: "";
+  display: inline-block;
+  inline-size: 56px;
+  block-size: 1px;
+  margin-inline-start: 16px;
+  vertical-align: middle;
+  background: var(--line-strong);
+}
+
+/* === fin notes en marge === */
+
+/* === annotations à main levée : bloc réservé (annotate.js) === */
+/* Hand-drawn annotations: <mark data-annotate="underline | highlight |
+   strike | circle | box | bracket">. principe : Rough Notation, MIT (see
+   annotate.js). Without the engine (no JavaScript, or a page that does not
+   load annotate.js): a sober emphasis in the highlight colour, never the
+   browser's yellow <mark>. With it (html.an-on): the drawn stroke replaces
+   that emphasis. Two per page at most. */
+mark:where([data-annotate]) {
+  background: none;
+  color: inherit;
+}
+
+[data-annotate] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--hl);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+[data-annotate="strike"] {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.07em;
+}
+
+/* A highlighted word is read in ink: muted text on a tint would fall under
+   4.5:1. */
+[data-annotate="highlight"] {
+  text-decoration-line: none;
+  background-color: var(--tint);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* A circle or a frame never breaks across two lines (1 to 3 words), and
+   keeps the neighbouring words out of its stroke (set with or without the
+   engine, so that nothing shifts when it starts). */
+[data-annotate="circle"],
+[data-annotate="box"] {
+  margin-inline: 0.22em;
+  white-space: nowrap;
+}
+
+[data-annotate="bracket"] {
+  margin-inline: 0.3em;
+}
+
+/* Engine running: the element hosts its stroke (stacking context, so that
+   the highlighter passes under the letters and over any card). */
+.an-on [data-annotate] {
+  position: relative;
+  z-index: 0;
+  text-decoration-line: none;
+  background-color: transparent;
+}
+
+/* max-width: none, or the base svg rule (max-width: 100%) collapses the
+   overlay to 0 px when the phrase wraps (the containing block of a split
+   inline has no width), and a 0 px SVG is not painted. */
+.an-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 1px;
+  max-width: none;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.an-svg path {
+  fill: none;
+  stroke: var(--hl);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-annotate="highlight"] > .an-svg {
+  z-index: -1;
+}
+
+[data-annotate="highlight"] > .an-svg path {
+  stroke-linecap: butt;
+  stroke-opacity: 0.2;
+}
+
+.band-dark [data-annotate="highlight"] > .an-svg path {
+  stroke-opacity: 0.34;
+}
+
+/* Drawn once: the dash runs from hidden to whole (pathLength="1"). */
+[data-annotate].an-pending > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+[data-annotate].is-drawn > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--an-dur, 0.8s) var(--ease) var(--an-delay, 0s);
+}
+
+@media (forced-colors: active) {
+  .an-svg path {
+    stroke: CanvasText;
+  }
+}
+/* === fin annotations === */

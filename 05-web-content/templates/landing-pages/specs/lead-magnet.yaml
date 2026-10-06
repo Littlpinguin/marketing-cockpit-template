@@ -1,0 +1,278 @@
+# ============================================================================
+# Modèle de landing « lead-magnet » : une ressource gratuite contre un email
+# ----------------------------------------------------------------------------
+# Conversion unique : l'envoi du formulaire de capture (événement generate_lead).
+# Tous les CTA de la page (barre du haut, hero, carte de la FAQ, CTA final)
+# mènent à l'ancre #recevoir, qui porte le formulaire.
+#
+# Assembler (depuis la racine du dépôt) :
+#   python3 05-web-content/scripts/assemble-landing.py 05-web-content/templates/landing-pages/specs/lead-magnet.yaml
+#   python3 05-web-content/scripts/qa-landing.py 05-web-content/templates/landing-pages/lead-magnet.html
+# Pour une vraie page : copier cette spec dans
+# 05-web-content/landing-pages/<slug>/pilotage/page.yaml, changer « output »
+# vers 05-web-content/landing-pages/<slug>/index.html, réécrire chaque texte
+# (skills copywriting puis copy-editing) et dérouler la skill landing-page.
+#
+# CONTENU FICTIF. La marque « Encaisse » (atelier de trésorerie pour
+# indépendants), ses deux autrices, le kit et ses chiffres sont inventés pour
+# la démonstration. Aucun ne se publie tel quel : chaque chiffre vient de
+# 01-brand/messaging-framework.md ou d'une source citée, chaque personne donne
+# son accord (01-brand/droits.md).
+#
+# Récit (une objection par section, dans l'ordre de la pensée du visiteur) :
+#   hero        De quoi s'agit-il, pour qui : la ressource montrée en objet
+#               (le kit ouvert sur un modèle d'email, le calendrier coché).
+#   recevoir    Qu'est-ce que je donne, qu'est-ce que je reçois : l'email seul,
+#               et le kit part par email, sans case à cocher (la demande vaut
+#               envoi). La lettre se propose à part, dans une case facultative
+#               et décochée ; la phrase sous le bouton dit ce qui suit.
+#   contenu     Qu'y a-t-il dedans, exactement : les six relances sur un rail,
+#               de J+1 à J+45, et une vraie page du kit en spécimen.
+#   preuve      Est-ce que relancer tôt change vraiment quelque chose : un
+#               chiffre, un graphique en barres, une source (evidence-chart,
+#               données fictives marquées comme telles).
+#   pour-qui    Est-ce pour moi : clients professionnels oui, particuliers non.
+#   auteures    Qui l'a écrit, est-ce sérieux : la praticienne et l'avocate.
+#   questions   Les dernières questions : gratuité, confirmation, format, données.
+#   final       Je passe à l'action : bande sombre, retour au formulaire.
+#
+# À BRANCHER avant publication (marqueurs en majuscules, signalés par la QA) :
+#   {{FORM_ENDPOINT}}          endpoint POST du formulaire : webhook n8n ou
+#                              formulaire de l'outil d'emailing (skill
+#                              lead-magnet, § 5). Le circuit envoie le kit à
+#                              l'adresse donnée ; si la case « newsletter »
+#                              est cochée (champ newsletter=oui), il inscrit à
+#                              la lettre avec un email de confirmation.
+#                              Tant que le marqueur reste, l'envoi est une
+#                              démonstration : rien ne part, la mesure compte
+#                              form_demo_submit et non generate_lead.
+#   {{URL_MENTIONS_LEGALES}}   page des mentions légales (pied de page)
+#   {{URL_CONFIDENTIALITE}}    politique de confidentialité (pied de page)
+#   bonjour@example.com        adresse de contact (carte de la FAQ, pied)
+# Mesure : tracking.mode datalayer par défaut (les événements attendent un
+# conteneur). Passer en « gtm » avec gtm: GTM-XXXX, ou en « gtag » avec
+# ga4: G-XXXX, puis marquer generate_lead comme conversion clé dans GA4.
+# Les UTM de la visite partent en champs cachés avec le formulaire.
+# Visibilité : noindex par défaut ; « index, follow » pour une ressource
+# pérenne, avec canonical et og:image.
+# ============================================================================
+
+output: 05-web-content/templates/landing-pages/lead-magnet.html
+title: "Kit de relance des factures impayées · Encaisse"
+description: "Six modèles d’emails et un calendrier de J+1 à J+45 pour être payé par vos clients professionnels sans abîmer la relation."
+lang: fr
+page: kit-relance
+robots: "noindex, nofollow"
+og:
+  title: "Le kit de relance des factures impayées"
+  description: "Six modèles d’emails, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer."
+fonts: ["Inter:wght@400;500;600;700;800", "JetBrains Mono:wght@500;600"]
+ground: dots
+tracking: {mode: datalayer, utm: true}
+
+sections:
+  - use: topbar
+    slots:
+      brand: "<svg class=\"s-topbar__mark\" viewBox=\"0 0 32 32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"4\" y=\"6\" width=\"24\" height=\"20\" rx=\"6\"/><path d=\"m11 16.5 3.5 3.5 7-7.5\"/></svg><span>Encaisse</span>"
+      cta_label: "Recevoir le kit"
+      cta_href: "#recevoir"
+      primary: true
+
+  - use: hero
+    slots:
+      title: "Six emails<br>pour être payé<br><span class=\"hl\">sans conflit</span>"
+      lede: "Le kit de relance des indépendants : six modèles prêts à copier, du rappel aimable à la mise en demeure, et le calendrier pour les envoyer."
+      cta_label: "Recevoir le kit"
+      cta_href: "#recevoir"
+      primary: true
+      deadline: "Gratuit, par email"
+      countdown: null
+      detail: "14 pages"
+      image: null
+      object: >-
+        <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+        <div class="obj-stack"><div class="obj-sheet">
+        <div class="obj-head"><span class="obj-mark"></span><b>Kit de relance</b><span class="obj-stamp obj-push">Modèle 3</span></div>
+        <div class="obj-rule"></div>
+        <div class="obj-mail">
+        <div class="obj-mail__from"><span class="obj-avatar">VD</span><span><b>Facture F-118 · échéance dépassée</b><br>À Julien, studio Halte</span></div>
+        <p class="obj-small">Bonjour Julien, la facture F-118 de <span class="obj-highlight">1 450 €</span> attend toujours son règlement. Pouvez-vous me confirmer un virement d’ici vendredi ?</p>
+        </div>
+        <div class="obj-rule"></div>
+        <div class="obj-check">
+        <span class="is-done">J+1 · Le rappel aimable</span>
+        <span class="is-done">J+8 · La relance claire</span>
+        <span class="is-done">J+15 · La relance ferme</span>
+        <span>J+22 · L’appel, puis l’email</span>
+        <span>J+30 · Le dernier rappel</span>
+        <span>J+45 · La mise en demeure</span>
+        </div>
+        </div></div>
+        <span class="obj-chip s-hero__chip"><i></i>Réglée à J+17</span>
+        </div>
+
+  - use: lead-capture
+    id: recevoir
+    slots:
+      title: "Recevez le kit <span class=\"hl\">dans votre boîte mail</span>"
+      intro: "Un document de quatorze pages relu par une avocate, avec un lien pour copier les modèles dans votre messagerie."
+      points:
+        - "Six modèles d’emails, du rappel aimable à la mise en demeure"
+        - "Le calendrier d’envoi, de J+1 à J+45"
+        - "Le tableau de suivi des relances, en tableur"
+        - "Les mentions à ajouter sur vos prochaines factures"
+      action: "{{FORM_ENDPOINT}}"
+      primary: true
+      position: "capture"
+      email_label: "Votre email professionnel"
+      email_placeholder: "prenom@example.com"
+      email_hint: "Le kit arrive à cette adresse."
+      optin:
+        label: "Recevoir aussi la lettre Encaisse sur la trésorerie des indépendants, un email tous les quinze jours. Désinscription en un clic."
+        name: "newsletter"
+      consent_required: ""
+      cta_label: "Recevoir le kit"
+      after: "Le kit arrive dans votre boîte dans la minute. La lettre ne part que si vous cochez la case."
+      error_required: "Indiquez l’adresse où envoyer le kit."
+      error_email: "Cette adresse email semble incomplète."
+      error_consent: "Cochez la case pour continuer."
+      msg_success: "C’est envoyé. Le kit arrive dans votre boîte dans la minute."
+      msg_failure: "L’envoi n’a pas abouti. Nouvel essai en cours."
+      msg_unwired: "Formulaire de démonstration : rien n’a été envoyé."
+
+  - use: program
+    id: contenu
+    slots:
+      title: "Six relances <span class=\"hl\">de J+1 à J+45</span>"
+      intro: "Chaque modèle monte d’un cran. Le ton reste courtois, la demande devient plus précise."
+      modules:
+        - {when: "J+1", title: "Le rappel aimable", text: "Une ligne pour signaler l’échéance, la facture en pièce jointe.", duration: "4 lignes"}
+        - {when: "J+8", title: "La relance claire", text: "Le montant dû et le moyen de paiement, sans un mot de reproche.", duration: "6 lignes"}
+        - {when: "J+15", title: "La relance ferme", text: "Une date de règlement précise et le rappel des pénalités prévues à vos conditions générales.", duration: "8 lignes"}
+        - {when: "J+22", title: "L’appel et l’email qui le résume", text: "Le déroulé d’un appel de cinq minutes et l’email qui confirme ce qui a été convenu.", duration: "1 script"}
+        - {when: "J+30", title: "Le dernier rappel", text: "L’annonce de la mise en demeure et le rappel de l’indemnité forfaitaire de 40 € due par un client professionnel en retard.", duration: "8 lignes"}
+        - {when: "J+45", title: "La mise en demeure", text: "La lettre recommandée prête à compléter, dernière étape avant une injonction de payer.", duration: "1 lettre"}
+      specimen: >-
+        <div class="obj"><div class="obj-sheet">
+        <div class="obj-head"><span class="obj-mark"></span><b>Modèle 3 · La relance ferme</b><span class="obj-push">p. 6</span></div>
+        <div class="obj-rule"></div>
+        <div class="obj-mail">
+        <p class="obj-small"><b>Objet</b> Facture [numéro] · échéance dépassée de 15 jours</p>
+        <p class="obj-small">Bonjour [prénom],</p>
+        <p class="obj-small">La facture [numéro] de <span class="obj-highlight">[montant]</span>, échue le [date], n’est pas encore réglée.</p>
+        <p class="obj-small">Je vous propose un règlement par virement d’ici le <span class="obj-highlight">[date + 7 jours]</span>. Passé ce délai, les pénalités prévues à nos conditions générales s’appliqueront.</p>
+        <div class="obj-lines"><i style="--w:72%"></i><i style="--w:44%"></i></div>
+        </div>
+        <div class="obj-rule"></div>
+        <div class="obj-head"><span>À joindre : la facture et votre RIB</span></div>
+        </div></div>
+      specimen_badge: "Extrait"
+      specimen_caption: "Le modèle 3, page 6 du kit."
+
+  - use: evidence-chart
+    id: preuve
+    slots:
+      title: 'Relancer dès J+1<br><span class="hl">raccourcit le retard de 32 jours</span>'
+      intro: >-
+        Sur les factures suivies en 2026, la date de la première relance a pesé
+        plus lourd que son ton : plus elle part tôt, plus le virement arrive vite.
+      measure: "Retard moyen de paiement après l’échéance, en jours"
+      bars:
+        - {label: "Relance dès J+1", value: "9 j", bar: 22, focus: true}
+        - {label: "Première relance à J+8", value: "14 j", bar: 34}
+        - {label: "Première relance à J+30", value: "26 j", bar: 63}
+        - {label: "Aucune relance écrite", value: "41 j", bar: 100}
+      focus_mark: circle
+      reading: >-
+        Lecture : une facture relancée le lendemain de son échéance est réglée
+        en moyenne 9 jours après celle-ci.
+      source: "Source : 1 200 factures suivies par Encaisse, 2026 (données fictives)"
+      poster: ""                   # chiffre géant décoratif : laissé vide
+
+  - use: for-whom
+    id: pour-qui
+    slots:
+      title: "Un kit écrit <span class=\"hl\">pour les indépendants</span>"
+      fit_title: "Il vous servira si"
+      fit:
+        - "Vous facturez d’autres entreprises et certaines paient après l’échéance."
+        - "Vous relancez au jugé, sans calendrier ni trace écrite."
+        - "Vous craignez d’abîmer une relation client en insistant."
+        - "Vous travaillez seul ou à deux, sans service comptable."
+      not_fit_title: "Il vous servira peu si"
+      not_fit:
+        - "Vos clients sont des particuliers : les règles et le ton diffèrent."
+        - "Votre client conteste la facture sur le fond : parlez-en d’abord avec lui."
+
+  - use: people
+    id: auteures
+    slots:
+      title: "Écrit par une praticienne <span class=\"hl\">et relu par une avocate</span>"
+      intro: ""
+      label_who: "Parcours"
+      label_proof: "Preuve"
+      label_part: "Dans ce kit"
+      shape: rounded
+      people:
+        - name: "Valentine Dorez"
+          role: "Fondatrice d’Encaisse (personnage fictif)"
+          initials: "VD"
+          photo: ""
+          photo_alt: ""
+          who: "Comptable de formation, elle suit la trésorerie d’indépendants et de petites agences depuis 2017."
+          proof: "Les six modèles reprennent les relances qu’elle envoie chaque mois pour ses clients."
+          part: "Elle a écrit les six emails et leur calendrier."
+        - name: "Inès Labarthe"
+          role: "Avocate en droit des affaires (personnage fictif)"
+          initials: "IL"
+          photo: ""
+          photo_alt: ""
+          who: "Elle conseille des TPE sur leurs conditions générales et leurs litiges de paiement."
+          proof: "Elle a vérifié chaque mention légale du kit en septembre 2026."
+          part: "Elle a rédigé la lettre de mise en demeure."
+
+  - use: faq
+    id: questions
+    slots:
+      title: "Avant de recevoir <span class=\"hl\">le kit</span>"
+      intro: ""
+      jsonld: false
+      items:
+        - q: "Le kit est‑il vraiment gratuit ?"
+          a: "Oui, et sans abonnement : vous recevez le kit par email. La lettre Encaisse, un email tous les quinze jours, ne part que si vous cochez la case prévue."
+        - q: "Et si je coche la case de la lettre ?"
+          a: "Un email vous demande de confirmer l’abonnement. Sans clic sur son lien, aucune lettre ne part. Vous pouvez vous désinscrire à tout moment et garder le kit."
+        - q: "Dans quel format arrive le kit ?"
+          a: "Un PDF de quatorze pages, avec les modèles en document modifiable à ouvrir dans votre traitement de texte."
+        - q: "Les modèles conviennent‑ils à des clients particuliers ?"
+          a: "Ils sont écrits pour des clients professionnels. L’indemnité forfaitaire de 40 € et plusieurs mentions ne s’appliquent pas à un particulier."
+        - q: "Que devient mon adresse email ?"
+          a: "Elle sert à vous envoyer le kit, et la lettre si vous l’avez demandée, rien d’autre. Elle n’est ni vendue ni prêtée, et la politique de confidentialité détaille le reste."
+      card_label: "La ressource"
+      card_title: "Le kit de relance"
+      card_meta: "Gratuit · 14 pages · modèles modifiables"
+      cta_label: "Recevoir le kit"
+      cta_href: "#recevoir"
+      contact: "Une autre question : <a href=\"mailto:bonjour@example.com\">bonjour@example.com</a>"
+
+  - use: final-cta
+    id: final
+    slots:
+      title: "Le prochain retard<br><span class=\"hl\">a déjà son email</span>"
+      text: "Recevez les six modèles et envoyez le premier dès la prochaine échéance dépassée."
+      cta_label: "Recevoir le kit"
+      cta_href: "#recevoir"
+      primary: true
+      note: "Gratuit, sans abonnement"
+      decor: dots
+      decor_html: ""
+
+  - use: footer
+    id: pied
+    slots:
+      brand: "<svg class=\"s-footer__mark\" viewBox=\"0 0 32 32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"4\" y=\"6\" width=\"24\" height=\"20\" rx=\"6\"/><path d=\"m11 16.5 3.5 3.5 7-7.5\"/></svg><span>Encaisse</span>"
+      links:
+        - {label: "Mentions légales", href: "{{URL_MENTIONS_LEGALES}}"}
+        - {label: "Confidentialité", href: "{{URL_CONFIDENTIALITE}}"}
+        - {label: "bonjour@example.com", href: "mailto:bonjour@example.com"}
+      legal: "© 2026 Encaisse · modèle de démonstration, contenus fictifs"

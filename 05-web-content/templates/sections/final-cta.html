@@ -1,0 +1,102 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "final-cta",
+  "name": "CTA final (bande sombre)",
+  "objection": "Je passe à l’action",
+  "when": "Dernière section avant les mentions : une bande sombre, une composition centrée, un titre sur deux lignes (le chiffre fort ou l’échéance), une phrase et le CTA primaire en variante claire. Sur grand écran, entrée en rideau (data-enter=\"curtain\").",
+  "avoid": "Un nouvel argument introduit à la fin, un second objectif, deux bandes sombres d’affilée.",
+  "reduced_motion": "La bande est là, sans rideau.",
+  "slots": {
+    "title": {"type": "html", "doc": "Titre sur deux lignes (<br> décidé), segment fort en <span class=\"hl\">.", "example": "Douze places<br><span class=\"hl\">pour le printemps</span>"},
+    "text": {"type": "text", "doc": "Une phrase : ce qui se passe au clic.", "example": "Vous choisissez votre formule sur le billet, la confirmation arrive dans l’heure."},
+    "cta_label": {"type": "text", "doc": "Le verbe du CTA primaire.", "example": "Réserver ma place"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion ou URL de conversion.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\".", "example": true},
+    "note": {"type": "text", "doc": "Ligne d'échéance sous le bouton (vide : rien).", "example": "Clôture des inscriptions le 31 mars 2027"},
+    "decor": {"type": "text", "doc": "Décor du fond de la bande, tracé avec les jetons : rings (cercles concentriques), lines (filets verticaux), dots (trame de points large), none (la trame de la bande seule). Ignoré si decor_html est rempli.", "example": "rings"},
+    "decor_html": {"type": "html", "doc": "Décor sur mesure à la place du décor prédéfini : un <svg> de la marque (motif signature) dessiné en currentColor, qui prend alors la couleur des filets de la bande. Toujours décoratif, posé dans un conteneur aria-hidden. Vide : le décor prédéfini.", "example": ""}
+  }
+}
+</script>
+<style data-section-style="final-cta">
+.s-final {
+  text-align: center;
+}
+
+/* Decor: drawn from the tokens of the band (--line, --line-strong) and
+   faded towards the edges. A custom SVG (decor_html) takes the colour of the
+   lines through currentColor. */
+.s-final__decor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: var(--line);
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(closest-side, black 35%, transparent);
+  mask-image: radial-gradient(closest-side, black 35%, transparent);
+}
+
+.s-final__decor > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.s-final__decor--rings {
+  background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 87px, var(--line) 87px 88.5px);
+}
+
+.s-final__decor--lines {
+  background-image: repeating-linear-gradient(90deg, transparent 0 79px, var(--line) 79px 80.5px);
+  background-position: center;
+}
+
+.s-final__decor--dots {
+  background-image: radial-gradient(circle, var(--line-strong) 1.6px, transparent 2.2px);
+  background-position: center;
+  background-size: 40px 40px;
+}
+
+.s-final__decor--none {
+  display: none;
+}
+
+.s-final__inner {
+  display: grid;
+  justify-items: center;
+  gap: clamp(18px, 1rem + 0.8vw, 28px);
+  max-width: 900px;
+}
+
+.s-final__title {
+  font-size: var(--t-display);
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.s-final__text {
+  max-width: 34em;
+  color: var(--muted);
+}
+
+.s-final .btn {
+  margin-top: 8px;
+}
+
+.s-final__note {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-final section band-dark" aria-labelledby="{{id}}-titre" data-section="final-cta" data-enter="curtain">
+  {{#decor_html}}<div class="s-final__decor" aria-hidden="true" data-qa-decor>{{{decor_html}}}</div>{{/decor_html}}{{^decor_html}}<div class="s-final__decor s-final__decor--{{decor}}" aria-hidden="true" data-qa-decor></div>{{/decor_html}}
+  <div class="wrap s-final__inner" data-reveal-group>
+    <h2 id="{{id}}-titre" class="s-final__title" data-reveal>{{{title}}}</h2>
+    <p class="s-final__text lede" data-reveal>{{text}}</p>
+    <a class="btn btn--light" href="{{cta_href}}" data-track="cta_click" data-cta-position="final"{{#primary}} data-cta="primaire"{{/primary}} data-reveal>{{cta_label}}<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    {{#note}}<p class="s-final__note" data-reveal>{{note}}</p>{{/note}}
+  </div>
+</section>
+<!-- /section:{{id}} -->

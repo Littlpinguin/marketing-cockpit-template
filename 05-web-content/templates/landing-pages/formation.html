@@ -1,0 +1,5472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Répondre aux marchés publics en cinq ateliers · Ferlane Formation</title>
+<meta name="description" content="Cinq matinées en petit groupe pour préparer une vraie offre publique, de la lecture du dossier au dépôt, avec votre mémoire technique relu avant l’envoi.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Répondre aux marchés publics en cinq ateliers">
+<meta property="og:description" content="Cinq mardis matin en visio, huit entreprises par cohorte, votre mémoire relu avant le dépôt.">
+<meta name="generator" content="assemble-landing.py · sha256:0ef4b5996314309e9ff640bf8435ab0a65950a364808a84807fe004f5e24c7b3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+<script>window.dataLayer = window.dataLayer || [];</script>
+<script>window.LANDING_CONFIG = {"page": "formation", "tracking": {"mode": "datalayer", "utm": true, "page": "formation"}, "offer": {"state": "open", "closes_at": "2027-03-26T18:00:00+01:00", "after_close": "waitlist"}};</script>
+<style>
+/* ---- tokens.css ---- */
+/* ============================================================
+   LANDING TOKENS · the brand file of the landing section library
+   ------------------------------------------------------------
+   Every landing page assembled from 05-web-content/templates/
+   (base.css, sections/*.html, assemble-landing.py) reads its brand
+   from this file, and from nowhere else: no colour, font or radius
+   is ever written by hand in base.css or in a section.
+
+   The lines between the brand-tokens markers are GENERATED from
+   01-brand/tokens.json by scripts/build-tokens.py (target and
+   derivation formulas in scripts/build-tokens.toml). Never edit
+   them by hand: change tokens.json, re-run the script;
+   `python3 scripts/build-tokens.py --check` flags any drift.
+
+   Before the wizard, the block carries the NEUTRAL EXAMPLE PALETTE
+   of docs/placeholders.json (deep blue, amber, slate, near white,
+   Inter and JetBrains Mono): the library and its catalogue render
+   and pass the landing QA as they are. Never write a {{...}}
+   placeholder into a CSS value: an invalid custom property silently
+   disables every rule that consumes it.
+
+   What each variable is for (semantic layer in base.css):
+     --brand-primary / -accent / -dark / -light / -white
+                              the five base colours of tokens.json
+     --brand-primary-soft     pastel fills (selected states, tints)
+     --brand-accent-soft      pastel of the accent (badges, notes)
+     --brand-surface-2        tinted cards on the light page
+     --brand-band-2 / -3      raised surfaces inside a dark band
+     --brand-line(-on-dark)   hairlines on light (dark) grounds
+     --brand-shadow(-soft)    card shadows
+     --brand-gradient(-vertical)  signature gradient: rules, rails,
+                              progress line, ticket edge. Never under
+                              running text
+     --brand-muted(-on-dark)  muted text, 4.6:1 on every ground it
+                              sits on
+     --brand-primary-text     accented title segment and links on light
+     --brand-accent-on-dark   the same inside a dark band
+     --brand-on-accent        label of the conversion button (on the
+                              accent fill, 19 px bold)
+     --brand-field-border(-on-dark)  form fields and controls, 3:1
+     --brand-danger           form error messages
+     --font-display / -mono   brand fonts
+     --radius-card / -cta / -badge / -input   radii
+   ============================================================ */
+
+:root {
+  /* brand-tokens:start */
+  /* Généré depuis 01-brand/tokens.json (python3 scripts/build-tokens.py). Ne pas éditer. */
+  --brand-primary: #1E40AF;
+  --brand-accent: #F59E0B;
+  --brand-dark: #0F172A;
+  --brand-light: #F8FAFC;
+  --brand-white: #FFFFFF;
+  --brand-primary-soft: rgba(30, 64, 175, 0.10);
+  --brand-accent-soft: rgba(245, 158, 11, 0.18);
+  --brand-surface-2: #EFF1F3;
+  --brand-band-2: #202739;
+  --brand-band-3: #313748;
+  --brand-line: rgba(15, 23, 42, 0.12);
+  --brand-line-on-dark: rgba(248, 250, 252, 0.16);
+  --brand-shadow: rgba(15, 23, 42, 0.16);
+  --brand-shadow-soft: rgba(15, 23, 42, 0.06);
+  --brand-gradient: linear-gradient(90deg, #1E40AF 0%, #F59E0B 100%);
+  --brand-gradient-vertical: linear-gradient(180deg, #1E40AF 0%, #F59E0B 100%);
+  --brand-muted: #656B78;
+  --brand-muted-on-dark: #9FA4AC;
+  --brand-primary-text: #1E40AF;
+  --brand-accent-on-dark: #F59E0B;
+  --brand-on-accent: #0F172A;
+  --brand-field-border: #8A8F99;
+  --brand-field-border-on-dark: #6C727E;
+  --brand-danger: #A4221A;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Menlo', monospace;
+  --radius-card: 16px;
+  --radius-cta: 999px;
+  --radius-badge: 999px;
+  --radius-input: 8px;
+  /* brand-tokens:end */
+}
+/* ---- base.css ---- */
+/* ==========================================================================
+   base.css · common base of every landing built from the section library
+   --------------------------------------------------------------------------
+   Reads the brand from tokens.css (generated from 01-brand/tokens.json) and
+   lays down, once for the whole page:
+     1. the semantic layer (ink, paper, muted, highlight, lines, focus), which
+        a dark band re-points so that every section works on both grounds;
+     2. rhythm and the fluid type scale, which meets the floors measured by
+        05-web-content/scripts/qa-landing.py (12 px labels, 16 px running
+        text, 18 px running text from 1024 px wide);
+     3. reset, page ground, focus ring, skip link, screen-reader utilities;
+     4. shared components: section head, buttons, cards, labels, badges,
+        check lists, form fields;
+     5. initial states of the reveal engine (reveal.js) and of the scroll
+        theatre (scroll.js). Nothing is hidden unless the engine has started
+        AND motion is allowed (class set on <html> by the script).
+   No colour is written here: everything goes through var(--brand-*).
+   Breakpoints (hard-coded, @media cannot read variables), the same in every
+   section: 1280 · 1100 (two columns become one; pinning from 1101 × 720) ·
+   900 (card pairs stack) · 768 (mobile type and gutter) · 640.
+   ========================================================================== */
+
+/* ---------- 1. Semantic layer ---------- */
+:root {
+  --ink: var(--brand-dark);
+  --paper: var(--brand-light);
+  --surface: var(--brand-white);
+  --surface-2: var(--brand-surface-2);
+  --muted: var(--brand-muted);
+  --hl: var(--brand-primary-text);
+  --tint: var(--brand-primary-soft);
+  --tint-accent: var(--brand-accent-soft);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-field-border);
+  --focus: var(--brand-dark);
+  --gradient: var(--brand-gradient);
+  --gradient-v: var(--brand-gradient-vertical);
+  --danger: var(--brand-danger);
+  --shadow: 0 1px 2px var(--brand-shadow-soft), 0 18px 40px -22px var(--brand-shadow);
+  --shadow-lift: 0 2px 4px var(--brand-shadow-soft), 0 28px 56px -26px var(--brand-shadow);
+
+  /* ---------- 2. Rhythm and type ---------- */
+  --wrap: min(1240px, 100% - 96px);
+  --wrap-narrow: min(820px, 100% - 96px);
+  --section-gap: clamp(64px, 3.2rem + 5vw, 120px);
+  --band-gap: clamp(80px, 4rem + 5vw, 128px);
+  --head-gap: clamp(36px, 1.6rem + 2.4vw, 56px);
+  --intro-gap: clamp(14px, 0.7rem + 0.6vw, 20px);
+  --gutter: clamp(16px, 0.6rem + 1.6vw, 32px);
+  --topbar-h: 0px;
+
+  --t-h1: clamp(2.75rem, 1.5rem + 3.6vw, 4.5rem);
+  --t-display: clamp(2.25rem, 1.2rem + 3.4vw, 4.25rem);
+  --t-h2: clamp(2rem, 1.45rem + 2.2vw, 3.25rem);
+  --t-h3: clamp(1.25rem, 1.12rem + 0.45vw, 1.5rem);
+  --t-number: clamp(2.5rem, 1.9rem + 2.4vw, 4rem);
+  --t-lead: 1.125rem;
+  --t-body: 1rem;
+  --t-small: 0.875rem;
+  --t-label: 0.8125rem;
+  --lh-title: 1.06;
+  --lh-snug: 1.3;
+  --lh-body: 1.6;
+  --w-title: 800;
+  --track-title: -0.03em;
+
+  /* ---------- Motion vocabulary (charter § 5) ---------- */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 0.8s;
+  --dur-fast: 0.25s;
+  --rv-step: 0.1s;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --t-body: 1.125rem;
+    --t-lead: 1.3125rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --wrap: calc(100% - 40px);
+    --wrap-narrow: calc(100% - 40px);
+  }
+}
+
+/* A page that carries the sticky top bar offsets anchors and pinned stages. */
+:root:has(.s-topbar) {
+  --topbar-h: 68px;
+}
+
+/* Dark band: the same semantic names, pointed at the dark palette. */
+.band-dark {
+  --ink: var(--brand-light);
+  --paper: var(--brand-dark);
+  --surface: var(--brand-band-2);
+  --surface-2: var(--brand-band-3);
+  --muted: var(--brand-muted-on-dark);
+  --hl: var(--brand-accent-on-dark);
+  --tint: var(--brand-band-3);
+  --line: var(--brand-line-on-dark);
+  --line-strong: var(--brand-field-border-on-dark);
+  --focus: var(--brand-light);
+  background-color: var(--brand-dark);
+  color: var(--ink);
+}
+
+/* ---------- 3. Reset and page ground ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--topbar-h) + 16px);
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--brand-light);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* The brand matter of the page ground: a fine dot grid, drawn by a masked
+   layer so that its colour comes from the tokens. Light sections never
+   cover it; only dark bands and cards paint. body[data-ground="plain"]
+   removes it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--brand-dark);
+  opacity: 0.07;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  -webkit-mask-size: 24px 24px;
+  mask-size: 24px 24px;
+}
+
+body[data-ground="plain"]::before {
+  content: none;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd,
+ol,
+ul {
+  margin: 0;
+}
+
+ol[role="list"],
+ul[role="list"] {
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--hl);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+/* Titles: balanced lines, never a lone word on the last one. */
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--brand-accent-soft);
+}
+
+/* Focus: a 3 px ring with an offset, dark on light grounds, light in bands. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Skip link: off screen and unpainted until focused (it is not an action of
+   the page, and the landing QA must not count it as a CTA). */
+.skip-link {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 12px 20px;
+  border-radius: var(--radius-input);
+  color: var(--brand-light);
+  font-weight: 600;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  background: var(--brand-dark);
+  transform: none;
+  outline-color: var(--brand-accent);
+}
+
+/* ---------- Layout ---------- */
+.wrap {
+  width: var(--wrap);
+  margin-inline: auto;
+}
+
+.wrap--narrow {
+  width: var(--wrap-narrow);
+  margin-inline: auto;
+}
+
+.section {
+  position: relative;
+  padding-block: var(--section-gap);
+  scroll-margin-top: calc(var(--topbar-h) + 8px);
+}
+
+.section.band-dark {
+  padding-block: var(--band-gap);
+}
+
+/* The ground of a dark band carries the same dot grid, in light ink. */
+.band-dark.section {
+  isolation: isolate;
+  overflow: clip;
+}
+
+.band-dark.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--brand-light);
+  opacity: 0.06;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E");
+  -webkit-mask-size: 24px 24px;
+  mask-size: 24px 24px;
+}
+
+/* ---------- 4. Section head (the same everywhere) ---------- */
+.section-head {
+  display: grid;
+  gap: var(--intro-gap);
+  max-width: 46rem;
+  margin-bottom: var(--head-gap);
+}
+
+.section-head--center {
+  margin-inline: auto;
+  text-align: center;
+  justify-items: center;
+}
+
+.section-title {
+  font-size: var(--t-h2);
+  line-height: var(--lh-title);
+  font-weight: var(--w-title);
+  letter-spacing: var(--track-title);
+  text-wrap: balance;
+}
+
+/* One title structure for the whole page: a strong segment, then the rest. */
+.hl {
+  color: var(--hl);
+}
+
+.section-intro {
+  max-width: 38em;
+  color: var(--muted);
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.lede {
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Labels: short, mono, never a sentence (12 px floor; 13 px here). */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* State badges ("Complet", "Spécimen", "Votre formule"). Never above a title. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 2px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  font-size: var(--t-label);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.badge--accent {
+  border-color: transparent;
+  background: var(--tint-accent);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  --btn-bg: transparent;
+  --btn-ink: var(--ink);
+  --btn-border: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 28px;
+  border: 2px solid var(--btn-border);
+  border-radius: var(--radius-cta);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  text-wrap: balance;
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* The conversion button: the only strong accent of the page. 19 px bold, so
+   that its label is "large text" for WCAG whatever the accent colour. */
+.btn--primary {
+  --btn-bg: var(--brand-accent);
+  --btn-ink: var(--brand-on-accent);
+  --btn-border: var(--brand-accent);
+  min-height: 56px;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px -14px var(--brand-shadow);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 16px 30px -14px var(--brand-shadow);
+}
+
+/* On a dark band, the primary action in its light variant. */
+.btn--light {
+  --btn-bg: var(--brand-light);
+  --btn-ink: var(--brand-dark);
+  --btn-border: var(--brand-light);
+  min-height: 56px;
+  font-size: 1.1875rem;
+  font-weight: 700;
+}
+
+.btn--secondary {
+  --btn-bg: transparent;
+  --btn-ink: var(--ink);
+  --btn-border: var(--line-strong);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn__icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.btn:hover .btn__icon {
+  transform: translateX(3px);
+}
+
+/* Inline action link (reading guide, never a second objective). */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.3em;
+}
+
+/* ---------- Cards (one family) ---------- */
+.card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.card--lift {
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.card--lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+
+/* ---------- Check list (icon drawn by a mask: no colour in the SVG) ---------- */
+.list-check {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.list-check > li {
+  position: relative;
+  padding-left: 34px;
+}
+
+.list-check > li::before {
+  content: "";
+  position: absolute;
+  top: 0.2em;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--tint);
+}
+
+.list-check > li::after {
+  content: "";
+  position: absolute;
+  top: calc(0.2em + 5px);
+  left: 5px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--hl);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.list-cross > li::after {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+  background-color: var(--muted);
+}
+
+.list-cross > li::before {
+  background: var(--surface-2);
+}
+
+/* ---------- Form fields ---------- */
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.field__optional {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.field__input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+textarea.field__input {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Select: native control, chevron drawn by the wrapper (no image under the text). */
+.field__select {
+  position: relative;
+}
+
+.field__select select.field__input {
+  appearance: none;
+  padding-right: 48px;
+}
+
+.field__select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  pointer-events: none;
+  background-color: var(--ink);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.field__input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.field__input:focus-visible {
+  outline-offset: 1px;
+}
+
+.field__input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.field__hint {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.field__error {
+  color: var(--danger);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* Consent box: the label makes the whole row a 44 px target. */
+.consent {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  align-items: start;
+  min-height: 44px;
+  font-size: var(--t-body);
+  line-height: 1.5;
+}
+
+.consent input {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  accent-color: var(--brand-primary);
+}
+
+/* Honeypot: off screen, out of the tab order, hidden from assistive tech. */
+.hp {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-status {
+  font-weight: 600;
+}
+
+/* ---------- 5a. Reveal engine (reveal.js) ----------
+   Hidden only once the script has started AND motion is allowed: the
+   script sets .rv-on on <html>. Opacity and position only: never
+   visibility, which would take titles and buttons out of the keyboard and
+   the accessibility tree until the scroll reaches them. */
+.rv-on [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+  transition-delay: calc(var(--rv-i, 0) * var(--rv-step));
+}
+
+.rv-on [data-reveal="left"] {
+  transform: translate3d(-40px, 0, 0);
+}
+
+.rv-on [data-reveal="right"] {
+  transform: translate3d(40px, 0, 0);
+}
+
+.rv-on [data-reveal="scale"] {
+  transform: scale(0.96);
+}
+
+.rv-on [data-reveal="fade"] {
+  transform: none;
+}
+
+.rv-on [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 5b. Scroll theatre (scroll.js) ----------
+   .sc-motion on <html>: motion allowed. .sc-pin: motion allowed AND at
+   least 1101 × 720 px (the only case where sections pin). */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 120;
+  height: 3px;
+  pointer-events: none;
+  background: var(--gradient);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--read, 0));
+  display: none;
+}
+
+.sc-pin .reading-progress {
+  display: block;
+}
+
+.sc-pin [data-exit="fade"] {
+  opacity: calc(1 - var(--exit, 0));
+  transform: translate3d(0, calc(var(--exit, 0) * -5vh), 0);
+}
+
+.sc-pin [data-enter="fade"] {
+  opacity: var(--enter, 1);
+}
+
+.sc-pin [data-enter="curtain"] {
+  clip-path: inset(0 calc((1 - var(--enter, 1)) * 7%) round calc((1 - var(--enter, 1)) * 56px));
+}
+
+/* ---------- 6. Composed objects kit ----------
+   Decorative compositions for hero objects, problem visuals, journey scenes
+   and showcases. ALWAYS inside a container marked aria-hidden="true" and
+   data-qa-decor: the meaning is carried by the real text next to it, and the
+   QA leaves these texts out of the type floors. Physical objects keep their
+   paper colours inside a dark band too. Compose new objects from these parts
+   before writing new CSS. */
+.obj {
+  --obj-ink: var(--brand-dark);
+  --obj-muted: var(--brand-muted);
+  --obj-paper: var(--brand-white);
+  --obj-line: var(--brand-line);
+  position: relative;
+  color: var(--obj-ink);
+  font-family: var(--font-display);
+  line-height: 1.3;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.obj-sheet,
+.obj-window {
+  position: relative;
+  border: 1px solid var(--obj-line);
+  border-radius: 14px;
+  background: var(--obj-paper);
+  color: var(--obj-ink);
+  box-shadow: 0 1px 2px var(--brand-shadow-soft), 0 30px 60px -30px var(--brand-shadow);
+}
+
+.obj-sheet {
+  padding: 22px;
+}
+
+.obj-stack {
+  position: relative;
+  isolation: isolate;
+}
+
+.obj-stack::before,
+.obj-stack::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid var(--obj-line);
+  border-radius: 14px;
+  background: var(--obj-paper);
+  box-shadow: 0 20px 40px -28px var(--brand-shadow);
+}
+
+.obj-stack::before {
+  transform: rotate(-4deg) translate(-10px, 12px);
+}
+
+.obj-stack::after {
+  transform: rotate(2.5deg) translate(8px, 6px);
+}
+
+.obj-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--obj-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.obj-head b {
+  color: var(--obj-ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.obj-mark {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+}
+
+.obj-push {
+  margin-left: auto;
+}
+
+.obj-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.obj-kpi {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.obj-kpi small {
+  margin-left: 6px;
+  color: var(--obj-muted);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.obj-small {
+  color: var(--obj-muted);
+  font-size: 12px;
+}
+
+.obj-rule {
+  height: 1px;
+  margin: 14px 0;
+  background: var(--obj-line);
+}
+
+.obj-lines {
+  display: grid;
+  gap: 8px;
+}
+
+.obj-lines i {
+  display: block;
+  width: var(--w, 100%);
+  height: 8px;
+  border-radius: 4px;
+  background: var(--obj-line);
+}
+
+.obj-bars {
+  display: grid;
+  gap: 10px;
+}
+
+.obj-bar {
+  display: grid;
+  grid-template-columns: 78px 1fr 38px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.obj-bar b {
+  text-align: right;
+  font-weight: 700;
+}
+
+.obj-bar__track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--brand-surface-2);
+}
+
+.obj-bar__fill {
+  display: block;
+  width: calc(var(--v, 0.5) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand-primary);
+}
+
+.obj-bar.is-hl .obj-bar__fill {
+  background: var(--brand-gradient);
+}
+
+.obj-chip {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 14px 30px -16px var(--brand-shadow);
+}
+
+.obj-chip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+}
+
+.obj-stamp {
+  display: inline-block;
+  padding: 3px 9px;
+  border: 2px solid var(--brand-primary-text);
+  border-radius: 6px;
+  color: var(--brand-primary-text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-5deg);
+}
+
+.obj-window {
+  overflow: hidden;
+}
+
+.obj-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--obj-line);
+  background: var(--brand-surface-2);
+  color: var(--obj-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.obj-window__bar i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--brand-field-border);
+}
+
+.obj-window__bar span {
+  margin-left: 8px;
+}
+
+.obj-window__body {
+  padding: 18px;
+}
+
+.obj-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  border-top: 1px solid var(--obj-line);
+  border-left: 1px solid var(--obj-line);
+  font-size: 11px;
+}
+
+.obj-grid span {
+  overflow: hidden;
+  padding: 5px 7px;
+  border-right: 1px solid var(--obj-line);
+  border-bottom: 1px solid var(--obj-line);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.obj-grid .is-head {
+  background: var(--brand-surface-2);
+  font-weight: 700;
+}
+
+.obj-grid .is-warn {
+  background: var(--brand-accent-soft);
+}
+
+.obj-check {
+  display: grid;
+  gap: 10px;
+}
+
+.obj-check span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.obj-check span::before {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--brand-field-border);
+  border-radius: 4px;
+}
+
+.obj-check .is-done::before {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  box-shadow: inset 0 0 0 3px var(--obj-paper);
+}
+
+.obj-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 120px;
+}
+
+.obj-chart i {
+  flex: 1;
+  height: calc(var(--v, 0.5) * 100%);
+  border-radius: 6px 6px 2px 2px;
+  background: var(--brand-primary-soft);
+}
+
+.obj-chart i.is-hl {
+  background: var(--brand-primary);
+}
+
+.obj-mail {
+  display: grid;
+  gap: 8px;
+}
+
+.obj-mail__from {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.obj-avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--brand-surface-2);
+  color: var(--obj-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.obj-highlight {
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--brand-accent-soft);
+}
+
+.obj-strike {
+  color: var(--obj-muted);
+  text-decoration: line-through;
+}
+
+/* ---------- Reduced motion: nothing moves, everything is visible ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === notes en marge : bloc réservé (chapters, notes, jauge) === */
+
+/* ---------- 7. Margin notes: the source of a figure, in the margin ----------
+   principe : Tufte CSS (Dave Liepmann et contributeurs), MIT. The note is
+   written inside the sentence it documents and floats into the right
+   margin, aligned with the line of its call; the checkbox toggle of Tufte
+   CSS (badly announced by screen readers) is not taken.
+   Markup, inside a paragraph or a list item, right after the figure or at
+   the end of the sentence (phrasing content only, links allowed):
+     <span class="note"><span class="note__body" role="note">Source…</span></span>
+   The call (in the text) and the number (in front of the note) are drawn
+   by one page-wide counter, hidden from assistive tech (alt text ""):
+   the note itself is read in place, announced as a note.
+   - From 1101 px, inside a .wrap--notes: the text column keeps a measure
+     of --note-measure and the note sits beside it, at running-text size
+     (a note is often 12 words or more: never in small type).
+   - Elsewhere (narrow screens, or a section without .wrap--notes): the
+     note opens as a numbered block right under the line of its call.
+   No script, nothing moves, identical in reduced motion. */
+:root {
+  --note-w: 20rem;
+  --note-gap: 2.5rem;
+  --note-measure: 44rem;
+}
+
+body {
+  counter-reset: landing-note;
+}
+
+.note {
+  counter-increment: landing-note;
+}
+
+.note::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  position: relative;
+  top: -0.5em;
+  margin-inline: 0.12em 0.18em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: max(12px, 0.7em);
+  font-weight: 600;
+  line-height: 0;
+}
+
+.note__body {
+  display: block;
+  margin-block: 0.5em 0.75em;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--line-strong);
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: start;
+  text-transform: none;
+  text-wrap: pretty;
+}
+
+.note__body::before {
+  content: counter(landing-note);
+  content: counter(landing-note) / "";
+  margin-inline-end: 0.6em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+@media (min-width: 1101px) {
+  /* The column leaves room: the text keeps its measure on the left, the
+     notes run beside it. Text blocks that carry their own max-width
+     (intro, lede) take the full column so that every note lines up. */
+  .wrap--notes {
+    padding-inline-end: max(calc(var(--note-w) + var(--note-gap)), calc(var(--wrap) - var(--note-measure)));
+  }
+
+  .wrap--notes .section-head,
+  .wrap--notes .section-intro,
+  .wrap--notes .lede {
+    max-width: none;
+  }
+
+  .wrap--notes .note__body {
+    float: right;
+    clear: right;
+    width: var(--note-w);
+    margin-block: 0.15em 0.9em;
+    margin-inline: 0 calc(-1 * (var(--note-w) + var(--note-gap)));
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    line-height: var(--lh-body);
+  }
+}
+
+/* ---------- 8. Narrative gauge (journey, program: field gauge) ----------
+   Where the reader is, in the unit of the story (« Semaine 3 sur 6 »).
+   Each step carries its label (HTML of a phrase, the value in <b>).
+   Decorative double of the step's moment and title: always in a container
+   marked aria-hidden="true" data-qa-decor, never the only carrier of an
+   information.
+   - .gauge--step: the label of one step, before its moment, in the list.
+     Shown wherever the scroll theatre does not run (small screen, reduced
+     motion, short screen, no script); the section hides it under .sc-pin.
+   - .gauge--live: one label in the left margin, read bottom to top like
+     the spine of a book, holding one .gauge__label per step. Hidden by
+     default; under .sc-pin the section shows it and reveals the label of
+     the current step (data-active or data-reached, written by scroll.js),
+     matched by rank in CSS: no script of its own. */
+.gauge {
+  display: none;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.gauge b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.gauge--step {
+  display: inline;
+  color: var(--ink);
+}
+
+.gauge--step::after {
+  content: "·";
+  content: "·" / "";
+  margin-inline: 0.6em;
+  color: var(--muted);
+}
+
+.gauge--live {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.gauge--live .gauge__label {
+  display: none;
+}
+
+.gauge--live b {
+  margin-inline: 0.2em;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* The hairline that carries the label, as on an altimeter. */
+.gauge--live::after {
+  content: "";
+  display: inline-block;
+  inline-size: 56px;
+  block-size: 1px;
+  margin-inline-start: 16px;
+  vertical-align: middle;
+  background: var(--line-strong);
+}
+
+/* === fin notes en marge === */
+
+/* === annotations à main levée : bloc réservé (annotate.js) === */
+/* Hand-drawn annotations: <mark data-annotate="underline | highlight |
+   strike | circle | box | bracket">. principe : Rough Notation, MIT (see
+   annotate.js). Without the engine (no JavaScript, or a page that does not
+   load annotate.js): a sober emphasis in the highlight colour, never the
+   browser's yellow <mark>. With it (html.an-on): the drawn stroke replaces
+   that emphasis. Two per page at most. */
+mark:where([data-annotate]) {
+  background: none;
+  color: inherit;
+}
+
+[data-annotate] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--hl);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+[data-annotate="strike"] {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.07em;
+}
+
+/* A highlighted word is read in ink: muted text on a tint would fall under
+   4.5:1. */
+[data-annotate="highlight"] {
+  text-decoration-line: none;
+  background-color: var(--tint);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* A circle or a frame never breaks across two lines (1 to 3 words), and
+   keeps the neighbouring words out of its stroke (set with or without the
+   engine, so that nothing shifts when it starts). */
+[data-annotate="circle"],
+[data-annotate="box"] {
+  margin-inline: 0.22em;
+  white-space: nowrap;
+}
+
+[data-annotate="bracket"] {
+  margin-inline: 0.3em;
+}
+
+/* Engine running: the element hosts its stroke (stacking context, so that
+   the highlighter passes under the letters and over any card). */
+.an-on [data-annotate] {
+  position: relative;
+  z-index: 0;
+  text-decoration-line: none;
+  background-color: transparent;
+}
+
+/* max-width: none, or the base svg rule (max-width: 100%) collapses the
+   overlay to 0 px when the phrase wraps (the containing block of a split
+   inline has no width), and a 0 px SVG is not painted. */
+.an-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 1px;
+  max-width: none;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.an-svg path {
+  fill: none;
+  stroke: var(--hl);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-annotate="highlight"] > .an-svg {
+  z-index: -1;
+}
+
+[data-annotate="highlight"] > .an-svg path {
+  stroke-linecap: butt;
+  stroke-opacity: 0.2;
+}
+
+.band-dark [data-annotate="highlight"] > .an-svg path {
+  stroke-opacity: 0.34;
+}
+
+/* Drawn once: the dash runs from hidden to whole (pathLength="1"). */
+[data-annotate].an-pending > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+[data-annotate].is-drawn > .an-svg path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--an-dur, 0.8s) var(--ease) var(--an-delay, 0s);
+}
+
+@media (forced-colors: active) {
+  .an-svg path {
+    stroke: CanvasText;
+  }
+}
+/* === fin annotations === */
+/* ---- section : topbar ---- */
+.s-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--line);
+  background: var(--brand-light);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+/* Scrolled: the bar lifts off the page (M10, without blur). */
+.s-topbar[data-scrolled] {
+  box-shadow: 0 12px 28px -24px var(--brand-shadow);
+}
+
+/* Hidden while reading down: off screen, and inert (script), so that neither
+   the logo nor the button can take the focus or reach a screen reader. */
+.s-topbar[data-hidden] {
+  transform: translateY(calc(-100% - 16px));
+  box-shadow: none;
+}
+
+.s-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 100%;
+}
+
+.s-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-topbar__brand img {
+  height: 32px;
+  width: auto;
+}
+
+.s-topbar__mark {
+  width: 30px;
+  height: 30px;
+  color: var(--hl);
+}
+
+.s-topbar__cta.btn {
+  min-height: 44px;
+  padding: 8px 22px;
+  font-size: 0.9375rem;
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+/* The button steps aside (hero button, conversion block or final CTA on
+   screen; on a small screen, the mobile bar shown): transparent AND inert
+   (script), never just transparent. */
+.s-topbar[data-cta-off] .s-topbar__cta.btn {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s-topbar,
+  .s-topbar__cta.btn {
+    transition: none;
+  }
+
+  .s-topbar[data-cta-off] .s-topbar__cta.btn {
+    transform: none;
+  }
+}
+/* ---- section : hero ---- */
+.s-hero {
+  padding-block: clamp(40px, 1.5rem + 5vw, 104px) clamp(64px, 2.5rem + 5vw, 120px);
+}
+
+.s-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(48px, 2rem + 5vw, 112px);
+  align-items: center;
+}
+
+.s-hero__title {
+  font-size: var(--t-h1);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.s-hero__lede {
+  max-width: 30em;
+  margin-top: clamp(20px, 1rem + 1vw, 28px);
+  color: var(--muted);
+}
+
+.s-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 28px;
+  margin-top: clamp(28px, 1.4rem + 1.4vw, 40px);
+}
+
+/* Deadline line: a status dot, then the deadline and its detail. The
+   separator sits in the gap before the detail, inside it: when the detail
+   starts a line of its own, the separator is clipped with the edge, so it
+   never ends or starts a line. A wrapped detail lines up with the deadline
+   text, after the dot. */
+.s-hero__deadline {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.s-hero__deadline::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-top: calc(0.7em - 4px);
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-hero__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  overflow: hidden;
+}
+
+.s-hero__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-hero__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
+}
+
+.s-hero__visual {
+  position: relative;
+  justify-self: end;
+  width: 100%;
+  max-width: 500px;
+}
+
+.s-hero__img {
+  width: 100%;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lift);
+}
+
+.s-hero__doc .obj-sheet {
+  padding: clamp(18px, 0.8rem + 1vw, 28px);
+}
+
+.s-hero__doc .obj-kpi {
+  margin-top: 4px;
+}
+
+.s-hero__chip {
+  bottom: -18px;
+  left: 28px;
+}
+
+/* Rotating word: every word in the same grid cell, the widest sets the box. */
+.s-hero__rot {
+  display: inline-grid;
+}
+
+.s-hero__rot > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(0.25em);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.s-hero__rot > span.is-on {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 1100px) {
+  .s-hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-hero__visual {
+    justify-self: start;
+  }
+}
+/* ---- section : facts-grid ---- */
+.s-facts--flush {
+  padding-top: 0;
+}
+
+.s-facts__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: clamp(28px, 1rem + 1.4vw, 40px) clamp(20px, 0.8rem + 1.6vw, 40px);
+}
+
+/* Columns follow the number of facts, so that no row ends half empty:
+   4 and 8 facts in fours, 3, 5 and 6 in threes, 7 in fours. */
+@media (min-width: 1101px) {
+  .s-facts__list {
+    --facts-cols: 4;
+    grid-template-columns: repeat(var(--facts-cols), minmax(0, 1fr));
+  }
+
+  .s-facts__list:is([data-count="3"], [data-count="5"], [data-count="6"]) {
+    --facts-cols: 3;
+  }
+
+  .s-facts__list[data-count="2"] {
+    --facts-cols: 2;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1100px) {
+  .s-facts__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Each fact sits on its own rule: label, value, note. */
+.s-facts__item {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-strong);
+}
+
+/* Labels, values and notes line up across the columns of a row. */
+@supports (grid-template-rows: subgrid) {
+  .s-facts__item {
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+  }
+}
+
+.s-facts__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-facts__value {
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.s-facts__note {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-facts__cta {
+  margin-top: clamp(32px, 1.4rem + 1.6vw, 48px);
+}
+
+/* Icons: masks filled with the highlight token (no icon font, no colour in
+   the drawings). The label always says what the icon shows. */
+.s-facts__icon {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E");
+  flex: none;
+  width: 20px;
+  height: 20px;
+  background-color: var(--hl);
+  -webkit-mask: var(--ic) center / contain no-repeat;
+  mask: var(--ic) center / contain no-repeat;
+}
+
+.s-facts__icon--calendar {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--clock {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--hourglass {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--pin {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.5'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--screen {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='12' rx='2'/%3E%3Cpath d='M8 20h8M12 16v4'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--people {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--price {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12V4h8l10 10-8 8z'/%3E%3Ccircle cx='7.5' cy='8.5' r='1.5'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--list {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='4' width='14' height='17' rx='2'/%3E%3Cpath d='M9 3h6v3H9zM9 12.5l2 2 4-4'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--language {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v11H10l-6 4z'/%3E%3Cpath d='M8 9h8M8 12h5'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--access {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9.5'/%3E%3Ccircle cx='12' cy='7.5' r='1.2'/%3E%3Cpath d='M7.5 10.5h9M12 10.5v3.5l-2.5 4M12 14l2.5 4'/%3E%3C/svg%3E");
+}
+
+.s-facts__icon--file {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h8l4 4v14H6z'/%3E%3Cpath d='M14 3v4h4M9 12h6M9 16h6'/%3E%3C/svg%3E");
+}
+
+/* Phone: a spec sheet, label on the left, value and note on the right. */
+@media (max-width: 640px) {
+  .s-facts__list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .s-facts__item {
+    grid-row: auto;
+    grid-template-rows: none;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 4px 16px;
+    padding: 14px 0;
+  }
+
+  .s-facts__label {
+    grid-row: 1 / span 2;
+    align-self: start;
+    padding-top: 0.3em;
+    letter-spacing: 0.04em;
+  }
+
+  .s-facts__value,
+  .s-facts__note {
+    grid-column: 2;
+  }
+
+  .s-facts__value {
+    font-size: 1.0625rem;
+  }
+}
+/* ---- section : problem-pinned ---- */
+.s-problem__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+  align-items: start;
+}
+
+.s-problem__head {
+  margin-bottom: clamp(24px, 1rem + 1.5vw, 40px);
+}
+
+.s-problem__visuals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.s-problem__obj {
+  width: 100%;
+  max-width: 400px;
+}
+
+.s-problem__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-problem__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 0 16px;
+  padding: clamp(18px, 0.8rem + 0.8vw, 26px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-problem__item::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient);
+  transition: width 0.6s var(--ease);
+}
+
+.s-problem__num {
+  padding-top: 0.3em;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-problem__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  transition: color 0.4s var(--ease);
+}
+
+.s-problem__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 0.5s var(--ease),
+    opacity 0.4s var(--ease);
+}
+
+.s-problem__body > p {
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 10px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 1100px) {
+  .s-problem__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-problem__visuals {
+    display: none;
+  }
+}
+
+/* Pinned (large screen, motion allowed): the stage holds while the
+   constats pass, 55 vh each. Keep in sync with scroll.js (.sc-pin). */
+.sc-pin .s-problem {
+  padding-block: 0;
+}
+
+.sc-pin .s-problem__track {
+  height: calc(100vh + var(--steps, 4) * 55vh);
+}
+
+.sc-pin .s-problem__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  height: calc(100vh - var(--topbar-h));
+}
+
+.sc-pin .s-problem__stage > .wrap {
+  width: var(--wrap);
+}
+
+.sc-pin .s-problem__visuals {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sc-pin .s-problem__visual {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.sc-pin .s-problem__visual[data-active] {
+  opacity: 1;
+  transform: none;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__body {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.sc-pin .s-problem__item:not([data-active]) .s-problem__title {
+  color: var(--muted);
+}
+
+.sc-pin .s-problem__item[data-active]::before {
+  width: 100%;
+}
+/* ---- section : letter ---- */
+/* A letter set like a book page: measure of 60 to 70 characters, drop cap,
+   small caps for the salutation, a detached quote, a signature drawn once.
+   The letter text reads var(--font-editorial), an OPTIONAL brand token (a
+   text face, often a serif) that tokens.css does not generate: without it,
+   the body font of the page. */
+/* Measure in em, not ch: the "0" of most sans faces is wide, and 60ch
+   would let French text run past 70 characters. 31em holds about 65. */
+.s-letter {
+  --letter-measure: 31em;
+}
+
+.s-letter__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(20px, 1rem + 1vw, 32px);
+}
+
+.s-letter__head {
+  margin-bottom: 0;
+}
+
+/* Margin: portrait or initials, who writes, from where and when. */
+.s-letter__margin {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 16px;
+  align-items: center;
+}
+
+.s-letter__portrait {
+  position: relative;
+  grid-row: span 3;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+/* A ring in the brand gradient, drawn above the disc and cut out by a mask:
+   the initials sit on a plain ground. */
+.s-letter__portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--gradient);
+  -webkit-mask: linear-gradient(var(--ink) 0 0) content-box, linear-gradient(var(--ink) 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(var(--ink) 0 0) content-box exclude, linear-gradient(var(--ink) 0 0);
+  pointer-events: none;
+}
+
+.s-letter__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-letter__initials {
+  color: var(--hl);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.s-letter__from {
+  display: grid;
+  line-height: var(--lh-snug);
+}
+
+.s-letter__name {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.s-letter__role,
+.s-letter__date,
+.s-letter__note {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-letter__date {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.02em;
+}
+
+/* The sheet: paper laid on the page, its top edge in the brand gradient. */
+.s-letter__sheet {
+  position: relative;
+  padding: clamp(24px, 0.6rem + 4.6vw, 76px) clamp(20px, 0.4rem + 4.6vw, 76px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-family: var(--font-editorial, var(--font-body, var(--font-display)));
+  font-size: clamp(1.0625rem, 0.95rem + 0.45vw, 1.25rem);
+  line-height: 1.72;
+}
+
+.s-letter__sheet::before {
+  content: "";
+  position: absolute;
+  inset: -1px -1px auto;
+  height: 4px;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background: var(--gradient);
+}
+
+.s-letter__text {
+  max-inline-size: var(--letter-measure);
+}
+
+.s-letter__text > * + * {
+  margin-top: 1.05em;
+}
+
+.s-letter__p {
+  text-wrap: pretty;
+  hyphens: manual;
+}
+
+.s-letter__salute {
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+}
+
+/* Drop cap over three lines where the engine knows initial-letter; elsewhere
+   the opening line goes in small caps (a floated fallback breaks with the
+   font metrics). */
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  .s-letter__p--lead::first-letter {
+    -webkit-initial-letter: 3;
+    initial-letter: 3;
+    margin-inline-end: 0.12em;
+    color: var(--hl);
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+}
+
+@supports not ((initial-letter: 3) or (-webkit-initial-letter: 3)) {
+  .s-letter__p--lead::first-line {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Detached quote: the same words as the text, larger, its opening guillemet
+   hanging in the margin. Hidden from screen readers (already read). */
+.s-letter__pull {
+  margin-block: 1.6em;
+}
+
+.s-letter__pull p {
+  max-inline-size: 22em;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.125rem);
+  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-indent: -0.62em;
+  text-wrap: balance;
+}
+
+.s-letter__pull p::before {
+  content: "\00AB\00A0";
+  color: var(--hl);
+}
+
+.s-letter__pull p::after {
+  content: "\00A0\00BB";
+  color: var(--hl);
+}
+
+/* Signature: drawn once when it comes into view (reveal.js sets .is-in),
+   stroke after stroke. Without the engine or with reduced motion: drawn. */
+.s-letter__sign {
+  margin-top: 1.8em;
+}
+
+.s-letter__sig {
+  width: min(100%, 15rem);
+  height: auto;
+  margin: 0.2em 0 0 -0.3em;
+  overflow: visible;
+  color: var(--hl);
+}
+
+.s-letter__sig path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rv-on .s-letter__sig[data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+.rv-on .s-letter__sig path {
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.45, 0.05, 0.35, 1);
+}
+
+.rv-on .s-letter__sig:not(.is-in) path {
+  stroke-dashoffset: 1.05;
+}
+
+.rv-on .s-letter__sig path:nth-child(2) { transition-delay: 0.75s; }
+.rv-on .s-letter__sig path:nth-child(3) { transition-delay: 1s; }
+.rv-on .s-letter__sig path:nth-child(4) { transition-delay: 1.5s; }
+.rv-on .s-letter__sig path:nth-child(5) { transition-delay: 1.8s; }
+.rv-on .s-letter__sig path:nth-child(6) { transition-delay: 2.2s; }
+
+.s-letter__signed {
+  margin-top: 0.2em;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.s-letter__ps {
+  margin-top: 2em;
+  padding-top: 1.2em;
+  border-top: 1px solid var(--line);
+}
+
+.s-letter__ps-mark {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.s-letter__action {
+  margin-top: 1.4em;
+  font-family: var(--font-display);
+}
+
+/* One key paragraph inks word by word as it rises to the reading line:
+   scroll-driven (animation-timeline: view()), where supported and motion is
+   allowed. The script splits the words only in that case; elsewhere the
+   paragraph stays plain, fully inked. */
+@property --letter-ink {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@keyframes s-letter-ink {
+  from { --letter-ink: 0; }
+  to { --letter-ink: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .s-letter__p[data-split] {
+      animation: s-letter-ink linear both;
+      animation-timeline: view();
+      animation-range: cover 12% cover 50%;
+    }
+
+    .s-letter__p[data-split] .s-letter__w {
+      opacity: clamp(0.2, calc(var(--letter-ink) * (var(--n) + 1) - var(--i)), 1);
+    }
+  }
+}
+
+/* Wide screens: the margin column on the left stays in view while the
+   letter scrolls (sticky column, no pinning). */
+@media (min-width: 1101px) {
+  .s-letter__grid {
+    grid-template-columns: minmax(0, 14rem) minmax(0, 50rem);
+    grid-template-areas:
+      ". head"
+      "margin sheet";
+    justify-content: center;
+    column-gap: clamp(40px, 1rem + 3.6vw, 88px);
+  }
+
+  .s-letter__head {
+    grid-area: head;
+  }
+
+  .s-letter__margin {
+    grid-area: margin;
+    position: sticky;
+    top: calc(var(--topbar-h) + 40px);
+    align-self: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 12px;
+    padding-top: clamp(24px, 0.6rem + 4.6vw, 76px);
+  }
+
+  .s-letter__portrait {
+    grid-row: auto;
+    width: 112px;
+    margin-bottom: 8px;
+  }
+
+  .s-letter__initials {
+    font-size: 2.25rem;
+  }
+
+  .s-letter__sheet {
+    grid-area: sheet;
+  }
+
+}
+
+@media (min-width: 1281px) {
+  /* Margin notes (slot notes): the sheet narrows and leaves the right
+     margin to the notes. The sheet (position: relative) is the containing
+     block: each note leaves it on the right, without a float that would
+     push the text aside. Declared inline, its static position stays on the
+     line of its call (a block would drop to the next line). One note per
+     paragraph at most, never in two paragraphs in a row: two notes close
+     to each other would overlap (no clear for absolute boxes). From 1281 px
+     only, with narrower notes (16rem), so the letter keeps a readable
+     measure; below, notes open under their line. */
+  .s-letter__grid.s-letter__grid--notes {
+    --note-w: 16rem;
+    grid-template-columns: minmax(0, 12rem) minmax(0, 46rem);
+    justify-content: start;
+    padding-inline-end: calc(var(--note-w) + var(--note-gap));
+    column-gap: clamp(32px, 1rem + 2vw, 56px);
+  }
+
+  .s-letter__grid--notes .note__body {
+    display: inline;
+    position: absolute;
+    left: calc(100% + var(--note-gap));
+    width: var(--note-w);
+    margin: 0;
+    font-family: var(--font-body, var(--font-display));
+    font-size: var(--t-body);
+    line-height: 1.5;
+  }
+}
+/* ---- section : program ---- */
+.s-program__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+  align-items: start;
+}
+
+.s-program__list {
+  position: relative;
+}
+
+.s-program__list::before,
+.s-program__list::after {
+  content: "";
+  position: absolute;
+  top: 30px;
+  bottom: 30px;
+  left: 7px;
+  width: 2px;
+  border-radius: 2px;
+}
+
+.s-program__list::before {
+  background: var(--line);
+}
+
+.s-program__list::after {
+  background: var(--gradient-v);
+  transform-origin: 50% 0;
+  transform: scaleY(var(--rail, 1));
+}
+
+.s-program__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  gap: 4px 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-program__item:last-child {
+  border-bottom: 0;
+}
+
+.s-program__dot {
+  position: relative;
+  z-index: 1;
+  grid-row: span 2;
+  width: 16px;
+  height: 16px;
+  margin-top: 6px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--paper);
+  transition:
+    background-color 0.4s var(--ease),
+    border-color 0.4s var(--ease);
+}
+
+.s-program__item[data-reached="true"] .s-program__dot {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+}
+
+.s-program__when {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-program__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-program__duration {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-badge);
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.s-program__text {
+  grid-column: 2 / span 2;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-program__specimen {
+  position: sticky;
+  top: calc(var(--topbar-h) + 32px);
+}
+
+.s-program__figure {
+  display: grid;
+  gap: 16px;
+  padding: clamp(20px, 1rem + 1vw, 32px);
+  border-radius: var(--radius-card);
+  background: var(--surface-2);
+}
+
+.s-program__figure .obj {
+  transform: rotate(-1.5deg);
+}
+
+.s-program__figure figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 1100px) {
+  .s-program__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-program__specimen {
+    position: static;
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-program__item {
+    grid-template-columns: 16px minmax(0, 1fr);
+  }
+
+  .s-program__duration {
+    grid-column: 2;
+    grid-row: auto;
+    justify-self: start;
+    margin-top: 8px;
+  }
+
+  .s-program__text {
+    grid-column: 2;
+  }
+}
+/* Narrative gauge (optional field gauge of each module; the .gauge
+   component lives in base.css). With motion on a large screen, a track as
+   tall as the list, in the left margin, holds one label centred in the
+   viewport: the label of the last module reached by the reading line
+   (data-reached, written by scroll.js on the rail), matched by rank
+   without a script (twelve modules at most). Elsewhere: each module shows
+   its own label before its date. */
+.s-program__run {
+  position: relative;
+}
+
+.s-program__track {
+  display: none;
+}
+
+.sc-pin .s-program__item .gauge--step {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+  .sc-pin .s-program__track {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: calc(100% + 20px);
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .sc-pin .s-program__gauge {
+    display: block;
+    position: sticky;
+    top: 50vh;
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.s-program__run:not(:has([data-reached="true"])) .s-program__gauge .gauge__label:first-child,
+.s-program__run:has(.s-program__item:last-child[data-reached="true"]) .s-program__gauge .gauge__label:last-child,
+.s-program__run:has(.s-program__item:nth-child(1)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(1),
+.s-program__run:has(.s-program__item:nth-child(2)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(2),
+.s-program__run:has(.s-program__item:nth-child(3)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(3),
+.s-program__run:has(.s-program__item:nth-child(4)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(4),
+.s-program__run:has(.s-program__item:nth-child(5)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(5),
+.s-program__run:has(.s-program__item:nth-child(6)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(6),
+.s-program__run:has(.s-program__item:nth-child(7)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(7),
+.s-program__run:has(.s-program__item:nth-child(8)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(8),
+.s-program__run:has(.s-program__item:nth-child(9)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(9),
+.s-program__run:has(.s-program__item:nth-child(10)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(10),
+.s-program__run:has(.s-program__item:nth-child(11)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(11),
+.s-program__run:has(.s-program__item:nth-child(12)[data-reached="true"] + :not([data-reached="true"])) .s-program__gauge .gauge__label:nth-child(12) {
+  display: inline;
+}
+/* ---- section : quote-interlude ---- */
+.s-quote {
+  padding-block: clamp(96px, 4rem + 8vw, 184px);
+}
+
+.s-quote.band-dark {
+  padding-block: clamp(104px, 4.5rem + 8vw, 200px);
+}
+
+/* Asymmetric: the quote starts a little in from the column, and its opening
+   guillemet hangs in that margin, so the letters align on one edge. */
+.s-quote__fig {
+  display: grid;
+  gap: clamp(28px, 1.2rem + 1.6vw, 48px);
+  max-width: 64rem;
+  padding-inline-start: max(28px, 6vw);
+}
+
+.s-quote__text {
+  font-size: clamp(1.75rem, 1.05rem + 2.6vw, 3.375rem);
+  line-height: 1.14;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.s-quote__text p {
+  position: relative;
+  max-width: 22em;
+  text-wrap: balance;
+}
+
+.s-quote__text p::before {
+  content: "«";
+  content: "«" / "";
+  position: absolute;
+  top: 0;
+  right: 100%;
+  padding-right: 0.16em;
+  color: var(--hl);
+}
+
+.s-quote__text p::after {
+  content: "\00a0»";
+  content: "\00a0»" / "";
+  color: var(--hl);
+}
+
+.s-quote__who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  line-height: 1.45;
+}
+
+.s-quote__rule {
+  flex: none;
+  align-self: center;
+  width: 40px;
+  height: 3px;
+  background: var(--gradient);
+}
+
+.s-quote__name {
+  font-weight: 700;
+}
+
+.s-quote__role,
+.s-quote__context {
+  color: var(--muted);
+}
+
+.s-quote__context {
+  flex-basis: 100%;
+  padding-inline-start: 54px;
+  font-size: var(--t-small);
+}
+
+@media (max-width: 640px) {
+  .s-quote__context {
+    padding-inline-start: 0;
+  }
+}
+/* ---- section : showcase-dark ---- */
+.s-showcase__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 1rem + 5vw, 96px);
+  align-items: center;
+}
+
+.s-showcase__object {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.s-showcase__folder {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  border-radius: 18px;
+  background: var(--brand-band-2);
+  box-shadow: inset 0 0 0 1px var(--brand-line-on-dark);
+}
+
+.s-showcase__sheet {
+  --lift: 0px;
+  position: absolute;
+  top: 8%;
+  left: 6%;
+  width: 70%;
+  height: 52%;
+  padding: 18px 20px;
+  transform: translate(calc(var(--k) * 9%), calc(var(--k) * 22% - var(--lift))) rotate(calc((var(--k) - 1.5) * 1.6deg));
+  transition:
+    transform 0.45s var(--ease),
+    opacity 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.s-showcase__tab {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--brand-primary-soft);
+  color: var(--brand-primary-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.s-showcase__folder:has([data-on]) .s-showcase__sheet:not([data-on]) {
+  opacity: 0.55;
+}
+
+.s-showcase__sheet[data-on] {
+  --lift: 22px;
+  border-color: var(--brand-accent);
+}
+
+.s-showcase__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.s-showcase__card {
+  padding: 22px;
+  box-shadow: none;
+  transition:
+    border-color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.s-showcase__card[data-on] {
+  border-color: var(--brand-accent);
+  transform: translateY(-3px);
+}
+
+.s-showcase__num {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-showcase__title {
+  font-size: 1.1875rem;
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+.s-showcase__text {
+  margin-top: 8px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 1100px) {
+  .s-showcase__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-showcase__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-showcase__sheet {
+    padding: 12px 14px;
+  }
+}
+/* ---- section : people ---- */
+.s-people__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
+}
+
+.s-people__card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  overflow: hidden;
+}
+
+/* The portrait fills its column: width is fixed by the column, the 4:5 ratio
+   gives the height, and min-height stretches it to the card when the
+   biography is taller. Without width: 100%, the ratio would size it from the
+   card height and push it out of its column. */
+.s-people__portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--tint);
+}
+
+/* rounded: a block set in from the card edge, at the radius of the tokens. */
+.s-people__grid[data-shape="rounded"] .s-people__portrait {
+  width: calc(100% - 24px);
+  min-height: calc(100% - 24px);
+  margin: 12px 0 12px 12px;
+  border-radius: max(8px, calc(var(--radius-card) - 4px));
+}
+
+.s-people__portrait img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-people__initials {
+  position: relative;
+  z-index: 1;
+  color: var(--hl);
+  font-size: clamp(2.5rem, 1.8rem + 2vw, 3.75rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.s-people__body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: clamp(20px, 1rem + 1vw, 32px);
+}
+
+.s-people__name {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-people__role {
+  color: var(--hl);
+  font-weight: 600;
+}
+
+.s-people__bio {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.s-people__bio dt {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-people__bio dd {
+  text-wrap: pretty;
+}
+
+@media (max-width: 640px) {
+  .s-people__card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-people__portrait {
+    aspect-ratio: 16 / 9;
+  }
+
+  .s-people__grid[data-shape="rounded"] .s-people__portrait {
+    margin: 12px 12px 0;
+  }
+}
+/* ---- section : testimonials ---- */
+.s-testi__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
+  align-items: start;
+}
+
+.s-testi__card {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 1rem + 1.2vw, 32px);
+}
+
+.s-testi__card:nth-child(2) {
+  margin-top: clamp(0px, 3vw, 40px);
+}
+
+.s-testi__result {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.s-testi__result::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-bottom: 14px;
+  border-radius: 3px;
+  background: var(--gradient);
+}
+
+.s-testi__quote p {
+  text-wrap: pretty;
+}
+
+.s-testi__quote p::before {
+  content: "«\00a0";
+}
+
+.s-testi__quote p::after {
+  content: "\00a0»";
+}
+
+.s-testi__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.s-testi__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--hl);
+  font-size: var(--t-small);
+  font-weight: 800;
+}
+
+.s-testi__name {
+  display: block;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-testi__role {
+  display: block;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+@media (max-width: 1100px) {
+  .s-testi__grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 680px;
+  }
+
+  .s-testi__card:nth-child(2) {
+    margin-top: 0;
+  }
+}
+/* ---- section : for-whom ---- */
+.s-forwhom__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.6vw, 32px);
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.s-forwhom__col {
+  padding: clamp(24px, 1rem + 1.4vw, 40px);
+  border-radius: var(--radius-card);
+}
+
+.s-forwhom__col--no {
+  border: 1.5px dashed var(--line-strong);
+}
+
+.s-forwhom__title {
+  margin-bottom: 20px;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .s-forwhom__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* ---- section : offer-ticket ---- */
+.s-offer__ticket {
+  --notch: 22px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  max-width: 1100px;
+  margin-inline: auto;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) + 8px);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+  transform: perspective(1600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.6s var(--ease);
+}
+
+.s-offer__ticket::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -1px;
+  left: 32px;
+  right: 32px;
+  height: 5px;
+  border-radius: 0 0 5px 5px;
+  background: var(--gradient);
+}
+
+.s-offer__main {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(28px, 1rem + 2.6vw, 52px);
+}
+
+.s-offer__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.s-offer__name {
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-offer__meta {
+  color: var(--muted);
+}
+
+.s-offer__formulas {
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-offer__legend {
+  margin-bottom: 10px;
+  padding: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-offer__seg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.s-offer__opt {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  min-height: 64px;
+  padding: 12px 44px 12px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.s-offer__opt:has(:checked) {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--brand-primary);
+}
+
+.s-offer__opt:has(:checked)::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--hl);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.s-offer__opt:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.s-offer__opt-label {
+  font-weight: 700;
+}
+
+.s-offer__opt-price {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-offer__pricebox {
+  display: grid;
+  gap: 6px;
+  padding-top: 6px;
+}
+
+.s-offer__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: clamp(2.5rem, 2rem + 1.8vw, 3.5rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-offer__unit {
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.s-offer__note {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-offer__discount {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--tint-accent);
+  text-wrap: pretty;
+}
+
+.s-offer__action {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* Closed: the button stays, visibly unavailable, its label readable at
+   4.5:1 (muted ink on the tinted surface, never an opacity). */
+.s-offer__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* The way out of a closed offer: a real button, same size as the main one. */
+.s-offer__notify {
+  min-height: 56px;
+}
+
+/* Single formula: a horizontal ticket. Price and action side by side, then
+   the stub below with its two columns, so no column is left half empty. */
+.s-offer__ticket--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Rows without gaps: the action spans spare rows that must stay at zero
+   height; the left column keeps its rhythm by margins. */
+.s-offer__ticket--single .s-offer__main {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0 clamp(32px, 1rem + 3vw, 64px);
+}
+
+.s-offer__ticket--single .s-offer__main > * {
+  grid-column: 1;
+}
+
+.s-offer__ticket--single .s-offer__main > * + :not(.s-offer__action) {
+  margin-top: 18px;
+}
+
+.s-offer__ticket--single .s-offer__main > .s-offer__action {
+  grid-column: 2;
+  grid-row: 1 / span 8;
+  align-self: center;
+}
+
+.s-offer__ticket--single .s-offer__stub {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px clamp(32px, 1rem + 3vw, 64px);
+  border-left: 0;
+  border-top: 2px dashed var(--line-strong);
+  border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+}
+
+.s-offer__ticket--single .s-offer__prereq {
+  grid-column: 1 / -1;
+}
+
+.s-offer__ticket--single .s-offer__stub::before,
+.s-offer__ticket--single .s-offer__stub::after {
+  top: calc(var(--notch) / -2 - 1px);
+  bottom: auto;
+}
+
+.s-offer__ticket--single .s-offer__stub::before {
+  left: calc(var(--notch) / -2);
+}
+
+.s-offer__ticket--single .s-offer__stub::after {
+  left: auto;
+  right: calc(var(--notch) / -2);
+}
+
+.s-offer__deadline {
+  display: flex;
+  justify-content: center;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Deadline line, centred: the line shrinks to its text, so the deadline and
+   its detail grow only once the detail has wrapped to a line of its own;
+   each then fills its line and centres its text. The separator sits in the
+   gap before the detail, inside it: on a line of its own the detail starts
+   at the left edge and the separator is clipped with it. Never a dot alone
+   at a line end or start, whatever the width or the text. */
+.s-offer__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  padding-inline: 4px;
+  overflow: hidden;
+}
+
+.s-offer__date,
+.s-offer__detail {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.s-offer__date::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 10px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+  vertical-align: middle;
+}
+
+.s-offer__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-offer__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
+}
+
+.s-offer__stub {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 28px;
+  padding: clamp(28px, 1rem + 2.6vw, 52px);
+  border-left: 2px dashed var(--line-strong);
+  border-radius: 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px) 0;
+  background: var(--surface-2);
+}
+
+.s-offer__stub::before,
+.s-offer__stub::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--notch) / -2 - 1px);
+  width: var(--notch);
+  height: var(--notch);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.s-offer__stub::before {
+  top: calc(var(--notch) / -2);
+}
+
+.s-offer__stub::after {
+  bottom: calc(var(--notch) / -2);
+}
+
+.s-offer__col-title {
+  margin-bottom: 14px;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.s-offer__steps {
+  display: grid;
+  gap: 12px;
+  counter-reset: suite;
+}
+
+.s-offer__steps > li {
+  position: relative;
+  padding-left: 38px;
+  counter-increment: suite;
+}
+
+.s-offer__steps > li::before {
+  content: counter(suite);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.s-offer__prereq {
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.s-offer__conditions {
+  max-width: 62ch;
+  margin: clamp(24px, 1rem + 1vw, 36px) auto 0;
+  color: var(--muted);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .s-offer__ticket {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main > .s-offer__action {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 18px;
+  }
+
+  .s-offer__ticket--single .s-offer__stub {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__stub {
+    border-left: 0;
+    border-top: 2px dashed var(--line-strong);
+    border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+  }
+
+  .s-offer__stub::before,
+  .s-offer__stub::after {
+    top: calc(var(--notch) / -2 - 1px);
+    bottom: auto;
+  }
+
+  .s-offer__stub::before {
+    left: calc(var(--notch) / -2);
+  }
+
+  .s-offer__stub::after {
+    left: auto;
+    right: calc(var(--notch) / -2);
+  }
+}
+/* ---- section : faq ---- */
+.s-faq__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.9fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-faq__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-faq__item {
+  border-bottom: 1px solid var(--line);
+}
+
+.s-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 64px;
+  padding: 18px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.s-faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.s-faq__q h3 {
+  font-size: 1.1875rem;
+  line-height: var(--lh-snug);
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.s-faq__icon {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  transition: transform var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.s-faq__icon::before,
+.s-faq__icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 2px;
+  margin: -1px 0 0 -6px;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.s-faq__icon::after {
+  transform: rotate(90deg);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.s-faq__item[open] .s-faq__icon {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+}
+
+.s-faq__item[open] .s-faq__icon::after {
+  transform: rotate(0deg);
+}
+
+.s-faq__a {
+  max-width: 62ch;
+  padding: 0 52px 24px 0;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-faq__card {
+  position: sticky;
+  top: calc(var(--topbar-h) + 32px);
+  display: grid;
+  gap: 12px;
+  padding: clamp(24px, 1rem + 1.4vw, 36px);
+}
+
+.s-faq__card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gradient);
+}
+
+.s-faq__card-title {
+  font-size: 1.375rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-faq__card-meta {
+  color: var(--muted);
+}
+
+.s-faq__card .btn {
+  margin-top: 8px;
+}
+
+.s-faq__contact {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+@media (max-width: 1100px) {
+  .s-faq__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-faq__card {
+    position: static;
+    max-width: 520px;
+  }
+}
+/* ---- section : legal ---- */
+.s-legal__inner {
+  max-width: 980px;
+}
+
+.s-legal__title {
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-legal__list {
+  border-top: 1px solid var(--line);
+}
+
+.s-legal__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.32fr) minmax(0, 1fr);
+  gap: 8px 32px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-legal__row dt {
+  font-weight: 700;
+}
+
+.s-legal__row dd {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-legal__row a[target="_blank"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.3em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 640px) {
+  .s-legal__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* ---- section : final-cta ---- */
+.s-final {
+  text-align: center;
+}
+
+/* Decor: drawn from the tokens of the band (--line, --line-strong) and
+   faded towards the edges. A custom SVG (decor_html) takes the colour of the
+   lines through currentColor. */
+.s-final__decor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: var(--line);
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(closest-side, black 35%, transparent);
+  mask-image: radial-gradient(closest-side, black 35%, transparent);
+}
+
+.s-final__decor > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.s-final__decor--rings {
+  background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 87px, var(--line) 87px 88.5px);
+}
+
+.s-final__decor--lines {
+  background-image: repeating-linear-gradient(90deg, transparent 0 79px, var(--line) 79px 80.5px);
+  background-position: center;
+}
+
+.s-final__decor--dots {
+  background-image: radial-gradient(circle, var(--line-strong) 1.6px, transparent 2.2px);
+  background-position: center;
+  background-size: 40px 40px;
+}
+
+.s-final__decor--none {
+  display: none;
+}
+
+.s-final__inner {
+  display: grid;
+  justify-items: center;
+  gap: clamp(18px, 1rem + 0.8vw, 28px);
+  max-width: 900px;
+}
+
+.s-final__title {
+  font-size: var(--t-display);
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.s-final__text {
+  max-width: 34em;
+  color: var(--muted);
+}
+
+.s-final .btn {
+  margin-top: 8px;
+}
+
+.s-final__note {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+/* ---- section : footer ---- */
+.s-footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--line);
+}
+
+.s-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+}
+
+.s-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-footer__mark {
+  width: 26px;
+  height: 26px;
+  color: var(--hl);
+}
+
+.s-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+}
+
+.s-footer__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+.s-footer__legal {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+/* ---- section : sticky-bar ---- */
+.s-sticky {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body:has(.s-sticky) {
+    padding-bottom: 88px;
+  }
+
+  .s-sticky {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    display: block;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    background: var(--brand-light);
+    box-shadow: 0 -12px 30px -20px var(--brand-shadow);
+    visibility: hidden;
+    transform: translateY(110%);
+    transition:
+      transform 0.35s var(--ease),
+      visibility 0s linear 0.35s;
+  }
+
+  .s-sticky[data-visible] {
+    visibility: visible;
+    transform: none;
+    transition: transform 0.35s var(--ease);
+  }
+}
+
+.s-sticky__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.s-sticky__text {
+  display: grid;
+  line-height: 1.3;
+}
+
+.s-sticky__text strong {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.s-sticky__text span {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-sticky__btn.btn {
+  flex: none;
+  min-height: 48px;
+  padding: 10px 22px;
+}
+</style>
+</head>
+<body data-page-slug="formation">
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<div class="reading-progress" aria-hidden="true"></div>
+<!-- section:topbar -->
+<header id="topbar" class="s-topbar" data-section="topbar">
+  <div class="wrap s-topbar__inner">
+    <p class="s-topbar__brand"><svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11l7 7v17H8z"/><path d="M19 4v7h7"/><path d="m12.5 19.5 3 3 6-7"/></svg><span>Ferlane</span></p>
+    <a class="btn btn--secondary s-topbar__cta" href="#offre" data-track="cta_click" data-cta-position="topbar" data-cta="primaire">Réserver</a>
+  </div>
+</header>
+<!-- /section:topbar -->
+<main id="contenu">
+<!-- section:hero -->
+<section id="hero" class="s-hero section" aria-labelledby="hero-titre" data-section="hero">
+  <div class="wrap s-hero__grid">
+    <div class="s-hero__text">
+      <h1 id="hero-titre" class="s-hero__title">Répondre aux marchés publics<br><span class="hl">en cinq ateliers</span></h1>
+      <p class="s-hero__lede lede">Cinq matinées en petit groupe pour préparer une vraie offre publique, avec votre mémoire technique relu avant l’envoi.</p>
+      <div class="s-hero__actions">
+        <a class="btn btn--primary" href="#offre" data-track="cta_click" data-cta-position="hero" data-cta="primaire">Réserver ma place<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <p class="s-hero__deadline"><span class="s-hero__when"><span data-offer-countdown data-many="Inscriptions closes dans {n} jours" data-one="Inscriptions closes demain" data-zero="Inscriptions closes ce soir">Inscriptions jusqu’au 26 mars 2027</span> <span class="s-hero__detail"><span class="s-hero__sep" aria-hidden="true">·</span>8 entreprises par cohorte</span></span></p>
+      </div>
+    </div>
+    <div class="s-hero__visual" data-reveal="right">
+      <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+  <div class="obj-stack">
+    <div class="obj-sheet">
+      <div class="obj-head"><span class="obj-mark"></span><b>Mémoire technique</b><span class="obj-stamp obj-push">Relu</span></div>
+      <div class="obj-rule"></div>
+      <p class="obj-title">Entretien des espaces verts · lot 2</p>
+      <p class="obj-small">Réponse au critère « valeur technique », 60 % de la note</p>
+      <div class="obj-rule"></div>
+      <div class="obj-check">
+        <span class="is-done">1. Moyens humains et encadrement</span>
+        <span class="is-done">2. Méthode par saison</span>
+        <span class="is-done">3. Planning daté des passages</span>
+        <span>4. Gestion des déchets verts</span>
+      </div>
+      <div class="obj-rule"></div>
+      <div class="obj-lines"><i style="--w:94%"></i><i style="--w:78%"></i><i style="--w:86%"></i></div>
+      <p class="obj-small" style="margin-top:12px">Note de relecture : <span class="obj-highlight">ajoutez les photos du chantier de 2025</span></p>
+      <div class="obj-rule"></div>
+      <div class="obj-head"><span>Remise des offres · 12 mars, 12 h</span><span class="obj-push">p. 4 / 18</span></div>
+    </div>
+  </div>
+  <span class="obj-chip s-hero__chip"><i></i>Atelier 5 · relecture croisée</span>
+</div>
+    </div>
+  </div>
+</section>
+<!-- /section:hero -->
+<!-- section:essentiel -->
+<section id="essentiel" class="s-facts section s-facts--flush" aria-labelledby="essentiel-titre" data-section="facts-grid">
+  <div class="wrap">
+    <h2 id="essentiel-titre" class="sr-only">La cohorte<br><span class="hl">en pratique</span></h2>
+    
+    <dl class="s-facts__list" data-count="6" data-reveal-group>
+      <div class="s-facts__item" data-reveal>
+        <dt class="s-facts__label"><span class="s-facts__icon s-facts__icon--calendar" aria-hidden="true"></span>Quand</dt>
+        <dd class="s-facts__value">Du 6 avril<br>au 4 mai 2027</dd>
+        <dd class="s-facts__note">Cinq mardis, de 9 h à 12 h</dd>
+      </div><div class="s-facts__item" data-reveal>
+        <dt class="s-facts__label"><span class="s-facts__icon s-facts__icon--screen" aria-hidden="true"></span>Format</dt>
+        <dd class="s-facts__value">En visio, en petit groupe</dd>
+        <dd class="s-facts__note">Ateliers enregistrés</dd>
+      </div><div class="s-facts__item" data-reveal>
+        <dt class="s-facts__label"><span class="s-facts__icon s-facts__icon--people" aria-hidden="true"></span>Effectif</dt>
+        <dd class="s-facts__value" data-offer-text-waitlist="Complet, liste d’attente ouverte" data-offer-text-closed="Inscriptions closes">8 entreprises au plus</dd>
+        
+      </div><div class="s-facts__item" data-reveal>
+        <dt class="s-facts__label"><span class="s-facts__icon s-facts__icon--hourglass" aria-hidden="true"></span>Entre deux ateliers</dt>
+        <dd class="s-facts__value">2 h de travail</dd>
+        <dd class="s-facts__note">Sur votre propre offre</dd>
+      </div><div class="s-facts__item" data-reveal>
+        <dt class="s-facts__label"><span class="s-facts__icon s-facts__icon--price" aria-hidden="true"></span>Prix</dt>
+        <dd class="s-facts__value">Dès 1 450 € HT</dd>
+        <dd class="s-facts__note">Prise en charge OPCO possible</dd>
+      </div><div class="s-facts__item" data-reveal>
+        <dt class="s-facts__label"><span class="s-facts__icon s-facts__icon--list" aria-hidden="true"></span>Prérequis</dt>
+        <dd class="s-facts__value">Vos références des trois dernières années</dd>
+        <dd class="s-facts__note">Même en vrac</dd>
+      </div>
+    </dl>
+    
+  </div>
+</section>
+<!-- /section:essentiel -->
+<!-- section:probleme -->
+<section id="probleme" class="s-problem section" aria-labelledby="probleme-titre" data-section="problem-pinned">
+  <div class="s-problem__track" data-scroll-track>
+    <div class="s-problem__stage">
+      <div class="wrap s-problem__grid">
+        <div class="s-problem__aside">
+          <div class="section-head s-problem__head">
+            <h2 id="probleme-titre" class="section-title">Où se perdent<br><span class="hl">vos offres publiques</span></h2>
+            <p class="section-intro">Ce que racontent les dirigeants à l’appel de cadrage, avant même le premier atelier.</p>
+          </div>
+          <div class="s-problem__visuals" aria-hidden="true" data-qa-decor>
+            <div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Avis de marché 27-0412</span></div><div class="obj-window__body"><div class="obj-grid" style="--cols:2"><span class="is-head">Étape</span><span class="is-head">Date</span><span>Publication</span><span>2 mars</span><span>Questions à l’acheteur</span><span>avant le 8 mars</span><span class="is-warn">Remise des offres</span><span class="is-warn">12 mars, 12 h</span></div><p class="obj-small" style="margin-top:12px">Dossier de consultation · 142 pages · 7 pièces</p></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>memoire_v6_COPIE.docx</span></div><div class="obj-window__body"><p class="obj-title">3. Méthodologie</p><div class="obj-lines" style="margin-top:10px"><i style="--w:96%"></i><i style="--w:88%"></i><i style="--w:62%"></i></div><div class="obj-rule"></div><p class="obj-small"><span class="obj-strike">Critère : délai d’intervention sous 48 h</span></p><p class="obj-small" style="margin-top:6px">Critère demandé cette fois : <span class="obj-highlight">gestion des déchets verts</span></p></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Analyse des offres</b></div><div class="obj-rule"></div><div class="obj-bars"><div class="obj-bar" style="--v:.95"><span>Prix</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>38/40</b></div><div class="obj-bar is-hl" style="--v:.52"><span>Technique</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>31/60</b></div></div><div class="obj-rule"></div><p class="obj-small">Motif : <span class="obj-highlight">méthodologie générale, aucun planning daté</span></p><div class="obj-rule"></div><div class="obj-head"><span>Classement de votre offre</span><span class="obj-push"><b>3 / 5</b></span></div></div></div><div class="s-problem__visual" data-step-visual><div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Pièces à déposer</b><span class="obj-stamp obj-push">11 h 58</span></div><div class="obj-rule"></div><div class="obj-check"><span class="is-done">Mémoire technique</span><span class="is-done">Bordereau des prix</span><span>Attestation d’assurance</span><span>Signature électronique</span></div></div></div>
+          </div>
+        </div>
+        <ol class="s-problem__list" role="list">
+          <li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">01</span>
+            <div>
+              <h3 class="s-problem__title">Dix jours pour un dossier de cent pages</h3>
+              <div class="s-problem__body"><p>Le dossier de consultation arrive un lundi, la date limite tombe la semaine suivante, entre deux chantiers.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">02</span>
+            <div>
+              <h3 class="s-problem__title">Le mémoire de la dernière fois</h3>
+              <div class="s-problem__body"><p>On reprend l’offre du marché précédent et on change le nom de l’acheteur. Les critères, eux, ont changé.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">03</span>
+            <div>
+              <h3 class="s-problem__title">Une note technique qui coule l’offre</h3>
+              <div class="s-problem__body"><p>Le prix était bien placé. Le rapport d’analyse donne 31 points sur 60 en valeur technique, et le marché part ailleurs.</p></div>
+            </div>
+          </li><li class="s-problem__item" data-step-item>
+            <span class="s-problem__num" aria-hidden="true">04</span>
+            <div>
+              <h3 class="s-problem__title">Un dépôt à midi moins deux</h3>
+              <div class="s-problem__body"><p>La signature électronique bloque, une attestation manque, et l’offre arrive incomplète.</p></div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:probleme -->
+<!-- section:lettre -->
+<section id="lettre" class="s-letter section" aria-labelledby="lettre-titre" data-section="letter">
+  <div class="wrap s-letter__grid">
+    <div class="section-head s-letter__head">
+      <h2 id="lettre-titre" class="section-title">Ce que je lisais<br><span class="hl">de l’autre côté du guichet</span></h2>
+    </div>
+    <div class="s-letter__margin" data-reveal="fade">
+      <div class="s-letter__portrait"><span class="s-letter__initials" aria-hidden="true">HM</span></div>
+      <p class="s-letter__from"><strong class="s-letter__name">Hélène Marchetti</strong><span class="s-letter__role">Ancienne acheteuse publique, formatrice</span></p>
+      <p class="s-letter__date">Rennes, le 8 janvier 2027</p>
+      <p class="s-letter__note">Personnage et lettre fictifs, à remplacer</p>
+    </div>
+    <article class="s-letter__sheet" data-reveal>
+      <div class="s-letter__text">
+        <p class="s-letter__salute">Madame, Monsieur,</p>
+        <p class="s-letter__p s-letter__p--lead">Pendant neuf ans, j’ai ouvert les offres des entreprises qui répondaient aux marchés de ma collectivité. Beaucoup venaient de très bonnes entreprises, et beaucoup perdaient avant même qu’on parle de prix.</p>
+        
+        <p class="s-letter__p">La raison tenait souvent en une ligne du rapport d’analyse : méthodologie générale, aucun planning daté. Le mémoire racontait l’entreprise au lieu de répondre aux critères que nous avions écrits.</p>
+        
+        <p class="s-letter__p" data-ink>Un mémoire qui gagne suit la grille de l’acheteur, critère après critère, avec une preuve pour chacun. Cela s’apprend en quelques matinées, sur votre propre dossier.</p>
+        <figure class="s-letter__pull" aria-hidden="true"><p>Un mémoire qui gagne suit la grille de l’acheteur, critère après critère</p></figure>
+        <p class="s-letter__p">C’est ce que nous faisons pendant les cinq ateliers. Je relis chaque mémoire comme je le faisais au service des achats, avec la même grille, avant que vous ne le déposiez.</p>
+        
+        <p class="s-letter__p">Nous prenons huit entreprises par cohorte, pour que chaque relecture soit faite à la main et rendue avant votre date limite.</p>
+        
+        <div class="s-letter__sign">
+          <p class="s-letter__closing">Bien à vous,</p>
+          
+          <p class="s-letter__signed">Hélène Marchetti</p>
+        </div>
+        <p class="s-letter__ps"><span class="s-letter__ps-mark">P.-S.</span> Le premier atelier part d’un dossier de consultation récent de votre secteur. Si vous en avez un sous la main, gardez-le pour le 6 avril.</p>
+        <p class="s-letter__action"><a class="link-arrow" href="#offre" data-track="cta_click" data-cta-position="lettre" data-cta="primaire">Voir les dates et le prix<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></p>
+      </div>
+    </article>
+  </div>
+</section>
+<!-- /section:lettre -->
+<!-- section:programme -->
+<section id="programme" class="s-program section" aria-labelledby="programme-titre" data-section="program">
+  <div class="wrap s-program__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="programme-titre" class="section-title">Cinq mardis matin<br><span class="hl">sur votre propre dossier</span></h2>
+        <p class="section-intro">Trois heures en visio, de 9 h à 12 h, enregistrées. Entre deux ateliers, comptez deux heures pour avancer votre offre.</p>
+      </div>
+      <div class="s-program__run">
+        <ol class="s-program__list" role="list" data-rail>
+          <li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">6 avril</p>
+            <h3 class="s-program__title">Lire un dossier en une heure</h3>
+            <p class="s-program__duration">3 h</p>
+            <p class="s-program__text">Règlement, critères et pièces exigées : vous repérez ce qui compte avant d’écrire une ligne.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">13 avril</p>
+            <h3 class="s-program__title">Choisir où répondre</h3>
+            <p class="s-program__duration">3 h</p>
+            <p class="s-program__text">Veille, lots et chances réelles : vous décidez où déposer et où passer votre tour.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">20 avril</p>
+            <h3 class="s-program__title">Écrire le mémoire technique</h3>
+            <p class="s-program__duration">3 h</p>
+            <p class="s-program__text">Une trame qui suit les critères de l’acheteur un par un, avec vos preuves.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">27 avril</p>
+            <h3 class="s-program__title">Chiffrer et présenter le prix</h3>
+            <p class="s-program__duration">3 h</p>
+            <p class="s-program__text">Bordereau, détail estimatif et variantes : un prix lisible et cohérent avec le mémoire.</p>
+          </li><li class="s-program__item" data-milestone>
+            <span class="s-program__dot" aria-hidden="true"></span>
+            <p class="s-program__when">4 mai</p>
+            <h3 class="s-program__title">Relire et déposer</h3>
+            <p class="s-program__duration">3 h</p>
+            <p class="s-program__text">Relecture croisée entre participants, pièces administratives et signature, avant le dépôt.</p>
+          </li>
+        </ol>
+        
+      </div>
+    </div>
+    <figure class="s-program__specimen">
+      <div class="s-program__figure">
+        <div aria-hidden="true" data-qa-decor><div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Critère 2 sur 4</b><span class="obj-stamp obj-push">Relu</span></div><div class="obj-rule"></div><div class="obj-grid" style="--cols:3"><span class="is-head">Sous-critère</span><span class="is-head">Poids</span><span class="is-head">Votre preuve</span><span>Organisation</span><span>15 %</span><span>Organigramme</span><span>Méthode</span><span>25 %</span><span>Fiche par saison</span><span class="is-warn">Planning</span><span class="is-warn">10 %</span><span class="is-warn">À dater</span><span>Matériel</span><span>10 %</span><span>Liste et photos</span></div><div class="obj-rule"></div><div class="obj-lines"><i style="--w:92%"></i><i style="--w:70%"></i></div><p class="obj-small" style="margin-top:10px">Note de relecture : <span class="obj-highlight">un planning sans dates ne rapporte aucun point</span></p></div></div>
+        <figcaption><span class="badge">Spécimen</span><span>Une page de mémoire relue pendant l’atelier 3, avec des données d’exemple.</span></figcaption>
+      </div>
+    </figure>
+  </div>
+</section>
+<!-- /section:programme -->
+<!-- section:parole -->
+<section id="parole" class="s-quote section" aria-labelledby="parole-titre" data-section="quote-interlude">
+  <div class="wrap">
+    <h2 id="parole-titre" class="sr-only">Ce qu’en dit un participant</h2>
+    <figure class="s-quote__fig" data-reveal-group>
+      <blockquote class="s-quote__text" data-reveal="fade"><p>Au dépôt suivant, le rapport d’analyse citait <mark data-annotate="underline">notre planning daté</mark> comme point fort.</p></blockquote>
+      <figcaption class="s-quote__who" data-reveal="fade"><span class="s-quote__rule" aria-hidden="true"></span><span class="s-quote__name">Karim B.</span><span class="s-quote__role">Gérant, entreprise de nettoyage, 11 salariés (avis fictif)</span><span class="s-quote__context">Cohorte d’automne 2026</span></figcaption>
+    </figure>
+  </div>
+</section>
+<!-- /section:parole -->
+<!-- section:kit -->
+<section id="kit" class="s-showcase section band-dark" aria-labelledby="kit-titre" data-section="showcase-dark">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="kit-titre" class="section-title">Quatre outils<br><span class="hl">pour les offres suivantes</span></h2>
+      <p class="section-intro">Ils servent pendant la cohorte, puis à chaque nouvel appel d’offres.</p>
+    </div>
+    <div class="s-showcase__grid">
+      <div class="obj s-showcase__object" aria-hidden="true" data-qa-decor data-reveal="scale">
+        <div class="s-showcase__folder">
+          <div class="obj-sheet s-showcase__sheet" data-part="1" style="--k:0"><span class="s-showcase__tab">Trame</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div><div class="obj-sheet s-showcase__sheet" data-part="2" style="--k:1"><span class="s-showcase__tab">Références</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div><div class="obj-sheet s-showcase__sheet" data-part="3" style="--k:2"><span class="s-showcase__tab">Grille</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div><div class="obj-sheet s-showcase__sheet" data-part="4" style="--k:3"><span class="s-showcase__tab">Planning</span><div class="obj-lines"><i style="--w:86%"></i><i style="--w:64%"></i><i style="--w:74%"></i><i style="--w:40%"></i></div></div>
+        </div>
+      </div>
+      <ul class="s-showcase__cards" role="list" data-reveal-group>
+        <li class="s-showcase__card card" data-part="1" data-reveal><span class="s-showcase__num" aria-hidden="true">01</span><h3 class="s-showcase__title">La trame de mémoire</h3><p class="s-showcase__text">Un document modifiable, rangé critère par critère, avec des exemples de réponses.</p></li><li class="s-showcase__card card" data-part="2" data-reveal><span class="s-showcase__num" aria-hidden="true">02</span><h3 class="s-showcase__title">Le tableau de références</h3><p class="s-showcase__text">Vos chantiers, attestations et photos, classés pour être cités en deux minutes.</p></li><li class="s-showcase__card card" data-part="3" data-reveal><span class="s-showcase__num" aria-hidden="true">03</span><h3 class="s-showcase__title">La grille de notation</h3><p class="s-showcase__text">Vous notez votre mémoire comme l’acheteur le fera, avant de l’envoyer.</p></li><li class="s-showcase__card card" data-part="4" data-reveal><span class="s-showcase__num" aria-hidden="true">04</span><h3 class="s-showcase__title">Le rétroplanning de réponse</h3><p class="s-showcase__text">De la publication au dépôt, qui fournit quoi et quand, sur dix jours.</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<!-- /section:kit -->
+<!-- section:formateurs -->
+<section id="formateurs" class="s-people section" aria-labelledby="formateurs-titre" data-section="people">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="formateurs-titre" class="section-title">Deux formateurs<br><span class="hl">des deux côtés du guichet</span></h2>
+      <p class="section-intro">Une ancienne acheteuse publique et un chargé d’affaires relisent vos mémoires.</p>
+    </div>
+    <ul class="s-people__grid" role="list" data-shape="rounded" data-reveal-group>
+      <li class="s-people__card card" data-reveal>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">HM</span></div>
+        <div class="s-people__body">
+          <h3 class="s-people__name">Hélène Marchetti</h3>
+          <p class="s-people__role">Ancienne acheteuse publique</p>
+          <dl class="s-people__bio">
+            <div><dt>Parcours</dt><dd>Neuf ans acheteuse dans une collectivité, puis formatrice.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : citer ici une preuve vérifiable.</dd></div>
+            <div><dt>Dans la cohorte</dt><dd>Anime les ateliers 1, 2 et 5 et relit chaque mémoire.</dd></div>
+          </dl>
+        </div>
+      </li><li class="s-people__card card" data-reveal>
+        <div class="s-people__portrait"><span class="s-people__initials" aria-hidden="true">BM</span></div>
+        <div class="s-people__body">
+          <h3 class="s-people__name">Bastien Morel</h3>
+          <p class="s-people__role">Chargé d’affaires</p>
+          <dl class="s-people__bio">
+            <div><dt>Parcours</dt><dd>Douze ans à préparer les offres d’une entreprise de second œuvre.</dd></div>
+            <div><dt>Preuve</dt><dd>Personnage fictif : une preuve se cite avec sa source.</dd></div>
+            <div><dt>Dans la cohorte</dt><dd>Anime les ateliers 3 et 4, le mémoire et le prix.</dd></div>
+          </dl>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+<!-- /section:formateurs -->
+<!-- section:avis -->
+<section id="avis" class="s-testi section" aria-labelledby="avis-titre" data-section="testimonials">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="avis-titre" class="section-title">Leurs offres sont parties<br><span class="hl">complètes et à l’heure</span></h2>
+    </div>
+    <div class="s-testi__grid" data-reveal-group>
+      <figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">Retenus au deuxième dépôt</p>
+        <blockquote class="s-testi__quote"><p>Nous avions perdu trois consultations sur la note technique. Avec la trame, le mémoire suit enfin les critères, et le deuxième dépôt a été retenu.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">SL</span><span><span class="s-testi__name">Sophie L.</span><span class="s-testi__role">Gérante, entreprise de peinture, 14 salariés (avis fictif)</span></span></figcaption>
+      </figure><figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">Plus de dépôt à la dernière minute</p>
+        <blockquote class="s-testi__quote"><p>Le rétroplanning a tout changé. Chacun sait ce qu’il fournit et quand, et l’offre part la veille de la date limite.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">TG</span><span><span class="s-testi__name">Thomas G.</span><span class="s-testi__role">Chargé d’affaires, menuiserie, 30 salariés (avis fictif)</span></span></figcaption>
+      </figure><figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">De 31 à 48 points sur 60</p>
+        <blockquote class="s-testi__quote"><p>La grille nous a montré ce que l’acheteur ne trouvait pas. Nous avons ajouté nos références et un planning daté.</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">IM</span><span><span class="s-testi__name">Inès M.</span><span class="s-testi__role">Assistante de direction, paysagiste, 9 salariés (avis fictif)</span></span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- /section:avis -->
+<!-- section:pour-qui -->
+<section id="pour-qui" class="s-forwhom section" aria-labelledby="pour-qui-titre" data-section="for-whom">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="pour-qui-titre" class="section-title">Pour qui <span class="hl">sont ces ateliers</span></h2>
+    </div>
+    <div class="s-forwhom__grid" data-reveal-group>
+      <div class="s-forwhom__col card" data-reveal>
+        <h3 class="s-forwhom__title">Pour vous si</h3>
+        <ul class="list-check" role="list"><li>Vous dirigez une TPE ou une PME et voulez déposer vos premières offres publiques.</li><li>Vous répondez déjà, mais vos offres perdent sur la valeur technique.</li><li>Vous préparez les dossiers pour votre dirigeant et cherchez une méthode.</li></ul>
+      </div>
+      <div class="s-forwhom__col s-forwhom__col--no" data-reveal>
+        <h3 class="s-forwhom__title">Pas pour vous si</h3>
+        <ul class="list-check list-cross" role="list"><li>Vous cherchez quelqu’un pour rédiger vos offres à votre place.</li><li>Vous visez des marchés de défense ou de très grands comptes, hors du programme.</li><li>Votre prochain dossier est à rendre avant le 6 avril, date du premier atelier.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:pour-qui -->
+<!-- section:offre -->
+<section id="offre" class="s-offer section" aria-labelledby="offre-titre" data-section="offer-ticket">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="offre-titre" class="section-title">Cinq mardis<br><span class="hl">pour votre prochaine offre</span></h2>
+      <p class="section-intro">Huit entreprises par cohorte, pour que chaque mémoire soit relu en atelier.</p>
+    </div>
+    <div data-reveal="scale">
+    <form class="s-offer__ticket" id="offre-billet" action="{{URL_CHECKOUT}}" method="get" data-track="begin_checkout" data-track-currency="EUR" data-offer-action-waitlist="{{URL_LISTE_ATTENTE}}">
+      <div class="s-offer__main">
+        <div class="s-offer__top">
+          <p class="s-offer__name">Répondre aux marchés publics</p>
+          <p class="badge badge--accent" data-offer-show="waitlist" hidden>Complet</p>
+          <p class="badge" data-offer-show="closed" hidden>Inscriptions closes</p>
+        </div>
+        <p class="s-offer__meta">Cohorte de printemps · 5 mardis, du 6 avril au 4 mai 2027 · en visio, de 9 h à 12 h</p>
+        <fieldset class="s-offer__formulas">
+          <legend class="s-offer__legend">Formule</legend>
+          <div class="s-offer__seg">
+            <label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="solo" data-price="1450" data-price-label="1 450 € HT" data-note="Une personne de l’entreprise. Avec la remise avant le 1er mars : 1 305 € HT." checked><span class="s-offer__opt-label">Solo</span><span class="s-offer__opt-price">1 450 € HT</span></label><label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="binome" data-price="2400" data-price-label="2 400 € HT" data-note="Deux personnes de la même entreprise, un seul mémoire relu. Avec la remise avant le 1er mars : 2 160 € HT."><span class="s-offer__opt-label">Binôme</span><span class="s-offer__opt-price">2 400 € HT</span></label>
+          </div>
+        </fieldset>
+        <div class="s-offer__pricebox">
+          <p class="s-offer__price"><span data-offer-price>1 450 € HT</span><span class="s-offer__unit">pour les cinq ateliers</span></p>
+          <p class="s-offer__note" aria-live="polite" data-offer-note>Une personne de l’entreprise. Avec la remise avant le 1er mars : 1 305 € HT.</p>
+        </div>
+        <p class="s-offer__discount"><strong>Avant le 1er mars</strong> 10 % de remise, appliqués à la commande. Après cette date, le prix affiché s’applique.</p>
+        <div class="s-offer__action">
+          <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre" data-cta="primaire" data-offer-text-waitlist="Rejoindre la liste d’attente" data-offer-text-closed="Inscriptions closes" data-offer-disabled-closed>Réserver ma place</button>
+          <a class="btn btn--secondary btn--block s-offer__notify" href="{{URL_LISTE_ATTENTE}}" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>Être prévenu de la prochaine cohorte</a>
+          <p class="s-offer__deadline"><span class="s-offer__when"><span class="s-offer__date" data-offer-countdown data-many="Clôture dans {n} jours" data-one="Clôture demain" data-zero="Clôture ce soir">Clôture le 26 mars 2027</span> <span class="s-offer__detail"><span class="s-offer__sep" aria-hidden="true">·</span>8 entreprises par cohorte</span></span></p>
+        </div>
+      </div>
+      <div class="s-offer__stub">
+        <div>
+          <h3 class="s-offer__col-title">Compris</h3>
+          <ul class="list-check" role="list"><li>Cinq ateliers de trois heures en visio, enregistrés</li><li>La relecture écrite de votre mémoire avant le dépôt</li><li>La trame, la grille et le rétroplanning, modifiables</li><li>Le groupe d’échange de la cohorte, ouvert six mois</li><li>Une attestation de fin de formation</li></ul>
+        </div>
+        <div>
+          <h3 class="s-offer__col-title">La suite</h3>
+          <ol class="s-offer__steps" role="list"><li>Convention et facture par email sous 24 heures</li><li>Un appel de vingt minutes pour choisir votre appel d’offres</li><li>Premier atelier le mardi 6 avril à 9 h</li></ol>
+        </div>
+        <p class="s-offer__prereq"><strong>Prérequis</strong> Vos références des trois dernières années (chantiers, prestations, attestations), même en vrac.</p>
+      </div>
+    </form>
+    </div>
+    <p class="s-offer__conditions">Paiement à la commande ou sur facture à 30 jours. Prise en charge possible par votre opérateur de compétences : la convention part avec la facture. Annulation sans frais jusqu’à 14 jours avant le premier atelier. La cohorte part à partir de 5 entreprises inscrites, sinon remboursement intégral.</p>
+  </div>
+</section>
+<!-- /section:offre -->
+<!-- section:questions -->
+<section id="questions" class="s-faq section" aria-labelledby="questions-titre" data-section="faq">
+  <div class="wrap s-faq__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="questions-titre" class="section-title">Les questions<br><span class="hl">avant de réserver</span></h2>
+        
+      </div>
+      <div class="s-faq__list">
+        <details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Faut-il avoir déjà répondu à un marché public ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Non. Le premier atelier part de la lecture d’un dossier, et l’appel de cadrage sert à choisir un appel d’offres à votre mesure.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Combien de temps prévoir entre deux ateliers ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Environ deux heures par semaine. Les exercices portent sur votre propre offre : ce temps avance votre dossier.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Que se passe‑t‑il si je manque un atelier ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Chaque atelier est enregistré et la vidéo arrive le jour même. Vos questions passent par le groupe d’échange.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>La formation peut-elle être prise en charge ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Souvent, par votre opérateur de compétences. La convention et le programme partent dès l’inscription ; comptez trois à quatre semaines pour l’accord.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Et si aucun appel d’offres ne tombe pendant la cohorte ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Nous travaillons sur un dossier récent de votre secteur, déjà clos. La méthode est la même, et votre trame sera prête pour le suivant.</p></div>
+        </details><details class="s-faq__item" data-track="faq_open">
+          <summary class="s-faq__q"><h3>Peut-on venir à deux ?</h3><span class="s-faq__icon" aria-hidden="true"></span></summary>
+          <div class="s-faq__a"><p>Oui, avec la formule Binôme : deux personnes de la même entreprise et un seul mémoire relu.</p></div>
+        </details>
+      </div>
+    </div>
+    <aside class="s-faq__card card" aria-labelledby="questions-carte">
+      <p class="label">Cohorte de printemps</p>
+      <p id="questions-carte" class="s-faq__card-title">Répondre aux marchés publics</p>
+      <p class="s-faq__card-meta">Du 6 avril au 4 mai 2027 · dès 1 450 € HT · 8 places</p>
+      <a class="btn btn--secondary btn--block" href="#offre" data-track="cta_click" data-cta-position="faq">Voir le billet</a>
+      <p class="s-faq__contact">Une autre question ? <a href="mailto:bonjour@example.com">bonjour@example.com</a></p>
+    </aside>
+  </div>
+</section>
+<!-- /section:questions -->
+<!-- section:mentions -->
+<section id="mentions" class="s-legal section" aria-labelledby="mentions-titre" data-section="legal">
+  <div class="wrap s-legal__inner">
+    <h2 id="mentions-titre" class="s-legal__title">Informations légales</h2>
+    <dl class="s-legal__list">
+      <div class="s-legal__row"><dt>Organisme</dt><dd>Ferlane Formation (organisme fictif de démonstration). Numéro de déclaration d’activité : à indiquer ici.</dd></div><div class="s-legal__row"><dt>Prix</dt><dd>Prix hors taxes, TVA de 20 % en sus. Facture émise à la réservation.</dd></div><div class="s-legal__row"><dt>Annulation</dt><dd>Sans frais jusqu’à 14 jours avant le premier atelier, puis 50 % du prix. Remboursement intégral si la cohorte n’atteint pas 5 entreprises.</dd></div><div class="s-legal__row"><dt>Conditions générales</dt><dd>Envoyées avec la convention de formation, à signer avant le premier atelier.</dd></div><div class="s-legal__row"><dt>Données personnelles</dt><dd>Vos données servent à l’inscription, à la facturation et au suivi de la cohorte. <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de confidentialité<span class="sr-only"> (nouvel onglet)</span></a></dd></div><div class="s-legal__row"><dt>Accessibilité</dt><dd>Ateliers sous-titrés en direct. Pour un besoin particulier, écrivez à <a href="mailto:bonjour@example.com">bonjour@example.com</a> avant de réserver.</dd></div>
+    </dl>
+  </div>
+</section>
+<!-- /section:mentions -->
+<!-- section:final -->
+<section id="final" class="s-final section band-dark" aria-labelledby="final-titre" data-section="final-cta" data-enter="curtain">
+  <div class="s-final__decor s-final__decor--rings" aria-hidden="true" data-qa-decor></div>
+  <div class="wrap s-final__inner" data-reveal-group>
+    <h2 id="final-titre" class="s-final__title" data-reveal>Huit places<br><span class="hl">pour le 6 avril</span></h2>
+    <p class="s-final__text lede" data-reveal>Vous choisissez Solo ou Binôme sur le billet, la convention arrive sous 24 heures.</p>
+    <a class="btn btn--light" href="#offre" data-track="cta_click" data-cta-position="final" data-cta="primaire" data-reveal>Réserver ma place<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    <p class="s-final__note" data-reveal>Clôture des inscriptions le 26 mars 2027</p>
+  </div>
+</section>
+<!-- /section:final -->
+</main>
+<!-- section:pied -->
+<footer id="pied" class="s-footer" data-section="footer">
+  <div class="wrap s-footer__inner">
+    <p class="s-footer__brand"><svg class="s-footer__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11l7 7v17H8z"/><path d="M19 4v7h7"/><path d="m12.5 19.5 3 3 6-7"/></svg><span>Ferlane</span></p>
+    <ul class="s-footer__links" role="list"><li><a href="{{URL_MENTIONS_LEGALES}}">Mentions légales</a></li><li><a href="{{URL_CONFIDENTIALITE}}">Confidentialité</a></li><li><a href="mailto:bonjour@example.com">bonjour@example.com</a></li></ul>
+    <p class="s-footer__legal">© 2027 Ferlane Formation, marque fictive de démonstration.</p>
+  </div>
+</footer>
+<!-- /section:pied -->
+<!-- section:barre-mobile -->
+<aside id="barre-mobile" class="s-sticky" aria-label="Réserver une place" data-section="sticky-bar">
+  <div class="s-sticky__inner">
+    <p class="s-sticky__text"><strong>Dès 1 450 € HT</strong><span>Clôture le 26 mars</span></p>
+    <a class="btn btn--primary s-sticky__btn" href="#offre" data-track="cta_click" data-cta-position="barre-mobile" data-cta="primaire">Réserver</a>
+  </div>
+</aside>
+<!-- /section:barre-mobile -->
+<script>
+/* ---- reveal.js ---- */
+/* ==========================================================================
+   reveal.js · the one reveal engine of a landing page
+   --------------------------------------------------------------------------
+   Contract (attributes read in the markup):
+     [data-reveal-group]            a container; its [data-reveal] children
+                                    enter together, 0.1 s apart, when the
+                                    container's top reaches ~85 % of the
+                                    viewport height.
+     [data-reveal]                  an element that enters on its own (outside
+                                    any group) or as part of its group.
+                                    Values: "" or "up" (rise 32 px), "left",
+                                    "right", "scale", "fade". Opacity and
+                                    position only.
+     [data-count]                   a number ("120", "1 900 €", "98 %") that
+                                    counts up once, when it first comes into
+                                    view from below the fold. Prefix, suffix
+                                    and digit grouping are kept.
+   Classes written:
+     html.rv-on                     the engine started and motion is allowed:
+                                    only then does base.css hide what waits.
+     [data-reveal].is-in            entered (CSS transitions to the final
+                                    state). --rv-i carries its rank in the
+                                    group, for the stagger.
+   Under prefers-reduced-motion, without IntersectionObserver, or without
+   JavaScript: the engine does nothing, so everything is visible at once and
+   counters show their final value. Elements inside a [hidden] part (the
+   choice gate) enter when that part is revealed, never before.
+   Events: none. No dependency. Runs once, whatever the number of sections.
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingReveal) return;
+  window.__landingReveal = true;
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) return;
+
+  var root = document.documentElement;
+  root.classList.add('rv-on');
+
+  var MAX_RANK = 8;
+
+  function enter(target) {
+    var items = target.hasAttribute('data-reveal-group')
+      ? target.querySelectorAll('[data-reveal]')
+      : [target];
+    for (var i = 0; i < items.length; i++) {
+      items[i].style.setProperty('--rv-i', String(Math.min(i, MAX_RANK)));
+      items[i].classList.add('is-in');
+    }
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      observer.unobserve(entry.target);
+      enter(entry.target);
+    });
+  }, { rootMargin: '0px 0px -15% 0px', threshold: 0 });
+
+  document.querySelectorAll('[data-reveal-group]').forEach(function (group) {
+    observer.observe(group);
+  });
+  document.querySelectorAll('[data-reveal]').forEach(function (el) {
+    if (!el.parentElement || !el.parentElement.closest('[data-reveal-group]')) observer.observe(el);
+  });
+
+  /* ---- counters ---- */
+  var COUNTABLE = /^(\D*?)(\d(?:[\d\s  .]*\d)?)(\D*)$/;
+  function format(n, sample) {
+    var sep = (sample.match(/\d([\s  .])\d{3}/) || [])[1];
+    var s = String(Math.round(n));
+    return sep ? s.replace(/\B(?=(\d{3})+(?!\d))/g, sep) : s;
+  }
+  var counters = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      counters.unobserve(entry.target);
+      var el = entry.target;
+      var m = (el.textContent || '').trim().match(COUNTABLE);
+      if (!m) return;
+      var target = parseInt(m[2].replace(/[^\d]/g, ''), 10);
+      if (!isFinite(target)) return;
+      var start = null;
+      var DURATION = 1200;
+      function frame(t) {
+        if (start === null) start = t;
+        var k = Math.min(1, (t - start) / DURATION);
+        var eased = 1 - Math.pow(1 - k, 3);
+        el.textContent = m[1] + format(target * eased, m[2]) + m[3];
+        if (k < 1) window.requestAnimationFrame(frame);
+      }
+      window.requestAnimationFrame(frame);
+    });
+  }, { rootMargin: '0px 0px -12% 0px' });
+  document.querySelectorAll('[data-count]').forEach(function (el) {
+    // Already on screen at load: leave it at its value.
+    if (el.getBoundingClientRect().top < window.innerHeight) return;
+    counters.observe(el);
+  });
+})();
+</script>
+<script>
+/* ---- scroll.js ---- */
+/* ==========================================================================
+   scroll.js · scroll theatre helper (optional engine)
+   --------------------------------------------------------------------------
+   Pinned stages, scroll-driven progress, reading line and section junctions,
+   all with position: sticky and CSS variables: no animation library, no pin
+   of its own, nothing that runs while the page does not scroll.
+
+   Classes on <html>:
+     .sc-motion   motion allowed (prefers-reduced-motion: no-preference)
+     .sc-pin      motion allowed AND viewport at least 1101 × 720 px: the
+                  only case where a section pins (charter § 5). Sections
+                  write their pinned layout under .sc-pin, so that without
+                  JavaScript, on a small screen or in reduced motion, they
+                  are plain readable lists.
+
+   Contract (attributes read in the markup):
+     [data-scroll-track]   a tall track (its pinned height is set by the
+                           section's CSS under .sc-pin, from --steps). The
+                           engine writes on it:
+                             --p      progress 0..1 (pinned: through the
+                                      track; not pinned: while it crosses the
+                                      viewport; reduced motion: 1)
+                             --steps  number of [data-step-item] inside
+                             data-step  current step, 0-based (pinned only)
+                           and inside it:
+                             [data-step-item], [data-step-visual]
+                                      data-active on the current one
+                                      (pinned only; otherwise none, and the
+                                      CSS shows them all)
+                             [data-step-current]  text = step + 1
+                           It dispatches "landing:step" on the track
+                           (detail: { step, steps }) when the step changes.
+     [data-rail]           a list whose line fills as the reading line (66 %
+                           of the viewport) goes down it: --rail 0..1 on the
+                           element, data-reached="true" on each
+                           [data-milestone] whose centre has passed the line.
+                           Reduced motion: --rail 1, every milestone reached.
+     .reading-progress     3 px reading line at the top: --read 0..1 (shown
+                           by base.css under .sc-pin only).
+     [data-exit="fade"]    pinned layout only: --exit 0..1 as the section
+                           leaves (base.css fades it out, no overlap).
+     [data-enter="fade"|"curtain"]  pinned layout only: --enter 0..1 as the
+                           section comes in (fade, or a dark band opening).
+   No transition between the hero and the next section: never put
+   data-exit on the hero.
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingScroll) return;
+  window.__landingScroll = true;
+
+  var root = document.documentElement;
+  var mqMotion = window.matchMedia('(prefers-reduced-motion: no-preference)');
+  var mqPin = window.matchMedia('(min-width: 1101px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)');
+  var READ_LINE = 0.66;
+  var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+  var fixed = function (v) { return v.toFixed(4); };
+
+  var tracks = [], rails = [], exits = [], enters = [], bars = [];
+
+  function collect() {
+    tracks = Array.prototype.map.call(document.querySelectorAll('[data-scroll-track]'), function (el) {
+      var items = el.querySelectorAll('[data-step-item]');
+      var n = parseInt(el.getAttribute('data-steps'), 10) || items.length || 1;
+      el.style.setProperty('--steps', String(n));
+      return { el: el, items: items, visuals: el.querySelectorAll('[data-step-visual]'),
+               current: el.querySelectorAll('[data-step-current]'), n: n, step: -1 };
+    });
+    rails = Array.prototype.slice.call(document.querySelectorAll('[data-rail]'));
+    exits = Array.prototype.slice.call(document.querySelectorAll('[data-exit="fade"]'));
+    enters = Array.prototype.slice.call(document.querySelectorAll('[data-enter]'));
+    bars = Array.prototype.slice.call(document.querySelectorAll('.reading-progress, [data-reading-progress]'));
+  }
+
+  function topbar() {
+    return parseFloat(getComputedStyle(root).getPropertyValue('--topbar-h')) || 0;
+  }
+
+  function setStep(t, step) {
+    if (step === t.step) return;
+    t.step = step;
+    if (step < 0) {
+      t.el.removeAttribute('data-step');
+    } else {
+      t.el.setAttribute('data-step', String(step));
+    }
+    [t.items, t.visuals].forEach(function (list) {
+      Array.prototype.forEach.call(list, function (it, i) {
+        if (i === step) it.setAttribute('data-active', ''); else it.removeAttribute('data-active');
+      });
+    });
+    Array.prototype.forEach.call(t.current, function (c) { c.textContent = String(Math.max(0, step) + 1); });
+    t.el.dispatchEvent(new CustomEvent('landing:step', { bubbles: true, detail: { step: step, steps: t.n } }));
+  }
+
+  function update() {
+    frame = 0;
+    var motion = mqMotion.matches;
+    var pin = mqPin.matches;
+    var vh = window.innerHeight;
+    var offset = topbar();
+
+    tracks.forEach(function (t) {
+      var p = 1;
+      var r = t.el.getBoundingClientRect();
+      if (pin) {
+        var room = r.height - (vh - offset);
+        p = room > 0 ? clamp((offset - r.top) / room) : 1;
+        setStep(t, Math.min(t.n - 1, Math.floor(p * t.n)));
+      } else {
+        if (motion) p = clamp((vh * 0.9 - r.top) / (vh * 0.5 + r.height * 0.5));
+        setStep(t, -1);
+      }
+      t.el.style.setProperty('--p', fixed(p));
+    });
+
+    rails.forEach(function (rail) {
+      var marks = rail.querySelectorAll('[data-milestone]');
+      if (!motion) {
+        rail.style.setProperty('--rail', '1');
+        Array.prototype.forEach.call(marks, function (m) { m.setAttribute('data-reached', 'true'); });
+        return;
+      }
+      var line = vh * READ_LINE;
+      var r = rail.getBoundingClientRect();
+      var first = marks.length ? marks[0].getBoundingClientRect() : r;
+      var last = marks.length ? marks[marks.length - 1].getBoundingClientRect() : r;
+      var a = first.top + first.height / 2, b = last.top + last.height / 2;
+      rail.style.setProperty('--rail', fixed(b > a ? clamp((line - a) / (b - a)) : (line >= a ? 1 : 0)));
+      Array.prototype.forEach.call(marks, function (m) {
+        var mr = m.getBoundingClientRect();
+        m.setAttribute('data-reached', mr.top + Math.min(mr.height, 48) / 2 <= line ? 'true' : 'false');
+      });
+    });
+
+    if (bars.length) {
+      var doc = document.documentElement.scrollHeight - vh;
+      var read = doc > 0 ? clamp(window.scrollY / doc) : 0;
+      bars.forEach(function (b) { b.style.setProperty('--read', fixed(read)); });
+    }
+
+    exits.forEach(function (el) {
+      if (!pin) { el.style.removeProperty('--exit'); return; }
+      var r = el.getBoundingClientRect();
+      // starts when the bottom reaches the bottom of the screen, ends at 40 %
+      el.style.setProperty('--exit', fixed(clamp((vh - r.bottom) / (vh * 0.6))));
+    });
+    enters.forEach(function (el) {
+      if (!pin) { el.style.removeProperty('--enter'); return; }
+      var r = el.getBoundingClientRect();
+      var kind = el.getAttribute('data-enter');
+      var p = kind === 'curtain'
+        ? clamp((vh - r.top) / (vh * 0.7))
+        : clamp((vh * 0.72 - r.top) / (vh * 0.42));
+      el.style.setProperty('--enter', fixed(p));
+    });
+  }
+
+  var frame = 0;
+  function request() {
+    if (!frame) frame = window.requestAnimationFrame(update);
+  }
+
+  function modes() {
+    root.classList.toggle('sc-motion', mqMotion.matches);
+    root.classList.toggle('sc-pin', mqPin.matches);
+    request();
+  }
+
+  function start() {
+    collect();
+    modes();
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request);
+    [mqMotion, mqPin].forEach(function (mq) {
+      if (mq.addEventListener) mq.addEventListener('change', modes); else mq.addListener(modes);
+    });
+    if ('ResizeObserver' in window) new ResizeObserver(request).observe(document.body);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(request);
+    // A part revealed later (choice gate) brings new tracks and rails.
+    document.addEventListener('landing:revealed', function () { collect(); request(); });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
+<script>
+/* ---- offer.js ---- */
+/* ==========================================================================
+   offer.js · state of the offer, computed in the browser (optional engine)
+   --------------------------------------------------------------------------
+   The static HTML always shows the OPEN state. The real state (waiting list,
+   closed) and the days left are computed here, from ONE configuration that
+   the assembler writes at the top of the page:
+
+     window.LANDING_CONFIG.offer = {
+       state: "open" | "waitlist" | "closed",   // decided by a human
+       closes_at: "2027-03-31T23:59:00+02:00",  // real closing date, or null
+       after_close: "waitlist" | "closed"        // state once the date is past
+     }
+
+   Contract (attributes read in the markup):
+     html[data-offer-state]            written: open | waitlist | closed
+     [data-offer-show="open waitlist"] shown only in the listed states (the
+                                       HTML marks non-open variants hidden)
+     [data-offer-countdown]            text replaced by the days left, from
+                                       data-many ("Clôture dans {n} jours"),
+                                       data-one ("Clôture demain") and
+                                       data-zero ("Clôture ce soir"). Without
+                                       JavaScript the static text (a date)
+                                       stays. Counted in days, never seconds.
+     [data-offer-text-<state>]         textContent in that state
+     [data-offer-href-<state>]         href in that state
+     [data-offer-action-<state>]       form action in that state
+     [data-offer-disabled-<state>]     disabled in that state
+   Event: "landing:offer" on document (detail: { state, days }).
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingOffer) return;
+  window.__landingOffer = true;
+
+  var config = (window.LANDING_CONFIG && window.LANDING_CONFIG.offer) || {};
+  var DAY = 86400000;
+
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+
+  var now = new Date();
+  var closes = config.closes_at ? new Date(config.closes_at) : null;
+  if (closes && isNaN(closes.getTime())) closes = null;
+  var state = config.state || 'open';
+  if (state === 'open' && closes && now > closes) state = config.after_close || 'waitlist';
+  var days = closes && state === 'open' ? Math.round((startOfDay(closes) - startOfDay(now)) / DAY) : null;
+
+  function apply() {
+    document.documentElement.setAttribute('data-offer-state', state);
+
+    document.querySelectorAll('[data-offer-show]').forEach(function (el) {
+      var states = el.getAttribute('data-offer-show').split(/\s+/);
+      el.hidden = states.indexOf(state) === -1;
+    });
+
+    if (days !== null) {
+      document.querySelectorAll('[data-offer-countdown]').forEach(function (el) {
+        var tpl = days <= 0 ? el.getAttribute('data-zero')
+          : days === 1 ? el.getAttribute('data-one')
+          : el.getAttribute('data-many');
+        if (tpl) el.textContent = tpl.replace('{n}', String(days));
+      });
+    }
+
+    if (state !== 'open') {
+      var attr = function (kind) { return 'data-offer-' + kind + '-' + state; };
+      document.querySelectorAll('[' + attr('text') + ']').forEach(function (el) {
+        el.textContent = el.getAttribute(attr('text'));
+      });
+      document.querySelectorAll('[' + attr('href') + ']').forEach(function (el) {
+        el.setAttribute('href', el.getAttribute(attr('href')));
+      });
+      document.querySelectorAll('[' + attr('action') + ']').forEach(function (el) {
+        el.setAttribute('action', el.getAttribute(attr('action')));
+      });
+      document.querySelectorAll('[' + attr('disabled') + ']').forEach(function (el) {
+        el.disabled = true;
+      });
+    }
+
+    document.dispatchEvent(new CustomEvent('landing:offer', { detail: { state: state, days: days } }));
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+})();
+</script>
+<script>
+/* ---- annotate.js ---- */
+/* ==========================================================================
+   annotate.js · hand-drawn annotations on a word or a phrase (optional engine)
+   --------------------------------------------------------------------------
+   principe : Rough Notation (Preet Shihn, github.com/rough-stuff/rough-notation), MIT.
+   The idea is taken and rewritten: an irregular SVG stroke laid on the text
+   and drawn once when it comes into view. Here the irregularity is seeded by
+   the annotated text (the same stroke on every load), there is no
+   dependency, and the stroke takes the colour of the tokens (--hl, never the
+   accent of the conversion button).
+
+   Contract (markup, in any slot that accepts HTML):
+     <mark data-annotate="underline">two words</mark>
+       underline   a line under the text, one per line of text
+       highlight   a marker band behind the text, one per line of text
+       strike      a line through the text, one per line (if the meaning
+                   "removed" matters, say it in words or use <s>)
+       circle      a hand ellipse around 1 to 3 words (they never wrap)
+       box         a hand frame around 1 to 3 words (they never wrap)
+       bracket     a bracket on each side of the phrase
+     Any inline element works (<mark>, <strong>, <s>, <span>). An unknown
+     value falls back to underline.
+   Classes written:
+     html.an-on                  engine running: base.css drops the no-JS
+                                 emphasis, the drawn stroke replaces it
+     [data-annotate].an-pending  stroke laid out, dash hidden, about to draw
+     [data-annotate].is-drawn    stroke drawn (once, ~0.8 s)
+     svg.an-svg                  decorative overlay inside the element,
+                                 aria-hidden: the text itself is unchanged
+   Dosage: two annotations per page at most; never in a title that already
+   carries a .hl segment; circle and box on 1 to 3 words.
+   Loading: declared by evidence-chart and quote-interlude; anywhere else,
+   add `engines: [annotate]` to the page spec.
+   Without JavaScript (or on a page that does not load this engine): base.css
+   gives a sober emphasis in --hl, never the browser's yellow <mark>.
+   Under prefers-reduced-motion, or without IntersectionObserver: strokes are
+   placed at once, without drawing. Strokes are laid out again (never drawn
+   again) when the lines change: resize, web fonts loaded, a part revealed by
+   the choice gate, a transform that ends (reveal entries).
+   Styles: base.css, reserved block "annotations à main levée".
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingAnnotate) return;
+  window.__landingAnnotate = true;
+
+  var SHAPES = { underline: 1, highlight: 1, strike: 1, circle: 1, box: 1, bracket: 1 };
+  var NS = 'http://www.w3.org/2000/svg';
+  var root = document.documentElement;
+
+  /* ---- seeded randomness: the same text always gets the same stroke ---- */
+  function hash(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function random(seed) { // mulberry32
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  var items = [];
+  var seen = {};
+  Array.prototype.forEach.call(document.querySelectorAll('[data-annotate]'), function (el) {
+    var type = (el.getAttribute('data-annotate') || '').trim().toLowerCase();
+    if (!SHAPES[type]) type = 'underline';
+    var key = type + '|' + (el.textContent || '').replace(/\s+/g, ' ').trim();
+    seen[key] = (seen[key] || 0) + 1;
+    items.push({ el: el, type: type, seed: hash(key + '|' + seen[key]), svg: null, drawn: false, waiting: false });
+  });
+  if (!items.length) return;
+
+  root.classList.add('an-on');
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var animate = !reduce && 'IntersectionObserver' in window;
+
+  /* ---- geometry ---- */
+  function r1(v) { return Math.round(v * 10) / 10; }
+  function pt(p) { return r1(p[0]) + ' ' + r1(p[1]); }
+
+  // Catmull-Rom spline through the points, written as cubic Béziers.
+  function spline(points) {
+    var d = 'M' + pt(points[0]);
+    for (var i = 0; i < points.length - 1; i++) {
+      var p0 = points[i - 1] || points[i];
+      var p1 = points[i];
+      var p2 = points[i + 1];
+      var p3 = points[i + 2] || p2;
+      d += 'C' + pt([p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6]) +
+        ' ' + pt([p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6]) +
+        ' ' + pt(p2);
+    }
+    return d;
+  }
+
+  // The element's line boxes, in the coordinates of its SVG overlay. An
+  // ancestor scale (a reveal entry still running) is divided out; the final
+  // layout is redone when the transform ends.
+  function lines(item) {
+    var el = item.el;
+    var box = el.getBoundingClientRect();
+    var scale = el.offsetWidth ? box.width / el.offsetWidth : 1;
+    if (!(scale > 0.2 && scale < 5)) scale = 1;
+    var o = item.svg.getBoundingClientRect();
+    var out = [];
+    var rects = el.getClientRects();
+    for (var i = 0; i < rects.length; i++) {
+      var r = rects[i];
+      if (r.width < 1 || r.height < 1) continue;
+      var x = (r.left - o.left) / scale;
+      var y = (r.top - o.top) / scale;
+      var w = r.width / scale;
+      var h = r.height / scale;
+      var last = out[out.length - 1];
+      if (last && Math.abs(last.y - y) < h / 2) {
+        var right = Math.max(last.x + last.w, x + w);
+        last.x = Math.min(last.x, x);
+        last.w = right - last.x;
+        last.y = Math.min(last.y, y);
+        last.h = Math.max(last.h, h);
+      } else {
+        out.push({ x: x, y: y, w: w, h: h });
+      }
+    }
+    return out;
+  }
+
+  function shapes(type, ls, rnd) {
+    function j(a) { return (rnd() * 2 - 1) * a; }
+    // A slightly bowed hand line from x0 to x1 around y, rising by `rise`.
+    function hand(x0, x1, y, em, rise) {
+      var w = x1 - x0;
+      return spline([
+        [x0, y + rise / 2 + j(em * 0.03)],
+        [x0 + w * 0.34, y + rise / 6 + j(em * 0.05)],
+        [x0 + w * 0.67, y - rise / 6 + j(em * 0.05)],
+        [x1, y - rise / 2 + j(em * 0.03)]
+      ]);
+    }
+    var out = [];
+    if (type === 'underline' || type === 'strike' || type === 'highlight') {
+      ls.forEach(function (r) {
+        var em = r.h / 1.2; // an inline box is about 1.2 em high
+        // A short fragment (one word left on a line) gets a calmer stroke.
+        var k = Math.min(1, r.w / (em * 4));
+        if (type === 'underline') {
+          out.push({ d: hand(r.x - em * 0.06, r.x + r.w + em * 0.1, r.y + r.h * 1.02, em * k, em * k * 0.05 + j(em * k * 0.04)),
+                     w: Math.max(2, em * 0.085) });
+        } else if (type === 'strike') {
+          out.push({ d: hand(r.x - em * 0.08, r.x + r.w + em * 0.08, r.y + r.h * 0.56, em * k, em * k * 0.14 + j(em * k * 0.04)),
+                     w: Math.max(2, em * 0.08) });
+        } else {
+          out.push({ d: hand(r.x - em * 0.12, r.x + r.w + em * 0.12, r.y + r.h * 0.54, em * k, j(em * k * 0.05)),
+                     w: r.h * 0.72 });
+        }
+      });
+      return out;
+    }
+
+    var u = ls.reduce(function (a, r) {
+      var x0 = Math.min(a.x, r.x);
+      var y0 = Math.min(a.y, r.y);
+      return { x: x0, y: y0, w: Math.max(a.x + a.w, r.x + r.w) - x0, h: Math.max(a.y + a.h, r.y + r.h) - y0 };
+    });
+    var em = ls[0].h / 1.2;
+    var sw = Math.max(2, em * 0.07);
+
+    if (type === 'circle') {
+      var cx = u.x + u.w / 2;
+      var cy = u.y + u.h / 2;
+      var rx = u.w / 2 + em * 0.42;
+      var ry = u.h / 2 + em * 0.26;
+      var start = Math.PI * (1.06 + rnd() * 0.14); // left, a little above the middle
+      var sweep = Math.PI * 2 + 0.42 + rnd() * 0.26; // the end runs past the start
+      var pts = [];
+      var steps = 16;
+      for (var i = 0; i <= steps; i++) {
+        var k = i / steps;
+        var a = start + sweep * k;
+        var f = 0.985 + 0.07 * k + j(0.03);
+        pts.push([cx + Math.cos(a) * rx * f, cy + Math.sin(a) * ry * f]);
+      }
+      out.push({ d: spline(pts), w: sw });
+      return out;
+    }
+
+    if (type === 'box') {
+      var b = em * 0.06;
+      var x0 = u.x - em * 0.26;
+      var x1 = u.x + u.w + em * 0.26;
+      var y0 = u.y - em * 0.15;
+      var y1 = u.y + u.h + em * 0.13;
+      var c = [[x0 + j(b), y0 + j(b)], [x1 + j(b), y0 + j(b)], [x1 + j(b), y1 + j(b)], [x0 + j(b), y1 + j(b)]];
+      var edge = function (p, q) {
+        return 'Q' + pt([(p[0] + q[0]) / 2 + j(b), (p[1] + q[1]) / 2 + j(b)]) + ' ' + pt(q);
+      };
+      var first = [c[0][0] - em * 0.1, c[0][1] + j(b)];
+      var last = [c[0][0] + Math.min(em * 0.5, (x1 - x0) * 0.3), c[0][1] + j(b)];
+      out.push({ d: 'M' + pt(first) + edge(first, c[1]) + edge(c[1], c[2]) + edge(c[2], c[3]) +
+                    edge(c[3], c[0]) + edge(c[0], last), w: sw });
+      return out;
+    }
+
+    // bracket: one on each side, drawn together
+    var arm = Math.min(em * 0.38, u.w * 0.25);
+    var t = u.y - em * 0.12;
+    var bt = u.y + u.h + em * 0.12;
+    var l = u.x - em * 0.22;
+    var rr = u.x + u.w + em * 0.22;
+    var g = em * 0.04;
+    out.push({ d: 'M' + pt([l + arm, t + j(g)]) + 'L' + pt([l + j(g), t + j(g)]) +
+                  'L' + pt([l + j(g), bt + j(g)]) + 'L' + pt([l + arm, bt + j(g)]), w: sw });
+    out.push({ d: 'M' + pt([rr - arm, t + j(g)]) + 'L' + pt([rr + j(g), t + j(g)]) +
+                  'L' + pt([rr + j(g), bt + j(g)]) + 'L' + pt([rr - arm, bt + j(g)]), w: sw });
+    return out;
+  }
+
+  /* ---- drawing ---- */
+  function overlay(item) {
+    if (!item.svg) {
+      var svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('class', 'an-svg');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      item.el.appendChild(svg);
+      item.svg = svg;
+    }
+    return item.svg;
+  }
+
+  // (Re)computes the paths; false when the text is not rendered (hidden part).
+  function layout(item) {
+    var svg = overlay(item);
+    var ls = lines(item);
+    if (!ls.length) return false;
+    var list = shapes(item.type, ls, random(item.seed));
+    var paths = svg.querySelectorAll('path');
+    for (var i = paths.length - 1; i >= list.length; i--) svg.removeChild(paths[i]);
+    var together = item.type === 'bracket';
+    var each = together ? 0.6 : Math.max(0.3, 0.8 / list.length);
+    list.forEach(function (s, k) {
+      var p = paths[k];
+      if (!p) {
+        p = document.createElementNS(NS, 'path');
+        p.setAttribute('pathLength', '1');
+        svg.appendChild(p);
+      }
+      p.setAttribute('d', s.d);
+      p.setAttribute('stroke-width', String(r1(s.w)));
+      p.style.setProperty('--an-dur', each + 's');
+      p.style.setProperty('--an-delay', (together ? 0 : k * each) + 's');
+    });
+    return true;
+  }
+
+  function draw(item, animated) {
+    if (item.drawn) return;
+    if (!layout(item)) return; // retried at the next layout change
+    item.drawn = true;
+    var el = item.el;
+    if (!animated) {
+      el.classList.add('is-drawn');
+      return;
+    }
+    el.classList.add('an-pending');
+    item.svg.getBoundingClientRect(); // commit the hidden dash before the transition
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        el.classList.remove('an-pending');
+        el.classList.add('is-drawn');
+      });
+    });
+  }
+
+  // Draw once the text itself has entered (reveal.js), then a short beat.
+  function drawWhenRead(item) {
+    if (item.waiting || item.drawn) return;
+    item.waiting = true;
+    var host = root.classList.contains('rv-on') ? item.el.closest('[data-reveal]') : null;
+    var tries = 0;
+    (function wait() {
+      if (host && !host.classList.contains('is-in') && tries++ < 50) {
+        window.setTimeout(wait, 100);
+        return;
+      }
+      window.setTimeout(function () {
+        item.waiting = false;
+        draw(item, true);
+      }, host ? 450 : 200);
+    })();
+  }
+
+  var queued = false;
+  function relayout() {
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(function () {
+      queued = false;
+      items.forEach(function (item) {
+        if (item.drawn) layout(item);
+        else if (!animate) draw(item, false);
+      });
+    });
+  }
+
+  if (animate) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        io.unobserve(entry.target);
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].el === entry.target) drawWhenRead(items[i]);
+        }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.75 });
+    items.forEach(function (item) { io.observe(item.el); });
+  } else {
+    items.forEach(function (item) { draw(item, false); });
+  }
+
+  if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(root);
+  else window.addEventListener('resize', relayout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  document.addEventListener('landing:revealed', relayout);
+  document.addEventListener('transitionend', function (e) {
+    if (e.propertyName === 'transform' && e.target.querySelector && e.target.querySelector('.is-drawn')) relayout();
+  }, true);
+})();
+</script>
+<script>
+/* ---- tracking.js ---- */
+/* ==========================================================================
+   tracking.js · measurement relay of a landing page (GA4 / GTM dataLayer)
+   --------------------------------------------------------------------------
+   Turns the data-* hooks of the markup into analytics events, and passes the
+   visit's UTM parameters on to the conversion. Sends nothing by itself: it
+   only feeds window.dataLayer (or gtag), which the page's tag loads, or not.
+
+   Configuration: window.LANDING_CONFIG.tracking, written by the assembler,
+   which also writes the dataLayer initialisation in <head> (the page's
+   declaration of measurement, read by qa-landing.py) unless mode is "off".
+     mode   "datalayer" (default): dataLayer.push({ event, ...params })
+            "gtm":   same push (a GTM container listens to it)
+            "gtag":  gtag('event', name, params) (gtag.js loaded in <head>)
+            "off":   nothing is sent (hooks stay in place for later)
+     utm    true (default): UTM pass-through on, false: off
+     page   page slug, sent as page_slug (default: body[data-page-slug])
+
+   Events and their parameters (every event also carries page_slug and the
+   visit's utm_source / utm_medium / utm_campaign / utm_content / utm_term
+   when present):
+     cta_click        click on an element with data-track="cta_click", or
+                      with data-cta / data-cta-position and no data-track.
+                      cta_position (data-cta-position), cta_label (visible
+                      text, 80 chars), cta_primary (data-cta="primaire"),
+                      link_url (href)
+     generate_lead    valid submit of a form[data-track="generate_lead"]
+                      (a form that forms.js refused carries data-invalid and
+                      is not counted). form_id (form id), lead_source (page
+                      slug), optin (true when an input[data-optin] box is
+                      ticked, false otherwise)
+     begin_checkout   submit of a form[data-track="begin_checkout"] (the
+                      conversion ticket). value, currency, formula, and
+                      items (GA4 array) when the form carries
+                      data-checkout-items (JSON, written by bundle-receipt)
+     form_demo_submit sent INSTEAD of the form's own event when its action
+                      is still a {{MARKER}} (or the form carries data-demo,
+                      written by forms.js, which then sends nothing): a
+                      demonstration submission never counts as a lead or a
+                      checkout. form_event (the event it replaces),
+                      form_id, and the parameters of that event
+     select_content   choice gate (content_type, content_id); also pushed
+                      through window.landingTrack by sections: recommender
+                      (content_type = its param, content_id = the offer,
+                      answers = "question:answer,…"), work-wall filter
+                      (content_type "filtre"), demonstrator request
+     viewer_open      viewer.js opened: content_type, content_id, pages
+     faq_open         a details[data-track="faq_open"] opened: question
+     <any name>       any other data-track value on a link or button: pushed
+                      on click under that name; a section may also call
+                      window.landingTrack(name, params) (demonstrator:
+                      its track_event, demo_calculate by default)
+   Extra parameters: every data-track-<name>="value" attribute on the tracked
+   element is sent as <name>: value (dashes become underscores). A form
+   exposes its current formula through a checked radio input[name="formule"]
+   (or "formula"), a hidden input of that name (single formula), or
+   [data-track-formula]; the formula input's data-price gives value.
+
+   UTM pass-through: utm_* (and gclid) of the landing URL are kept for the
+   visit (sessionStorage) and appended to (a) every outbound conversion link
+   (a[data-cta] or a[data-track] with an absolute http(s) href) and (b) every
+   form[data-track] as hidden inputs. data-utm="off" on a link or form opts
+   it out.
+   ========================================================================== */
+(function () {
+  'use strict';
+  if (window.__landingTracking) return;
+  window.__landingTracking = true;
+
+  var config = (window.LANDING_CONFIG && window.LANDING_CONFIG.tracking) || {};
+  var mode = config.mode || 'datalayer';
+  var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid'];
+
+  // The page declares its measurement in <head> (the assembler writes the
+  // dataLayer initialisation, and the GTM or gtag snippet when an id is set).
+  // In "off" mode nothing is declared and nothing is created here.
+  function layer() {
+    if (!Array.isArray(window.dataLayer)) {
+      var fresh = [];
+      window.dataLayer = fresh;
+    }
+    return window.dataLayer;
+  }
+
+  function pageSlug() {
+    return config.page || (document.body && document.body.getAttribute('data-page-slug')) || location.pathname;
+  }
+
+  /* ---- UTM of the visit ---- */
+  var utm = {};
+  try {
+    var params = new URLSearchParams(location.search);
+    var stored = JSON.parse(sessionStorage.getItem('landing_utm') || '{}');
+    UTM_KEYS.forEach(function (k) {
+      var v = params.get(k) || stored[k];
+      if (v) utm[k] = v;
+    });
+    if (Object.keys(utm).length) sessionStorage.setItem('landing_utm', JSON.stringify(utm));
+  } catch (e) { /* private mode, blocked storage: keep what the URL gives */ }
+
+  function send(name, extra) {
+    if (mode === 'off' || !name) return;
+    var payload = { page_slug: pageSlug() };
+    Object.keys(utm).forEach(function (k) { payload[k] = utm[k]; });
+    Object.keys(extra || {}).forEach(function (k) {
+      if (extra[k] !== undefined && extra[k] !== '') payload[k] = extra[k];
+    });
+    if (mode === 'gtag' && typeof window.gtag === 'function') {
+      window.gtag('event', name, payload);
+    } else {
+      var obj = { event: name };
+      Object.keys(payload).forEach(function (k) { obj[k] = payload[k]; });
+      layer().push(obj);
+    }
+  }
+  window.landingTrack = send;
+
+  function extras(el) {
+    var out = {};
+    Array.prototype.forEach.call(el.attributes, function (a) {
+      var m = a.name.match(/^data-track-(.+)$/);
+      if (m) out[m[1].replace(/-/g, '_')] = a.value;
+    });
+    return out;
+  }
+
+  function label(el) {
+    return (el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+  }
+
+  /* ---- clicks ---- */
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('[data-track], [data-cta], [data-cta-position]');
+    if (!el || el.tagName === 'FORM' || el.tagName === 'DETAILS') return;
+    // A submit button of a tracked form: the form's submit event counts.
+    var form = el.form || null;
+    if (form && form.hasAttribute('data-track') && (el.type === 'submit')) return;
+    var name = el.getAttribute('data-track') || 'cta_click';
+    var data = extras(el);
+    if (name === 'cta_click') {
+      data.cta_position = el.getAttribute('data-cta-position') || 'body';
+      data.cta_label = label(el);
+      data.cta_primary = /^(primaire|primary)$/i.test(el.getAttribute('data-cta') || '');
+      if (el.tagName === 'A') data.link_url = el.getAttribute('href');
+    }
+    send(name, data);
+  });
+
+  /* ---- forms ---- */
+  // A form whose action is still a {{MARKER}} is a demonstration (forms.js
+  // also marks data-demo a form it handles with an empty action): nothing is
+  // sent, and the submission is counted under form_demo_submit, never as a
+  // lead or a checkout.
+  function isDemo(form) {
+    return form.hasAttribute('data-demo') || /\{\{/.test(form.getAttribute('action') || '');
+  }
+
+  var FORMULA = 'input[name="formule"]:checked, input[name="formula"]:checked, '
+    + 'input[type="hidden"][name="formule"], input[type="hidden"][name="formula"]';
+
+  // Bubble phase: the form's own handler (forms.js) has validated it first,
+  // and marked it data-invalid when it refused the submission.
+  document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form || !form.matches || !form.matches('form[data-track]')) return;
+    if (form.hasAttribute('data-invalid')) return;
+    var name = form.getAttribute('data-track');
+    var data = extras(form);
+    var formula = form.querySelector(FORMULA);
+    if (formula) data.formula = formula.value;
+    if (name === 'generate_lead') {
+      data.form_id = form.id || '';
+      data.lead_source = pageSlug();
+      var optin = form.querySelector('input[data-optin]');
+      data.optin = !!(optin && optin.checked);
+    }
+    if (name === 'begin_checkout' && formula && formula.getAttribute('data-price')) {
+      data.value = Number(formula.getAttribute('data-price'));
+    }
+    // GA4 items of the checkout, as JSON written by the section (bundle-receipt:
+    // the articles ticked, or the pack). Malformed or empty: no items.
+    if (name === 'begin_checkout') {
+      var rawItems = form.getAttribute('data-checkout-items');
+      if (rawItems) {
+        try {
+          var list = JSON.parse(rawItems);
+          if (Array.isArray(list) && list.length) data.items = list;
+        } catch (err) { /* not JSON: leave items out */ }
+      }
+    }
+    if (isDemo(form)) {
+      data.form_event = name;
+      if (!data.form_id) data.form_id = form.id || '';
+      name = 'form_demo_submit';
+    }
+    send(name, data);
+  });
+
+  /* ---- FAQ ---- */
+  document.addEventListener('toggle', function (e) {
+    var d = e.target;
+    if (!d || d.tagName !== 'DETAILS' || !d.open || d.getAttribute('data-track') !== 'faq_open') return;
+    var s = d.querySelector('summary');
+    send('faq_open', { question: s ? label(s) : '' });
+  }, true);
+
+  /* ---- UTM pass-through ---- */
+  function passUtm() {
+    if (config.utm === false || !Object.keys(utm).length) return;
+    document.querySelectorAll('a[data-cta], a[data-track]').forEach(function (a) {
+      if (a.getAttribute('data-utm') === 'off') return;
+      var href = a.getAttribute('href') || '';
+      if (!/^https?:\/\//i.test(href)) return;
+      try {
+        var url = new URL(href);
+        Object.keys(utm).forEach(function (k) { if (!url.searchParams.has(k)) url.searchParams.set(k, utm[k]); });
+        a.setAttribute('href', url.toString());
+      } catch (err) { /* malformed href: leave it */ }
+    });
+    document.querySelectorAll('form[data-track]').forEach(function (form) {
+      if (form.getAttribute('data-utm') === 'off') return;
+      Object.keys(utm).forEach(function (k) {
+        if (form.querySelector('input[type="hidden"][name="' + k + '"]')) return;
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = k;
+        input.value = utm[k];
+        form.appendChild(input);
+      });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', passUtm);
+  else passUtm();
+})();
+</script>
+<script>
+/* ---- section : topbar ---- */
+(function () {
+  /* principe : Headroom.js (Nick Williams), MIT ; réécrit sans dépendance. */
+  var root = document.documentElement;
+  var small = window.matchMedia('(max-width: 768px)');
+  document.querySelectorAll('.s-topbar').forEach(function (bar) {
+    var cta = bar.querySelector('.s-topbar__cta');
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+
+    /* ---- 1. Hide while reading down, come back when going up ---- */
+    var hidden = false;
+    var lastY = window.scrollY;
+    var ticking = false;
+    var DELTA = 8;
+    var tracks = [];
+
+    function collect() { tracks = Array.prototype.slice.call(document.querySelectorAll('[data-scroll-track]')); }
+    collect();
+    document.addEventListener('landing:revealed', collect);
+
+    function setHidden(on) {
+      if (on === hidden) return;
+      hidden = on;
+      bar.toggleAttribute('data-hidden', on);
+      bar.inert = on;
+    }
+
+    // A pinned stage sits right under the bar (scroll.js, top: --topbar-h):
+    // the bar stays while one is stuck, so no gap opens above it.
+    function pinnedStage() {
+      if (!root.classList.contains('sc-pin')) return false;
+      var top = bar.offsetHeight + 1;
+      var vh = window.innerHeight;
+      return tracks.some(function (t) {
+        var r = t.getBoundingClientRect();
+        return r.top <= top && r.bottom >= vh - 1;
+      });
+    }
+
+    function keyboardInside() {
+      var a = document.activeElement;
+      if (!a || !bar.contains(a)) return false;
+      try { return a.matches(':focus-visible'); } catch (e) { return true; }
+    }
+
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      bar.toggleAttribute('data-scrolled', y > 2);
+      if (y <= bar.offsetHeight * 2 || pinnedStage() || keyboardInside()) {
+        setHidden(false);
+        lastY = y;
+        return;
+      }
+      var dy = y - lastY;
+      if (Math.abs(dy) < DELTA) return;
+      setHidden(dy > 0);
+      lastY = y;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }, { passive: true });
+
+    // Going back up the page with the keyboard brings the bar back before the
+    // focus moves, so Shift+Tab can reach it.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' && e.shiftKey) setHidden(false);
+    }, true);
+
+    update();
+
+    /* ---- 2. The button steps aside ---- */
+    if (!cta) return;
+    var guardOff = false;
+    var stickyOn = root.getAttribute('data-sticky-bar') === 'on';
+    function applyCta() {
+      var off = guardOff || (small.matches && stickyOn);
+      bar.toggleAttribute('data-cta-off', off);
+      cta.inert = off;
+    }
+    // Small screens: the mobile bar (sticky-bar) carries the button while it
+    // is visible; never the same button twice on screen.
+    document.addEventListener('landing:sticky-bar', function (e) {
+      stickyOn = !!(e.detail && e.detail.visible);
+      applyCta();
+    });
+    if (small.addEventListener) small.addEventListener('change', applyCta);
+
+    // Opt-in (slot cta_after_hero: data-cta-after-hero on the bar, off by
+    // default): hidden while the hero's button, the conversion block (the
+    // anchor of the button) or the final CTA is on screen.
+    var guards = [];
+    if (bar.hasAttribute('data-cta-after-hero') && 'IntersectionObserver' in window) {
+      var href = cta.getAttribute('href') || '';
+      guards = [
+        document.querySelector('main [data-cta-position="hero"]'),
+        document.querySelector('main [data-cta-position="final"]')
+      ];
+      if (href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+      guards = guards.filter(function (g, i, list) { return g && list.indexOf(g) === i; });
+    }
+    if (guards.length) {
+      var onScreen = new Map();
+      var below = bar.offsetHeight;
+      var measure = function () { guardOff = guards.some(function (g) { return onScreen.get(g); }); applyCta(); };
+      // First state measured at once: no flash of the button on load.
+      guards.forEach(function (g) {
+        var r = g.getBoundingClientRect();
+        onScreen.set(g, r.width > 0 && r.bottom > below && r.top < window.innerHeight);
+      });
+      measure();
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { onScreen.set(e.target, e.isIntersecting); });
+        measure();
+      }, { rootMargin: '-' + below + 'px 0px 0px 0px' });
+      guards.forEach(function (g) { io.observe(g); });
+    } else {
+      applyCta();
+    }
+  });
+})();
+/* ---- section : hero ---- */
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.s-hero [data-rotate]').forEach(function (el) {
+    var words = el.getAttribute('data-rotate').split('|').map(function (w) { return w.trim(); }).filter(Boolean);
+    if (words.length < 2) return;
+    var stable = (el.textContent || '').trim() || words[0];
+    el.textContent = '';
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = stable;
+    var box = document.createElement('span');
+    box.className = 's-hero__rot';
+    box.setAttribute('aria-hidden', 'true');
+    words.forEach(function (w, i) {
+      var s = document.createElement('span');
+      s.textContent = w;
+      if (i === 0) s.className = 'is-on';
+      box.appendChild(s);
+    });
+    el.appendChild(sr);
+    el.appendChild(box);
+    if (reduce) return;
+    // Three rounds at most, and only while the hero is on screen.
+    var i = 0, steps = 0, max = words.length * 3, onScreen = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }).observe(el);
+    }
+    var timer = window.setInterval(function () {
+      if (!onScreen) return;
+      box.children[i].className = '';
+      i = (i + 1) % words.length;
+      box.children[i].className = 'is-on';
+      if (++steps >= max) window.clearInterval(timer);
+    }, 2600);
+  });
+})();
+/* ---- section : letter ---- */
+(function () {
+  // Word inking needs scroll-driven animations and motion allowed: otherwise
+  // the paragraph is left untouched. Words are split on ASCII spaces only, so
+  // that no-break spaces (before « : », inside « 1 900 ») stay inside a word.
+  var motion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  var driven = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+  if (!motion || !driven) return;
+  document.querySelectorAll('.s-letter__p[data-ink]').forEach(function (p) {
+    // A paragraph that carries markup (emphasis, margin note) is left plain:
+    // splitting its text would drop the markup.
+    if (p.children.length) return;
+    var text = (p.textContent || '').trim();
+    var words = text.split(/[ \t\n\r]+/);
+    if (words.length < 2) return;
+    p.textContent = '';
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = text;
+    var shown = document.createElement('span');
+    shown.setAttribute('aria-hidden', 'true');
+    words.forEach(function (w, i) {
+      var span = document.createElement('span');
+      span.className = 's-letter__w';
+      span.style.setProperty('--i', String(i));
+      span.textContent = w;
+      shown.appendChild(span);
+      if (i < words.length - 1) shown.appendChild(document.createTextNode(' '));
+    });
+    p.appendChild(sr);
+    p.appendChild(shown);
+    p.style.setProperty('--n', String(words.length));
+    p.setAttribute('data-split', '');
+  });
+})();
+/* ---- section : showcase-dark ---- */
+(function () {
+  if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+  document.querySelectorAll('.s-showcase').forEach(function (section) {
+    var parts = section.querySelectorAll('[data-part]');
+    function light(n) {
+      parts.forEach(function (el) { el.toggleAttribute('data-on', n !== null && el.getAttribute('data-part') === n); });
+    }
+    parts.forEach(function (el) {
+      el.addEventListener('pointerenter', function () { light(el.getAttribute('data-part')); });
+      el.addEventListener('pointerleave', function () { light(null); });
+    });
+  });
+})();
+/* ---- section : offer-ticket ---- */
+(function () {
+  var tilt = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 901px)');
+  var MAX = 3;
+  document.querySelectorAll('.s-offer__ticket').forEach(function (ticket) {
+    var price = ticket.querySelector('[data-offer-price]');
+    var note = ticket.querySelector('[data-offer-note]');
+    var radios = ticket.querySelectorAll('input[name="formule"][type="radio"]');
+    function sync() {
+      var on = ticket.querySelector('input[name="formule"]:checked');
+      if (!on) return;
+      if (price) price.textContent = on.getAttribute('data-price-label') || price.textContent;
+      if (note) note.textContent = on.getAttribute('data-note') || '';
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    // The choice gate sets the formula.
+    document.addEventListener('landing:choice', function (e) {
+      var match = ticket.querySelector('input[name="formule"][value="' + (e.detail && e.detail.value) + '"]');
+      if (match && !match.checked) { match.checked = true; sync(); }
+    });
+    // Pointer tilt: physical object, fine pointer, motion allowed, 3 degrees at most.
+    ticket.addEventListener('pointermove', function (e) {
+      if (!tilt.matches || e.pointerType !== 'mouse') return;
+      var r = ticket.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      ticket.style.setProperty('--ry', (x * MAX * 2).toFixed(2) + 'deg');
+      ticket.style.setProperty('--rx', (-y * MAX * 2).toFixed(2) + 'deg');
+    });
+    ticket.addEventListener('pointerleave', function () {
+      ticket.style.removeProperty('--rx');
+      ticket.style.removeProperty('--ry');
+    });
+  });
+})();
+/* ---- section : faq ---- */
+(function () {
+  // FAQPage JSON-LD built from the visible questions (indexed pages only).
+  document.querySelectorAll('.s-faq__list[data-faq-jsonld]').forEach(function (list) {
+    var entities = Array.prototype.map.call(list.querySelectorAll('details'), function (d) {
+      var q = d.querySelector('summary');
+      var a = d.querySelector('.s-faq__a');
+      return { '@type': 'Question', name: q ? q.textContent.trim() : '',
+               acceptedAnswer: { '@type': 'Answer', text: a ? a.textContent.trim() : '' } };
+    });
+    var script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: entities });
+    document.head.appendChild(script);
+  });
+})();
+/* ---- section : sticky-bar ---- */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  document.querySelectorAll('.s-sticky').forEach(function (bar) {
+    var link = bar.querySelector('a[href]');
+    var href = link ? link.getAttribute('href') : '';
+    // Shown once the hero has been scrolled past; hidden again while the
+    // conversion block or the footer is on screen.
+    var hero = document.querySelector('main section');
+    var guards = [document.querySelector('footer')];
+    if (href && href.charAt(0) === '#' && href.length > 1) guards.push(document.getElementById(href.slice(1)));
+    guards = guards.filter(Boolean);
+    var onScreen = new Map();
+    var heroPassed = !hero;
+    // Static during any View Transition of the page (unique name: ids are).
+    if (bar.id) bar.style.viewTransitionName = 'vt-' + bar.id;
+    var root = document.documentElement;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
+        else onScreen.set(e.target, e.isIntersecting);
+      });
+      var blocked = guards.some(function (g) { return onScreen.get(g); });
+      var visible = heroPassed && !blocked;
+      if (visible === bar.hasAttribute('data-visible') && root.hasAttribute('data-sticky-bar')) return;
+      bar.toggleAttribute('data-visible', visible);
+      // The top bar drops its own button on small screens while this one shows.
+      root.setAttribute('data-sticky-bar', visible ? 'on' : 'off');
+      document.dispatchEvent(new CustomEvent('landing:sticky-bar', { detail: { visible: visible } }));
+    });
+    if (hero) io.observe(hero);
+    guards.forEach(function (g) { onScreen.set(g, false); io.observe(g); });
+  });
+})();
+</script>
+</body>
+</html>

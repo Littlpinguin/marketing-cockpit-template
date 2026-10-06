@@ -67,6 +67,63 @@ indent = "  "
 # jusqu'à 4,5:1 sur neutral-dark et sur neutral-dark-soft.
 "--label-accent-dark" = { token = "color.primary", mix = "#FFFFFF", amount = 0.5, min_contrast = 4.5, against = ["color.dark", { token = "color.dark", mix = "#FFFFFF", amount = 0.14 }] }
 
+# Tokens des landing pages : le fichier de marque de la bibliothèque de sections
+# (05-web-content/templates/assets/, sections/ ; assemblage par
+# 05-web-content/scripts/assemble-landing.py). base.css et chaque section lisent
+# ces variables et rien d'autre. Dérivées en valeurs littérales (la QA des
+# landings lit des couleurs calculées). Les couleurs de texte qui se posent sur
+# plusieurs fonds sont poussées jusqu'au contraste WCAG voulu sur chacun d'eux :
+# texte atténué (4,6:1 sur le fond de page, les cartes blanches et les cartes
+# teintées ; idem en bande sombre), segment accentué des titres, bordure des
+# champs (3:1, WCAG 1.4.11). Le texte du bouton de conversion (sur l'accent)
+# vise 3:1 : ce bouton est en 19 px gras (grand texte WCAG), et le seuil reste
+# atteignable quelle que soit la couleur d'accent. Ne dépend que des tokens que
+# le gabarit garde toujours (primary, accent, dark, light, white, gradient, font,
+# radius) : un fork qui retire positive ou negative ne casse rien.
+[[targets]]
+path = "05-web-content/templates/assets/tokens.css"
+mode = "block"
+indent = "  "
+
+[targets.vars]
+"--brand-primary" = "color.primary"
+"--brand-accent" = "color.accent"
+"--brand-dark" = "color.dark"
+"--brand-light" = "color.light"
+"--brand-white" = "color.white"
+"--brand-primary-soft" = { token = "color.primary", alpha = 0.10 }
+"--brand-accent-soft" = { token = "color.accent", alpha = 0.18 }
+"--brand-surface-2" = { token = "color.light", mix = "#000000", amount = 0.035 }
+"--brand-band-2" = { token = "color.dark", mix = "#FFFFFF", amount = 0.07 }
+"--brand-band-3" = { token = "color.dark", mix = "#FFFFFF", amount = 0.14 }
+"--brand-line" = { token = "color.dark", alpha = 0.12 }
+"--brand-line-on-dark" = { token = "color.light", alpha = 0.16 }
+"--brand-shadow" = { token = "color.dark", alpha = 0.16 }
+"--brand-shadow-soft" = { token = "color.dark", alpha = 0.06 }
+"--brand-gradient" = "gradient.signature"
+"--brand-gradient-vertical" = { token = "gradient.signature", angle = "180deg" }
+# Texte atténué : du fond clair vers le sombre, jusqu'à 4,6:1 sur les trois fonds clairs.
+"--brand-muted" = { token = "color.light", mix = "color.dark", amount = 0.45, min_contrast = 4.6, against = ["color.light", "color.white", { token = "color.light", mix = "#000000", amount = 0.035 }] }
+# Le même en bande sombre, sur le fond de bande et ses deux surfaces.
+"--brand-muted-on-dark" = { token = "color.dark", mix = "color.light", amount = 0.5, min_contrast = 4.6, against = ["color.dark", { token = "color.dark", mix = "#FFFFFF", amount = 0.07 }, { token = "color.dark", mix = "#FFFFFF", amount = 0.14 }] }
+# Segment accentué des titres et liens sur fond clair : la primaire, assombrie au besoin.
+"--brand-primary-text" = { token = "color.primary", mix = "#000000", min_contrast = 4.6, against = ["color.light", "color.white", { token = "color.light", mix = "#000000", amount = 0.035 }] }
+# Le même en bande sombre : l'accent, éclairci au besoin.
+"--brand-accent-on-dark" = { token = "color.accent", mix = "#FFFFFF", min_contrast = 4.6, against = ["color.dark", { token = "color.dark", mix = "#FFFFFF", amount = 0.07 }, { token = "color.dark", mix = "#FFFFFF", amount = 0.14 }] }
+# Texte du bouton de conversion posé sur l'accent (19 px gras, seuil grand texte).
+"--brand-on-accent" = { token = "color.dark", mix = "#FFFFFF", min_contrast = 3, against = "color.accent" }
+# Bordures de champs et contrôles : 3:1 contre le fond (WCAG 1.4.11).
+"--brand-field-border" = { token = "color.light", mix = "color.dark", amount = 0.3, min_contrast = 3, against = ["color.white", "color.light"] }
+"--brand-field-border-on-dark" = { token = "color.dark", mix = "color.light", amount = 0.3, min_contrast = 3, against = ["color.dark", { token = "color.dark", mix = "#FFFFFF", amount = 0.07 }] }
+# Messages d'erreur de formulaire : un rouge neutre, teinté de la couleur sombre de la marque.
+"--brand-danger" = { token = "color.dark", mix = "#B42318", amount = 0.9, min_contrast = 4.6, against = ["color.white", "color.light"] }
+"--font-display" = "font.display"
+"--font-mono" = "font.mono"
+"--radius-card" = "radius.card"
+"--radius-cta" = "radius.cta"
+"--radius-badge" = "radius.badge"
+"--radius-input" = "radius.input"
+
 # Annexe CSS du style-guide : la référence lisible de toutes les variables.
 [[targets]]
 path = "01-brand/style-guide.md"

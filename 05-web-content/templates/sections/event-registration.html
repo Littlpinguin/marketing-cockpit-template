@@ -1,0 +1,414 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "event-registration",
+  "name": "Inscription à un événement (sur place ou en ligne)",
+  "objection": "Comment je m’inscris, et comment je participe",
+  "engines": ["forms", "offer"],
+  "when": "Événement gratuit ou sur invitation, hybride ou non : la conversion est une inscription, pas un paiement. À gauche, les faits (quand, où) et ce qui arrive après l’inscription ; à droite, le choix du mode de participation en vraies radios, quatre champs au plus, une case facultative pour la prochaine édition, le bouton et l’échéance en jours. L’état réel vient de la configuration « offer » de la spec : liste d’attente = salle complète (le mode marqué full_on_waitlist se désactive, le direct reste ouvert), clos = message de clôture.",
+  "avoid": "Événement payant (préférer le billet offer-ticket), compteur de places sans vrai chiffre, case obligatoire pour s’inscrire, inscription à une lettre glissée dans le formulaire, plus de cinq champs.",
+  "reduced_motion": "Immobile : la carte du formulaire est là d’emblée.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, coupure décidée par <br>.", "example": "Votre place<br><span class=\"hl\">sur place ou en&nbsp;ligne</span>"},
+    "intro": {"type": "text", "doc": "Chapô : ce que réserve l'inscription.", "example": "L’inscription est gratuite. Elle vous réserve une place à Lyon ou le lien du direct, et le replay dans les deux cas."},
+    "dark": {"type": "bool", "doc": "true : bande sombre (la carte du formulaire reste sur papier clair) ; false : fond clair de la page.", "example": true},
+    "facts": {"type": "list", "doc": "2 ou 3 faits en liste de définitions. term : intitulé court (Quand, Où) ; text : le fait, en une ligne.", "fields": {"term": "intitulé", "text": "le fait"}, "example": [{"term": "Quand", "text": "Jeudi 10 juin 2027, de 8 h 30 à 12 h"}, {"term": "Où", "text": "Dans nos locaux de Lyon, et en direct de 9 h à 11 h 30"}]},
+    "next_title": {"type": "text", "doc": "Titre (h3) des étapes après l'inscription.", "example": "Après l’inscription"},
+    "next_steps": {"type": "list", "doc": "2 à 4 étapes, une phrase chacune.", "example": ["Un email de confirmation tout de suite, avec l’invitation pour votre agenda", "La veille à 17 h, le plan d’accès ou le lien du direct", "Sous 48 heures, le replay et les supports des intervenants"]},
+    "action": {"type": "url", "doc": "Endpoint POST de l'inscription (outil d'événement, webhook n8n). Reçoit participation, name, email, company, question, la case facultative et les UTM. Marqueur {{FORM_ENDPOINT}} : envoi de démonstration, rien ne part.", "example": "{{FORM_ENDPOINT}}"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le bouton d'envoi.", "example": true},
+    "position": {"type": "text", "doc": "Position mesurée du bouton (data-cta-position).", "example": "inscription"},
+    "modes_legend": {"type": "text", "doc": "Question du choix de participation. Vide : pas de choix affiché, le mode marqué checked part en champ caché.", "example": "Comment participez-vous ?"},
+    "modes": {"type": "list", "doc": "1 à 3 modes. value : identifiant envoyé (participation) et mesuré ; label : nom court ; meta : précision ; checked : le mode par défaut (un seul) ; full_on_waitlist : true pour le mode qui se ferme quand la salle est complète (état waitlist).", "fields": {"value": "identifiant", "label": "nom court", "meta": "précision", "checked": "true pour un seul", "full_on_waitlist": "true ou false"}, "example": [{"value": "sur-place", "label": "Sur place", "meta": "À Lyon, café d’accueil compris", "checked": true, "full_on_waitlist": true}, {"value": "en-ligne", "label": "En ligne", "meta": "En direct, lien envoyé la veille", "checked": false, "full_on_waitlist": false}]},
+    "badge_full": {"type": "text", "doc": "Badge du mode fermé en état waitlist.", "example": "Salle complète"},
+    "labels": {"type": "object", "doc": "Labels visibles des champs. company ou question vides : champ absent.", "fields": {"name": "nom", "email": "email", "company": "entreprise (vide : pas de champ)", "question": "question facultative (vide : pas de champ)", "optional": "mention facultatif"}, "example": {"name": "Prénom et nom", "email": "Email professionnel", "company": "Entreprise", "question": "Une question pour les intervenants", "optional": "(facultatif)"}},
+    "optin": {"type": "object", "doc": "Case facultative et décochée pour être prévenu de la prochaine édition. label : la phrase ; name : nom du champ envoyé. generate_lead porte optin: true ou false. null : pas de case.", "fields": {"label": "phrase de la case", "name": "nom du champ"}, "example": {"label": "Me prévenir de la prochaine matinale", "name": "prochaines"}},
+    "cta_label": {"type": "text", "doc": "Le verbe du bouton.", "example": "M’inscrire"},
+    "cta_closed": {"type": "text", "doc": "Libellé du bouton en état clos (désactivé).", "example": "Inscriptions closes"},
+    "deadline": {"type": "text", "doc": "Échéance statique, toujours vraie.", "example": "Inscriptions jusqu’au mercredi 9 juin"},
+    "countdown": {"type": "object", "doc": "Jours restants (moteur offer) : many, one, zero. null : la date reste.", "fields": {"many": "« … {n} jours »", "one": "veille", "zero": "jour même"}, "example": {"many": "Inscriptions closes dans {n} jours", "one": "Inscriptions closes demain", "zero": "Inscriptions closes ce soir"}},
+    "seats": {"type": "text", "doc": "Vraies places (un chiffre réel ou rien).", "example": "60 places sur place"},
+    "closed_text": {"type": "html", "doc": "Message affiché à la place du formulaire en état clos, avec la suite possible (replay, contact).", "example": "Les inscriptions sont closes. Écrivez à <a href=\"mailto:bonjour@example.com\">bonjour@example.com</a> pour recevoir le replay."},
+    "privacy": {"type": "html", "doc": "Obligatoire : mention de confidentialité sous le bouton, avec le lien (nouvel onglet annoncé). Dans une page réelle, le lien est le marqueur {{URL_CONFIDENTIALITE}} jusqu'à son branchement.", "example": "Vos données servent à organiser la matinale et à vous envoyer le replay. <a href=\"https://www.example.com/confidentialite\" target=\"_blank\" rel=\"noopener\">Confidentialité<span class=\"sr-only\"> (nouvel onglet)</span></a>"},
+    "error_required": {"type": "text", "doc": "Message champ vide.", "example": "Ce champ est nécessaire à votre inscription."},
+    "error_email": {"type": "text", "doc": "Message email mal formé.", "example": "Cette adresse email semble incomplète."},
+    "msg_success": {"type": "text", "doc": "Confirmation après envoi.", "example": "C’est noté. La confirmation et l’invitation pour votre agenda arrivent par email dans quelques minutes."},
+    "msg_failure": {"type": "text", "doc": "Message si l'envoi échoue.", "example": "L’envoi n’a pas abouti. Nouvel essai en cours."},
+    "msg_unwired": {"type": "text", "doc": "Ajouté au message de confirmation quand l'endpoint est encore un marqueur {{…}} : rien ne part, la mesure compte form_demo_submit.", "example": "Formulaire de démonstration : rien n’a été envoyé."}
+  }
+}
+</script>
+<style data-section-style="event-registration">
+.s-evreg__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-evreg__facts {
+  display: grid;
+  gap: 16px;
+  margin-bottom: clamp(28px, 1rem + 2vw, 40px);
+  padding-block: 22px;
+  border-block: 1px solid var(--line);
+}
+
+.s-evreg__facts > div {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+}
+
+.s-evreg__facts dt {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-evreg__facts dd {
+  font-weight: 600;
+  text-wrap: pretty;
+}
+
+.s-evreg__next-title {
+  margin-bottom: 16px;
+  font-size: var(--t-h3);
+  font-weight: 800;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.015em;
+}
+
+.s-evreg__next {
+  display: grid;
+  gap: 14px;
+  counter-reset: next;
+}
+
+.s-evreg__next > li {
+  position: relative;
+  padding-left: 44px;
+  counter-increment: next;
+  text-wrap: pretty;
+}
+
+.s-evreg__next > li::before {
+  content: counter(next);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+/* The form card is paper, on a dark band too: the semantic layer is pointed
+   back at the light palette (tokens only, no new colour). */
+.s-evreg__card {
+  --ink: var(--brand-dark);
+  --surface: var(--brand-white);
+  --surface-2: var(--brand-surface-2);
+  --muted: var(--brand-muted);
+  --hl: var(--brand-primary-text);
+  --tint: var(--brand-primary-soft);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-field-border);
+  --focus: var(--brand-dark);
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+  color: var(--ink);
+}
+
+.s-evreg__form,
+.s-evreg__fields,
+.s-evreg__open {
+  display: grid;
+  gap: 20px;
+}
+
+.s-evreg__row,
+.s-evreg__seg {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.s-evreg__modes {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-evreg__legend {
+  margin-bottom: 12px;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.s-evreg__opt {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-height: 76px;
+  padding: 14px 48px 14px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.s-evreg__opt:hover {
+  border-color: var(--ink);
+}
+
+.s-evreg__opt::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.s-evreg__opt:has(input:checked) {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--brand-primary);
+}
+
+.s-evreg__opt:has(input:checked)::after {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  box-shadow: inset 0 0 0 4px var(--surface);
+}
+
+.s-evreg__opt:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.s-evreg__opt:has(input:disabled) {
+  border-style: dashed;
+  background: var(--surface-2);
+  cursor: not-allowed;
+}
+
+.s-evreg__opt-label {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-evreg__opt-meta {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+.s-evreg__opt .badge {
+  justify-self: start;
+  margin-top: 4px;
+}
+
+.s-evreg__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.s-evreg__deadline {
+  display: flex;
+  justify-content: center;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Deadline line, centred: the line shrinks to its text, so the deadline and
+   its detail grow only once the detail has wrapped to a line of its own;
+   each then fills its line and centres its text. The separator sits in the
+   gap before the detail, inside it: on a line of its own the detail starts
+   at the left edge and the separator is clipped with it. Never a dot alone
+   at a line end or start, whatever the width or the text. */
+.s-evreg__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  padding-inline: 4px;
+  overflow: hidden;
+}
+
+.s-evreg__date,
+.s-evreg__detail {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.s-evreg__date::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 10px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+  vertical-align: middle;
+}
+
+.s-evreg__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-evreg__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
+}
+
+.s-evreg__closed {
+  font-weight: 600;
+}
+
+.s-evreg__privacy {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-evreg__status:not(:empty) {
+  padding: 14px 16px;
+  border-radius: var(--radius-input);
+  background: var(--tint);
+}
+
+@media (max-width: 1100px) {
+  .s-evreg__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-evreg__row,
+  .s-evreg__seg {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-evreg__opt {
+    min-height: 64px;
+  }
+
+  .s-evreg__facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-evreg section{{#dark}} band-dark{{/dark}}" aria-labelledby="{{id}}-titre" data-section="event-registration">
+  <div class="wrap s-evreg__grid">
+    <div>
+      <div class="section-head">
+        <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+        <p class="section-intro">{{intro}}</p>
+      </div>
+      <dl class="s-evreg__facts">
+        {{#facts}}<div><dt>{{term}}</dt><dd>{{text}}</dd></div>{{/facts}}
+      </dl>
+      <h3 class="s-evreg__next-title">{{next_title}}</h3>
+      <ol class="s-evreg__next" role="list">{{#next_steps}}<li>{{.}}</li>{{/next_steps}}</ol>
+    </div>
+    <div class="s-evreg__card card" data-reveal>
+      <form class="s-evreg__form" id="{{id}}-form" action="{{action}}" method="post" data-form="inscription" data-track="generate_lead"{{#modes}}{{#checked}} data-track-participation="{{value}}"{{/checked}}{{/modes}} data-error-required="{{error_required}}" data-error-email="{{error_email}}" data-msg-success="{{msg_success}}" data-msg-failure="{{msg_failure}}" data-msg-unwired="{{msg_unwired}}">
+        <div class="hp" aria-hidden="true"><label for="{{id}}-site">Site web</label><input type="text" id="{{id}}-site" name="site" tabindex="-1" autocomplete="off"></div>
+        <div class="s-evreg__fields" data-form-fields>
+          <div class="s-evreg__open" data-offer-show="open waitlist">
+            {{#modes_legend}}<fieldset class="s-evreg__modes">
+              <legend class="s-evreg__legend">{{modes_legend}}</legend>
+              <div class="s-evreg__seg">
+                {{#modes}}<label class="s-evreg__opt"><input class="sr-only" type="radio" name="participation" value="{{value}}"{{#checked}} checked{{/checked}}{{#full_on_waitlist}} data-offer-disabled-waitlist data-full{{/full_on_waitlist}}><span class="s-evreg__opt-label">{{label}}</span><span class="s-evreg__opt-meta">{{meta}}</span>{{#full_on_waitlist}}<span class="badge badge--accent" data-offer-show="waitlist" hidden>{{badge_full}}</span>{{/full_on_waitlist}}</label>{{/modes}}
+              </div>
+            </fieldset>{{/modes_legend}}{{^modes_legend}}{{#modes}}{{#checked}}<input type="hidden" name="participation" value="{{value}}">{{/checked}}{{/modes}}{{/modes_legend}}
+            <div class="s-evreg__row">
+              <div class="field">
+                <label class="field__label" for="{{id}}-name">{{labels.name}}</label>
+                <input class="field__input" type="text" id="{{id}}-name" name="name" autocomplete="name" required aria-describedby="{{id}}-name-error">
+                <p class="field__error" id="{{id}}-name-error" hidden></p>
+              </div>
+              <div class="field">
+                <label class="field__label" for="{{id}}-email">{{labels.email}}</label>
+                <input class="field__input" type="email" id="{{id}}-email" name="email" autocomplete="email" required aria-describedby="{{id}}-email-error">
+                <p class="field__error" id="{{id}}-email-error" hidden></p>
+              </div>
+            </div>
+            {{#labels.company}}<div class="field">
+              <label class="field__label" for="{{id}}-company">{{labels.company}}</label>
+              <input class="field__input" type="text" id="{{id}}-company" name="company" autocomplete="organization" required aria-describedby="{{id}}-company-error">
+              <p class="field__error" id="{{id}}-company-error" hidden></p>
+            </div>{{/labels.company}}
+            {{#labels.question}}<div class="field">
+              <label class="field__label" for="{{id}}-question">{{labels.question}} <span class="field__optional">{{labels.optional}}</span></label>
+              <textarea class="field__input" id="{{id}}-question" name="question" rows="3"></textarea>
+            </div>{{/labels.question}}
+            {{#optin}}<div class="consent"><input type="checkbox" id="{{id}}-optin" name="{{name}}" value="oui" data-optin><label for="{{id}}-optin">{{label}}</label></div>{{/optin}}
+            <button type="submit" class="btn btn--block s-evreg__cta {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" data-cta-position="{{position}}"{{#primary}} data-cta="primaire"{{/primary}} data-offer-text-closed="{{cta_closed}}" data-offer-disabled-closed>{{cta_label}}</button>
+            <p class="s-evreg__deadline"><span class="s-evreg__when"><span class="s-evreg__date"{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}} <span class="s-evreg__detail"><span class="s-evreg__sep" aria-hidden="true">·</span>{{seats}}</span>{{/seats}}</span></p>
+          </div>
+          <p class="s-evreg__closed" data-offer-show="closed" hidden>{{{closed_text}}}</p>
+          <p class="s-evreg__privacy">{{{privacy}}}</p>
+        </div>
+        <p class="form-status s-evreg__status" role="status" data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="event-registration">
+(function () {
+  document.querySelectorAll('.s-evreg').forEach(function (section) {
+    var form = section.querySelector('form');
+    if (!form) return;
+    var radios = form.querySelectorAll('input[name="participation"][type="radio"]');
+    // The chosen mode travels with the lead (generate_lead: participation).
+    function sync() {
+      var on = form.querySelector('input[name="participation"]:checked');
+      if (on) form.setAttribute('data-track-participation', on.value);
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    // offer.js: "waitlist" means the room is full; the modes marked full
+    // close, the first one still open is selected.
+    document.addEventListener('landing:offer', function (e) {
+      if (!e.detail || e.detail.state !== 'waitlist') return;
+      var current = form.querySelector('input[name="participation"]:checked');
+      if (current && !current.disabled) return;
+      var open = form.querySelector('input[name="participation"][type="radio"]:not(:disabled)');
+      if (open) { open.checked = true; sync(); }
+    });
+    sync();
+  });
+})();
+</script>

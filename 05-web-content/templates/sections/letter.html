@@ -1,0 +1,451 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "letter",
+  "name": "Lettre signée",
+  "objection": "Qui est derrière l’offre, et pourquoi lui faire confiance",
+  "when": "Quand l’offre repose sur une personne (fondatrice, formatrice, consultante) : une lettre à la première personne, quatre à six paragraphes, signée, avec son portrait ou ses initiales en marge. Place : juste après le problème (la personne y répond) ou juste avant l’offre (elle s’engage). Une seule par page. Typographie de livre : mesure de 60 à 70 caractères, lettrine, formule d’appel en petites capitales, citation détachée facultative.",
+  "avoid": "Biographie en liste de titres, plus de six paragraphes, faits personnels tirés de notes internes, signature « manuscrite » inventée pour une vraie personne (vectoriser la sienne, avec son accord), photo de banque d’images, citation détachée qui dit autre chose que le texte, deux paragraphes encrés, serif sur fond crème avec accent terracotta par réflexe.",
+  "reduced_motion": "La signature est déjà tracée, le paragraphe encré est plein, rien ne bouge.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2, l’objet de la lettre, sans virgule ni point. Segment accentué en <span class=\"hl\">…</span>, coupure décidée en <br>.", "example": "Pourquoi le bilan se fait<br><span class=\"hl\">dans vos fichiers</span>"},
+    "salutation": {"type": "text", "doc": "Formule d’appel, en petites capitales. Vide : rien.", "example": "Chère dirigeante, cher dirigeant,"},
+    "paragraphs": {"type": "list", "doc": "4 à 6 paragraphes de deux à quatre phrases. Le premier porte la lettrine. text : HTML de phrase (<em>, <strong>, note en marge), écrit tel quel dans la page : & et < s’écrivent &amp; et &lt;. Note en marge : <span class=\"note\"><span class=\"note__body\" role=\"note\">Source…</span></span> juste après la ponctuation qu’elle documente, une par paragraphe au plus, jamais dans deux paragraphes qui se suivent (dans la marge, deux notes proches se chevaucheraient), jamais dans le paragraphe encré ; une ou deux phrases courtes. ink : true sur UN paragraphe clé (pas le premier), en texte simple, dont les mots s’encrent au défilement là où le navigateur sait le faire (animation-timeline: view()) ; ailleurs, ou s’il porte une balise, il reste simple. pull : citation détachée affichée après ce paragraphe, reprise mot pour mot du texte (masquée aux lecteurs d’écran, qui l’ont déjà lue) ; vide : rien.", "fields": {"text": "le paragraphe, en HTML de phrase (<em>, <strong>, note en marge)", "ink": "true sur un paragraphe clé, sinon false", "pull": "phrase reprise du texte, ou vide"}, "example": [
+      {"text": "La première fois qu’un client m’a demandé son bilan carbone, j’ai fait comme la plupart des bureaux d’études : trois semaines de collecte chez lui, puis un rapport de quarante pages. Six mois plus tard, personne dans l’entreprise ne savait le refaire.", "ink": false, "pull": ""},
+      {"text": "Les chiffres tenaient. Seulement, ils vivaient dans nos tableurs, avec nos hypothèses, et le jour où un grand client a envoyé son questionnaire fournisseur, il a fallu nous rappeler pour y répondre.", "ink": false, "pull": ""},
+      {"text": "Depuis, je travaille dans l’autre sens. Vos factures et vos achats restent chez vous, et c’est vous qui faites le calcul, atelier après atelier. Je relis chaque étape et je vous montre où chercher.", "ink": true, "pull": "C’est vous qui faites le calcul, atelier après atelier"},
+      {"text": "La première semaine va moins vite. Au bout de la sixième, vous avez un bilan que vous savez défendre devant un client, et la méthode pour le refaire l’an prochain en deux jours.", "ink": false, "pull": ""},
+      {"text": "Nous prenons douze entreprises par cohorte, pour que je puisse lire chaque fichier. Si la vôtre n’est pas prête ce printemps, dites-le-moi : je préfère vous accueillir à la cohorte suivante.", "ink": false, "pull": ""}
+    ]},
+    "notes": {"type": "bool", "doc": "Facultatif, faux par défaut. Vrai : dès 1281 px, les notes en marge écrites dans les paragraphes (<span class=\"note\">…) sortent dans la marge droite de la feuille, qui se resserre pour leur faire place ; ailleurs, elles s’ouvrent sous leur ligne. Faux : les notes s’ouvrent toujours sous leur ligne.", "example": false, "default": false},
+    "closing": {"type": "text", "doc": "Formule de politesse, une ligne. Vide : rien.", "example": "Bien à vous,"},
+    "name": {"type": "text", "doc": "Nom de la personne qui signe (en marge et sous la signature).", "example": "Nadia Ferrand"},
+    "role": {"type": "text", "doc": "Sa fonction dans l’offre, en marge.", "example": "Ingénieure énergie, animatrice des ateliers"},
+    "initials": {"type": "text", "doc": "Deux lettres, affichées à la place du portrait quand « portrait » est vide.", "example": "NF"},
+    "portrait": {"type": "object", "doc": "Portrait réel de la personne, avec son accord : {src, alt, width, height}, WebP carré. null : ses initiales dans un disque aux couleurs de la marque. Jamais de photo de banque d’images ; mention IA dans l’alt si le portrait est généré.", "fields": {"src": "chemin relatif (WebP carré)", "alt": "description", "width": "px", "height": "px"}, "example": null},
+    "place_date": {"type": "text", "doc": "Lieu et date de la lettre, en marge. Vide : rien.", "example": "Lyon, le 4 janvier 2027"},
+    "note": {"type": "text", "doc": "Mention courte en marge, moins de douze mots (personnage fictif, lettre traduite…). Vide : rien.", "example": "Personnage et lettre fictifs, pour la démonstration"},
+    "signature": {"type": "object", "doc": "Signature tracée une fois à l’écran : {viewbox, paths[]}, les attributs d de un à six tracés SVG (traits, sans remplissage), vectorisés depuis la vraie signature de la personne avec son accord. null : pas de signature, le nom seul. Jamais une signature dessinée pour une personne réelle qui ne l’a pas donnée. L’exemple est un tracé fictif.", "fields": {"viewbox": "viewBox du tracé, ex. 0 0 360 120", "paths": "liste des attributs d"}, "example": {"viewbox": "0 0 360 120", "paths": ["M12 98C14 93 20 81 25 70C30 59 38 38 42 30C46 22 47 20 48 22C49 24 49 30 49 40C50 50 51 74 52 82C53 90 53 88 55 86C57 84 59 78 63 70C66 62 71 44 74 36C77 28 80 21 80 22C81 23 79 32 77 40C76 48 72 65 72 72C72 79 74 82 76 82C78 82 84 73 87 70C90 67 94 64 94 62C95 60 91 58 89 60C87 62 82 71 82 74C82 77 86 81 88 80C91 79 95 76 99 70C102 64 107 52 110 44C114 36 119 23 119 24C119 25 114 41 111 50C108 59 102 71 101 76C101 81 106 81 108 80C111 79 115 71 117 68C119 65 122 60 122 62C123 64 118 75 119 78C119 81 122 81 124 80C127 79 130 73 133 70C136 67 141 65 142 64C143 63 138 60 136 62C134 64 130 71 130 74C130 77 133 80 136 80C139 80 144 74 148 72C152 70 158 67 159 66", "M124 47c2-1 3-2 5-1", "M170 98C172 93 177 81 181 70C185 59 191 42 195 34C198 26 198 26 201 24C203 22 205 21 210 20C214 19 220 19 226 18C232 17 239 16 244 16C250 16 256 18 258 18", "M175 60C177 60 184 58 189 57C195 56 205 55 208 55", "M204 82C205 80 210 73 213 70C215 67 220 63 220 64C220 65 213 73 213 76C213 79 217 83 220 82C223 81 226 73 229 70C231 67 233 63 234 64C235 65 233 77 235 78C236 79 240 73 243 70C245 67 249 61 250 62C252 63 250 73 251 76C252 79 254 81 256 80C259 79 262 71 265 68C268 65 272 61 272 62C272 63 265 73 265 76C265 79 269 82 272 80C275 78 280 69 283 66C287 63 291 58 291 60C291 62 283 73 283 76C283 79 287 81 290 80C293 79 297 74 301 68C305 62 309 51 312 44C316 37 321 23 321 24C321 25 316 43 313 52C310 61 303 73 303 78C302 83 307 84 310 84C313 84 317 80 321 78C324 76 327 73 330 74C332 75 337 82 335 86C333 90 329 97 320 100C311 103 299 105 283 106C266 107 242 108 222 108C202 108 182 109 162 108C143 107 121 105 105 104C89 103 71 101 64 100"]}},
+    "ps": {"type": "text", "doc": "Post-scriptum facultatif, une ou deux phrases : le détail concret qui fait passer à l’acte. Vide : rien.", "example": "Le premier atelier part de vos factures d’énergie de l’an dernier. Gardez-les sous la main."},
+    "cta_label": {"type": "text", "doc": "Lien d’action discret sous la lettre (un verbe). Vide : pas de lien.", "example": "Réserver ma place"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion (#offre) ou URL de la conversion.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le lien (il mène à la conversion de la page).", "example": true}
+  }
+}
+</script>
+<style data-section-style="letter">
+/* A letter set like a book page: measure of 60 to 70 characters, drop cap,
+   small caps for the salutation, a detached quote, a signature drawn once.
+   The letter text reads var(--font-editorial), an OPTIONAL brand token (a
+   text face, often a serif) that tokens.css does not generate: without it,
+   the body font of the page. */
+/* Measure in em, not ch: the "0" of most sans faces is wide, and 60ch
+   would let French text run past 70 characters. 31em holds about 65. */
+.s-letter {
+  --letter-measure: 31em;
+}
+
+.s-letter__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(20px, 1rem + 1vw, 32px);
+}
+
+.s-letter__head {
+  margin-bottom: 0;
+}
+
+/* Margin: portrait or initials, who writes, from where and when. */
+.s-letter__margin {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 16px;
+  align-items: center;
+}
+
+.s-letter__portrait {
+  position: relative;
+  grid-row: span 3;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+/* A ring in the brand gradient, drawn above the disc and cut out by a mask:
+   the initials sit on a plain ground. */
+.s-letter__portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--gradient);
+  -webkit-mask: linear-gradient(var(--ink) 0 0) content-box, linear-gradient(var(--ink) 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(var(--ink) 0 0) content-box exclude, linear-gradient(var(--ink) 0 0);
+  pointer-events: none;
+}
+
+.s-letter__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.s-letter__initials {
+  color: var(--hl);
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.s-letter__from {
+  display: grid;
+  line-height: var(--lh-snug);
+}
+
+.s-letter__name {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.s-letter__role,
+.s-letter__date,
+.s-letter__note {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-letter__date {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.02em;
+}
+
+/* The sheet: paper laid on the page, its top edge in the brand gradient. */
+.s-letter__sheet {
+  position: relative;
+  padding: clamp(24px, 0.6rem + 4.6vw, 76px) clamp(20px, 0.4rem + 4.6vw, 76px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-family: var(--font-editorial, var(--font-body, var(--font-display)));
+  font-size: clamp(1.0625rem, 0.95rem + 0.45vw, 1.25rem);
+  line-height: 1.72;
+}
+
+.s-letter__sheet::before {
+  content: "";
+  position: absolute;
+  inset: -1px -1px auto;
+  height: 4px;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background: var(--gradient);
+}
+
+.s-letter__text {
+  max-inline-size: var(--letter-measure);
+}
+
+.s-letter__text > * + * {
+  margin-top: 1.05em;
+}
+
+.s-letter__p {
+  text-wrap: pretty;
+  hyphens: manual;
+}
+
+.s-letter__salute {
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+}
+
+/* Drop cap over three lines where the engine knows initial-letter; elsewhere
+   the opening line goes in small caps (a floated fallback breaks with the
+   font metrics). */
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  .s-letter__p--lead::first-letter {
+    -webkit-initial-letter: 3;
+    initial-letter: 3;
+    margin-inline-end: 0.12em;
+    color: var(--hl);
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+}
+
+@supports not ((initial-letter: 3) or (-webkit-initial-letter: 3)) {
+  .s-letter__p--lead::first-line {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Detached quote: the same words as the text, larger, its opening guillemet
+   hanging in the margin. Hidden from screen readers (already read). */
+.s-letter__pull {
+  margin-block: 1.6em;
+}
+
+.s-letter__pull p {
+  max-inline-size: 22em;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.125rem);
+  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-indent: -0.62em;
+  text-wrap: balance;
+}
+
+.s-letter__pull p::before {
+  content: "\00AB\00A0";
+  color: var(--hl);
+}
+
+.s-letter__pull p::after {
+  content: "\00A0\00BB";
+  color: var(--hl);
+}
+
+/* Signature: drawn once when it comes into view (reveal.js sets .is-in),
+   stroke after stroke. Without the engine or with reduced motion: drawn. */
+.s-letter__sign {
+  margin-top: 1.8em;
+}
+
+.s-letter__sig {
+  width: min(100%, 15rem);
+  height: auto;
+  margin: 0.2em 0 0 -0.3em;
+  overflow: visible;
+  color: var(--hl);
+}
+
+.s-letter__sig path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rv-on .s-letter__sig[data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+.rv-on .s-letter__sig path {
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.45, 0.05, 0.35, 1);
+}
+
+.rv-on .s-letter__sig:not(.is-in) path {
+  stroke-dashoffset: 1.05;
+}
+
+.rv-on .s-letter__sig path:nth-child(2) { transition-delay: 0.75s; }
+.rv-on .s-letter__sig path:nth-child(3) { transition-delay: 1s; }
+.rv-on .s-letter__sig path:nth-child(4) { transition-delay: 1.5s; }
+.rv-on .s-letter__sig path:nth-child(5) { transition-delay: 1.8s; }
+.rv-on .s-letter__sig path:nth-child(6) { transition-delay: 2.2s; }
+
+.s-letter__signed {
+  margin-top: 0.2em;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.s-letter__ps {
+  margin-top: 2em;
+  padding-top: 1.2em;
+  border-top: 1px solid var(--line);
+}
+
+.s-letter__ps-mark {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.s-letter__action {
+  margin-top: 1.4em;
+  font-family: var(--font-display);
+}
+
+/* One key paragraph inks word by word as it rises to the reading line:
+   scroll-driven (animation-timeline: view()), where supported and motion is
+   allowed. The script splits the words only in that case; elsewhere the
+   paragraph stays plain, fully inked. */
+@property --letter-ink {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@keyframes s-letter-ink {
+  from { --letter-ink: 0; }
+  to { --letter-ink: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .s-letter__p[data-split] {
+      animation: s-letter-ink linear both;
+      animation-timeline: view();
+      animation-range: cover 12% cover 50%;
+    }
+
+    .s-letter__p[data-split] .s-letter__w {
+      opacity: clamp(0.2, calc(var(--letter-ink) * (var(--n) + 1) - var(--i)), 1);
+    }
+  }
+}
+
+/* Wide screens: the margin column on the left stays in view while the
+   letter scrolls (sticky column, no pinning). */
+@media (min-width: 1101px) {
+  .s-letter__grid {
+    grid-template-columns: minmax(0, 14rem) minmax(0, 50rem);
+    grid-template-areas:
+      ". head"
+      "margin sheet";
+    justify-content: center;
+    column-gap: clamp(40px, 1rem + 3.6vw, 88px);
+  }
+
+  .s-letter__head {
+    grid-area: head;
+  }
+
+  .s-letter__margin {
+    grid-area: margin;
+    position: sticky;
+    top: calc(var(--topbar-h) + 40px);
+    align-self: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 12px;
+    padding-top: clamp(24px, 0.6rem + 4.6vw, 76px);
+  }
+
+  .s-letter__portrait {
+    grid-row: auto;
+    width: 112px;
+    margin-bottom: 8px;
+  }
+
+  .s-letter__initials {
+    font-size: 2.25rem;
+  }
+
+  .s-letter__sheet {
+    grid-area: sheet;
+  }
+
+}
+
+@media (min-width: 1281px) {
+  /* Margin notes (slot notes): the sheet narrows and leaves the right
+     margin to the notes. The sheet (position: relative) is the containing
+     block: each note leaves it on the right, without a float that would
+     push the text aside. Declared inline, its static position stays on the
+     line of its call (a block would drop to the next line). One note per
+     paragraph at most, never in two paragraphs in a row: two notes close
+     to each other would overlap (no clear for absolute boxes). From 1281 px
+     only, with narrower notes (16rem), so the letter keeps a readable
+     measure; below, notes open under their line. */
+  .s-letter__grid.s-letter__grid--notes {
+    --note-w: 16rem;
+    grid-template-columns: minmax(0, 12rem) minmax(0, 46rem);
+    justify-content: start;
+    padding-inline-end: calc(var(--note-w) + var(--note-gap));
+    column-gap: clamp(32px, 1rem + 2vw, 56px);
+  }
+
+  .s-letter__grid--notes .note__body {
+    display: inline;
+    position: absolute;
+    left: calc(100% + var(--note-gap));
+    width: var(--note-w);
+    margin: 0;
+    font-family: var(--font-body, var(--font-display));
+    font-size: var(--t-body);
+    line-height: 1.5;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-letter section" aria-labelledby="{{id}}-titre" data-section="letter">
+  <div class="wrap s-letter__grid{{#notes}} s-letter__grid--notes{{/notes}}">
+    <div class="section-head s-letter__head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+    </div>
+    <div class="s-letter__margin" data-reveal="fade">
+      <div class="s-letter__portrait">{{#portrait}}<img src="{{src}}" alt="{{alt}}" width="{{width}}" height="{{height}}" loading="lazy">{{/portrait}}{{^portrait}}<span class="s-letter__initials" aria-hidden="true">{{initials}}</span>{{/portrait}}</div>
+      <p class="s-letter__from"><strong class="s-letter__name">{{name}}</strong><span class="s-letter__role">{{role}}</span></p>
+      {{#place_date}}<p class="s-letter__date">{{place_date}}</p>{{/place_date}}
+      {{#note}}<p class="s-letter__note">{{note}}</p>{{/note}}
+    </div>
+    <article class="s-letter__sheet" data-reveal>
+      <div class="s-letter__text">
+        {{#salutation}}<p class="s-letter__salute">{{salutation}}</p>{{/salutation}}
+        {{#paragraphs}}<p class="s-letter__p{{#@first}} s-letter__p--lead{{/@first}}"{{#ink}} data-ink{{/ink}}>{{{text}}}</p>
+        {{#pull}}<figure class="s-letter__pull" aria-hidden="true"><p>{{pull}}</p></figure>{{/pull}}
+        {{/paragraphs}}<div class="s-letter__sign">
+          {{#closing}}<p class="s-letter__closing">{{closing}}</p>{{/closing}}
+          {{#signature}}<svg class="s-letter__sig" viewBox="{{viewbox}}" aria-hidden="true" focusable="false" data-reveal>{{#paths}}<path pathLength="1" d="{{.}}"/>{{/paths}}</svg>{{/signature}}
+          <p class="s-letter__signed">{{name}}</p>
+        </div>
+        {{#ps}}<p class="s-letter__ps"><span class="s-letter__ps-mark">P.-S.</span> {{ps}}</p>{{/ps}}
+        {{#cta_label}}<p class="s-letter__action"><a class="link-arrow" href="{{cta_href}}" data-track="cta_click" data-cta-position="lettre"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></p>{{/cta_label}}
+      </div>
+    </article>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="letter">
+(function () {
+  // Word inking needs scroll-driven animations and motion allowed: otherwise
+  // the paragraph is left untouched. Words are split on ASCII spaces only, so
+  // that no-break spaces (before « : », inside « 1 900 ») stay inside a word.
+  var motion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  var driven = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+  if (!motion || !driven) return;
+  document.querySelectorAll('.s-letter__p[data-ink]').forEach(function (p) {
+    // A paragraph that carries markup (emphasis, margin note) is left plain:
+    // splitting its text would drop the markup.
+    if (p.children.length) return;
+    var text = (p.textContent || '').trim();
+    var words = text.split(/[ \t\n\r]+/);
+    if (words.length < 2) return;
+    p.textContent = '';
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = text;
+    var shown = document.createElement('span');
+    shown.setAttribute('aria-hidden', 'true');
+    words.forEach(function (w, i) {
+      var span = document.createElement('span');
+      span.className = 's-letter__w';
+      span.style.setProperty('--i', String(i));
+      span.textContent = w;
+      shown.appendChild(span);
+      if (i < words.length - 1) shown.appendChild(document.createTextNode(' '));
+    });
+    p.appendChild(sr);
+    p.appendChild(shown);
+    p.style.setProperty('--n', String(words.length));
+    p.setAttribute('data-split', '');
+  });
+})();
+</script>

@@ -1,0 +1,319 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "journey",
+  "name": "Parcours en scrollytelling",
+  "objection": "Concrètement, qu’est-ce que je fais et qu’est-ce que j’en tire",
+  "engines": ["scroll"],
+  "when": "Programme, méthode ou parcours client en 3 à 6 étapes. Sur grand écran, un bloc collant d’un écran : à gauche « Étape n sur N », un rail qui se remplit et l’étape active dépliée ; à droite une scène décorative qui change avec l’étape (60 vh par étape). Facultative, la jauge narrative (champ gauge de chaque étape) : épinglé, l’étiquette de l’étape en cours se lit dans la marge gauche, dans l’unité du récit (« Semaine 3 sur 6 »).",
+  "avoid": "Plus de six étapes, une scène qui porte une information absente du texte, deux sections épinglées d’affilée sans respiration.",
+  "reduced_motion": "Liste simple des étapes, toutes dépliées, rail plein ; chaque scène sous son étape, immobile. Même rendu sur petit écran et sans script. Avec la jauge, chaque étape porte son étiquette devant son moment, immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Six semaines <span class=\"hl\">en quatre temps</span>"},
+    "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Un atelier de deux heures chaque mardi, et le travail sur vos données entre deux ateliers."},
+    "counter_label": {"type": "text", "doc": "Mot du compteur d'étapes (« Étape »), suivi de n / N.", "example": "Étape"},
+    "outcome_label": {"type": "text", "doc": "Préfixe du résultat de chaque étape.", "example": "Vous repartez avec"},
+    "steps": {"type": "list", "doc": "3 à 6 étapes. when : moment court ; title : h3 sans point ; text : une ou deux phrases ; outcome : ce que l'étape produit ; scene : objet composé décoratif ; gauge : facultatif, l'étiquette de la jauge narrative à cette étape, HTML de phrase avec la valeur en <b> (« Semaine <b>3</b> sur 6 ») ; toutes les étapes ou aucune, six au plus. Décorative (aria-hidden) : elle double le moment et le titre, jamais une information absente du texte.", "fields": {"when": "moment (« Semaine 1 »)", "title": "titre", "text": "ce qu'on fait", "outcome": "ce qu'on obtient", "scene": "HTML décoratif (kit .obj)", "gauge": "étiquette de la jauge, facultative (« Semaine <b>3</b> sur 6 »)"}, "example": [
+      {"when": "Semaines 1 et 2", "title": "Collecter vos données", "text": "Factures d’énergie, achats et déplacements : une liste par poste et un modèle de collecte prêt à remplir.", "outcome": "vos données rangées dans un seul fichier", "scene": "<div class=\"obj obj-window\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Collecte · 34 / 41 postes</span></div><div class=\"obj-window__body\"><div class=\"obj-check\"><span class=\"is-done\">Factures de gaz 2026</span><span class=\"is-done\">Électricité, deux sites</span><span class=\"is-done\">Grand livre des achats</span><span class=\"is-done\">Notes de frais</span><span>Fret amont, à demander</span><span>Déchets, à estimer</span></div></div></div>"},
+      {"when": "Semaine 3", "title": "Calculer vos émissions", "text": "Vous appliquez les facteurs d’émission de la base publique de référence, poste par poste, avec l’animateur.", "outcome": "un total par scope et sa source", "scene": "<div class=\"obj obj-window\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Calcul</span></div><div class=\"obj-window__body\"><div class=\"obj-grid\" style=\"--cols:4\"><span class=\"is-head\">Poste</span><span class=\"is-head\">Quantité</span><span class=\"is-head\">Facteur</span><span class=\"is-head\">t CO₂e</span><span>Gaz</span><span>48 200 kWh</span><span>0,227</span><span>10,9</span><span>Électricité</span><span>112 000 kWh</span><span>0,052</span><span>5,8</span><span>Acier</span><span>36 t</span><span>1,9</span><span>68,4</span><span>Trajets</span><span>81 000 km</span><span>0,19</span><span>15,4</span></div></div></div>"},
+      {"when": "Semaines 4 et 5", "title": "Choisir vos priorités", "text": "Vous classez les mesures possibles par tonnes évitées et par coût, puis vous en retenez une dizaine.", "outcome": "un plan d’action chiffré", "scene": "<div class=\"obj obj-sheet\"><div class=\"obj-head\"><b>Mesures classées</b><span class=\"obj-push\">t évitées / an</span></div><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:.9\"><span>Fournisseur acier</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>41</b></div><div class=\"obj-bar\" style=\"--v:.55\"><span>Fret mutualisé</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>24</b></div><div class=\"obj-bar\" style=\"--v:.32\"><span>Pompe à chaleur</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>14</b></div><div class=\"obj-bar\" style=\"--v:.18\"><span>Visio d’abord</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>8</b></div></div></div>"},
+      {"when": "Semaine 6", "title": "Présenter votre bilan", "text": "Vous répétez la présentation devant le groupe, puis vous envoyez le dossier à vos clients.", "outcome": "un bilan de quatorze pages, sources comprises", "scene": "<div class=\"obj obj-stack\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Bilan d’émissions 2026</b><span class=\"obj-stamp obj-push\">Envoyé</span></div><div class=\"obj-rule\"></div><p class=\"obj-kpi\">412<small>t CO₂e</small></p><div class=\"obj-rule\"></div><div class=\"obj-lines\"><i style=\"--w:94%\"></i><i style=\"--w:80%\"></i><i style=\"--w:86%\"></i></div></div></div>"}
+    ]}
+  }
+}
+</script>
+<style data-section-style="journey">
+.s-journey__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+  align-items: center;
+}
+
+.s-journey__counter {
+  display: none;
+  margin-bottom: 20px;
+}
+
+.s-journey__list {
+  position: relative;
+  display: grid;
+  gap: 4px;
+}
+
+/* The rail: a hairline behind the dots, filled by --rail (list) or --p (pinned). */
+.s-journey__list::before,
+.s-journey__list::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 11px;
+  width: 2px;
+  border-radius: 2px;
+}
+
+.s-journey__list::before {
+  background: var(--line);
+}
+
+.s-journey__list::after {
+  background: var(--gradient-v);
+  transform-origin: 50% 0;
+  transform: scaleY(var(--rail, 1));
+}
+
+.s-journey__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 0 24px;
+  padding: 14px 0;
+}
+
+.s-journey__dot {
+  position: relative;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--paper);
+  transition:
+    background-color 0.4s var(--ease),
+    border-color 0.4s var(--ease);
+}
+
+.s-journey__when {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-journey__title {
+  margin-top: 4px;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  transition: color 0.4s var(--ease);
+}
+
+.s-journey__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 0.5s var(--ease),
+    opacity 0.4s var(--ease);
+}
+
+.s-journey__body > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.s-journey__text {
+  padding-top: 8px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-journey__outcome {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-input);
+  background: var(--tint);
+  font-weight: 600;
+}
+
+.s-journey__outcome strong {
+  color: var(--hl);
+}
+
+.s-journey__scenes {
+  display: none;
+}
+
+.s-journey__scene .obj {
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+}
+
+/* Not pinned (small screen, short screen, reduced motion, no script): each
+   step carries its own scene, static, under its text (beside it on a wide
+   screen). The pinned column of scenes is only for the pinned layout. */
+.s-journey__inline {
+  display: none;
+}
+
+:root:not(.sc-pin) .s-journey__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:root:not(.sc-pin) .s-journey__inline {
+  display: block;
+  grid-column: 2;
+  margin-top: 16px;
+}
+
+:root:not(.sc-pin) .s-journey__inline .obj {
+  width: 100%;
+  max-width: 440px;
+}
+
+@media (min-width: 1101px) {
+  :root:not(.sc-pin) .s-journey__step {
+    grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 clamp(24px, 1rem + 2vw, 56px);
+    padding: 24px 0;
+  }
+
+  :root:not(.sc-pin) .s-journey__inline {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    margin-top: 0;
+  }
+}
+
+/* Not pinned: every step open, dots fill as the reading line passes them. */
+:root:not(.sc-pin) .s-journey__step[data-reached="true"] .s-journey__dot {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  box-shadow: inset 0 0 0 4px var(--paper);
+}
+
+@media (max-width: 1100px) {
+  .s-journey__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Pinned: the block holds one screen, 60 vh per step. Keep in sync with scroll.js. */
+.sc-pin .s-journey__track {
+  height: calc(100vh + var(--steps, 4) * 60vh);
+}
+
+.sc-pin .s-journey__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  height: calc(100vh - var(--topbar-h));
+}
+
+.sc-pin .s-journey__stage > .wrap {
+  width: var(--wrap);
+}
+
+.sc-pin .s-journey__counter {
+  display: block;
+}
+
+.sc-pin .s-journey__list::after {
+  transform: scaleY(var(--p, 0));
+}
+
+.sc-pin .s-journey__step:not([data-active]) .s-journey__body {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.sc-pin .s-journey__step:not([data-active]) .s-journey__title {
+  color: var(--muted);
+}
+
+.sc-pin .s-journey__step[data-active] .s-journey__dot,
+.sc-pin .s-journey__step:has(~ .s-journey__step[data-active]) .s-journey__dot {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  box-shadow: inset 0 0 0 4px var(--paper);
+}
+
+.sc-pin .s-journey__scenes {
+  display: grid;
+}
+
+.sc-pin .s-journey__scene {
+  grid-area: 1 / 1;
+  align-self: center;
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  transition:
+    opacity 0.55s var(--ease),
+    transform 0.55s var(--ease);
+}
+
+.sc-pin .s-journey__scene[data-active] {
+  opacity: 1;
+  transform: none;
+}
+/* Narrative gauge (optional field gauge of each step; the .gauge component
+   lives in base.css). Pinned: one label in the left margin of the stage
+   shows the label of the active step (data-active, written by scroll.js),
+   matched by rank without a script (six steps at most). Elsewhere: each
+   step shows its own label before its moment. */
+.sc-pin .s-journey__step .gauge--step {
+  display: none;
+}
+
+@media (min-width: 1101px) {
+  .sc-pin .s-journey__gauge {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: calc((100% + var(--wrap)) / 2 + 20px);
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.s-journey__track:has(.s-journey__step:nth-child(1)[data-active]) .s-journey__gauge .gauge__label:nth-child(1),
+.s-journey__track:has(.s-journey__step:nth-child(2)[data-active]) .s-journey__gauge .gauge__label:nth-child(2),
+.s-journey__track:has(.s-journey__step:nth-child(3)[data-active]) .s-journey__gauge .gauge__label:nth-child(3),
+.s-journey__track:has(.s-journey__step:nth-child(4)[data-active]) .s-journey__gauge .gauge__label:nth-child(4),
+.s-journey__track:has(.s-journey__step:nth-child(5)[data-active]) .s-journey__gauge .gauge__label:nth-child(5),
+.s-journey__track:has(.s-journey__step:nth-child(6)[data-active]) .s-journey__gauge .gauge__label:nth-child(6) {
+  display: inline;
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-journey section" aria-labelledby="{{id}}-titre" data-section="journey">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+  </div>
+  <div class="s-journey__track" data-scroll-track>
+    <div class="s-journey__stage">
+      <div class="wrap s-journey__grid">
+        <div>
+          <p class="s-journey__counter label" aria-hidden="true">{{counter_label}} <span data-step-current>1</span> / {{steps.length}}</p>
+          <ol class="s-journey__list" role="list" data-rail>
+            {{#steps}}<li class="s-journey__step" data-step-item data-milestone>
+              <span class="s-journey__dot" aria-hidden="true"></span>
+              <div>
+                <p class="s-journey__when">{{#gauge}}<span class="gauge gauge--step" aria-hidden="true" data-qa-decor>{{{gauge}}}</span>{{/gauge}}{{when}}</p>
+                <h3 class="s-journey__title">{{title}}</h3>
+                <div class="s-journey__body"><div>
+                  <p class="s-journey__text">{{text}}</p>
+                  {{#outcome}}<p class="s-journey__outcome"><strong>{{outcome_label}}</strong> {{outcome}}</p>{{/outcome}}
+                </div></div>
+              </div>
+              <div class="s-journey__inline" aria-hidden="true" data-qa-decor>{{{scene}}}</div>
+            </li>{{/steps}}
+          </ol>
+          {{#steps}}{{#@last}}{{#gauge}}<p class="gauge gauge--live s-journey__gauge" aria-hidden="true" data-qa-decor>{{#steps}}<span class="gauge__label">{{{gauge}}}</span>{{/steps}}</p>{{/gauge}}{{/@last}}{{/steps}}
+        </div>
+        <div class="s-journey__scenes" aria-hidden="true" data-qa-decor>
+          {{#steps}}<div class="s-journey__scene" data-step-visual>{{{scene}}}</div>{{/steps}}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

@@ -63,7 +63,8 @@ PLACEHOLDERS_TOLERES = [
     # per-deliverable markers (see docs/placeholders.json, groups decks / web_page_markers / tracking_acquisition)
     "DECK_TITLE", "CAMPAIGN_SLUG",
     "FORM_ENDPOINT", "URL_CONFIDENTIALITE", "LIEN_CONFIDENTIALITE", "MENTION_RGPD",
-    "URL_MENTIONS_LEGALES", "URL_SITE", "URL_ESSAI", "URL_ITINERAIRE", "CONCURRENT",
+    "URL_MENTIONS_LEGALES", "URL_SITE", "URL_ITINERAIRE",
+    "URL_CHECKOUT", "URL_LISTE_ATTENTE", "URL_CGV",
     # tool/account IDs resolved by /tools-setup or the modules, referenced in ops docs
     "GA4_MEASUREMENT_ID", "GA4_PROPERTY_ID", "GOOGLE_ADS_CUSTOMER_ID", "LEMLIST_SIGNUP_URL",
     # runtime slots — filled per entry at production time, never by the wizard

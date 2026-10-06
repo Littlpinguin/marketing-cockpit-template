@@ -1,0 +1,315 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "problem-evidence",
+  "name": "Problème en pièces à conviction",
+  "objection": "Pourquoi maintenant, est-ce vraiment mon problème",
+  "when": "Quand le problème se montre mieux qu’il ne se raconte : 3 à 5 pièces que l’audience reconnaît (un extrait de document, un chiffre sourcé, une phrase entendue), chacune légendée, puis un verdict en tampon et la réponse qui mène à l’offre. Même rôle que problem-pinned, sans épinglage : sur grand écran le titre reste collé à gauche pendant que les pièces défilent, et la section ne compte pas dans le budget de trois épinglages.",
+  "avoid": "Pièces inventées présentées comme réelles, registre de la peur, plus de cinq pièces, un verdict qui accuse le visiteur, problem-pinned et problem-evidence sur la même page (une seule section de problème).",
+  "reduced_motion": "Pièces visibles d’emblée, tampon posé sans chute.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, segment fort en <span class=\"hl\">.", "example": "Votre bilan<br><span class=\"hl\">pièce par pièce</span>"},
+    "intro": {"type": "text", "doc": "Chapô d’une ou deux phrases : d’où viennent les pièces (vide : rien).", "example": "Ce que nous trouvons sur la table au premier rendez-vous, avant de parler de méthode."},
+    "exhibit_word": {"type": "text", "doc": "Mot de l’étiquette de chaque pièce, suivi de son numéro (« Pièce n° 1 »).", "example": "Pièce n°"},
+    "items": {"type": "list", "doc": "3 à 5 pièces. Chacune porte UNE forme : object (extrait de document composé avec le kit .obj, décoratif, son sens est dans la légende), figure (un chiffre sourcé) ou quote (une phrase entendue, signée). caption : légende en h3, 7 mots au plus, sans virgule ni point ; text : une phrase.", "fields": {"object": "HTML décoratif (kit .obj), ou absent", "figure": "{value, unit, label, source}, ou absent", "quote": "{text, cite}, ou absent", "caption": "légende courte (h3)", "text": "une phrase"}, "example": [
+      {"object": "<div class=\"obj obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Questionnaire fournisseurs 2027</b><span class=\"obj-stamp obj-push\">Obligatoire</span></div><div class=\"obj-rule\"></div><p class=\"obj-small\">Section 4 · Émissions de gaz à effet de serre</p><div class=\"obj-grid\" style=\"--cols:2;margin-top:10px\"><span class=\"is-head\">Indicateur</span><span class=\"is-head\">Votre réponse</span><span>Scope 1 (t CO₂e)</span><span class=\"is-warn\">à compléter</span><span>Scope 2 (t CO₂e)</span><span class=\"is-warn\">à compléter</span><span>Scope 3 (t CO₂e)</span><span class=\"is-warn\">à compléter</span><span>Méthode utilisée</span><span class=\"is-warn\">à compléter</span></div><div class=\"obj-rule\"></div><div class=\"obj-head\"><span>Réponse attendue avant le</span><b class=\"obj-push obj-highlight\">15 mars</b></div></div>", "caption": "Le questionnaire du premier client", "text": "Quatre cases à remplir et une date limite, alors qu’aucune donnée n’est prête dans l’entreprise."},
+      {"figure": {"value": "11", "unit": "jours", "label": "passés à retrouver les factures d’énergie et de transport de l’année", "source": "Relevé d’un client, 2026 (exemple fictif)"}, "caption": "Des données dispersées", "text": "Chaque service garde ses chiffres dans son propre fichier, sans facteur d’émission commun."},
+      {"quote": {"text": "On a remis le chiffre de l’an dernier. Personne ne sait plus d’où il vient.", "cite": "Directrice administrative, négoce de matériaux (verbatim fictif)"}, "caption": "Un chiffre sans méthode", "text": "Le bilan précédent existe, mais sa méthode est partie avec la personne qui l’avait fait."},
+      {"object": "<div class=\"obj obj-window\"><div class=\"obj-window__bar\"><i></i><i></i><i></i><span>Réponse de l’acheteur</span></div><div class=\"obj-window__body obj-mail\"><div class=\"obj-mail__from\"><span class=\"obj-avatar\">SA</span><span><b>Service achats</b><br>Re : questionnaire fournisseurs</span></div><p class=\"obj-small\">Merci pour votre retour. Votre réponse est <span class=\"obj-highlight\">incomplète</span> : précisez la méthode et les facteurs d’émission utilisés.</p><div class=\"obj-lines\"><i style=\"--w:86%\"></i><i style=\"--w:58%\"></i></div><div class=\"obj-rule\"></div><div class=\"obj-head\"><span>Note fournisseur</span><b class=\"obj-push\"><span class=\"obj-strike\">B</span> C</b></div></div></div>", "caption": "La réponse de l’acheteur", "text": "Sans méthode ni source, la réponse revient avec des questions et une note fournisseur en baisse."}
+    ]},
+    "verdict_label": {"type": "text", "doc": "Mot du tampon, un ou deux mots.", "example": "Constat"},
+    "verdict": {"type": "text", "doc": "Le verdict que les pièces établissent, 8 mots au plus, sans point. Il décrit la situation, jamais la faute du visiteur.", "example": "Des chiffres que personne ne peut défendre"},
+    "remedy_label": {"type": "text", "doc": "Étiquette courte de la réponse.", "example": "Ce que change le parcours"},
+    "remedy": {"type": "html", "doc": "Une phrase : ce que l’offre change à ce verdict, son nom en <span class=\"hl\">.", "example": "<span class=\"hl\">Le parcours Bilan carbone</span> range chaque donnée à côté de sa source, dans un dossier que vous savez relire et compléter seul."},
+    "cta_label": {"type": "text", "doc": "Lien vers l’offre, un verbe (vide : pas de lien).", "example": "Voir le parcours"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion ou de la section de l’offre.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" quand le lien mène au bloc de conversion.", "example": true}
+  }
+}
+</script>
+<style data-section-style="problem-evidence">
+/* Scrollytelling without pinning: the head sticks in its column while the
+   exhibits scroll by. The grid does not align its items to the start, so the
+   left column stretches and the sticky head can travel. */
+.s-exhibits__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(40px, 1rem + 4vw, 88px);
+}
+
+.s-exhibits__head {
+  position: sticky;
+  top: calc(var(--topbar-h) + 40px);
+  margin-bottom: 0;
+}
+
+.s-exhibits__list {
+  display: grid;
+  gap: clamp(48px, 2rem + 3vw, 88px);
+}
+
+.s-exhibits__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-areas:
+    "tag tag"
+    "exhibit caption";
+  gap: 20px clamp(24px, 1rem + 1.5vw, 40px);
+  align-items: center;
+}
+
+/* Exhibit label: mono, then a rule that fills the line. */
+.s-exhibits__tag {
+  grid-area: tag;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--hl);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.s-exhibits__tag::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.s-exhibits__exhibit {
+  grid-area: exhibit;
+  min-width: 0;
+}
+
+/* Documents lie a little askew, like pieces on a desk. Static. */
+.s-exhibits__doc {
+  --tilt: -1.2deg;
+  max-width: 420px;
+  transform: rotate(var(--tilt));
+}
+
+.s-exhibits__item:nth-child(even) .s-exhibits__doc {
+  --tilt: 1deg;
+}
+
+.s-exhibits__paper {
+  display: grid;
+  gap: 12px;
+  max-width: 420px;
+  padding: clamp(22px, 1rem + 1vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.s-exhibits__figure-value {
+  color: var(--ink);
+  font-size: var(--t-number);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-exhibits__figure-unit {
+  color: var(--hl);
+  font-size: 0.42em;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.s-exhibits__figure-label {
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.s-exhibits__figure-source,
+.s-exhibits__quote-cite {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-exhibits__figure-source {
+  font-family: var(--font-mono);
+}
+
+.s-exhibits__quote blockquote p {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.s-exhibits__quote blockquote p::before {
+  content: "«\00a0";
+}
+
+.s-exhibits__quote blockquote p::after {
+  content: "\00a0»";
+}
+
+.s-exhibits__caption {
+  grid-area: caption;
+  display: grid;
+  gap: 8px;
+}
+
+.s-exhibits__caption-title {
+  font-size: clamp(1.1875rem, 1.1rem + 0.3vw, 1.375rem);
+  line-height: var(--lh-snug);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.s-exhibits__caption-text {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* The verdict, then the remedy that points to the offer. */
+.s-exhibits__close {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(28px, 1rem + 2vw, 56px);
+  align-items: center;
+  margin-top: clamp(56px, 2rem + 4vw, 104px);
+  padding-top: clamp(32px, 1.2rem + 2vw, 48px);
+  border-top: 1px solid var(--line);
+}
+
+.s-exhibits__verdict {
+  justify-self: start;
+  padding: 8px;
+}
+
+.s-exhibits__stamp {
+  display: grid;
+  gap: 4px;
+  max-width: 16rem;
+  padding: 14px 20px 16px;
+  border: 2px solid var(--hl);
+  border-radius: calc(var(--radius-input) / 2);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4.5px var(--hl);
+  color: var(--hl);
+  text-transform: uppercase;
+  transform: rotate(-4deg);
+}
+
+.s-exhibits__stamp-label {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.16em;
+}
+
+.s-exhibits__stamp-text {
+  font-size: 1.25rem;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+/* The stamp lands once (reveal.js): it comes down from a little higher and
+   larger, without bounce. Laid down at once in reduced motion or without
+   the engine. */
+.rv-on .s-exhibits__verdict[data-reveal] {
+  transition:
+    opacity 0.3s var(--ease),
+    transform 0.45s var(--ease);
+}
+
+.rv-on .s-exhibits__verdict[data-reveal]:not(.is-in) {
+  opacity: 0;
+  transform: scale(1.4);
+}
+
+.s-exhibits__remedy {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.s-exhibits__remedy-text {
+  max-width: 34em;
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.s-exhibits__link:hover .btn__icon {
+  transform: translateX(3px);
+}
+
+@media (max-width: 1100px) {
+  .s-exhibits__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .s-exhibits__head {
+    position: static;
+    margin-bottom: var(--head-gap);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-exhibits__item {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "tag"
+      "exhibit"
+      "caption";
+  }
+
+  .s-exhibits__close {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-exhibits section" aria-labelledby="{{id}}-titre" data-section="problem-evidence">
+  <div class="wrap s-exhibits__grid">
+    <div class="s-exhibits__aside">
+      <div class="section-head s-exhibits__head">
+        <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+        {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+      </div>
+    </div>
+    <div class="s-exhibits__main">
+      <ol class="s-exhibits__list" role="list">
+        {{#items}}<li class="s-exhibits__item" data-reveal>
+          <p class="s-exhibits__tag">{{exhibit_word}}&nbsp;{{@index}}</p>
+          <div class="s-exhibits__exhibit">
+            {{#object}}<div class="s-exhibits__doc" aria-hidden="true" data-qa-decor>{{{object}}}</div>{{/object}}
+            {{#figure}}<p class="s-exhibits__paper s-exhibits__figure"><span class="s-exhibits__figure-value">{{value}}{{#unit}}<span class="s-exhibits__figure-unit">&nbsp;{{unit}}</span>{{/unit}}</span><span class="s-exhibits__figure-label">{{label}}</span>{{#source}}<span class="s-exhibits__figure-source">{{source}}</span>{{/source}}</p>{{/figure}}
+            {{#quote}}<figure class="s-exhibits__paper s-exhibits__quote"><blockquote><p>{{text}}</p></blockquote>{{#cite}}<figcaption class="s-exhibits__quote-cite">{{cite}}</figcaption>{{/cite}}</figure>{{/quote}}
+          </div>
+          <div class="s-exhibits__caption">
+            <h3 class="s-exhibits__caption-title">{{caption}}</h3>
+            {{#text}}<p class="s-exhibits__caption-text">{{text}}</p>{{/text}}
+          </div>
+        </li>{{/items}}
+      </ol>
+      <div class="s-exhibits__close">
+        <div class="s-exhibits__verdict" data-reveal>
+          <p class="s-exhibits__stamp"><span class="s-exhibits__stamp-label">{{verdict_label}}</span> <span class="s-exhibits__stamp-text">{{verdict}}</span></p>
+        </div>
+        <div class="s-exhibits__remedy">
+          <p class="label">{{remedy_label}}</p>
+          <p class="s-exhibits__remedy-text">{{{remedy}}}</p>
+          {{#cta_label}}<a class="link-arrow s-exhibits__link" href="{{cta_href}}" data-track="cta_click" data-cta-position="problem-evidence"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>{{/cta_label}}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

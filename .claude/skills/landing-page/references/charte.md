@@ -10,7 +10,7 @@ Lire `pilotage/research-notes.md`. S'il ne couvre pas le besoin de la section, c
 
 ## 2. Grille et rythme
 
-Les jetons sont posés une seule fois, dans le `:root` du socle, et toutes les sections en héritent. Aucun fragment ne redéclare une couleur, une police ni une valeur de rythme.
+Les jetons sont posés une seule fois, dans le `:root` du socle, et toutes les sections en héritent. Aucun fragment ne redéclare une couleur, une police ni une valeur de rythme. Une page assemblée depuis la bibliothèque les reçoit de `05-web-content/templates/assets/tokens.css` (généré depuis `01-brand/tokens.json`) et de `base.css` (couche sémantique `--ink`, `--muted`, `--hl`, `--line`… que la classe `band-dark` repointe sur la palette sombre) : un fragment sur mesure lit ces mêmes noms.
 
 | Jeton | Bureau | ≤ 768 px | Valeur de la page |
 |---|---|---|---|
@@ -63,7 +63,7 @@ Les jetons sont posés une seule fois, dans le `:root` du socle, et toutes les s
 - **Épinglage** : seulement à partir d'environ 1100 px de large et 720 px de haut, hors mouvement réduit. Réalisé en `position: sticky` sur une piste haute (`height: calc(100vh + <étapes> × <n>vh)`), progression calculée au défilement.
   - Une section épinglée doit **vraiment se bloquer** au défilement.
   - Une animation qui raconte une progression (tracé, allumage successif) s'épingle, sinon le visiteur voit un état intermédiaire.
-  - Trois épinglages au plus, jamais deux d'affilée sans respiration, environ 7 écrans de défilement captif au total.
+  - Trois épinglages au plus, jamais deux d'affilée sans respiration (seule exception : le couple problème épinglé → basculement, conçu pour s'enchaîner), environ 7 écrans de défilement captif au total.
 - **Transitions entre sections** : fondu inversé (la section qui part s'efface, la suivante apparaît, sans superposition), dérive ou rideau, en lien avec le défilement, et seulement là où elles apportent. Jamais de cartes qui s'empilent. Aucune transition entre le hero et la section suivante.
 - **Inclinaison 3D** : ±6° au plus, seulement sur des objets physiques (billet, carte, document), avec un pointeur fin (`(hover: hover) and (pointer: fine)`).
 - **Animations infinies** : trois itérations au plus ; une boucle ne tourne que lorsqu'elle est à l'écran.

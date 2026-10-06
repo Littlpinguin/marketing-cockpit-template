@@ -1,0 +1,218 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "evidence-chart",
+  "name": "Un chiffre, un graphique, une source",
+  "objection": "Est-ce vrai, et de combien",
+  "engines": ["annotate"],
+  "when": "Quand une affirmation de la page tient à une comparaison chiffrée et sourcée. Le titre énonce la conclusion, 2 à 6 barres la montrent, une seule est mise en avant, la source suit le graphique. Les barres sont une liste : la donnée est le balisage, lue telle quelle par les lecteurs d’écran, sans image ni canvas. Remplace une rangée de cartes de chiffres.",
+  "avoid": "Chiffre sans source ou arrondi à la hausse, plus de six barres, deux barres mises en avant, un titre qui décrit le graphique au lieu de conclure, un graphique qui orne une affirmation qu’il ne prouve pas, une échelle tronquée qui grossit l’écart.",
+  "reduced_motion": "Barres à leur longueur finale d’emblée ; l’annotation de la valeur mise en avant est posée sans être tracée.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 : la conclusion que le graphique prouve, sans virgule ni point, segment fort en <span class=\"hl\">.", "example": "Le fret pèse<br><span class=\"hl\">trois fois l’énergie</span>"},
+    "intro": {"type": "text", "doc": "Une ou deux phrases : ce que le chiffre change pour le visiteur (vide : rien).", "example": "Sur le bilan type d’une PME de négoce, le transport des marchandises dépasse le chauffage et l’électricité réunis : c’est par lui que le plan d’action commence."},
+    "measure": {"type": "text", "doc": "Ce que mesurent les barres, avec l’unité, en une ligne au-dessus du graphique.", "example": "Part de chaque poste dans les émissions, en %"},
+    "bars": {"type": "list", "doc": "2 à 6 barres, de préférence de la plus longue à la plus courte. label : poste en quelques mots ; value : valeur affichée avec son unité ; bar : longueur de 0 à 100, la plus grande valeur vaut 100 (jamais d’échelle tronquée) ; focus : true sur la seule barre mise en avant.", "fields": {"label": "poste, quelques mots", "value": "valeur affichée avec son unité (« 54 % »)", "bar": "longueur de 0 à 100", "focus": "true sur la barre mise en avant"}, "example": [
+      {"label": "Fret amont et aval", "value": "54 %", "bar": 100, "focus": true},
+      {"label": "Achats de marchandises", "value": "21 %", "bar": 39},
+      {"label": "Énergie des bâtiments", "value": "18 %", "bar": 33},
+      {"label": "Déplacements des salariés", "value": "5 %", "bar": 9},
+      {"label": "Déchets", "value": "2 %", "bar": 4}
+    ]},
+    "focus_mark": {"type": "text", "doc": "Annotation à main levée sur la valeur mise en avant (moteur annotate) : circle, underline, box, ou vide pour aucune. Compte dans les deux annotations de la page.", "example": "circle"},
+    "reading": {"type": "text", "doc": "Phrase de lecture facultative, au corps courant (« Lecture : … »). Vide : rien.", "example": "Lecture : sur 100 tonnes de CO₂e émises par une PME de négoce type, 54 viennent du transport des marchandises."},
+    "source": {"type": "text", "doc": "Source du chiffre, moins de 12 mots : étude, auteur, année. Un exemple porte « données fictives ».", "example": "Source : 40 bilans de PME de négoce, 2026 (données fictives)"},
+    "poster": {"type": "text", "doc": "Facultatif, aucun par défaut. Chiffre géant de 2 à 4 caractères en dégradé de la marque, sous le titre et aligné sur lui, coupé par le bas de la section dès 1101 px (les deux tiers du chiffre au moins restent visibles ; masqué sur un écran plus étroit). Décoratif : il répète un chiffre déjà écrit dans le titre ou les barres, jamais une information nouvelle.", "example": "×3", "default": null}
+  }
+}
+</script>
+<style data-section-style="evidence-chart">
+/* The poster figure is cut by the bottom edge of the section. */
+.s-chart {
+  overflow: clip;
+}
+
+.s-chart__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 1rem + 5vw, 104px);
+}
+
+.s-chart__aside {
+  display: flex;
+  flex-direction: column;
+}
+
+.s-chart__head {
+  margin-bottom: 0;
+}
+
+/* V10 : un chiffre en affiche, coupé par le bord de la section. Static (a
+   gradient clipped to text is lost on a transformed element). The box
+   ends 0.17em under the section's edge: about a fifth of the digits is
+   cut, the rest reads whole. The negative inline margin lines the ink of
+   the first glyph up with the title (side bearing of a 12rem glyph). */
+.s-chart__poster {
+  align-self: flex-start;
+  margin-top: auto;
+  margin-inline-start: -0.05em;
+  margin-bottom: calc(-1 * var(--section-gap) - 0.17em);
+  padding-top: 32px;
+  font-size: clamp(8rem, 3rem + 10vw, 15rem);
+  line-height: 0.8;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: transparent;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.s-chart__figure {
+  display: grid;
+  gap: 22px;
+  align-self: start;
+  padding: clamp(24px, 1rem + 1.6vw, 40px);
+}
+
+.s-chart__measure {
+  font-weight: 700;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.s-chart__bars {
+  display: grid;
+  gap: clamp(16px, 0.7rem + 0.6vw, 22px);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.s-chart__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label value"
+    "track track";
+  gap: 8px 16px;
+  align-items: baseline;
+}
+
+.s-chart__label {
+  grid-area: label;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.s-chart__value {
+  grid-area: value;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.s-chart__track {
+  grid-area: track;
+  display: block;
+  height: 14px;
+  overflow: hidden;
+  border-radius: calc(var(--radius-input) / 4);
+  background: var(--surface-2);
+}
+
+/* The bar is the value itself: its length is --v % of the track. */
+.s-chart__fill {
+  display: block;
+  width: calc(var(--v, 100) * 1%);
+  max-width: 100%;
+  height: 100%;
+  background: var(--line-strong);
+  transform-origin: 0 50%;
+  transition: transform 0.9s var(--ease);
+  transition-delay: calc(var(--rv-i, 0) * 0.12s + 0.15s);
+}
+
+/* The one bar the title speaks of: ink label, bold value, highlight fill.
+   Weight carries the emphasis too, never the colour alone. */
+.s-chart__row[data-focus] .s-chart__label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.s-chart__row[data-focus] .s-chart__value {
+  color: var(--hl);
+  font-size: 1.25em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.s-chart__row[data-focus] .s-chart__fill {
+  background: var(--hl);
+}
+
+/* Bars grow when their row enters (reveal.js); final width without the
+   engine, without JavaScript and in reduced motion. */
+.rv-on .s-chart__row:not(.is-in) .s-chart__fill {
+  transform: scaleX(0);
+}
+
+.s-chart__reading {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-chart__source {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .s-chart__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .s-chart__head {
+    margin-bottom: var(--head-gap);
+  }
+
+  .s-chart__poster {
+    display: none;
+  }
+
+  .s-chart__figure {
+    max-width: 760px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-chart section" aria-labelledby="{{id}}-titre" data-section="evidence-chart">
+  <div class="wrap s-chart__grid">
+    <div class="s-chart__aside">
+      <div class="section-head s-chart__head">
+        <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+        {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+      </div>
+      {{#poster}}<p class="s-chart__poster" aria-hidden="true" data-qa-decor>{{poster}}</p>{{/poster}}
+    </div>
+    <figure class="s-chart__figure card">
+      <figcaption class="s-chart__measure">{{measure}}</figcaption>
+      <ol class="s-chart__bars" role="list" data-reveal-group>
+        {{#bars}}<li class="s-chart__row"{{#focus}} data-focus{{/focus}} style="--v: {{bar}}" data-reveal="fade">
+          <span class="s-chart__label">{{label}}</span>
+          <span class="s-chart__value"{{#focus}}{{#focus_mark}} data-annotate="{{focus_mark}}"{{/focus_mark}}{{/focus}}>{{value}}</span>
+          <span class="s-chart__track" aria-hidden="true"><span class="s-chart__fill"></span></span>
+        </li>{{/bars}}
+      </ol>
+      {{#reading}}<p class="s-chart__reading">{{reading}}</p>{{/reading}}
+      <p class="s-chart__source">{{source}}</p>
+    </figure>
+  </div>
+</section>
+<!-- /section:{{id}} -->

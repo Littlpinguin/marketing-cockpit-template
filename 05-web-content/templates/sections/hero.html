@@ -1,0 +1,213 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "hero",
+  "name": "Hero à objet fort",
+  "objection": "De quoi s’agit-il, pour qui, combien, jusqu’à quand",
+  "when": "Toujours, en première section : un h1, une accroche de deux lignes, un seul bouton, une ligne d’échéance s’il y en a une, et un objet fort (le produit en situation, un document réel, une illustration de marque). C’est la section qu’on fait valider en premier.",
+  "avoid": "Étiquette au-dessus du h1, carte d’information posée sur l’objet, rangée de visages, second bouton concurrent, accroche de trois lignes, hero centré par réflexe.",
+  "reduced_motion": "L’accroche tournante montre son premier mot, l’objet est immobile.",
+  "slots": {
+    "title": {"type": "html", "doc": "Le h1, trois lignes au plus, sans virgule ni point. Segment accentué en <span class=\"hl\">…</span>, coupures décidées en <br>. Accroche tournante : entourer le mot de <span data-rotate=\"mot1|mot2|mot3\">mot1</span> (mots courts, le plus long fixe la largeur).", "example": "Le bilan carbone<br>de votre <span data-rotate=\"PME|usine|agence\">PME</span><br><span class=\"hl\">en six semaines</span>"},
+    "lede": {"type": "text", "doc": "Une phrase, deux lignes sur bureau : pour qui, et ce qu'on obtient.", "example": "Six ateliers en petit groupe pour mesurer vos émissions et répondre aux questionnaires carbone de vos clients."},
+    "cta_label": {"type": "text", "doc": "Libellé du bouton : un verbe, sans prix.", "example": "Réserver ma place"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion (#offre) ou URL de la conversion.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le bouton (le CTA que la QA protège).", "example": true},
+    "deadline": {"type": "text", "doc": "Ligne d'échéance statique, toujours vraie (une date, pas un compte). Vide : pas de ligne.", "example": "Inscriptions jusqu’au 31 mars 2027"},
+    "countdown": {"type": "object", "doc": "Optionnel : remplace la date par les jours restants (moteur offer). Champs many (« … {n} jours »), one, zero. null : la date reste.", "fields": {"many": "texte avec {n}", "one": "veille de la clôture", "zero": "jour de la clôture"}, "example": {"many": "Clôture des inscriptions dans {n} jours", "one": "Clôture des inscriptions demain", "zero": "Clôture des inscriptions ce soir"}},
+    "detail": {"type": "text", "doc": "Fait court après l'échéance (places, format). Vide : rien.", "example": "12 entreprises par cohorte"},
+    "image": {"type": "object", "doc": "Objet en image : {src, alt, width, height}. Prime sur « object ». L'alt décrit l'objet ; mention IA si l'image est générée.", "fields": {"src": "chemin relatif (WebP)", "alt": "description", "width": "px", "height": "px"}, "example": null},
+    "object": {"type": "html", "doc": "Objet composé en HTML (kit .obj de base.css), dans un conteneur aria-hidden=\"true\" data-qa-decor. Utilisé si « image » est vide.", "example": "<div class=\"obj s-hero__doc\" aria-hidden=\"true\" data-qa-decor><div class=\"obj-stack\"><div class=\"obj-sheet\"><div class=\"obj-head\"><span class=\"obj-mark\"></span><b>Bilan d’émissions 2026</b><span class=\"obj-stamp obj-push\">Prêt</span></div><div class=\"obj-rule\"></div><p class=\"obj-kpi\">412<small>t CO₂e</small></p><p class=\"obj-small\">3 scopes · 214 postes de dépenses analysés</p><div class=\"obj-rule\"></div><div class=\"obj-bars\"><div class=\"obj-bar is-hl\" style=\"--v:.58\"><span>Achats</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>58 %</b></div><div class=\"obj-bar\" style=\"--v:.21\"><span>Transport</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>21 %</b></div><div class=\"obj-bar\" style=\"--v:.12\"><span>Énergie</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>12 %</b></div><div class=\"obj-bar\" style=\"--v:.09\"><span>Déplacements</span><span class=\"obj-bar__track\"><i class=\"obj-bar__fill\"></i></span><b>9 %</b></div></div><div class=\"obj-rule\"></div><div class=\"obj-head\"><span>Plan d’action · 9 mesures</span><span class=\"obj-push\">p. 1 / 14</span></div></div></div><span class=\"obj-chip s-hero__chip\"><i></i>Semaine 6 sur 6</span></div>"}
+  }
+}
+</script>
+<style data-section-style="hero">
+.s-hero {
+  padding-block: clamp(40px, 1.5rem + 5vw, 104px) clamp(64px, 2.5rem + 5vw, 120px);
+}
+
+.s-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(48px, 2rem + 5vw, 112px);
+  align-items: center;
+}
+
+.s-hero__title {
+  font-size: var(--t-h1);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.s-hero__lede {
+  max-width: 30em;
+  margin-top: clamp(20px, 1rem + 1vw, 28px);
+  color: var(--muted);
+}
+
+.s-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 28px;
+  margin-top: clamp(28px, 1.4rem + 1.4vw, 40px);
+}
+
+/* Deadline line: a status dot, then the deadline and its detail. The
+   separator sits in the gap before the detail, inside it: when the detail
+   starts a line of its own, the separator is clipped with the edge, so it
+   never ends or starts a line. A wrapped detail lines up with the deadline
+   text, after the dot. */
+.s-hero__deadline {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.s-hero__deadline::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-top: calc(0.7em - 4px);
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-hero__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  overflow: hidden;
+}
+
+.s-hero__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-hero__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
+}
+
+.s-hero__visual {
+  position: relative;
+  justify-self: end;
+  width: 100%;
+  max-width: 500px;
+}
+
+.s-hero__img {
+  width: 100%;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lift);
+}
+
+.s-hero__doc .obj-sheet {
+  padding: clamp(18px, 0.8rem + 1vw, 28px);
+}
+
+.s-hero__doc .obj-kpi {
+  margin-top: 4px;
+}
+
+.s-hero__chip {
+  bottom: -18px;
+  left: 28px;
+}
+
+/* Rotating word: every word in the same grid cell, the widest sets the box. */
+.s-hero__rot {
+  display: inline-grid;
+}
+
+.s-hero__rot > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(0.25em);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.s-hero__rot > span.is-on {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 1100px) {
+  .s-hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-hero__visual {
+    justify-self: start;
+  }
+}
+
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-hero section" aria-labelledby="{{id}}-titre" data-section="hero">
+  <div class="wrap s-hero__grid">
+    <div class="s-hero__text">
+      <h1 id="{{id}}-titre" class="s-hero__title">{{{title}}}</h1>
+      <p class="s-hero__lede lede">{{lede}}</p>
+      <div class="s-hero__actions">
+        <a class="btn btn--primary" href="{{cta_href}}" data-track="cta_click" data-cta-position="hero"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        {{#deadline}}<p class="s-hero__deadline"><span class="s-hero__when"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#detail}} <span class="s-hero__detail"><span class="s-hero__sep" aria-hidden="true">·</span>{{detail}}</span>{{/detail}}</span></p>{{/deadline}}
+      </div>
+    </div>
+    <div class="s-hero__visual" data-reveal="right">
+      {{#image}}<img class="s-hero__img" src="{{src}}" alt="{{alt}}" width="{{width}}" height="{{height}}" fetchpriority="high">{{/image}}{{^image}}{{{object}}}{{/image}}
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="hero">
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.s-hero [data-rotate]').forEach(function (el) {
+    var words = el.getAttribute('data-rotate').split('|').map(function (w) { return w.trim(); }).filter(Boolean);
+    if (words.length < 2) return;
+    var stable = (el.textContent || '').trim() || words[0];
+    el.textContent = '';
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = stable;
+    var box = document.createElement('span');
+    box.className = 's-hero__rot';
+    box.setAttribute('aria-hidden', 'true');
+    words.forEach(function (w, i) {
+      var s = document.createElement('span');
+      s.textContent = w;
+      if (i === 0) s.className = 'is-on';
+      box.appendChild(s);
+    });
+    el.appendChild(sr);
+    el.appendChild(box);
+    if (reduce) return;
+    // Three rounds at most, and only while the hero is on screen.
+    var i = 0, steps = 0, max = words.length * 3, onScreen = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }).observe(el);
+    }
+    var timer = window.setInterval(function () {
+      if (!onScreen) return;
+      box.children[i].className = '';
+      i = (i + 1) % words.length;
+      box.children[i].className = 'is-on';
+      if (++steps >= max) window.clearInterval(timer);
+    }, 2600);
+  });
+})();
+</script>

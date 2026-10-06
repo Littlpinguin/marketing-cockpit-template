@@ -1,0 +1,134 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "pivot",
+  "name": "Basculement typographique",
+  "objection": "Et donc, quelle réponse",
+  "engines": ["scroll"],
+  "when": "Une fois par page, entre le problème et la solution : une phrase géante presque seule à l’écran, dont les mots s’encrent l’un après l’autre au défilement, puis un trait et la réponse (l’offre comme solution). Sur grand écran, la scène se bloque, avec un temps de tenue pour lire. Sa sortie est un fondu (data-exit=\"fade\").",
+  "avoid": "Deux basculements sur une page, une phrase de plus de 12 mots, un dégradé de texte sur un élément transformé, une phrase lue mot à mot par les lecteurs d’écran (une copie sr-only porte la phrase entière).",
+  "reduced_motion": "La phrase entière, encrée, et la réponse, d’emblée.",
+  "slots": {
+    "statement": {"type": "text", "doc": "La phrase, 12 mots au plus, sans point ni virgule.", "example": "Votre bilan carbone peut se faire en interne"},
+    "answer_highlight": {"type": "text", "doc": "Début accentué de la réponse (le nom de l'offre).", "example": "Le parcours Meridian"},
+    "answer_rest": {"type": "text", "doc": "Suite de la réponse, sur la même ligne ou la suivante.", "example": "vous guide jusqu’au bilan remis"},
+    "answer_body": {"type": "text", "doc": "Une phrase qui dit comment.", "example": "Six ateliers, vos propres données et une méthode que vous gardez pour les bilans suivants."}
+  }
+}
+</script>
+<style data-section-style="pivot">
+.s-pivot__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s-pivot__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.s-pivot__statement {
+  max-width: 13em;
+  font-size: var(--t-display);
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* Words ink in one after the other as the stage progresses (--p from
+   scroll.js). Without the split (no JavaScript, reduced motion) the sentence
+   is simply there, fully inked. */
+.s-pivot__track {
+  --q: min(1, calc(var(--p, 1) / 0.6));
+}
+
+/* Inline words (opacity only), so that the balanced line breaks stay those of
+   the plain sentence. */
+.sc-motion .s-pivot__text[data-split] .s-pivot__w {
+  opacity: clamp(0.14, calc(var(--q) * (var(--n) + 1) - var(--i)), 1);
+}
+
+.s-pivot__rule {
+  display: block;
+  width: 72px;
+  height: 3px;
+  margin: clamp(28px, 1.2rem + 2vw, 52px) auto clamp(22px, 1rem + 1.6vw, 40px);
+  border-radius: 3px;
+  background: var(--gradient);
+  transform: scaleX(clamp(0, calc((var(--p, 1) - 0.55) * 8), 1));
+}
+
+.s-pivot__answer {
+  max-width: 44rem;
+  opacity: clamp(0, calc((var(--p, 1) - 0.6) * 5), 1);
+  transform: translateY(calc((1 - clamp(0, calc((var(--p, 1) - 0.6) * 5), 1)) * 24px));
+}
+
+.s-pivot__answer-title {
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.25rem);
+  line-height: 1.22;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.s-pivot__answer-body {
+  max-width: 36em;
+  margin: 16px auto 0;
+  color: var(--muted);
+}
+
+/* Pinned: 1.3 screens of travel; the words take the first 60 %, the answer
+   comes at 60-80 %, the rest is the hold. */
+.sc-pin .s-pivot {
+  padding-block: 0;
+}
+
+.sc-pin .s-pivot__track {
+  height: calc(100vh + 130vh);
+}
+
+.sc-pin .s-pivot__stage {
+  position: sticky;
+  top: var(--topbar-h);
+  height: calc(100vh - var(--topbar-h));
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-pivot section" aria-labelledby="{{id}}-titre" data-section="pivot" data-exit="fade">
+  <div class="s-pivot__track" data-scroll-track data-steps="1">
+    <div class="s-pivot__stage">
+      <div class="wrap s-pivot__inner">
+        <h2 id="{{id}}-titre" class="s-pivot__statement"><span class="sr-only">{{statement}}</span><span class="s-pivot__text" aria-hidden="true">{{statement}}</span></h2>
+        <span class="s-pivot__rule" aria-hidden="true"></span>
+        <div class="s-pivot__answer">
+          <p class="s-pivot__answer-title"><span class="hl">{{answer_highlight}}</span> {{answer_rest}}</p>
+          <p class="s-pivot__answer-body lede">{{answer_body}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="pivot">
+(function () {
+  if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+  document.querySelectorAll('.s-pivot__text').forEach(function (text) {
+    var words = (text.textContent || '').trim().split(/\s+/);
+    text.textContent = '';
+    words.forEach(function (w, i) {
+      var span = document.createElement('span');
+      span.className = 's-pivot__w';
+      span.style.setProperty('--i', String(i));
+      span.textContent = w;
+      text.appendChild(span);
+      if (i < words.length - 1) text.appendChild(document.createTextNode(' '));
+    });
+    text.style.setProperty('--n', String(words.length));
+    text.setAttribute('data-split', '');
+  });
+})();
+</script>

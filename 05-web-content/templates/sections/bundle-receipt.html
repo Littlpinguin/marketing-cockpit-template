@@ -1,0 +1,693 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "bundle-receipt",
+  "name": "Ticket à la carte qui bascule vers le pack",
+  "objection": "Combien ça me coûterait à la carte, et pourquoi prendre le pack",
+  "engines": ["offer"],
+  "when": "Offre vendue en éléments séparés et en pack (parcours complet, abonnement) : la liste des éléments à cocher avec leur prix à l’unité, et à côté un ticket de caisse, collant sur grand écran, dont les lignes apparaissent à chaque case cochée. Dès que la sélection atteint le prix du pack, le ticket le propose avec l’économie exacte, et un clic bascule vers le pack. Le ticket est un formulaire GET vers l’outil de vente (formule, articles et UTM en champs cachés), compté en begin_checkout, et suit l’état de l’offre (ouverte, liste d’attente, close). Juste avant ou à la place du billet, comme bloc de conversion.",
+  "avoid": "Prix à l’unité gonflés pour fabriquer une économie (le total barré est toujours la vraie somme de prix réellement pratiqués), pack qui ne contient pas tous les éléments de la liste, plus de sept éléments, total qui défile tout seul. Une seule offre sans éléments séparés : préférer le billet (offer-ticket).",
+  "reduced_motion": "Les lignes du ticket apparaissent sans glisser et le total change sans défiler. Sans JavaScript : la liste des prix à l’unité, le pack et un bouton qui envoie le pack.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "À la carte ou en parcours<br><span class=\"hl\">le ticket fait le compte</span>"},
+    "intro": {"type": "text", "doc": "Chapô : ce que fait le ticket.", "example": "Cochez ce dont vous avez besoin. Le ticket additionne les prix à l’unité et vous dit quand le parcours complet revient moins cher."},
+    "list_legend": {"type": "text", "doc": "Nom de la liste des éléments (légende du groupe de cases). Lisible aussi sans JavaScript, où la liste devient une simple grille de prix.", "example": "Les éléments, à l’unité"},
+    "items": {"type": "list", "doc": "2 à 7 éléments vendus réellement à l'unité, tous compris dans le pack. value : identifiant (envoyé dans « articles ») ; name : nom court ; text : précision d'une ligne ; price : montant numérique (calcul et mesure) ; price_label : prix affiché ; checked : déjà coché au chargement (en cocher un ou deux pour que le ticket ne soit jamais vide, sans atteindre le prix du pack).", "fields": {"value": "identifiant", "name": "nom court", "text": "précision", "price": "nombre", "price_label": "prix affiché", "checked": "true ou false"}, "example": [
+      {"value": "ateliers", "name": "Les six ateliers en visio", "text": "Deux heures chacun, en petit groupe, enregistrés.", "price": 1200, "price_label": "1 200 € HT", "checked": true},
+      {"value": "collecte", "name": "Le modèle de collecte", "text": "Le tableur et la table de facteurs d’émission commentée.", "price": 290, "price_label": "290 € HT", "checked": true},
+      {"value": "relecture", "name": "La relecture de votre bilan", "text": "Un consultant vérifie vos calculs avant la restitution.", "price": 450, "price_label": "450 € HT", "checked": false},
+      {"value": "presentiel", "name": "La demi-journée à Lyon", "text": "Un atelier en présentiel sur le plan d’action.", "price": 380, "price_label": "380 € HT", "checked": false},
+      {"value": "groupe", "name": "Le groupe d’échange", "text": "Ouvert un an aux entreprises de la cohorte.", "price": 120, "price_label": "120 € HT", "checked": false}
+    ]},
+    "receipt_title": {"type": "text", "doc": "Titre du ticket (h3), court.", "example": "Votre sélection"},
+    "receipt_note": {"type": "text", "doc": "Précision sous le titre du ticket, moins de 12 mots (taxes, unité).", "example": "Prix hors taxes, par entreprise"},
+    "empty_text": {"type": "text", "doc": "Ticket vide (aucune case cochée) : le bouton est alors désactivé.", "example": "Cochez un élément pour l’ajouter au ticket."},
+    "total_label": {"type": "text", "doc": "Libellé du total.", "example": "Total"},
+    "full_label": {"type": "text", "doc": "Pack retenu : libellé de la somme à l'unité, affichée barrée au-dessus du total.", "example": "À la carte"},
+    "amount_format": {"type": "text", "doc": "Gabarit des montants calculés : {n} reçoit le nombre, groupé selon la langue de la page (1 940 en français). Espaces insécables avant € et HT.", "example": "{n} € HT"},
+    "pack": {"type": "object", "doc": "Le pack, qui comprend tous les éléments de la liste. value : identifiant envoyé dans « formule » ; price : montant numérique ; price_label : prix affiché ; text : ce qu'il comprend (affiché tant que la sélection reste sous son prix, et sans JavaScript) ; switch_label : bouton qui bascule vers le pack ; undo_label : bouton qui rend la sélection précédente.", "fields": {"value": "identifiant", "name": "nom", "price": "nombre", "price_label": "prix affiché", "text": "ce qu'il comprend", "switch_label": "verbe", "undo_label": "verbe"}, "example": {"value": "parcours-complet", "name": "Le parcours complet", "price": 1900, "price_label": "1 900 € HT", "text": "Les cinq éléments, pour une personne de l’entreprise.", "switch_label": "Passer au parcours complet", "undo_label": "Revenir à ma sélection"}},
+    "saving_text": {"type": "text", "doc": "Sélection plus chère que le pack : {saving} reçoit l'écart exact. Annoncé une fois après chaque changement.", "example": "Le parcours complet coûte {saving} de moins que votre sélection"},
+    "same_text": {"type": "text", "doc": "Sélection au prix exact du pack.", "example": "Le parcours complet coûte le même prix que votre sélection"},
+    "chosen_text": {"type": "text", "doc": "Pack retenu : {saving} reçoit l'écart avec la somme à l'unité.", "example": "Parcours complet retenu : {saving} de moins qu’à la carte"},
+    "announce_text": {"type": "text", "doc": "Annonce aux lecteurs d'écran après chaque changement (une fois, quand la sélection se stabilise) : {total} reçoit le total.", "example": "Total de votre sélection : {total}"},
+    "action": {"type": "url", "doc": "URL de l'outil de vente : le formulaire y part en GET avec ?formule=<pack.value ou carte_value>&articles=<identifiants séparés par des virgules> et les UTM de la visite.", "example": "{{URL_CHECKOUT}}"},
+    "action_waitlist": {"type": "url", "doc": "URL de la liste d'attente (état « waitlist »).", "example": "{{URL_LISTE_ATTENTE}}"},
+    "currency": {"type": "text", "doc": "Devise ISO 4217 pour la mesure (begin_checkout).", "example": "EUR"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le bouton du ticket.", "example": true},
+    "carte_value": {"type": "text", "doc": "Valeur de « formule » pour une commande à l'unité.", "example": "a-la-carte"},
+    "cta_carte": {"type": "text", "doc": "Bouton pour une sélection à l'unité, sans prix.", "example": "Commander ma sélection"},
+    "cta_pack": {"type": "text", "doc": "Bouton quand le pack est retenu (et sans JavaScript).", "example": "Réserver le parcours complet"},
+    "cta_waitlist": {"type": "text", "doc": "Libellé en état liste d'attente.", "example": "Rejoindre la liste d’attente"},
+    "cta_closed": {"type": "text", "doc": "Libellé en état clos : le bouton reste là, désactivé, lisible à 4,5:1.", "example": "Inscriptions closes"},
+    "cta_notify": {"type": "text", "doc": "État clos seulement : lien dessiné en bouton sous le bouton désactivé. Vide : pas de lien.", "example": "Être prévenu de la prochaine cohorte"},
+    "notify_href": {"type": "url", "doc": "Destination de ce lien. Dans une page réelle : le marqueur {{URL_LISTE_ATTENTE}} jusqu'à son branchement.", "example": "https://inscription.example.com/meridian/prochaine-cohorte"},
+    "deadline": {"type": "text", "doc": "Échéance statique sous le bouton, toujours vraie (vide : rien).", "example": "Clôture le 31 mars 2027"},
+    "countdown": {"type": "object", "doc": "Jours restants (moteur offer) : many, one, zero. null : la date reste.", "fields": {"many": "« … {n} jours »", "one": "veille", "zero": "jour même"}, "example": {"many": "Clôture dans {n} jours", "one": "Clôture demain", "zero": "Clôture ce soir"}},
+    "badge_waitlist": {"type": "text", "doc": "Badge du ticket en état liste d'attente (vide : rien).", "example": "Complet"},
+    "badge_closed": {"type": "text", "doc": "Badge du ticket en état clos (vide : rien).", "example": "Inscriptions closes"},
+    "conditions": {"type": "text", "doc": "Conditions sous le ticket : paiement, ce que la commande à l'unité engage ou non.", "example": "Paiement à la commande ou sur facture à 30 jours. Un élément pris à l’unité ne vous engage pas sur les suivants."}
+  }
+}
+</script>
+<style data-section-style="bundle-receipt">
+/* Two columns: the items, then the receipt (sticky on wide screens). The
+   grid keeps the default stretch so the receipt's column runs the full
+   height and the sticky ticket can travel. */
+.s-receipt__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(32px, 1rem + 4vw, 80px);
+}
+
+/* ---- The items ---- */
+.s-receipt__menu {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-receipt__legend {
+  margin-bottom: 14px;
+  padding: 0;
+}
+
+.s-receipt__items {
+  border-top: 1px solid var(--line);
+}
+
+.s-receipt__items > li {
+  border-bottom: 1px solid var(--line);
+}
+
+.s-receipt__item {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "box name price"
+    "box text text";
+  align-items: baseline;
+  gap: 4px 16px;
+  min-height: 64px;
+  margin-block: 6px;
+  padding: 14px 14px;
+  border-radius: 12px;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.s-receipt[data-ready] .s-receipt__item {
+  cursor: pointer;
+}
+
+.s-receipt[data-ready] .s-receipt__item:hover {
+  background: var(--surface-2);
+}
+
+/* A ticked item lifts onto the paper of the receipt (white surface: the
+   muted description keeps its 4.5:1). */
+.s-receipt[data-ready] .s-receipt__item:has(:checked) {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.s-receipt__item:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* The box is drawn (the real checkbox is visually hidden but focusable). */
+.s-receipt__box {
+  position: relative;
+  grid-area: box;
+  align-self: start;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border: 2px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.s-receipt[data-ready] .s-receipt__item:has(:checked) .s-receipt__box {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.s-receipt[data-ready] .s-receipt__item:has(:checked) .s-receipt__box::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background-color: var(--paper);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Without JavaScript the boxes do nothing: the list reads as a price list. */
+.s-receipt:not([data-ready]) .s-receipt__check,
+.s-receipt:not([data-ready]) .s-receipt__box {
+  display: none;
+}
+
+.s-receipt:not([data-ready]) .s-receipt__item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name price"
+    "text text";
+}
+
+.s-receipt__name {
+  grid-area: name;
+  font-weight: 700;
+  line-height: var(--lh-snug);
+}
+
+.s-receipt__text {
+  grid-area: text;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-receipt__price,
+.s-receipt__amount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.s-receipt__price {
+  grid-area: price;
+  justify-self: end;
+}
+
+/* ---- The receipt ---- */
+.s-receipt__aside {
+  min-width: 0;
+}
+
+.s-receipt__ticket {
+  position: sticky;
+  top: calc(var(--topbar-h) + 24px);
+  filter: drop-shadow(0 1px 1px var(--brand-shadow-soft)) drop-shadow(0 22px 24px var(--brand-shadow-soft));
+}
+
+/* Paper with a perforated top and bottom edge: half holes cut by a mask
+   (alpha only, so the mask colour is irrelevant), the shadow follows them
+   through the drop-shadow of the parent. */
+.s-receipt__paper {
+  --hole: 6px;
+  --pitch: 20px;
+  display: grid;
+  gap: 18px;
+  padding: calc(var(--hole) + 22px) clamp(20px, 0.8rem + 1.2vw, 32px) calc(var(--hole) + 26px);
+  border-inline: 1px solid var(--line);
+  background: var(--surface);
+  -webkit-mask:
+    radial-gradient(circle at 50% 0, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) top / var(--pitch) 51% round no-repeat,
+    radial-gradient(circle at 50% 100%, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) bottom / var(--pitch) 51% round no-repeat;
+  mask:
+    radial-gradient(circle at 50% 0, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) top / var(--pitch) 51% round no-repeat,
+    radial-gradient(circle at 50% 100%, transparent var(--hole), var(--ink) calc(var(--hole) + 0.5px)) bottom / var(--pitch) 51% round no-repeat;
+}
+
+.s-receipt__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px dashed var(--line-strong);
+}
+
+.s-receipt__title {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.s-receipt__note {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-receipt__lines {
+  display: grid;
+  gap: 10px;
+}
+
+.s-receipt__line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.s-receipt__line-name {
+  min-width: 0;
+  text-wrap: pretty;
+}
+
+/* Dotted leader between the name and its amount. */
+.s-receipt__leader {
+  flex: 1 1 16px;
+  min-width: 16px;
+  border-bottom: 2px dotted var(--line-strong);
+  transform: translateY(-0.3em);
+}
+
+/* A line that joins the ticket is printed in: it slides down from the line
+   above. Reduced motion: base.css turns every animation off. */
+.s-receipt__line.is-new {
+  animation: s-receipt-print 0.32s var(--ease) both;
+  animation-delay: calc(var(--k, 0) * 60ms);
+}
+
+@keyframes s-receipt-print {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+.s-receipt__empty {
+  color: var(--muted);
+}
+
+.s-receipt__sums {
+  display: grid;
+  gap: 6px;
+  padding-top: 16px;
+  border-top: 2px dashed var(--line-strong);
+}
+
+.s-receipt__full,
+.s-receipt__total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.s-receipt__full {
+  color: var(--muted);
+}
+
+.s-receipt__full s {
+  text-decoration-thickness: 2px;
+}
+
+.s-receipt__total > :first-child {
+  font-weight: 800;
+}
+
+.s-receipt__amount--total {
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* The pack: quiet below its price, tinted once the selection reaches it,
+   outlined in ink once chosen. Never the accent of the conversion button. */
+.s-receipt__pack {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.s-receipt__pack[data-state="better"],
+.s-receipt__pack[data-state="same"] {
+  border-color: var(--hl);
+  background: var(--tint);
+}
+
+.s-receipt__pack[data-state="chosen"] {
+  border-color: var(--ink);
+}
+
+.s-receipt__pack-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-weight: 800;
+}
+
+.s-receipt__pack-msg {
+  text-wrap: pretty;
+}
+
+.s-receipt__pack[data-state="better"] .s-receipt__pack-msg,
+.s-receipt__pack[data-state="same"] .s-receipt__pack-msg {
+  color: var(--hl);
+  font-weight: 700;
+}
+
+.s-receipt__switch {
+  min-height: 48px;
+}
+
+/* Closed offer: nothing left to switch to. */
+html[data-offer-state="closed"] .s-receipt__switch {
+  display: none;
+}
+
+.s-receipt__undo {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.s-receipt__form {
+  display: grid;
+  gap: 12px;
+}
+
+/* Closed or empty: the button stays, visibly unavailable, its label
+   readable at 4.5:1 (muted ink on the tinted surface, never an opacity). */
+.s-receipt__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.s-receipt__notify {
+  min-height: 56px;
+}
+
+.s-receipt__deadline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  text-align: center;
+}
+
+.s-receipt__deadline::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--hl);
+}
+
+.s-receipt__conditions {
+  max-width: 62ch;
+  margin-top: clamp(24px, 1rem + 1vw, 36px);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 1100px) {
+  .s-receipt__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-receipt__ticket {
+    position: static;
+    max-width: 560px;
+  }
+}
+
+/* A short screen: a stuck receipt would hide its own button. */
+@media (max-height: 759px) {
+  .s-receipt__ticket {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .s-receipt__item {
+    column-gap: 12px;
+    padding-inline: 10px;
+  }
+
+  .s-receipt__paper {
+    padding-inline: 16px;
+  }
+
+  .s-receipt__pack {
+    padding-inline: 14px;
+  }
+
+  .s-receipt__switch,
+  .s-receipt__cta {
+    padding-inline: 16px;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-receipt section" aria-labelledby="{{id}}-titre" data-section="bundle-receipt" data-amount-format="{{amount_format}}" data-saving-text="{{saving_text}}" data-same-text="{{same_text}}" data-chosen-text="{{chosen_text}}" data-announce-text="{{announce_text}}" data-cta-carte="{{cta_carte}}" data-cta-pack="{{cta_pack}}" data-carte-value="{{carte_value}}">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+    <div class="s-receipt__grid">
+      <fieldset class="s-receipt__menu">
+        <legend class="s-receipt__legend label">{{list_legend}}</legend>
+        <ul class="s-receipt__items" role="list" data-reveal-group>
+          {{#items}}<li data-reveal><label class="s-receipt__item"><input class="s-receipt__check sr-only" type="checkbox" value="{{value}}" data-price="{{price}}" data-name="{{name}}" aria-labelledby="{{id}}-{{value}}-nom {{id}}-{{value}}-prix" aria-describedby="{{id}}-{{value}}-texte"{{#checked}} checked{{/checked}}><span class="s-receipt__box" aria-hidden="true"></span><span class="s-receipt__name" id="{{id}}-{{value}}-nom">{{name}}</span><span class="s-receipt__price" id="{{id}}-{{value}}-prix">{{price_label}}</span><span class="s-receipt__text" id="{{id}}-{{value}}-texte">{{text}}</span></label></li>{{/items}}
+        </ul>
+      </fieldset>
+      <div class="s-receipt__aside" data-reveal>
+        <div class="s-receipt__ticket">
+          <div class="s-receipt__paper">
+            <div class="s-receipt__head">
+              <h3 class="s-receipt__title">{{receipt_title}}</h3>
+              {{#badge_waitlist}}<p class="badge badge--accent" data-offer-show="waitlist" hidden>{{badge_waitlist}}</p>{{/badge_waitlist}}{{#badge_closed}}<p class="badge" data-offer-show="closed" hidden>{{badge_closed}}</p>{{/badge_closed}}
+              <p class="s-receipt__note">{{receipt_note}}</p>
+            </div>
+            <ul class="s-receipt__lines" role="list">
+              {{#items}}<li class="s-receipt__line" data-line="{{value}}"><span class="s-receipt__line-name">{{name}}</span><span class="s-receipt__leader" aria-hidden="true"></span><span class="s-receipt__amount">{{price_label}}</span></li>{{/items}}
+            </ul>
+            <p class="s-receipt__empty" data-receipt-empty hidden>{{empty_text}}</p>
+            <div class="s-receipt__sums">
+              <p class="s-receipt__full" data-receipt-full hidden><span>{{full_label}}</span><s class="s-receipt__amount" data-receipt-full-amount></s></p>
+              <p class="s-receipt__total" data-receipt-total hidden><span>{{total_label}}</span><span class="s-receipt__amount s-receipt__amount--total" data-receipt-total-amount></span></p>
+            </div>
+            {{#pack}}<div class="s-receipt__pack" data-receipt-pack data-state="static" data-pack-value="{{value}}" data-pack-price="{{price}}">
+              <p class="s-receipt__pack-head"><span>{{name}}</span><span class="s-receipt__amount">{{price_label}}</span></p>
+              <p class="s-receipt__pack-msg" data-receipt-msg>{{text}}</p>
+              <button type="button" class="btn btn--secondary btn--block s-receipt__switch" data-receipt-switch hidden>{{switch_label}}</button>
+              <button type="button" class="link-arrow s-receipt__undo" data-receipt-undo hidden>{{undo_label}}</button>
+            </div>{{/pack}}
+            <form class="s-receipt__form" id="{{id}}-commande" action="{{action}}" method="get" data-track="begin_checkout" data-track-currency="{{currency}}" data-track-item-ids="{{pack.value}}" data-offer-action-waitlist="{{action_waitlist}}">
+              <input type="hidden" name="formule" value="{{pack.value}}" data-price="{{pack.price}}" data-receipt-formula>
+              <input type="hidden" name="articles" value="" disabled data-receipt-articles>
+              <button type="submit" class="btn btn--primary btn--block s-receipt__cta" data-cta-position="ticket"{{#primary}} data-cta="primaire"{{/primary}} data-offer-text-waitlist="{{cta_waitlist}}" data-offer-text-closed="{{cta_closed}}" data-offer-disabled-closed>{{cta_pack}}</button>
+              {{#cta_notify}}<a class="btn btn--secondary btn--block s-receipt__notify" href="{{notify_href}}" data-track="cta_click" data-cta-position="ticket-alerte" data-offer-show="closed" hidden>{{cta_notify}}</a>{{/cta_notify}}
+              {{#deadline}}<p class="s-receipt__deadline"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span></p>{{/deadline}}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="sr-only" role="status" data-receipt-status></p>
+    {{#conditions}}<p class="s-receipt__conditions">{{conditions}}</p>{{/conditions}}
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="bundle-receipt">
+(function () {
+  /* Principle: an itemised receipt as a price anchor that fills as items
+     are ticked, then offers the bundle once the selection reaches its
+     price. Written for this library, no third-party code. */
+  var motion = window.matchMedia('(prefers-reduced-motion: no-preference)');
+  var lang = document.documentElement.lang || 'fr';
+  var grouping = null;
+  try { grouping = new Intl.NumberFormat(lang, { maximumFractionDigits: 2 }); } catch (e) { grouping = null; }
+
+  function sentence(s) { return /[.!?…]$/.test(s) ? s : s + '.'; }
+  function offerState() { return document.documentElement.getAttribute('data-offer-state') || 'open'; }
+
+  document.querySelectorAll('.s-receipt').forEach(function (section) {
+    function txt(name) { return section.getAttribute('data-' + name) || ''; }
+    function money(n) {
+      var v = grouping ? grouping.format(n) : String(n);
+      return (txt('amount-format') || '{n}').replace('{n}', v);
+    }
+    function price(input) { return Number(input.getAttribute('data-price')) || 0; }
+
+    var checks = Array.prototype.slice.call(section.querySelectorAll('.s-receipt__check'));
+    var lines = {};
+    section.querySelectorAll('[data-line]').forEach(function (li) { lines[li.getAttribute('data-line')] = li; });
+    var empty = section.querySelector('[data-receipt-empty]');
+    var fullRow = section.querySelector('[data-receipt-full]');
+    var fullAmount = section.querySelector('[data-receipt-full-amount]');
+    var totalRow = section.querySelector('[data-receipt-total]');
+    var totalAmount = section.querySelector('[data-receipt-total-amount]');
+    var pack = section.querySelector('[data-receipt-pack]');
+    var msg = pack && pack.querySelector('[data-receipt-msg]');
+    var packText = msg ? msg.textContent : '';
+    var packPrice = pack ? Number(pack.getAttribute('data-pack-price')) || 0 : 0;
+    var packValue = pack ? pack.getAttribute('data-pack-value') || '' : '';
+    var switchBtn = pack && pack.querySelector('[data-receipt-switch]');
+    var undoBtn = pack && pack.querySelector('[data-receipt-undo]');
+    var form = section.querySelector('.s-receipt__form');
+    var formula = form && form.querySelector('[data-receipt-formula]');
+    var articles = form && form.querySelector('[data-receipt-articles]');
+    var cta = form && form.querySelector('.s-receipt__cta');
+    var status = section.querySelector('[data-receipt-status]');
+    if (!checks.length || !form || !formula || !cta) return;
+
+    var full = checks.reduce(function (s, c) { return s + price(c); }, 0);
+    var mode = 'carte';
+    var before = null;
+    var shown = null;
+    var raf = 0;
+    var timer = 0;
+    var spoken = '';
+
+    function selected() { return checks.filter(function (c) { return c.checked; }); }
+
+    // The total glides to its value (motion allowed only); never announced
+    // while it moves: the status line below speaks once, after the change.
+    function setTotal(value, animate) {
+      if (raf) window.cancelAnimationFrame(raf);
+      raf = 0;
+      if (!animate || !motion.matches || shown === null || shown === value) {
+        shown = value;
+        totalAmount.textContent = money(value);
+        return;
+      }
+      var from = shown;
+      var start = null;
+      var DURATION = 320;
+      function frame(t) {
+        if (start === null) start = t;
+        var k = Math.min(1, (t - start) / DURATION);
+        var eased = 1 - Math.pow(1 - k, 3);
+        totalAmount.textContent = money(Math.round(from + (value - from) * eased));
+        if (k < 1) { raf = window.requestAnimationFrame(frame); } else { raf = 0; shown = value; totalAmount.textContent = money(value); }
+      }
+      shown = value;
+      raf = window.requestAnimationFrame(frame);
+    }
+
+    function syncCta() {
+      var state = offerState();
+      var isPack = mode === 'pack';
+      if (state === 'open') cta.textContent = isPack ? txt('cta-pack') : txt('cta-carte');
+      cta.disabled = state === 'closed' || (!isPack && selected().length === 0);
+    }
+
+    function render(animate, speak) {
+      var sel = selected();
+      var ids = sel.map(function (c) { return c.value; });
+      var total = sel.reduce(function (s, c) { return s + price(c); }, 0);
+      var isPack = mode === 'pack';
+
+      var k = 0;
+      checks.forEach(function (c) {
+        var li = lines[c.value];
+        if (!li) return;
+        var on = isPack || c.checked;
+        if (on && li.hidden && animate && motion.matches) {
+          li.classList.remove('is-new');
+          void li.offsetWidth;
+          li.style.setProperty('--k', String(k++));
+          li.classList.add('is-new');
+        }
+        li.hidden = !on;
+      });
+      empty.hidden = isPack || sel.length > 0;
+      fullRow.hidden = !isPack;
+      fullAmount.textContent = money(full);
+      totalRow.hidden = !isPack && sel.length === 0;
+      setTotal(isPack ? packPrice : total, animate);
+
+      var state = 'below';
+      if (isPack) state = 'chosen';
+      else if (pack && sel.length && total > packPrice) state = 'better';
+      else if (pack && sel.length && total === packPrice) state = 'same';
+      var line = packText;
+      if (state === 'chosen') line = sentence(txt('chosen-text').replace('{saving}', money(full - packPrice)));
+      else if (state === 'better') line = sentence(txt('saving-text').replace('{saving}', money(total - packPrice)));
+      else if (state === 'same') line = sentence(txt('same-text'));
+      if (pack) {
+        pack.setAttribute('data-state', state);
+        msg.textContent = line;
+        if (switchBtn) switchBtn.hidden = isPack;
+        if (undoBtn) undoBtn.hidden = !isPack;
+      }
+
+      formula.value = isPack ? packValue : txt('carte-value');
+      formula.setAttribute('data-price', String(isPack ? packPrice : total));
+      if (articles) {
+        articles.disabled = isPack;
+        articles.value = isPack ? '' : ids.join(',');
+      }
+      form.setAttribute('data-track-item-ids', isPack ? packValue : ids.join(','));
+      // GA4 items, as JSON: tracking.js reads data-checkout-items into the
+      // items array of begin_checkout (the articles ticked, or the pack).
+      form.setAttribute('data-checkout-items', JSON.stringify(isPack
+        ? [{ item_id: packValue, item_name: pack ? pack.querySelector('.s-receipt__pack-head span').textContent : '', price: packPrice, quantity: 1 }]
+        : sel.map(function (c) { return { item_id: c.value, item_name: c.getAttribute('data-name') || '', price: price(c), quantity: 1 }; })));
+      syncCta();
+
+      if (!speak || !status) return;
+      var say = isPack ? line : sentence(txt('announce-text').replace('{total}', money(total)));
+      if (!isPack && (state === 'better' || state === 'same')) say += ' ' + line;
+      if (!isPack && sel.length === 0) say = empty.textContent;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(function () {
+        if (say === spoken) return;
+        spoken = say;
+        status.textContent = say;
+      }, 700);
+    }
+
+    checks.forEach(function (c) {
+      c.addEventListener('change', function () {
+        if (mode === 'pack' && !c.checked) { mode = 'carte'; before = null; }
+        render(true, true);
+      });
+    });
+
+    if (switchBtn) switchBtn.addEventListener('click', function () {
+      before = selected().map(function (c) { return c.value; });
+      checks.forEach(function (c) { c.checked = true; });
+      mode = 'pack';
+      render(true, true);
+      if (undoBtn) undoBtn.focus();
+    });
+
+    if (undoBtn) undoBtn.addEventListener('click', function () {
+      var keep = before || [];
+      checks.forEach(function (c) { c.checked = keep.indexOf(c.value) !== -1; });
+      mode = 'carte';
+      before = null;
+      render(true, true);
+      if (switchBtn) switchBtn.focus();
+    });
+
+    // offer.js decides the state (it may run after this script).
+    document.addEventListener('landing:offer', syncCta);
+
+    render(false, false);
+    section.setAttribute('data-ready', '');
+  });
+})();
+</script>

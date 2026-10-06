@@ -1,0 +1,79 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "footer",
+  "name": "Pied de page",
+  "region": "footer",
+  "objection": "Qui est derrière, et où sont les mentions",
+  "when": "Toute landing : la marque, les mentions légales, la confidentialité, un contact. Rien qui concurrence la conversion.",
+  "avoid": "Plan du site, liens vers les réseaux sociaux ou le blog, inscription à la newsletter (second objectif).",
+  "reduced_motion": "Immobile.",
+  "slots": {
+    "brand": {"type": "html", "doc": "Logo ou logotype (comme la barre du haut).", "example": "<svg class=\"s-footer__mark\" viewBox=\"0 0 32 32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"16\" cy=\"16\" r=\"13\"/><path d=\"M16 3c-5 4-5 22 0 26M16 3c5 4 5 22 0 26M3.5 12h25M3.5 20h25\"/></svg><span>Meridian</span>"},
+    "links": {"type": "list", "doc": "2 à 4 liens : mentions, confidentialité, conditions, contact.", "fields": {"label": "texte", "href": "URL"}, "example": [
+      {"label": "Mentions légales", "href": "https://www.example.com/mentions-legales"},
+      {"label": "Confidentialité", "href": "https://www.example.com/confidentialite"},
+      {"label": "bonjour@example.com", "href": "mailto:bonjour@example.com"}
+    ]},
+    "legal": {"type": "text", "doc": "Ligne de copyright.", "example": "© 2027 Meridian Conseil, marque fictive de démonstration."}
+  }
+}
+</script>
+<style data-section-style="footer">
+.s-footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--line);
+}
+
+.s-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+}
+
+.s-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-footer__mark {
+  width: 26px;
+  height: 26px;
+  color: var(--hl);
+}
+
+.s-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+}
+
+.s-footer__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+.s-footer__legal {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+</style>
+<!-- section:{{id}} -->
+<footer id="{{id}}" class="s-footer" data-section="footer">
+  <div class="wrap s-footer__inner">
+    <p class="s-footer__brand">{{{brand}}}</p>
+    <ul class="s-footer__links" role="list">{{#links}}<li><a href="{{href}}">{{label}}</a></li>{{/links}}</ul>
+    <p class="s-footer__legal">{{legal}}</p>
+  </div>
+</footer>
+<!-- /section:{{id}} -->

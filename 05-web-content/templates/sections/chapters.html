@@ -1,0 +1,793 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "chapters",
+  "name": "Sommaire des chapitres",
+  "objection": "Où en suis-je, et où est ce qui m’intéresse",
+  "when": "Page longue (huit sections et plus, ou plusieurs écrans épinglés), juste après le hero : la liste des chapitres de la page en liens d’ancre, une ligne de description chacun. Ensuite le sommaire suit la lecture : dès 1101 px, un rail de repères dans la marge gauche marque le chapitre en cours (numéros dès 1440 px, intitulés dès 1700 px, sinon au survol et au focus) ; en dessous, une barre fine « Chapitre n sur N » sous la barre du haut ouvre la liste. Le rail s’efface devant une bande sombre et devant une section qui porte une jauge narrative.",
+  "avoid": "Une page courte, où le sommaire allonge sans servir ; plus de neuf chapitres ; un chapitre par section (regrouper) ; un intitulé de plus de trois mots ; un chapitre vers une section cachée par la porte de choix (gated).",
+  "reduced_motion": "Même sommaire, même rail et même barre : le chapitre en cours change sans transition et la progression par chapitre ne se dessine pas. Sans script : la liste de liens d’ancre seule.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Au sommaire <span class=\"hl\">de cette page</span>"},
+    "intro": {"type": "text", "doc": "Chapô facultatif (vide : rien) : une phrase qui dit où trouver le prix ou la date.", "example": "Sept parties, du constat aux conditions d’inscription. Le prix et les dates sont dans la sixième."},
+    "chapters": {"type": "list", "doc": "3 à 9 chapitres, dans l’ordre de la page. label : intitulé de un à trois mots ; anchor : id d’une section de la page, sans # ; desc : une ligne facultative, ce qu’on y trouve.", "fields": {"label": "intitulé court", "anchor": "id de la section visée (sans #)", "desc": "une ligne, facultative"}, "example": [
+      {"label": "Le constat", "anchor": "probleme", "desc": "Pourquoi vos clients vous demandent vos émissions"},
+      {"label": "La méthode", "anchor": "parcours", "desc": "Six semaines en quatre temps, du tableur au dossier"},
+      {"label": "Le programme", "anchor": "programme", "desc": "Six ateliers de deux heures, date par date"},
+      {"label": "Les animateurs", "anchor": "animateurs", "desc": "Deux personnes qui relisent votre bilan"},
+      {"label": "Les avis", "anchor": "avis", "desc": "Trois entreprises qui ont rendu leur bilan à temps"},
+      {"label": "Prix et dates", "anchor": "offre", "desc": "1 900 € HT, douze places, clôture le 31 mars"},
+      {"label": "Questions", "anchor": "faq", "desc": "Temps à prévoir, atelier manqué, paiement sur facture"}
+    ]},
+    "nav_label": {"type": "text", "doc": "Nom accessible du sommaire qui suit la lecture (rail ou barre), distinct du titre.", "example": "Chapitres de la page"},
+    "count_label": {"type": "text", "doc": "Compteur de la barre sur petit écran : {n} reçoit le numéro du chapitre en cours, {total} leur nombre.", "example": "Chapitre {n} sur {total}"},
+    "bar": {"type": "bool", "doc": "Barre « Chapitre n sur N » sous la barre du haut, sous 1101 px. false : sur petit écran, le sommaire reste la liste après le hero.", "example": true},
+    "progress": {"type": "bool", "doc": "Progression de lecture dans le chapitre en cours (trait du rail, filet de la barre), là où le navigateur sait la lier au défilement (amélioration progressive, jamais en mouvement réduit).", "example": true}
+  }
+}
+</script>
+<style data-section-style="chapters">
+/* ---------- In-flow table of contents (always there, works without script) ---------- */
+.s-chapters__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(32px, 1rem + 4vw, 88px);
+  align-items: start;
+}
+
+.s-chapters__grid > .section-head {
+  margin-bottom: 0;
+}
+
+.s-chapters__list {
+  counter-reset: s-chapters;
+  border-top: 1px solid var(--line);
+}
+
+.s-chapters__item {
+  counter-increment: s-chapters;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-chapters__link {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) 20px;
+  gap: 0 16px;
+  align-items: baseline;
+  min-height: 64px;
+  padding: 18px 4px 18px 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.s-chapters__n {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.s-chapters__n::before {
+  content: counter(s-chapters, decimal-leading-zero);
+  content: counter(s-chapters, decimal-leading-zero) / "";
+}
+
+.s-chapters__label {
+  display: block;
+  font-size: var(--t-h3);
+  font-weight: 800;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.015em;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color var(--dur-fast) var(--ease);
+}
+
+.s-chapters__desc {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-chapters__arrow {
+  align-self: center;
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.s-chapters__link:hover .s-chapters__label {
+  text-decoration-color: currentColor;
+}
+
+.s-chapters__link:hover .s-chapters__arrow {
+  color: var(--ink);
+  transform: translateY(3px);
+}
+
+/* The chapter being read, when the reader comes back up to the list. */
+.s-chapters__link[aria-current="true"] .s-chapters__n {
+  color: var(--hl);
+}
+
+.s-chapters__link[aria-current="true"] .s-chapters__label {
+  text-decoration-color: var(--hl);
+}
+
+@media (max-width: 1100px) {
+  .s-chapters__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .s-chapters__grid > .section-head {
+    margin-bottom: var(--head-gap);
+  }
+}
+
+@media (max-width: 640px) {
+  .s-chapters__link {
+    grid-template-columns: 2.25rem minmax(0, 1fr) 20px;
+    gap: 0 12px;
+    padding-block: 14px;
+  }
+}
+
+/* ---------- The table of contents that follows the reading ----------
+   Shown by the script only (hidden attribute in the markup), once the
+   in-flow list has scrolled away. From 1101 px: a rail of marks in the
+   left page margin; below: a slim bar under the top bar that opens the
+   list. One element, two layouts. */
+.s-chapters__float {
+  position: fixed;
+  z-index: 55;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--dur-fast) var(--ease),
+    visibility 0s linear var(--dur-fast);
+}
+
+.s-chapters__float[data-visible] {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+.s-chapters__rail {
+  counter-reset: s-chapters-rail;
+}
+
+.s-chapters__rail > li {
+  counter-increment: s-chapters-rail;
+}
+
+.s-chapters__rlink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.s-chapters__rn {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.s-chapters__rn::before {
+  content: counter(s-chapters-rail, decimal-leading-zero);
+  content: counter(s-chapters-rail, decimal-leading-zero) / "";
+}
+
+.s-chapters__rlink[aria-current="true"] .s-chapters__rn {
+  color: var(--ink);
+}
+
+/* Mark of a chapter: a hairline; read (passed) chapters are inked; the
+   current one is longer and fills with the reading of the chapter. */
+.s-chapters__tick {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 14px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--line-strong);
+}
+
+.s-chapters__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+.s-chapters__rail > [data-passed] .s-chapters__fill,
+.s-chapters__rlink[aria-current="true"] .s-chapters__fill {
+  transform: none;
+}
+
+.s-chapters__rlink[aria-current="true"] .s-chapters__tick {
+  width: 28px;
+}
+
+.s-chapters__meter {
+  display: none;
+}
+
+@keyframes s-chapters-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Reading progress inside a chapter, tied to the scroll by the browser
+   (view timelines named by the script on the chapter sections): from the
+   top of the chapter crossing 40 % of the screen to its end crossing it.
+   Without support, the current mark is simply full. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .s-chapters__float[data-progress-on] .s-chapters__fill,
+    .s-chapters__float[data-progress-on] .s-chapters__meter {
+      animation: s-chapters-fill linear both;
+      animation-range: cover 60vh cover calc(100% - 40vh);
+    }
+  }
+}
+
+/* Narrow: the slim bar under the top bar, and its list. */
+@media (max-width: 1100px) {
+  .s-chapters__float {
+    top: var(--topbar-h);
+    right: 0;
+    left: 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 14px 28px -24px var(--brand-shadow);
+  }
+
+  /* The top bar steps aside while reading down: the chapter bar takes its
+     place, and comes back down with it. */
+  :root:has(.s-topbar[data-hidden]) .s-chapters__float {
+    transform: translateY(calc(-1 * var(--topbar-h)));
+  }
+
+  .s-chapters__float {
+    transition:
+      opacity var(--dur-fast) var(--ease),
+      transform 0.3s var(--ease),
+      visibility 0s linear var(--dur-fast);
+  }
+
+  .s-chapters__float[data-visible] {
+    transition:
+      opacity var(--dur-fast) var(--ease),
+      transform 0.3s var(--ease);
+  }
+
+  .s-chapters__toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+    padding: 0 calc((100% - var(--wrap)) / 2);
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font-size: 1rem;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .s-chapters__count {
+    flex: none;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .s-chapters__now {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .s-chapters__chev {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    transition: transform var(--dur-fast) var(--ease);
+  }
+
+  .s-chapters__float[data-open] .s-chapters__chev {
+    transform: rotate(180deg);
+  }
+
+  .s-chapters__meter {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    display: block;
+    height: 2px;
+    background: var(--gradient);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+  }
+
+  .s-chapters__float:not([data-open]) .s-chapters__rail {
+    display: none;
+  }
+
+  .s-chapters__rail {
+    max-height: calc(100vh - var(--topbar-h) - 64px);
+    overflow-y: auto;
+    padding: 4px 0 12px;
+    border-top: 1px solid var(--line);
+    overscroll-behavior: contain;
+  }
+
+  .s-chapters__rlink {
+    gap: 14px;
+    min-height: 48px;
+    padding: 0 calc((100% - var(--wrap)) / 2);
+  }
+
+  .s-chapters__rn {
+    flex: none;
+    width: 2.25rem;
+  }
+
+  .s-chapters__rlink .s-chapters__tick {
+    display: none;
+  }
+
+  .s-chapters__rlabel {
+    font-weight: 600;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__rn {
+    color: var(--hl);
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__rlabel {
+    font-weight: 800;
+  }
+
+  /* Focus and anchors land below the bar, never under it. */
+  :root:has(.s-chapters__float[data-visible]) {
+    scroll-padding-top: calc(var(--topbar-h) + 64px);
+  }
+}
+
+/* Wide: the rail in the left page margin. Up to 1439 px the margin is
+   48 px: marks only, against the edge of the screen. From 1440 px (100 px
+   of margin) the rail moves beside the text column and shows the numbers,
+   and from 1700 px the titles. Before that, a title shows on hover and
+   focus, as a label beside its mark (Escape hides it). */
+@media (min-width: 1101px) {
+  .s-chapters__float {
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+  }
+
+  .s-chapters__toggle {
+    display: none;
+  }
+
+  .s-chapters__rail {
+    display: grid;
+    justify-items: start;
+  }
+
+  .s-chapters__rlink {
+    gap: 10px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+
+  .s-chapters__tick {
+    width: 10px;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__tick {
+    width: 20px;
+  }
+
+  .s-chapters__rn {
+    display: none;
+  }
+
+  .s-chapters__rlabel {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 12px);
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    font-size: var(--t-small);
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-4px, -50%);
+    transition:
+      opacity var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+
+  /* A bridge, so that the pointer can travel from the mark to its label. */
+  .s-chapters__rlabel::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: 100%;
+    bottom: -1px;
+    width: 14px;
+  }
+
+  .s-chapters__rlink:hover .s-chapters__rlabel,
+  .s-chapters__rlink:focus-visible .s-chapters__rlabel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, -50%);
+  }
+
+  .s-chapters__float[data-quiet] .s-chapters__rlabel {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .s-chapters__rlink:focus-visible {
+    outline-offset: 4px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .s-chapters__float {
+    right: calc((100% + var(--wrap)) / 2 + 20px);
+    left: auto;
+  }
+
+  .s-chapters__rail {
+    justify-items: end;
+  }
+
+  .s-chapters__rlink {
+    flex-direction: row-reverse;
+    min-width: 32px;
+  }
+
+  .s-chapters__tick {
+    width: 14px;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__tick {
+    width: 28px;
+  }
+
+  .s-chapters__rn {
+    display: block;
+  }
+}
+
+@media (min-width: 1700px) {
+  .s-chapters__rlabel {
+    position: static;
+    max-width: calc((100vw - var(--wrap)) / 2 - 110px);
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--muted);
+    font-weight: 500;
+    white-space: normal;
+    text-align: end;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .s-chapters__rlabel::before {
+    content: none;
+  }
+
+  .s-chapters__rlink[aria-current="true"] .s-chapters__rlabel {
+    color: var(--ink);
+    font-weight: 700;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<nav id="{{id}}" class="s-chapters section" aria-labelledby="{{id}}-titre" data-section="chapters" data-chapters>
+  <div class="wrap s-chapters__grid">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+    </div>
+    <ol class="s-chapters__list" role="list">
+      {{#chapters}}<li class="s-chapters__item"><a class="s-chapters__link" href="#{{anchor}}"><span class="s-chapters__n" aria-hidden="true"></span><span><span class="s-chapters__label">{{label}}</span>{{#desc}}<span class="s-chapters__desc">{{desc}}</span>{{/desc}}</span><svg class="s-chapters__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></li>{{/chapters}}
+    </ol>
+  </div>
+</nav>
+<nav id="{{id}}-suivi" class="s-chapters__float" aria-label="{{nav_label}}" data-chapters-float{{#bar}} data-bar{{/bar}}{{#progress}} data-progress{{/progress}} hidden>
+  <button class="s-chapters__toggle" type="button" aria-expanded="false" aria-controls="{{id}}-liste">
+    <span class="s-chapters__count" data-count="{{count_label}}"></span>
+    <span class="s-chapters__now"></span>
+    <svg class="s-chapters__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    <span class="s-chapters__meter" aria-hidden="true"></span>
+  </button>
+  <ol id="{{id}}-liste" class="s-chapters__rail" role="list">
+    {{#chapters}}<li><a class="s-chapters__rlink" href="#{{anchor}}"><span class="s-chapters__tick" aria-hidden="true"><i class="s-chapters__fill"></i></span><span class="s-chapters__rn" aria-hidden="true"></span><span class="s-chapters__rlabel">{{label}}</span></a></li>{{/chapters}}
+  </ol>
+</nav>
+<!-- /section:{{id}} -->
+<script data-section-script="chapters">
+/* Table of contents that follows the reading.
+   principe : scrollspy par IntersectionObserver, sans écouteur de
+   défilement ; aria-current posé par le script, parce que :target-current
+   colore sans rien dire aux technologies d'assistance.
+   - The current chapter is the last listed section whose top has passed a
+     reading line at 40 % of the screen (the last one in view at the very
+     bottom of the page). It is computed only when an observer reports a
+     crossing, never on every scroll frame.
+   - The following table of contents (rail or bar) shows once the in-flow
+     list has gone above the screen. The rail yields the margin to a dark
+     band and to a section that carries a narrative gauge.
+   - Reading progress per chapter: view timelines named on the chapter
+     sections, where supported and motion is allowed. */
+(function () {
+  'use strict';
+  if (window.__landingChapters || !('IntersectionObserver' in window)) return;
+  window.__landingChapters = true;
+
+  var root = document.documentElement;
+  var LINE = 0.4;
+  var mqWide = window.matchMedia('(min-width: 1101px)');
+  var mqMotion = window.matchMedia('(prefers-reduced-motion: no-preference)');
+
+  function topbar() {
+    return parseFloat(getComputedStyle(root).getPropertyValue('--topbar-h')) || 0;
+  }
+
+  function hiddenTarget(el) {
+    return !el || !!el.closest('[hidden]');
+  }
+
+  function setup(toc) {
+    var float = document.getElementById(toc.id + '-suivi');
+    var chapters = Array.prototype.map.call(toc.querySelectorAll('.s-chapters__link'), function (a, i) {
+      var id = (a.getAttribute('href') || '').slice(1);
+      try { id = decodeURIComponent(id); } catch (e) {}
+      var rlink = float ? float.querySelectorAll('.s-chapters__rlink')[i] : null;
+      var label = a.querySelector('.s-chapters__label');
+      return {
+        id: id,
+        target: document.getElementById(id),
+        links: rlink ? [a, rlink] : [a],
+        item: rlink ? rlink.parentElement : null,
+        fill: rlink ? rlink.querySelector('.s-chapters__fill') : null,
+        label: (label || a).textContent.trim()
+      };
+    });
+    if (!chapters.length) return;
+
+    var current = -2;
+    var tocPassed = false;
+    var open = false;
+    var zones = new Map();
+    var frame = 0;
+    var toggle = float && float.querySelector('.s-chapters__toggle');
+    var count = float && float.querySelector('.s-chapters__count');
+    var now = float && float.querySelector('.s-chapters__now');
+    var meter = float && float.querySelector('.s-chapters__meter');
+    var names = [];
+    var progressOn = false;
+
+    function setCurrent(i) {
+      if (i === current) return;
+      current = i;
+      chapters.forEach(function (c, j) {
+        c.links.forEach(function (a) {
+          if (j === i) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+        });
+        if (c.item) c.item.toggleAttribute('data-passed', i >= 0 && j < i);
+      });
+      if (count) {
+        count.textContent = (count.getAttribute('data-count') || '')
+          .replace('{n}', String(i + 1)).replace('{total}', String(chapters.length));
+      }
+      if (now) now.textContent = i >= 0 ? chapters[i].label : '';
+      if (meter && progressOn) meter.style.animationTimeline = i >= 0 && names[i] ? names[i] : 'none';
+    }
+
+    function render() {
+      if (!float) return;
+      var show = tocPassed && current >= 0;
+      if (mqWide.matches) {
+        // A dark band always; a live gauge only while it shows (scroll theatre).
+        var pinOn = root.classList.contains('sc-pin');
+        var blocked = false;
+        zones.forEach(function (z) { if (z.on && (z.kind === 'dark' || pinOn)) blocked = true; });
+        show = show && window.innerHeight >= 600 && !blocked;
+      } else {
+        show = show && float.hasAttribute('data-bar');
+      }
+      // Never hide what holds the focus, nor the open list.
+      if (!show && (open || float.contains(document.activeElement)) && tocPassed && current >= 0) show = true;
+      float.toggleAttribute('data-visible', show);
+      if (!show && open) setOpen(false);
+    }
+
+    function compute() {
+      frame = 0;
+      var vh = window.innerHeight;
+      var line = vh * LINE;
+      var cur = -1;
+      chapters.forEach(function (c, i) {
+        if (hiddenTarget(c.target)) return;
+        if (c.target.getBoundingClientRect().top <= line) cur = i;
+      });
+      if (window.scrollY + vh >= root.scrollHeight - 2) {
+        chapters.forEach(function (c, i) {
+          if (!hiddenTarget(c.target) && c.target.getBoundingClientRect().top < vh) cur = Math.max(cur, i);
+        });
+      }
+      setCurrent(cur);
+      tocPassed = toc.getBoundingClientRect().bottom <= topbar() + 1;
+      render();
+    }
+
+    function schedule() {
+      if (!frame) frame = window.requestAnimationFrame(compute);
+    }
+
+    // While the list is open (and only then), scrolling the page on by more
+    // than a line closes it: it never stays over the text being read.
+    var openedAt = 0;
+    function onScrollWhileOpen() {
+      if (Math.abs(window.scrollY - openedAt) > 48) setOpen(false);
+    }
+
+    function setOpen(v) {
+      if (v === open) return;
+      open = v;
+      if (!toggle) return;
+      toggle.setAttribute('aria-expanded', v ? 'true' : 'false');
+      float.toggleAttribute('data-open', v);
+      if (v) {
+        openedAt = window.scrollY;
+        window.addEventListener('scroll', onScrollWhileOpen, { passive: true });
+      } else {
+        window.removeEventListener('scroll', onScrollWhileOpen);
+      }
+    }
+
+    // Crossings of the reading line, entries and exits of the screen.
+    var ioLine = new IntersectionObserver(schedule, { rootMargin: '-40% 0px -60% 0px' });
+    var ioView = new IntersectionObserver(schedule);
+    var ioToc = new IntersectionObserver(schedule, { rootMargin: '-' + Math.round(topbar()) + 'px 0px 0px 0px' });
+    function watch() {
+      chapters.forEach(function (c) {
+        c.target = document.getElementById(c.id);
+        if (c.target) { ioLine.observe(c.target); ioView.observe(c.target); }
+      });
+    }
+    watch();
+    ioToc.observe(toc);
+    var end = document.querySelector('.s-footer, body > footer');
+    if (end) ioView.observe(end);
+
+    // The rail gives way to dark bands and to narrative gauges (both use
+    // the page margin or paint it).
+    if (float) {
+      var ioZone = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var z = zones.get(e.target);
+          if (z) z.on = e.isIntersecting;
+        });
+        render();
+      }, { rootMargin: '-25% 0px -25% 0px' });
+      var addZone = function (el, kind) {
+        if (!el || zones.has(el)) return;
+        zones.set(el, { on: false, kind: kind });
+        ioZone.observe(el);
+      };
+      document.querySelectorAll('section.band-dark, .section.band-dark').forEach(function (el) { addZone(el, 'dark'); });
+      document.querySelectorAll('.gauge--live, [data-gauge]').forEach(function (g) {
+        addZone(g.closest('section') || g, 'gauge');
+      });
+    }
+
+    // Reading progress per chapter (view timelines), motion allowed only.
+    if (float && float.hasAttribute('data-progress') && mqMotion.matches && window.CSS && CSS.supports &&
+        CSS.supports('animation-timeline: view()')) {
+      var base = '--' + (toc.id || 'chapters').replace(/[^A-Za-z0-9_-]/g, '') + '-ch';
+      chapters.forEach(function (c, i) {
+        if (!c.target) return;
+        var taken = getComputedStyle(c.target).getPropertyValue('view-timeline-name').trim();
+        if (taken && taken !== 'none') return;
+        names[i] = base + i;
+        c.target.style.setProperty('view-timeline-name', names[i]);
+        if (c.fill) c.fill.style.animationTimeline = names[i];
+      });
+      var used = names.filter(Boolean);
+      if (used.length) {
+        var scope = getComputedStyle(document.body).getPropertyValue('timeline-scope').trim();
+        document.body.style.setProperty('timeline-scope', (scope && scope !== 'none' ? scope + ', ' : '') + used.join(', '));
+        float.setAttribute('data-progress-on', '');
+        progressOn = true;
+      }
+    }
+
+    if (float) {
+      if (toggle) toggle.addEventListener('click', function () { setOpen(!open); render(); });
+      float.addEventListener('click', function (e) {
+        if (open && e.target.closest('.s-chapters__rlink')) setOpen(false);
+      });
+      float.addEventListener('focusout', function (e) {
+        if (open && !float.contains(e.relatedTarget)) setOpen(false);
+        window.requestAnimationFrame(render);
+      });
+      float.addEventListener('focusin', function () { float.removeAttribute('data-quiet'); });
+      float.addEventListener('pointerleave', function () { float.removeAttribute('data-quiet'); });
+      document.addEventListener('click', function (e) {
+        if (open && !float.contains(e.target)) setOpen(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape' && e.key !== 'Esc') return;
+        if (open) { setOpen(false); if (toggle) toggle.focus(); return; }
+        // Escape dismisses a title shown on hover or focus (WCAG 1.4.13).
+        if (float.matches(':hover') || float.contains(document.activeElement)) float.setAttribute('data-quiet', '');
+      });
+      float.hidden = false;
+    }
+
+    [mqWide, mqMotion].forEach(function (mq) {
+      if (mq.addEventListener) mq.addEventListener('change', schedule); else mq.addListener(schedule);
+    });
+    window.addEventListener('resize', schedule);
+    document.addEventListener('landing:revealed', function () { watch(); schedule(); });
+    schedule();
+  }
+
+  function start() {
+    document.querySelectorAll('[data-chapters]').forEach(setup);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>

@@ -1,0 +1,542 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "offer-ticket",
+  "name": "Bloc de conversion en billet",
+  "objection": "Combien, qu’est-ce qui est compris, comment je réserve, et ensuite",
+  "engines": ["offer"],
+  "when": "Toute page qui vend ou inscrit : l’offre comme un objet (billet). Le prix avec ce qu’il comprend, les formules en contrôle segmenté (vraies radios), une remise expliquée, le seul bouton à l’accent fort de la page, l’échéance en jours, puis « Compris », « La suite » et les prérequis. Le billet est un formulaire GET vers l’outil de vente : les ancres #<id> de la page et son bouton mènent à la même conversion. L’état réel (ouvert, liste d’attente, clos) vient de la configuration « offer » de la spec.",
+  "avoid": "Prix sans ce qu’il comprend, remise dont on ne dit pas ce qui se passe après sa date, compte à rebours en secondes, compteur de places sans vrai chiffre, prix dans le bouton, second bouton accentué.",
+  "reduced_motion": "Billet immobile (pas d’inclinaison), prix lisible d’emblée.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 centré sans virgule ni point.", "example": "Votre place <span class=\"hl\">dans la cohorte de printemps</span>"},
+    "intro": {"type": "text", "doc": "Chapô d'une phrase.", "example": "Le prix comprend les six ateliers, les outils et la relecture de votre bilan."},
+    "action": {"type": "url", "doc": "URL de l'outil de vente ou d'inscription (le formulaire y part en GET avec ?formule=… et les UTM).", "example": "{{URL_CHECKOUT}}"},
+    "action_waitlist": {"type": "url", "doc": "URL de la liste d'attente (état « waitlist »).", "example": "{{URL_LISTE_ATTENTE}}"},
+    "currency": {"type": "text", "doc": "Devise ISO 4217 pour la mesure (begin_checkout).", "example": "EUR"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le bouton du billet.", "example": true},
+    "name": {"type": "text", "doc": "Nom de l'offre sur le billet.", "example": "Parcours Bilan carbone"},
+    "meta": {"type": "text", "doc": "Dates, format, lieu, en une ligne.", "example": "Cohorte de printemps · du 14 avril au 19 mai 2027 · visio et une demi-journée à Lyon"},
+    "badge_waitlist": {"type": "text", "doc": "Badge affiché en état liste d'attente.", "example": "Complet"},
+    "badge_closed": {"type": "text", "doc": "Badge affiché en état clos.", "example": "Inscriptions closes"},
+    "formula_legend": {"type": "text", "doc": "Nom du choix de formule. Vide : pas de choix affiché (une seule formule, celle marquée checked, envoyée en champ caché) et le billet passe en mise en page horizontale : prix et bouton côte à côte, puis « Compris » et « La suite » en deux colonnes.", "example": "Formule"},
+    "formulas": {"type": "list", "doc": "1 à 3 formules. value : identifiant (le même que la porte de choix) ; price : montant numérique (mesure) ; price_label : prix affiché ; note : précision annoncée à chaque changement (aria-live) ; checked : la formule par défaut (une seule).", "fields": {"value": "identifiant", "label": "nom court", "price": "nombre", "price_label": "prix affiché", "note": "précision", "checked": "true pour une seule"}, "example": [
+      {"value": "solo", "label": "Solo", "price": 1900, "price_label": "1 900 € HT", "note": "Une personne de l’entreprise. Avec la remise fondateur : 1 615 € HT.", "checked": true},
+      {"value": "equipe", "label": "Équipe", "price": 2900, "price_label": "2 900 € HT", "note": "Jusqu’à trois personnes de la même entreprise. Avec la remise fondateur : 2 465 € HT.", "checked": false}
+    ]},
+    "price_unit": {"type": "text", "doc": "Unité du prix.", "example": "par entreprise"},
+    "discount_title": {"type": "text", "doc": "Nom de la remise (vide : pas de remise).", "example": "Tarif fondateur"},
+    "discount": {"type": "text", "doc": "La remise, sa date, et ce qui se passe après.", "example": "15 % de remise jusqu’au 31 janvier 2027, appliqués à la commande. Après cette date, le prix affiché s’applique."},
+    "cta_label": {"type": "text", "doc": "Le verbe du bouton, sans prix.", "example": "Réserver ma place"},
+    "cta_waitlist": {"type": "text", "doc": "Libellé en état liste d'attente.", "example": "Rejoindre la liste d’attente"},
+    "cta_closed": {"type": "text", "doc": "Libellé en état clos : le bouton reste là, désactivé, lisible à 4,5:1.", "example": "Inscriptions closes"},
+    "cta_notify": {"type": "text", "doc": "État clos seulement : libellé d'un lien vers la liste d'attente ou l'alerte de la session suivante, dessiné en vrai bouton sous le bouton désactivé. Vide : pas de lien.", "example": "Être prévenu de la prochaine cohorte"},
+    "notify_href": {"type": "url", "doc": "Destination de ce lien (formulaire d'alerte, liste d'attente). Dans une page réelle : le marqueur {{URL_LISTE_ATTENTE}} jusqu'à son branchement.", "example": "https://inscription.example.com/meridian/prochaine-cohorte"},
+    "deadline": {"type": "text", "doc": "Échéance statique, toujours vraie.", "example": "Clôture le 31 mars 2027"},
+    "countdown": {"type": "object", "doc": "Jours restants (moteur offer) : many, one, zero. null : la date reste.", "fields": {"many": "« … {n} jours »", "one": "veille", "zero": "jour même"}, "example": {"many": "Clôture dans {n} jours", "one": "Clôture demain", "zero": "Clôture ce soir"}},
+    "seats": {"type": "text", "doc": "Vraies places (un chiffre réel ou rien).", "example": "12 places par cohorte"},
+    "included_title": {"type": "text", "doc": "Titre de la colonne de ce qui est compris.", "example": "Compris"},
+    "included": {"type": "list", "doc": "4 à 7 lignes concrètes.", "example": ["Six ateliers de deux heures en visio, enregistrés", "Une demi-journée en présentiel à Lyon", "Le modèle de collecte et la table de facteurs", "La relecture de votre bilan avant la restitution", "Le groupe d’échange de la cohorte, ouvert un an"]},
+    "next_title": {"type": "text", "doc": "Titre de la colonne des étapes après le clic.", "example": "La suite"},
+    "next_steps": {"type": "list", "doc": "3 ou 4 étapes après la réservation.", "example": ["Confirmation et facture par email dans l’heure", "Un appel de vingt minutes pour cadrer vos données", "Premier atelier le mardi 14 avril à 9 h"]},
+    "prereq_title": {"type": "text", "doc": "Titre des prérequis.", "example": "Prérequis"},
+    "prerequisites": {"type": "text", "doc": "Ce qu'il faut avoir (vide : rien).", "example": "Les factures d’énergie et le grand livre des achats de l’année écoulée."},
+    "conditions": {"type": "text", "doc": "Conditions sous le billet : paiement, annulation, seuil de confirmation.", "example": "Paiement à la commande ou sur facture à 30 jours. Annulation sans frais jusqu’à 14 jours avant le premier atelier. La cohorte part à partir de 6 entreprises inscrites, sinon remboursement intégral."}
+  }
+}
+</script>
+<style data-section-style="offer-ticket">
+.s-offer__ticket {
+  --notch: 22px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  max-width: 1100px;
+  margin-inline: auto;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) + 8px);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+  transform: perspective(1600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.6s var(--ease);
+}
+
+.s-offer__ticket::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -1px;
+  left: 32px;
+  right: 32px;
+  height: 5px;
+  border-radius: 0 0 5px 5px;
+  background: var(--gradient);
+}
+
+.s-offer__main {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(28px, 1rem + 2.6vw, 52px);
+}
+
+.s-offer__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.s-offer__name {
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-offer__meta {
+  color: var(--muted);
+}
+
+.s-offer__formulas {
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-offer__legend {
+  margin-bottom: 10px;
+  padding: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s-offer__seg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.s-offer__opt {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  min-height: 64px;
+  padding: 12px 44px 12px 16px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.s-offer__opt:has(:checked) {
+  border-color: var(--brand-primary);
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--brand-primary);
+}
+
+.s-offer__opt:has(:checked)::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--hl);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 0a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm5.7 9.7-1.4-1.4-5.8 5.8-2.8-2.8-1.4 1.4 4.2 4.2 7.2-7.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.s-offer__opt:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.s-offer__opt-label {
+  font-weight: 700;
+}
+
+.s-offer__opt-price {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-offer__pricebox {
+  display: grid;
+  gap: 6px;
+  padding-top: 6px;
+}
+
+.s-offer__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: clamp(2.5rem, 2rem + 1.8vw, 3.5rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-offer__unit {
+  color: var(--muted);
+  font-size: var(--t-body);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.s-offer__note {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-offer__discount {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--tint-accent);
+  text-wrap: pretty;
+}
+
+.s-offer__action {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* Closed: the button stays, visibly unavailable, its label readable at
+   4.5:1 (muted ink on the tinted surface, never an opacity). */
+.s-offer__cta[disabled] {
+  --btn-bg: var(--surface-2);
+  --btn-ink: var(--muted);
+  --btn-border: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* The way out of a closed offer: a real button, same size as the main one. */
+.s-offer__notify {
+  min-height: 56px;
+}
+
+/* Single formula: a horizontal ticket. Price and action side by side, then
+   the stub below with its two columns, so no column is left half empty. */
+.s-offer__ticket--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Rows without gaps: the action spans spare rows that must stay at zero
+   height; the left column keeps its rhythm by margins. */
+.s-offer__ticket--single .s-offer__main {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 0 clamp(32px, 1rem + 3vw, 64px);
+}
+
+.s-offer__ticket--single .s-offer__main > * {
+  grid-column: 1;
+}
+
+.s-offer__ticket--single .s-offer__main > * + :not(.s-offer__action) {
+  margin-top: 18px;
+}
+
+.s-offer__ticket--single .s-offer__main > .s-offer__action {
+  grid-column: 2;
+  grid-row: 1 / span 8;
+  align-self: center;
+}
+
+.s-offer__ticket--single .s-offer__stub {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px clamp(32px, 1rem + 3vw, 64px);
+  border-left: 0;
+  border-top: 2px dashed var(--line-strong);
+  border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+}
+
+.s-offer__ticket--single .s-offer__prereq {
+  grid-column: 1 / -1;
+}
+
+.s-offer__ticket--single .s-offer__stub::before,
+.s-offer__ticket--single .s-offer__stub::after {
+  top: calc(var(--notch) / -2 - 1px);
+  bottom: auto;
+}
+
+.s-offer__ticket--single .s-offer__stub::before {
+  left: calc(var(--notch) / -2);
+}
+
+.s-offer__ticket--single .s-offer__stub::after {
+  left: auto;
+  right: calc(var(--notch) / -2);
+}
+
+.s-offer__deadline {
+  display: flex;
+  justify-content: center;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Deadline line, centred: the line shrinks to its text, so the deadline and
+   its detail grow only once the detail has wrapped to a line of its own;
+   each then fills its line and centres its text. The separator sits in the
+   gap before the detail, inside it: on a line of its own the detail starts
+   at the left edge and the separator is clipped with it. Never a dot alone
+   at a line end or start, whatever the width or the text. */
+.s-offer__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  padding-inline: 4px;
+  overflow: hidden;
+}
+
+.s-offer__date,
+.s-offer__detail {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.s-offer__date::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 10px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+  vertical-align: middle;
+}
+
+.s-offer__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-offer__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
+}
+
+.s-offer__stub {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 28px;
+  padding: clamp(28px, 1rem + 2.6vw, 52px);
+  border-left: 2px dashed var(--line-strong);
+  border-radius: 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px) 0;
+  background: var(--surface-2);
+}
+
+.s-offer__stub::before,
+.s-offer__stub::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--notch) / -2 - 1px);
+  width: var(--notch);
+  height: var(--notch);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.s-offer__stub::before {
+  top: calc(var(--notch) / -2);
+}
+
+.s-offer__stub::after {
+  bottom: calc(var(--notch) / -2);
+}
+
+.s-offer__col-title {
+  margin-bottom: 14px;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.s-offer__steps {
+  display: grid;
+  gap: 12px;
+  counter-reset: suite;
+}
+
+.s-offer__steps > li {
+  position: relative;
+  padding-left: 38px;
+  counter-increment: suite;
+}
+
+.s-offer__steps > li::before {
+  content: counter(suite);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand-dark);
+  color: var(--brand-light);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.s-offer__prereq {
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.s-offer__conditions {
+  max-width: 62ch;
+  margin: clamp(24px, 1rem + 1vw, 36px) auto 0;
+  color: var(--muted);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .s-offer__ticket {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__ticket--single .s-offer__main > .s-offer__action {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 18px;
+  }
+
+  .s-offer__ticket--single .s-offer__stub {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-offer__stub {
+    border-left: 0;
+    border-top: 2px dashed var(--line-strong);
+    border-radius: 0 0 calc(var(--radius-card) + 8px) calc(var(--radius-card) + 8px);
+  }
+
+  .s-offer__stub::before,
+  .s-offer__stub::after {
+    top: calc(var(--notch) / -2 - 1px);
+    bottom: auto;
+  }
+
+  .s-offer__stub::before {
+    left: calc(var(--notch) / -2);
+  }
+
+  .s-offer__stub::after {
+    left: auto;
+    right: calc(var(--notch) / -2);
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-offer section" aria-labelledby="{{id}}-titre" data-section="offer-ticket">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      <p class="section-intro">{{intro}}</p>
+    </div>
+    <div data-reveal="scale">
+    <form class="s-offer__ticket{{^formula_legend}} s-offer__ticket--single{{/formula_legend}}" id="{{id}}-billet" action="{{action}}" method="get" data-track="begin_checkout" data-track-currency="{{currency}}" data-offer-action-waitlist="{{action_waitlist}}">
+      <div class="s-offer__main">
+        <div class="s-offer__top">
+          <p class="s-offer__name">{{name}}</p>
+          <p class="badge badge--accent" data-offer-show="waitlist" hidden>{{badge_waitlist}}</p>
+          <p class="badge" data-offer-show="closed" hidden>{{badge_closed}}</p>
+        </div>
+        <p class="s-offer__meta">{{meta}}</p>
+        {{#formula_legend}}<fieldset class="s-offer__formulas">
+          <legend class="s-offer__legend">{{formula_legend}}</legend>
+          <div class="s-offer__seg">
+            {{#formulas}}<label class="s-offer__opt"><input class="sr-only" type="radio" name="formule" value="{{value}}" data-price="{{price}}" data-price-label="{{price_label}}" data-note="{{note}}"{{#checked}} checked{{/checked}}><span class="s-offer__opt-label">{{label}}</span><span class="s-offer__opt-price">{{price_label}}</span></label>{{/formulas}}
+          </div>
+        </fieldset>{{/formula_legend}}{{^formula_legend}}{{#formulas}}{{#checked}}<input type="hidden" name="formule" value="{{value}}" data-price="{{price}}">{{/checked}}{{/formulas}}{{/formula_legend}}
+        <div class="s-offer__pricebox">
+          <p class="s-offer__price">{{#formulas}}{{#checked}}<span data-offer-price>{{price_label}}</span>{{/checked}}{{/formulas}}<span class="s-offer__unit">{{price_unit}}</span></p>
+          <p class="s-offer__note" aria-live="polite" data-offer-note>{{#formulas}}{{#checked}}{{note}}{{/checked}}{{/formulas}}</p>
+        </div>
+        {{#discount_title}}<p class="s-offer__discount"><strong>{{discount_title}}</strong> {{discount}}</p>{{/discount_title}}
+        <div class="s-offer__action">
+          <button type="submit" class="btn btn--primary btn--block s-offer__cta" data-cta-position="offre"{{#primary}} data-cta="primaire"{{/primary}} data-offer-text-waitlist="{{cta_waitlist}}" data-offer-text-closed="{{cta_closed}}" data-offer-disabled-closed>{{cta_label}}</button>
+          {{#cta_notify}}<a class="btn btn--secondary btn--block s-offer__notify" href="{{notify_href}}" data-track="cta_click" data-cta-position="offre-alerte" data-offer-show="closed" hidden>{{cta_notify}}</a>{{/cta_notify}}
+          <p class="s-offer__deadline"><span class="s-offer__when"><span class="s-offer__date"{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#seats}} <span class="s-offer__detail"><span class="s-offer__sep" aria-hidden="true">·</span>{{seats}}</span>{{/seats}}</span></p>
+        </div>
+      </div>
+      <div class="s-offer__stub">
+        <div>
+          <h3 class="s-offer__col-title">{{included_title}}</h3>
+          <ul class="list-check" role="list">{{#included}}<li>{{.}}</li>{{/included}}</ul>
+        </div>
+        <div>
+          <h3 class="s-offer__col-title">{{next_title}}</h3>
+          <ol class="s-offer__steps" role="list">{{#next_steps}}<li>{{.}}</li>{{/next_steps}}</ol>
+        </div>
+        {{#prerequisites}}<p class="s-offer__prereq"><strong>{{prereq_title}}</strong> {{prerequisites}}</p>{{/prerequisites}}
+      </div>
+    </form>
+    </div>
+    {{#conditions}}<p class="s-offer__conditions">{{conditions}}</p>{{/conditions}}
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="offer-ticket">
+(function () {
+  var tilt = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (min-width: 901px)');
+  var MAX = 3;
+  document.querySelectorAll('.s-offer__ticket').forEach(function (ticket) {
+    var price = ticket.querySelector('[data-offer-price]');
+    var note = ticket.querySelector('[data-offer-note]');
+    var radios = ticket.querySelectorAll('input[name="formule"][type="radio"]');
+    function sync() {
+      var on = ticket.querySelector('input[name="formule"]:checked');
+      if (!on) return;
+      if (price) price.textContent = on.getAttribute('data-price-label') || price.textContent;
+      if (note) note.textContent = on.getAttribute('data-note') || '';
+    }
+    radios.forEach(function (r) { r.addEventListener('change', sync); });
+    // The choice gate sets the formula.
+    document.addEventListener('landing:choice', function (e) {
+      var match = ticket.querySelector('input[name="formule"][value="' + (e.detail && e.detail.value) + '"]');
+      if (match && !match.checked) { match.checked = true; sync(); }
+    });
+    // Pointer tilt: physical object, fine pointer, motion allowed, 3 degrees at most.
+    ticket.addEventListener('pointermove', function (e) {
+      if (!tilt.matches || e.pointerType !== 'mouse') return;
+      var r = ticket.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      ticket.style.setProperty('--ry', (x * MAX * 2).toFixed(2) + 'deg');
+      ticket.style.setProperty('--rx', (-y * MAX * 2).toFixed(2) + 'deg');
+    });
+    ticket.addEventListener('pointerleave', function () {
+      ticket.style.removeProperty('--rx');
+      ticket.style.removeProperty('--ry');
+    });
+  });
+})();
+</script>

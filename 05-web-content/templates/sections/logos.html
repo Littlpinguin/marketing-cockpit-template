@@ -1,0 +1,89 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "logos",
+  "name": "Logos clients",
+  "objection": "Qui d’autre leur fait confiance",
+  "when": "Quand on a 4 à 6 logos dont l’usage est accordé par écrit (01-brand/droits.md). Sous le hero ou près du bloc de conversion.",
+  "avoid": "Logos sans accord, logos estompés par opacité (le contraste tombe), défilement infini, plus de six logos. Sans logo autorisé, ne pas poser la section.",
+  "reduced_motion": "Rien ne bouge.",
+  "slots": {
+    "title": {"type": "text", "doc": "Phrase courte au-dessus des logos (texte simple, pas une pastille).", "example": "Ils ont fait leur bilan avec la méthode"},
+    "logos": {"type": "list", "doc": "4 à 6 logos. src : fichier monochrome (SVG ou WebP) ; name : nom de l'entreprise (alt). Sans src, une marque fictive de démonstration (mark : SVG en currentColor).", "fields": {"src": "chemin du logo, ou vide", "name": "nom (alt)", "width": "px", "height": "px", "mark": "SVG de démonstration si pas de src"}, "example": [
+      {"src": "", "name": "Client A", "width": 120, "height": 32, "mark": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 2 22 20H2z\"/></svg>"},
+      {"src": "", "name": "Client B", "width": 120, "height": 32, "mark": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>"},
+      {"src": "", "name": "Client C", "width": 120, "height": 32, "mark": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"/></svg>"},
+      {"src": "", "name": "Client D", "width": 120, "height": 32, "mark": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" aria-hidden=\"true\"><path d=\"M4 18 12 6l8 12\"/></svg>"},
+      {"src": "", "name": "Client E", "width": 120, "height": 32, "mark": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z\"/></svg>"}
+    ]},
+    "note": {"type": "text", "doc": "Mention courte sous les logos (moins de 12 mots). Vide : rien.", "example": "Logos fictifs, à remplacer par des logos autorisés."}
+  }
+}
+</script>
+<style data-section-style="logos">
+.s-logos {
+  padding-block: clamp(40px, 1.6rem + 3vw, 72px);
+}
+
+.s-logos__inner {
+  display: grid;
+  gap: 24px;
+  justify-items: center;
+  text-align: center;
+}
+
+.s-logos__title {
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.s-logos__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px clamp(28px, 1rem + 3vw, 64px);
+}
+
+.s-logos__item {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+}
+
+.s-logos__item img {
+  height: 32px;
+  width: auto;
+}
+
+.s-logos__placeholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.s-logos__placeholder svg {
+  width: 24px;
+  height: 24px;
+}
+
+.s-logos__note {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-logos section" aria-labelledby="{{id}}-titre" data-section="logos">
+  <div class="wrap s-logos__inner">
+    <p id="{{id}}-titre" class="s-logos__title">{{title}}</p>
+    <ul class="s-logos__list" role="list">
+      {{#logos}}<li class="s-logos__item">{{#src}}<img src="{{src}}" alt="{{name}}" width="{{width}}" height="{{height}}" loading="lazy">{{/src}}{{^src}}<span class="s-logos__placeholder">{{{mark}}}<span>{{name}}</span></span>{{/src}}</li>{{/logos}}
+    </ul>
+    {{#note}}<p class="s-logos__note">{{note}}</p>{{/note}}
+  </div>
+</section>
+<!-- /section:{{id}} -->

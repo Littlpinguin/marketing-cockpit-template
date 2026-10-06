@@ -263,6 +263,48 @@ def test_suivi_declare_avec_evenement():
     assert primaires[0]["evenements"] == ["cta_click"]
 
 
+def envoi(**autres) -> dict:
+    base = {"trouve": True, "envoi": True, "attendu": "generate_lead", "demo": False, "crochet": True,
+            "rempli": ["email"], "refus": [], "evenements": [], "requetes": []}
+    base.update(autres)
+    return base
+
+
+def test_formulaire_rempli_evenement_attendu():
+    primaires = [cta("b", genre="envoi", formulaire="f")]
+    clics = {"b": envoi(evenements=["generate_lead"], requetes=[{"methode": "POST", "url": "https://example.test/lead"}])}
+    assert qa.auditer_suivi("dataLayer initialisé", primaires, clics) == []
+    assert primaires[0]["evenements"] == ["generate_lead"] and primaires[0]["requetes"]
+
+
+def test_formulaire_de_demo_attend_form_demo_submit():
+    primaires = [cta("b", genre="envoi", formulaire="f")]
+    bon = {"b": envoi(demo=True, attendu="form_demo_submit", evenements=["form_demo_submit"])}
+    assert qa.auditer_suivi("dataLayer initialisé", primaires, bon) == []
+    compte = {"b": envoi(demo=True, attendu="form_demo_submit", evenements=["generate_lead"])}
+    constats = qa.auditer_suivi("dataLayer initialisé", primaires, compte)
+    assert types(constats) == ["tracking"] and "jamais compter comme un lead" in constats[0]["message"]
+
+
+def test_formulaire_de_demo_qui_part_sur_le_reseau():
+    primaires = [cta("b", genre="envoi", formulaire="f")]
+    clics = {"b": envoi(demo=True, attendu="form_demo_submit", evenements=["form_demo_submit"],
+                        requetes=[{"methode": "POST", "url": "https://example.test/lead"}])}
+    constats = qa.auditer_suivi("dataLayer initialisé", primaires, clics)
+    assert types(constats) == ["tracking"] and "requête POST" in constats[0]["message"]
+
+
+def test_formulaire_avec_crochet_sans_evenement_est_une_erreur():
+    primaires = [cta("b", genre="envoi", formulaire="f")]
+    assert types(qa.auditer_suivi("gtag.js / GTM", primaires, {"b": envoi()})) == ["tracking"]
+    # refusé par le remplissage de test : avertissement, à vérifier à la main
+    refuse = qa.auditer_suivi("gtag.js / GTM", primaires, {"b": envoi(refus=["siret"])})
+    assert types(refuse) == [] and types(refuse, "avertissement") == ["tracking"]
+    # mauvais événement
+    autre = qa.auditer_suivi("gtag.js / GTM", primaires, {"b": envoi(evenements=["cta_click"])})
+    assert types(autre) == ["tracking"]
+
+
 def test_suivi_non_declare_exige_un_crochet():
     assert types(qa.auditer_suivi("", [cta("a")], None), "avertissement") == ["tracking"]
     assert qa.auditer_suivi("", [cta("a", crochet="data-track=cta_click")], None) == []
@@ -489,6 +531,25 @@ def test_defauts_de_structure(tmp_path):
 
 
 @CHROMIUM
+def test_nom_accessible_ignore_ce_qui_n_est_pas_expose(tmp_path):
+    """Inerte (barre cachée au défilement), aria-hidden ou visibility: hidden : hors des aides techniques."""
+    corps = """
+    <section><h2>Des contrôles hors d'atteinte</h2>
+      <div inert><a class="lien-inerte" href="#offre"><svg width="20" height="20"></svg></a></div>
+      <div aria-hidden="true"><button class="bouton-masque" type="button"></button></div>
+      <p><button class="bouton-invisible" type="button" style="visibility: hidden"></button></p>
+    </section>"""
+    script = "document.querySelector('.lien-inerte').parentElement.inert = true;"
+    _, donnees = rapport(ecrire(tmp_path, corps=corps, script=script), "--viewports", "1440x900")
+    assert "nom-accessible" not in tous(donnees)
+    # le même bouton, exposé, reste une erreur
+    corps_expose = corps + '<section><h2>Exposé</h2><p><button class="bouton-nu" type="button"></button></p></section>'
+    _, donnees = rapport(ecrire(tmp_path, corps=corps_expose, nom="b.html"), "--viewports", "1440x900")
+    noms = [c["message"] for c in donnees["page"] if c["type"] == "nom-accessible"]
+    assert len(noms) == 1 and "bouton-nu" in noms[0]
+
+
+@CHROMIUM
 def test_debordement_et_petits_textes_sur_mobile(tmp_path):
     corps = """<section><div style="width: 640px; height: 20px; background: #1E40AF"></div>
       <p style="font-size: 14px">Ce paragraphe de démonstration compte bien plus de douze mots pour être lu comme du texte courant.</p>
@@ -551,3 +612,61 @@ def test_suivi_declare_avec_evenement(tmp_path):
     assert "tracking" not in tous(donnees) + tous(donnees, "avertissement")
     assert any(c.get("evenements") == ["cta_click"] for c in donnees["ctas"])
     assert resultat.returncode == 0
+
+
+# --------------------------------------------------------------------------
+# Suivi des formulaires de la bibliothèque : remplis, envoyés, réseau intercepté
+# --------------------------------------------------------------------------
+
+def _charger_assembleur():
+    chemin = REPO / "05-web-content" / "scripts" / "assemble-landing.py"
+    spec = importlib.util.spec_from_file_location("assemble_landing_qa", chemin)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _page_capture(dossier: Path, action: str, nom: str) -> Path:
+    al = _charger_assembleur()
+    spec = {"title": "Acme · guide", "page": "test", "samples": True, "tracking": {"mode": "datalayer"},
+            "sections": [{"use": "hero", "slots": {"cta_href": "#guide"}},
+                         {"use": "lead-capture", "id": "guide", "slots": {"action": action}}]}
+    sortie = dossier / nom
+    sortie.write_text(al.assembler(spec, sortie=sortie).html, encoding="utf-8")
+    return sortie
+
+
+def _envoi(donnees: dict) -> dict:
+    return next(c for c in donnees["ctas"] if c["genre"] == "envoi")
+
+
+@CHROMIUM
+def test_suivi_formulaire_de_demo_compte_form_demo_submit(tmp_path):
+    _, donnees = rapport(_page_capture(tmp_path, "{{FORM_ENDPOINT}}", "demo.html"), "--viewports", "1440x900")
+    assert "tracking" not in tous(donnees)
+    cta_envoi = _envoi(donnees)
+    assert "form_demo_submit" in cta_envoi["evenements"] and "generate_lead" not in cta_envoi["evenements"]
+    assert not [r for r in cta_envoi["requetes_interceptees"] or [] if r["methode"] == "POST"]
+
+
+@CHROMIUM
+def test_suivi_vrai_endpoint_generate_lead_intercepte(tmp_path):
+    _, donnees = rapport(_page_capture(tmp_path, "https://forms.example.test/lead", "vrai.html"),
+                         "--viewports", "1440x900")
+    assert "tracking" not in tous(donnees) + tous(donnees, "avertissement")
+    cta_envoi = _envoi(donnees)
+    assert "generate_lead" in cta_envoi["evenements"]
+    assert {"methode": "POST", "url": "https://forms.example.test/lead"} in cta_envoi["requetes_interceptees"]
+
+
+@CHROMIUM
+def test_cta_d_un_autre_etat_de_l_offre_ignore(tmp_path):
+    """Un lien réservé à l'état clos (data-offer-show="closed") n'est pas un CTA de l'état ouvert."""
+    corps = """<section><p data-offer-show="closed" hidden><a class="btn" href="https://example.test/alerte"
+      data-track="cta_click">Être prévenu</a></p>
+      <p data-offer-show="open waitlist"><a class="btn" href="https://example.test/ailleurs">Ailleurs</a></p></section>"""
+    _, donnees = rapport(ecrire(tmp_path, corps=corps), "--viewports", "1440x900")
+    destinations = [c["destination"] for c in donnees["ctas"]]
+    assert "https://example.test/alerte" not in destinations
+    assert "https://example.test/ailleurs" in destinations      # visible en état ouvert : inventorié

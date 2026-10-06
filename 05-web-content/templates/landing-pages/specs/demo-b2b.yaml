@@ -1,0 +1,506 @@
+# ============================================================================
+# Modèle de landing : DÉMO B2B (demande de démo d'un logiciel ou d'un produit)
+# ----------------------------------------------------------------------------
+# Assemblage :
+#   python3 05-web-content/scripts/assemble-landing.py \
+#     05-web-content/templates/landing-pages/specs/demo-b2b.yaml
+#   python3 05-web-content/scripts/qa-landing.py \
+#     05-web-content/templates/landing-pages/demo-b2b.html
+#
+# Pour une vraie page : copier ce fichier vers
+# 05-web-content/landing-pages/<slug>/pilotage/page.yaml, changer « output »
+# et « page », réécrire chaque texte (skills copywriting puis copy-editing),
+# remplacer chaque objet composé par le vrai produit, puis dérouler la skill
+# landing-page (brief, charte, QA, quatre revues, brand-check).
+#
+# Marque d'exemple : Calquai, éditeur FICTIF d'un logiciel de rendez-vous de
+# quai pour entrepôts. Chiffres, avis, noms et fonctions sont inventés pour
+# montrer le ton et les longueurs : rien ne part en ligne tel quel. Les
+# chiffres d'exemple sont marqués comme tels sur la page.
+#
+# À brancher avant publication (marqueurs du dépôt, signalés par la QA) :
+#   {{FORM_ENDPOINT}}         endpoint POST du formulaire (n8n, outil CRM…)
+#   {{URL_CONFIDENTIALITE}}   page de politique de confidentialité
+#   {{URL_MENTIONS_LEGALES}}  page des mentions légales
+# Le contact demo@example.com du pied et de la FAQ se remplace par la vraie
+# adresse. Mesure : mode datalayer (événements cta_click, generate_lead,
+# faq_open) et passage des UTM vers le formulaire (champs cachés). Pour
+# GA4 : tracking.mode gtag et tracking.ga4 ; pour GTM : mode gtm et gtm.
+#
+# Récit : une objection par section, dans l'ordre de la pensée de l'acheteur.
+#   hero            De quoi s'agit-il : le produit montré dès l'écran 1
+#   preuves         Est-ce sérieux : quatre faits courts
+#   probleme        Pourquoi maintenant : quatre scènes dans les mots du terrain (épinglé)
+#   changements     Qu'est-ce que ça change : respiration entre deux épinglages
+#   parcours        Est-ce que ça marche chez moi : un camion de bout en bout (épinglé)
+#   estimation      Combien ça me ferait gagner : le calculateur d'attente évitée,
+#                   hypothèse et source sous le résultat (demonstrator, mode
+#                   calculator ; son bouton mène au formulaire sans compter
+#                   comme CTA primaire)
+#   securite        Ma DSI va-t-elle bloquer : hébergement, accès, connecteurs (bande sombre)
+#   donnees         Suis-je enfermé chez vous : ce que vous possédez, ce qui s'y
+#                   branche, les preuves de sortie (ownership-diagram)
+#   avis            D'autres l'ont-ils fait : trois avis, chacun avec un résultat, près du formulaire
+#   ensuite         Que se passe-t-il pendant et après la démo
+#   demo            Je demande la démo : cinq champs, dont un qui qualifie le volume
+#   questions       Dernières questions, carte collante qui ramène au formulaire
+#   final           Je passe à l'action (bande sombre)
+# Formulaire sans case de consentement : la demande de démo fonde le
+# traitement (mesures précontractuelles) ; la mention de confidentialité,
+# avec son lien, reste sous le bouton.
+# Deux sections épinglées, jamais d'affilée ; deux bandes sombres, jamais
+# d'affilée ; une seule conversion (#demo) pour tous les boutons.
+# ============================================================================
+output: 05-web-content/templates/landing-pages/demo-b2b.html
+title: "Calquai · Vos réceptions planifiées la veille"
+description: >-
+  Les transporteurs réservent leur créneau, Calquai affecte le quai. Démo de
+  30 minutes sur vos propres flux de réception.
+lang: fr
+page: demo-b2b
+robots: "noindex, nofollow"
+fonts: ["Inter:wght@400;500;600;700;800", "JetBrains Mono:wght@500;600"]
+ground: dots
+theatre: {progress: true}
+tracking: {mode: datalayer, utm: true}
+skip_link: "Aller au contenu"
+
+sections:
+  - use: topbar
+    slots:
+      brand: >-
+        <svg class="s-topbar__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true"><path d="M4 28V10l12-6 12 6v18"/><path
+        d="M9 28V15h14v13M9 19.5h14M9 24h14"/></svg><span>Calquai</span>
+      cta_label: "Demander une démo"
+      cta_href: "#demo"
+      primary: true
+
+  - use: hero
+    slots:
+      title: >-
+        Vos réceptions<br><span class="hl">planifiées la veille</span>
+      lede: >-
+        Les transporteurs réservent leur créneau en ligne, et Calquai affecte
+        chaque camion au bon quai selon sa marchandise.
+      cta_label: "Demander une démo"
+      cta_href: "#demo"
+      primary: true
+      deadline: "Démo de 30 minutes sur vos propres flux"
+      countdown: null
+      detail: "Réponse sous un jour ouvré"
+      image: null
+      object: >-
+        <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+        <div class="obj-window">
+        <div class="obj-window__bar"><i></i><i></i><i></i><span>Calquai · réceptions de mardi</span></div>
+        <div class="obj-window__body">
+        <div class="obj-head"><span class="obj-mark"></span><b>Quais 1 à 4</b><span class="obj-push">23 rendez-vous</span></div>
+        <div class="obj-rule"></div>
+        <div class="obj-grid" style="--cols:4">
+        <span class="is-head">Quai</span><span class="is-head">6 h</span><span class="is-head">8 h</span><span class="is-head">10 h</span>
+        <span>Quai 1</span><span>18 pal.</span><span>26 pal.</span><span>12 pal.</span>
+        <span>Quai 2</span><span>33 pal.</span><span>Libre</span><span>9 pal.</span>
+        <span>Quai 3</span><span>22 t vrac</span><span class="is-warn">Retard</span><span>14 pal.</span>
+        <span>Quai 4</span><span>Libre</span><span>21 pal.</span><span>30 pal.</span>
+        </div>
+        <div class="obj-rule"></div>
+        <div class="obj-bars">
+        <div class="obj-bar is-hl" style="--v:.82"><span>Occupation</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>82 %</b></div>
+        <div class="obj-bar" style="--v:.18"><span>Attente</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>11 min</b></div>
+        </div>
+        </div>
+        </div>
+        <span class="obj-chip s-hero__chip"><i></i>Quai 3 réaffecté à 8 h 40</span>
+        </div>
+
+  - use: proof-band
+    id: preuves
+    slots:
+      title: "Calquai en quatre faits"
+      facts:
+        - {value: "38", unit: "", label: "sites logistiques équipés", source: "Chiffre d’exemple"}
+        - {value: "11", unit: "min", label: "d’attente moyenne au quai", source: "Chiffre d’exemple"}
+        - {value: "21", unit: "jours", label: "pour équiper un site, WMS branché", source: "Chiffre d’exemple"}
+        - {value: "0", unit: "", label: "compte à créer pour vos transporteurs", source: ""}
+
+  - use: problem-pinned
+    id: probleme
+    slots:
+      title: >-
+        Le quai déborde<br><span class="hl">avant 8 heures</span>
+      intro: >-
+        Quatre situations que les responsables de réception nous décrivent
+        avant chaque démo.
+      items:
+        - title: "Tous les camions arrivent avant 8 h"
+          text: >-
+            Sans créneau, chaque transporteur vise le début de matinée. Le quai
+            sature à 7 h, puis reste vide l’après-midi.
+          visual: >-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Arrivées par heure</b><span class="obj-push">mardi</span></div>
+            <div class="obj-rule"></div>
+            <div class="obj-chart"><i style="--v:.45"></i><i class="is-hl" style="--v:1"></i><i style="--v:.6"></i><i style="--v:.2"></i><i style="--v:.12"></i><i style="--v:.08"></i><i style="--v:.22"></i><i style="--v:.1"></i></div>
+            <div class="obj-rule"></div>
+            <p class="obj-small"><span class="obj-highlight">15 camions entre 6 h et 8 h</span>, 4 après 14 h</p></div>
+        - title: "Le planning vit dans un tableur partagé"
+          text: >-
+            Trois personnes le modifient, et deux camions finissent sur le même
+            quai sans que personne ne sache quelle version fait foi.
+          visual: >-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>planning_quais_S41_v4(2).xlsx</span></div>
+            <div class="obj-window__body"><div class="obj-grid" style="--cols:3">
+            <span class="is-head">Heure</span><span class="is-head">Quai</span><span class="is-head">Livraison</span>
+            <span>7 h 00</span><span class="is-warn">2</span><span>Frais 18 pal.</span>
+            <span>7 h 00</span><span class="is-warn">2</span><span>Sec 26 pal.</span>
+            <span>7 h 15</span><span class="is-warn">?</span><span>Vrac 22 t</span>
+            <span>7 h 30</span><span>4</span><span class="is-warn">#N/A</span>
+            <span>8 h 00</span><span>1</span><span>Sec 12 pal.</span>
+            </div><p class="obj-small" style="margin-top:10px">Modifié par 3 personnes ce matin</p></div></div>
+        - title: "Les chauffeurs appellent pour trouver leur quai"
+          text: >-
+            L’accueil passe la matinée au téléphone pendant que les camions
+            attendent sur le parking, moteur allumé.
+          visual: >-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Accueil · appels du matin</span></div>
+            <div class="obj-window__body obj-mail">
+            <div class="obj-mail__from"><span class="obj-avatar">6:52</span><span><b>Chauffeur, plaque GH-418</b><br>Je décharge où ?</span></div>
+            <div class="obj-mail__from"><span class="obj-avatar">7:04</span><span><b>Chauffeur, plaque BT-907</b><br>Toujours personne au quai 2</span></div>
+            <div class="obj-mail__from"><span class="obj-avatar">7:11</span><span><b>Transporteur</b><br>Mon camion attend depuis 1 h</span></div>
+            <div class="obj-rule"></div>
+            <p class="obj-small"><span class="obj-highlight">14 appels</span> avant 9 h</p></div></div>
+        - title: "Les frais d’attente arrivent le mois suivant"
+          text: >-
+            Le transporteur facture l’immobilisation, et vous n’avez aucune
+            heure d’arrivée fiable pour la discuter.
+          visual: >-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Facture transporteur</b><span class="obj-stamp obj-push">Octobre</span></div>
+            <div class="obj-rule"></div>
+            <div class="obj-grid" style="--cols:3">
+            <span class="is-head">Ligne</span><span class="is-head">Qté</span><span class="is-head">Montant</span>
+            <span>Livraisons</span><span>42</span><span>6 300 €</span>
+            <span class="is-warn">Attente au-delà de 2 h</span><span class="is-warn">9</span><span class="is-warn">405 €</span>
+            <span>Gazole</span><span>1</span><span>612 €</span>
+            </div>
+            <div class="obj-rule"></div>
+            <p class="obj-small">Heures d’arrivée : <span class="obj-strike">non fournies</span></p></div>
+
+  - use: outcomes
+    id: changements
+    slots:
+      title: >-
+        Ce qui change<br><span class="hl">dès le premier mois</span>
+      items:
+        - {number: "01", title: "Des arrivées étalées", text: "Les créneaux se répartissent sur la journée, au rythme que vos équipes déchargent."}
+        - {number: "02", title: "Un quai par camion", text: "Chaque rendez-vous arrive avec son quai, son volume et son type de marchandise."}
+        - {number: "03", title: "Un accueil au calme", text: "Le chauffeur lit son quai sur la borne ou dans le SMS de confirmation."}
+        - {number: "04", title: "Des attentes prouvées", text: "L’arrivée et la mise à quai sont horodatées, rendez-vous par rendez-vous."}
+
+  - use: journey
+    id: parcours
+    slots:
+      title: >-
+        Un camion suivi<br><span class="hl">de la réservation au départ</span>
+      intro: >-
+        Ce que la démo vous montre, sur une livraison qui ressemble aux vôtres.
+      counter_label: "Étape"
+      outcome_label: "Votre équipe voit"
+      steps:
+        - when: "La veille, 16 h"
+          title: "Le transporteur réserve son créneau"
+          text: >-
+            Il reçoit un lien avec la commande et choisit une heure libre, sans
+            compte à créer.
+          outcome: "un rendez-vous confirmé, palettes comprises"
+          scene: >-
+            <div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Réserver un créneau · commande 48213</span></div>
+            <div class="obj-window__body"><div class="obj-grid" style="--cols:4">
+            <span class="is-head">6 h 30</span><span class="is-head">7 h 00</span><span class="is-head">7 h 30</span><span class="is-head">8 h 30</span>
+            <span>Complet</span><span>Complet</span><span>Complet</span><span class="is-warn">Choisi</span>
+            </div><div class="obj-rule"></div>
+            <div class="obj-check"><span class="is-done">18 palettes déclarées</span><span class="is-done">Marchandise fraîche</span><span>Plaque à confirmer le jour J</span></div></div></div>
+        - when: "La veille, 18 h"
+          title: "Calquai affecte les quais"
+          text: >-
+            Chaque rendez-vous reçoit un quai selon la marchandise et la durée
+            de déchargement prévue. Le chef de quai ajuste à la main s’il le faut.
+          outcome: "le planning du lendemain, quai par quai"
+          scene: >-
+            <div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Affectation · mercredi</span></div>
+            <div class="obj-window__body"><div class="obj-bars">
+            <div class="obj-bar" style="--v:.74"><span>Quai 1</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>6 RDV</b></div>
+            <div class="obj-bar" style="--v:.62"><span>Quai 2</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>5 RDV</b></div>
+            <div class="obj-bar is-hl" style="--v:.86"><span>Quai 3</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>7 RDV</b></div>
+            <div class="obj-bar" style="--v:.6"><span>Quai 4</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>5 RDV</b></div>
+            </div><div class="obj-rule"></div><p class="obj-small">23 rendez-vous, aucun quai en double</p></div></div>
+        - when: "Le jour J, 8 h 27"
+          title: "Le camion se présente à l’accueil"
+          text: >-
+            Le chauffeur scanne le code de son rendez-vous à la borne. L’accueil
+            voit son quai s’afficher, sans un appel.
+          outcome: "l’heure d’arrivée, horodatée"
+          scene: >-
+            <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Borne d’accueil</b><span class="obj-stamp obj-push">Arrivé</span></div>
+            <div class="obj-rule"></div><p class="obj-kpi">Quai 3<small>8 h 30</small></p>
+            <p class="obj-small">Plaque GH-418 · arrivée à 8 h 27</p><div class="obj-rule"></div>
+            <div class="obj-lines"><i style="--w:88%"></i><i style="--w:60%"></i></div></div>
+        - when: "Le jour J, 9 h 05"
+          title: "Le déchargement est clôturé"
+          text: >-
+            Le cariste valide la fin du déchargement sur sa tablette, et les
+            écarts de palettes repartent vers votre WMS avec la réception.
+          outcome: "le temps à quai de chaque transporteur"
+          scene: >-
+            <div class="obj obj-window"><div class="obj-window__bar"><i></i><i></i><i></i><span>Temps à quai · semaine 41</span></div>
+            <div class="obj-window__body"><div class="obj-chart"><i style="--v:.7"></i><i style="--v:.55"></i><i style="--v:.6"></i><i class="is-hl" style="--v:.42"></i><i style="--v:.4"></i></div>
+            <div class="obj-rule"></div><div class="obj-head"><span>Moyenne de la semaine</span><b class="obj-push">38 min</b></div></div></div>
+
+  - use: demonstrator
+    id: estimation
+    slots:
+      title: >-
+        L’attente évitée<br><span class="hl">sur vos quais</span>
+      intro: >-
+        Indiquez votre volume de réception. L’estimation se calcule ici, avec
+        son hypothèse et sa source sous le résultat.
+      mode: calculator
+      dark: false
+      replay: null
+      calculator:
+        legend: "Vos réceptions aujourd’hui"
+        inputs:
+          - {name: camions, label: "Camions reçus par jour", hint: "Toutes livraisons confondues. Entre 1 et 400.", value: 40, min: 1, max: 400, step: 1}
+          - {name: attente, label: "Attente moyenne d’un camion", slider: true, unit: "min", value: 45, min: 10, max: 120, step: 5}
+          - name: jours
+            label: "Jours de réception"
+            choices:
+              - {label: "5 jours sur 7", value: 22, selected: true}
+              - {label: "6 jours sur 7", value: 26}
+              - {label: "7 jours sur 7", value: 30}
+        lines:
+          - {key: total, label: "Camions reçus par mois", expr: "camions * jours", unit: "camions", decimals: 0, example: "880"}
+          - {key: attente_totale, label: "Attente cumulée aujourd’hui", expr: "total * attente / 60", unit: "h", decimals: 0, example: "660"}
+        result: {label: "Attente évitée chaque mois", expr: "attente_totale * part_evitee", unit: "heures", decimals: 0, example: "495", announce: "Estimation : {value} heures d’attente évitées chaque mois"}
+        coefficients:
+          - key: part_evitee
+            value: 0.75
+            display: "75 %"
+            label: "de l’attente évitée par la réservation de créneaux."
+            source: "Chiffre d’exemple : passage de 45 à 11 minutes d’attente au quai sur les sites d’exemple de la bande de preuves, à remplacer par les mesures de vos pilotes."
+        sources_label: "Hypothèse et source"
+        invalid_text: "Saisissez un nombre de camions entre 1 et 400 pour voir l’estimation."
+        noscript: "Exemple calculé pour les valeurs ci-dessus."
+      cta_label: "Demander une démo"
+      cta_href: "#demo"
+      primary: false
+      position: "estimation"
+      cta_note: "La démo rejoue une semaine de vos propres réceptions."
+      track_type: "estimation"
+      track_event: "demo_calculate"
+
+  - use: showcase-dark
+    id: securite
+    slots:
+      title: >-
+        Le dossier technique<br><span class="hl">pour votre DSI</span>
+      intro: >-
+        Les réponses écrites aux questions de votre DSI partent avec le compte
+        rendu de la démo.
+      parts:
+        - tab: "Hébergement"
+          title: "Données hébergées en France"
+          text: "Deux centres de données en France, et un contrat de sous-traitance RGPD prêt à signer."
+        - tab: "Accès"
+          title: "Connexion par votre annuaire"
+          text: "Authentification unique SAML ou OpenID Connect, et des droits par site et par quai."
+        - tab: "Connecteurs"
+          title: "Branché sur votre WMS"
+          text: "Les commandes d’achat arrivent par API ou par fichier, les réceptions clôturées repartent vers le WMS."
+        - tab: "Journal"
+          title: "Chaque action tracée"
+          text: "Qui a déplacé quel rendez-vous, et à quelle heure : le journal se consulte et s’exporte."
+
+  - use: ownership-diagram
+    id: donnees
+    slots:
+      title: 'Vos données de quai<br><span class="hl">restent les vôtres</span>'
+      intro: >-
+        L’historique des réceptions et le carnet des transporteurs vous
+        appartiennent. Si vous quittez Calquai, ils repartent avec vous, dans
+        des formats que votre WMS sait lire.
+      owned_title: "Vos données de réception"
+      owned:
+        - {name: "L’historique des rendez-vous, quai par quai", format: "CSV · API"}
+        - {name: "Les heures d’arrivée et de mise à quai horodatées", format: "CSV"}
+        - {name: "Le carnet des transporteurs et leurs contacts", format: "CSV · XLSX"}
+        - {name: "Le journal des actions de vos équipes", format: "CSV"}
+      tools_title: "Ce qui s’y branche"
+      tools:
+        - {name: "Calquai", note: "Planifie les créneaux et affecte les quais", state: "current", tag: "Aujourd’hui"}
+        - {name: "Un autre logiciel de quai", note: "Importe l’historique et le carnet des transporteurs", state: "alt", tag: ""}
+        - {name: "Votre outil de pilotage", note: "Lit les temps à quai par l’API ou l’export du jour", state: "alt", tag: ""}
+        - {name: "Votre WMS", note: "Garde les réceptions, avec ou sans Calquai", state: "alt", tag: ""}
+      caption: >-
+        Les données restent dans des formats ouverts : Calquai s’y branche
+        aujourd’hui, un autre outil pourra s’y brancher demain.
+      proofs:
+        - {term: "Export", text: "Export complet en CSV à tout moment depuis l’administration, et une API documentée pour le reste."}
+        - {term: "Préavis", text: "Abonnement résiliable chaque mois, avec trente jours de préavis et sans frais de sortie."}
+        - {term: "Passation", text: "À la résiliation, un export complet vous est remis sous cinq jours ouvrés, puis vos données sont effacées sous trente jours."}
+
+  - use: testimonials
+    id: avis
+    slots:
+      title: >-
+        Ils reçoivent<br><span class="hl">sans file d’attente</span>
+      quotes:
+        - result: "Le pic de 7 h étalé sur la matinée"
+          quote: >-
+            Avant, quinze camions se présentaient entre 6 h et 8 h. Aujourd’hui
+            les créneaux vont jusqu’à 11 h, et le quai 4 ne déborde plus.
+          name: "Sandrine P."
+          role: "Responsable réception, plateforme alimentaire de 22 quais (avis fictif)"
+          initials: "SP"
+        - result: "Une heure gagnée chaque matin à l’accueil"
+          quote: >-
+            Le chauffeur scanne son code et voit son quai. L’accueil a récupéré
+            une heure par matinée, le téléphone ne sonne presque plus avant 9 h.
+          name: "Thomas A."
+          role: "Chef de site, entrepôt de pièces détachées (avis fictif)"
+          initials: "TA"
+        - result: "Des frais d’attente enfin discutés sur pièces"
+          quote: >-
+            Quand un transporteur facture deux heures d’attente, on ouvre le
+            rendez-vous : l’arrivée et la mise à quai sont là, à la minute.
+          name: "Inès B."
+          role: "Acheteuse transport, distributeur de matériaux (avis fictif)"
+          initials: "IB"
+
+  - use: process
+    id: ensuite
+    slots:
+      title: >-
+        De la démo<br><span class="hl">au premier quai équipé</span>
+      intro: >-
+        Vous décidez à chaque étape. Si Calquai ne colle pas à vos flux, nous
+        vous le disons dès la démo.
+      steps:
+        - {title: "Un échange de préparation", text: "Quelques questions sur vos quais et vos transporteurs, pour préparer une démo à votre échelle.", delay: "15 min, sous 2 jours"}
+        - {title: "La démo sur vos flux", text: "Une semaine de vos réceptions reconstruite dans Calquai, à partir d’un export que vous envoyez.", delay: "30 min en visio"}
+        - {title: "Un pilote sur un quai", text: "Un quai et trois transporteurs pendant deux semaines, pour comparer l’attente avant et après.", delay: "2 semaines"}
+        - {title: "Le site équipé", text: "Connexion à votre WMS, puis formation des équipes d’accueil et de quai.", delay: "3 semaines en général"}
+
+  - use: form
+    id: demo
+    slots:
+      title: >-
+        Voyez vos quais<br><span class="hl">dans Calquai</span>
+      intro: >-
+        Indiquez votre volume de réception : la démo se prépare sur des flux
+        proches des vôtres.
+      next:
+        - "Un créneau de démo proposé sous un jour ouvré"
+        - "La liste courte des exports utiles à la démo"
+      action: "{{FORM_ENDPOINT}}"
+      primary: true
+      position: "formulaire"
+      labels:
+        name: "Nom et prénom"
+        email: "Email professionnel"
+        company: "Entreprise ou site"
+        size: "Camions reçus par jour"
+        message: "Votre contexte"
+        optional: "(facultatif)"
+      select_name: "camions_par_jour"
+      size_options: ["Choisir", "Moins de 20", "20 à 60", "61 à 150", "Plus de 150"]
+      url_field: null
+      cta_label: "Demander une démo"
+      privacy: >-
+        Vos réponses servent seulement à organiser la démo.
+        <a href="{{URL_CONFIDENTIALITE}}" target="_blank" rel="noopener">Politique de
+        confidentialité<span class="sr-only"> (nouvel onglet)</span></a>
+      error_required: "Ce champ nous sert à préparer la démo."
+      error_email: "Cette adresse email semble incomplète."
+      msg_success: "Merci, votre demande est partie. Un créneau vous arrive sous un jour ouvré."
+      msg_failure: "L’envoi n’a pas abouti. Nouvel essai en cours."
+      msg_unwired: "Modèle de démonstration : branchez l’adresse du formulaire pour recevoir les demandes."
+
+  - use: faq
+    id: questions
+    slots:
+      title: >-
+        Les questions<br><span class="hl">avant une démo</span>
+      intro: ""
+      items:
+        - q: "Faut-il remplacer notre WMS ?"
+          a: >-
+            Calquai planifie les rendez-vous et les quais, et votre WMS garde
+            les stocks et les réceptions. Les deux échangent les commandes et les clôtures.
+        - q: "Nos transporteurs doivent-ils installer quelque chose ?"
+          a: >-
+            Ils reçoivent un lien de réservation avec la commande et choisissent
+            leur créneau dans le navigateur, sans compte ni application.
+        - q: "Combien coûte Calquai ?"
+          a: >-
+            Un abonnement par quai et par mois, dégressif à partir de dix quais.
+            Le chiffrage exact suit la démo, avec votre nombre de quais et de sites.
+        - q: "Peut-on tester avant de s’engager ?"
+          a: >-
+            Oui. Le pilote dure deux semaines sur un quai, avec trois de vos
+            transporteurs, et compare l’attente avant et après.
+        - q: "Combien de temps pour équiper un site ?"
+          a: >-
+            Trois semaines en général entre la signature et le premier camion
+            réservé, connexion au WMS comprise. Le planning se fixe pendant le pilote.
+        - q: "Que deviennent nos données si nous ne donnons pas suite ?"
+          a: >-
+            L’export envoyé pour la démo est supprimé sous trente jours, et vous
+            gardez le chiffrage.
+      jsonld: false
+      card_label: "Démo en visio"
+      card_title: "Calquai sur vos quais"
+      card_meta: "30 minutes sur vos flux, sans engagement"
+      cta_label: "Demander une démo"
+      cta_href: "#demo"
+      contact: >-
+        Une question technique ? <a href="mailto:demo@example.com">demo@example.com</a>
+
+  - use: final-cta
+    id: final
+    slots:
+      title: >-
+        Trente minutes<br><span class="hl">sur vos propres quais</span>
+      text: >-
+        Envoyez une semaine de réceptions : la démo la rejoue dans Calquai,
+        créneau par créneau.
+      cta_label: "Demander une démo"
+      cta_href: "#demo"
+      primary: true
+      note: "Réponse sous un jour ouvré"
+      decor: lines
+      decor_html: ""
+
+  - use: footer
+    id: pied
+    slots:
+      brand: >-
+        <svg class="s-footer__mark" viewBox="0 0 32 32" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true"><path d="M4 28V10l12-6 12 6v18"/><path
+        d="M9 28V15h14v13M9 19.5h14M9 24h14"/></svg><span>Calquai</span>
+      links:
+        - {label: "Mentions légales", href: "{{URL_MENTIONS_LEGALES}}"}
+        - {label: "Confidentialité", href: "{{URL_CONFIDENTIALITE}}"}
+        - {label: "demo@example.com", href: "mailto:demo@example.com"}
+      legal: "© 2026 Calquai, marque fictive de démonstration. Chiffres et avis d’exemple."
+
+  - use: sticky-bar
+    id: barre-mobile
+    slots:
+      label: "Demander une démo"
+      title: "Démo de 30 minutes"
+      detail: "Sur vos propres flux"
+      cta_label: "Demander"
+      cta_href: "#demo"
+      primary: true

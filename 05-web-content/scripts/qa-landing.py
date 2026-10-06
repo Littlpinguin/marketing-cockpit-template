@@ -26,7 +26,8 @@ Page (une fois) :
   titres-ordre       niveau de titre sauté (h2 puis h4)                       erreur
   image-alt          `<img>` sans attribut alt (décoratif : alt="") ou
                      `role="img"` sans nom ; alt en nom de fichier             erreur / avert.
-  nom-accessible     lien ou bouton sans nom accessible                        erreur
+  nom-accessible     lien ou bouton exposé aux aides techniques (ni inerte,
+                     ni aria-hidden, ni masqué) sans nom accessible           erreur
   champ-sans-label   champ de formulaire sans label (le placeholder n'en
                      est pas un)                                              erreur
   cta-absent         aucun CTA repéré                                         erreur
@@ -35,8 +36,13 @@ Page (une fois) :
                      formulaire sans action                                   erreur / avert.
   cta-hors-objectif  CTA qui ne mène pas à la conversion primaire              avertissement
   tracking           suivi déclaré (gtag, GTM, dataLayer) : aucun
-                     événement au clic d'un CTA primaire. Non déclaré :
-                     crochet `data-track` absent du CTA primaire               erreur / avert.
+                     événement au clic d'un CTA primaire ; formulaire
+                     rempli et envoyé sans l'événement attendu
+                     (generate_lead, begin_checkout, ou form_demo_submit si
+                     l'endpoint est encore un marqueur) ; envoi de
+                     démonstration compté comme une conversion ou parti sur
+                     le réseau. Non déclaré : crochet `data-track` absent
+                     du CTA primaire                                          erreur / avert.
   placeholder        `{{...}}` restant dans le texte ou un attribut            avertissement
   titre-ponctuation  titre h1-h4 terminé par un point ou portant une virgule   avertissement
   surtitre-pastille  pastille de sur-titre (eyebrow) posée sur un titre de
@@ -60,7 +66,8 @@ Par taille d'écran :
   cta-pli            écran mobile : aucun CTA primaire visible sans défiler   erreur
   mot-orphelin       titre, accroche ou bouton dont la dernière ligne tient
                      en un seul mot                                           avertissement
-  troncature         plus de textes que le collecteur n'en relève              avertissement
+  troncature         plus de textes que le collecteur n'en relève (3000 par
+                     écran, --max-textes) : les autres ne sont pas audités    avertissement
 
 Mouvement réduit (une fois, à la plus large des tailles) :
   mouvement-reduit-masque     un texte reste masqué (opacité nulle ou
@@ -96,7 +103,9 @@ CTA
 ---
 Un CTA est un lien ou un bouton qui porte `data-cta`, `data-cta-position` ou
 `data-track`, une classe btn / button / cta, un bouton d'envoi de formulaire,
-ou un lien dessiné en bouton (fond et marges intérieures). Le CTA primaire est,
+ou un lien dessiné en bouton (fond et marges intérieures). Un élément réservé à un
+autre état de l'offre (`data-offer-show` sans `open`, moteur offer.js) n'en est
+pas un : la page se contrôle dans son état ouvert. Le CTA primaire est,
 dans l'ordre : celui qui porte `data-cta="primaire"` (ou `primary`), le premier
 `data-cta-position="hero"`, le premier CTA de `<main>`, le premier CTA. Tous
 les CTA qui mènent à la même destination sont primaires ; une ancre vers le
@@ -106,8 +115,15 @@ bloc qui contient le formulaire et le bouton d'envoi de ce formulaire mènent
 Suivi : la page « déclare » un suivi quand elle charge gtag.js ou GTM, ou
 qu'un script initialise `dataLayer` ou appelle `gtag('config', …)`
 (--tracking oui|non force la décision). Le script clique alors chaque CTA
-primaire, navigation empêchée et réseau coupé, et regarde ce qui part dans
-`dataLayer`. Rien n'est envoyé hors de la machine.
+primaire, navigation empêchée, et regarde ce qui part dans `dataLayer`. Un
+bouton d'envoi passe par son formulaire : les champs requis reçoivent des
+valeurs de test (email prenom@example.com, nom, URL, téléphone, première
+option d'une liste), les cases requises sont cochées, puis le formulaire est
+envoyé (requestSubmit). L'événement attendu est celui du `data-track` du
+formulaire (generate_lead, begin_checkout), ou form_demo_submit quand son
+action est encore un marqueur `{{…}}` (rien ne doit alors partir sur le
+réseau). Toute requête qui quitte la page est interceptée par Playwright et
+reçoit une réponse 200 vide : rien n'est envoyé hors de la machine.
 
 Niveaux : `erreur` fait échouer la QA ; `avertissement` est listé sans la
 faire échouer ; `resume` remplace les constats masqués par le plafond
@@ -159,7 +175,7 @@ MOTS_TEXTE_COURANT = 12          # à partir de 12 mots, un texte se lit comme d
 CIBLE_MIN_PX = 24.0              # WCAG 2.5.8 (AA)
 CIBLE_CONFORT_PX = 44.0          # WCAG 2.5.5 (AAA), guides iOS / Android ; exigé pour un CTA
 MAX_PAR_TYPE = 8
-MAX_TEXTES = 1500
+MAX_TEXTES = 3000                # textes relevés par écran ; au-delà : avertissement troncature
 ATTENTE_MS = 1200
 OBSERVATION_MS = 1200            # mouvement réduit : temps d'observation entre deux relevés
 CLIC_MS = 400                    # suivi : attente après le clic d'un CTA
@@ -267,8 +283,14 @@ const nomAccessible = el => {
 const CANDIDATS_CTA = 'a, button, input[type="submit"], input[type="button"], [role="button"]';
 const HORS_CTA = 'dialog, [role="dialog"], [role="alertdialog"], [aria-modal="true"], '
   + '[id*="cookie" i], [class*="cookie" i], [id*="consent" i], [class*="consent" i]';
+// Un élément réservé à un autre état de l'offre (data-offer-show sans « open »,
+// offer.js) : la page se contrôle dans son état ouvert, il n'est pas un CTA ici.
+const autreEtat = el => {
+  const o = el.closest('[data-offer-show]');
+  return !!o && !/(^|\s)open(\s|$)/.test(o.getAttribute('data-offer-show') || '');
+};
 const estCta = el => {
-  if (dansAriaHidden(el) || el.closest(HORS_CTA)) return false;
+  if (dansAriaHidden(el) || el.closest(HORS_CTA) || autreEtat(el)) return false;
   if (el.hasAttribute('data-cta') || el.hasAttribute('data-cta-position') || el.hasAttribute('data-track')) return true;
   const cls = (el.getAttribute('class') || '').toLowerCase();
   if (/(^|[\s_-])(btn|button|cta)([\s_-]|$)/.test(cls)) return true;
@@ -519,8 +541,11 @@ const rolesImg = Array.from(document.querySelectorAll('[role="img"]'))
   .filter(el => !dansAriaHidden(el) && !nomAccessible(el)).map(el => ({ nom: nom(el) }));
 const SANS_NOM = 'a[href], button, [role="button"], [role="link"], summary, '
   + 'input[type="submit"], input[type="button"], input[type="reset"], input[type="image"]';
+// Seulement ce qui est exposé aux aides techniques : ni aria-hidden, ni inerte
+// (barre du haut cachée au défilement, bouton retiré), ni masqué, ni hors rendu.
 const sansNom = Array.from(document.querySelectorAll(SANS_NOM))
-  .filter(el => !dansAriaHidden(el) && rendu(el) && !nomAccessible(el))
+  .filter(el => !dansAriaHidden(el) && !el.closest('[inert]') && rendu(el)
+    && getComputedStyle(el).visibility !== 'hidden' && !nomAccessible(el))
   .map(el => ({ nom: nom(el), href: el.getAttribute('href') || '' }));
 const CHAMPS = 'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]), select, textarea';
 const champs = Array.from(document.querySelectorAll(CHAMPS)).filter(el => !dansAriaHidden(el)).map(el => {
@@ -652,31 +677,106 @@ ESPION_SUIVI = r"""
 })();
 """
 
-CLIQUER = r"""
-async ([cheminCta, attente]) => {
+# Lecture d'un élément de dataLayer : nom d'événement, sinon null.
+JS_LIRE_EVENEMENT = r"""
+const lire = it => {
+  if (!it) return null;
+  if (typeof it === 'object' && it.length !== undefined && it[0] === 'event') return String(it[1]);
+  if (typeof it === 'object' && typeof it.event === 'string' && !/^gtm\./.test(it.event)) return it.event;
+  return null;
+};
+"""
+
+# Un CTA primaire : clic sur un lien (navigation empêchée), ou, pour un bouton
+# d'envoi, remplissage de test du formulaire puis envoi. Retourne aussitôt les
+# événements partis pendant l'envoi ; RELIRE complète après l'attente.
+CLIQUER = "async ([cheminCta]) => {" + JS_LIRE_EVENEMENT + r"""
   const el = document.querySelector(cheminCta);
-  if (!el) return { trouve: false, evenements: [] };
-  const lire = it => {
-    if (!it) return null;
-    if (typeof it === 'object' && it.length !== undefined && it[0] === 'event') return String(it[1]);
-    if (typeof it === 'object' && typeof it.event === 'string' && !/^gtm\./.test(it.event)) return it.event;
-    return null;
-  };
+  if (!el) return { trouve: false, evenements: [], avant: 0 };
   const avant = window.__qaEvenements.length;
+  const valeur = f => {
+    const type = (f.getAttribute('type') || f.tagName).toLowerCase();
+    const auto = (f.getAttribute('autocomplete') || '').toLowerCase();
+    const clavier = (f.getAttribute('inputmode') || '').toLowerCase();
+    if (type === 'email' || auto === 'email' || clavier === 'email') return 'prenom@example.com';
+    if (type === 'tel' || auto === 'tel' || clavier === 'tel') return '+33 1 23 45 67 89';
+    if (type === 'url' || auto === 'url' || clavier === 'url') return 'https://www.example.com';
+    if (type === 'number' || type === 'range') return f.getAttribute('min') || '1';
+    if (type === 'date') return '2027-01-15';
+    if (auto === 'organization') return 'Entreprise Exemple';
+    if (/name/.test(auto) || /^(name|nom|prenom)/i.test(f.name || '')) return 'Prénom Nom';
+    if (type === 'textarea') return 'Message de test de la QA.';
+    return 'Test QA';
+  };
+  const remplir = form => {
+    const faits = [];
+    const groupes = new Set();
+    form.querySelectorAll('input, select, textarea').forEach(f => {
+      if (f.closest('.hp') || f.disabled) return;
+      const type = (f.getAttribute('type') || '').toLowerCase();
+      if (['hidden', 'submit', 'button', 'reset', 'image', 'file'].includes(type)) return;
+      if (type === 'checkbox') {
+        if (f.required && !f.checked) { f.checked = true; faits.push(f.name || f.id); }
+        return;
+      }
+      if (type === 'radio') {
+        if (groupes.has(f.name)) return;
+        groupes.add(f.name);
+        const groupe = Array.from(form.querySelectorAll('input[type="radio"]')).filter(r => r.name === f.name);
+        if (groupe.some(r => r.checked) || !groupe.some(r => r.required)) return;
+        const libre = groupe.find(r => !r.disabled);
+        if (libre) { libre.checked = true; faits.push(f.name); }
+        return;
+      }
+      if (!f.required || (f.value || '').trim()) return;
+      if (f.tagName === 'SELECT') {
+        const option = Array.from(f.options).find(o => o.value && !o.disabled);
+        if (!option) return;
+        f.value = option.value;
+      } else {
+        f.value = valeur(f);
+      }
+      f.dispatchEvent(new Event('input', { bubbles: true }));
+      f.dispatchEvent(new Event('change', { bubbles: true }));
+      faits.push(f.name || f.id);
+    });
+    return faits;
+  };
   const bloquer = e => e.preventDefault();
   window.addEventListener('click', bloquer, true);
   window.addEventListener('submit', bloquer, true);
+  const sortie = { trouve: true, avant: avant, envoi: false, attendu: null, demo: false,
+                   crochet: false, rempli: [], refus: [] };
   try {
     const form = el.form || el.closest('form');
     const envoi = form && ((el.tagName === 'BUTTON' && (el.getAttribute('type') || 'submit') === 'submit')
                            || (el.tagName === 'INPUT' && el.type === 'submit'));
-    if (envoi) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    else el.click();
+    if (envoi) {
+      sortie.envoi = true;
+      sortie.rempli = remplir(form);
+      const suivi = form.getAttribute('data-track') || '';
+      sortie.crochet = !!suivi;
+      sortie.demo = form.hasAttribute('data-demo') || /\{\{/.test(form.getAttribute('action') || '');
+      sortie.attendu = sortie.demo ? 'form_demo_submit' : (suivi || null);
+      if (typeof form.requestSubmit === 'function') form.requestSubmit(el);
+      else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      const refuses = Array.from(form.querySelectorAll('[aria-invalid="true"]'));
+      if (!form.noValidate) refuses.push(...Array.from(form.querySelectorAll('input, select, textarea'))
+        .filter(f => !f.disabled && !f.closest('.hp') && f.willValidate && !f.checkValidity()));
+      sortie.refus = Array.from(new Set(refuses.map(f => f.name || f.id)));
+    } else {
+      el.click();
+    }
   } catch (e) {}
-  await new Promise(r => setTimeout(r, attente));
   window.removeEventListener('click', bloquer, true);
   window.removeEventListener('submit', bloquer, true);
-  return { trouve: true, evenements: window.__qaEvenements.slice(avant).map(lire).filter(Boolean) };
+  sortie.evenements = window.__qaEvenements.slice(avant).map(lire).filter(Boolean);
+  return sortie;
+}
+"""
+
+RELIRE = "(avant) => {" + JS_LIRE_EVENEMENT + r"""
+  return window.__qaEvenements.slice(avant).map(lire).filter(Boolean);
 }
 """
 
@@ -1102,8 +1202,56 @@ def auditer_page(page: dict, pastilles: list[dict]) -> list[dict]:
     return constats
 
 
+CONVERSIONS = ("generate_lead", "begin_checkout", "purchase", "sign_up")
+
+
+def auditer_envoi(cta: dict, resultat: dict) -> list[dict]:
+    """Un formulaire rempli et envoyé : l'événement attendu part, une démo ne compte jamais."""
+    desc = f"{cta['nom']} « {cta['libelle']} »"
+    evenements = resultat.get("evenements") or []
+    attendu = resultat.get("attendu")
+    requetes = [r for r in resultat.get("requetes") or [] if r.get("methode") != "GET"]
+    constats: list[dict] = []
+    if resultat.get("demo") and requetes:
+        constats.append(constat(
+            "erreur", "tracking",
+            f"{desc} : formulaire de démonstration (endpoint en marqueur) mais une requête "
+            f"{requetes[0]['methode']} est partie vers {requetes[0]['url'][:80]}", cta["nom"]))
+    if attendu and attendu in evenements:
+        return constats
+    comptes = [e for e in evenements if e in CONVERSIONS]
+    if resultat.get("demo") and comptes:
+        constats.append(constat(
+            "erreur", "tracking",
+            f"{desc} : envoi de démonstration (endpoint encore en marqueur) compté comme "
+            f"{comptes[0]} : attendu form_demo_submit, une démo ne doit jamais compter comme un lead",
+            cta["nom"]))
+    elif evenements:
+        constats.append(constat(
+            "erreur" if attendu else "avertissement", "tracking",
+            f"{desc} : événement {attendu or 'de conversion'} attendu à l'envoi, reçu "
+            f"{', '.join(evenements)}", cta["nom"]))
+    elif resultat.get("refus"):
+        constats.append(constat(
+            "avertissement", "tracking",
+            f"{desc} : le formulaire a refusé le remplissage de test (champs "
+            f"{', '.join(resultat['refus'][:4])}) : aucun événement mesuré, à vérifier à la main",
+            cta["nom"]))
+    elif attendu:
+        constats.append(constat(
+            "erreur", "tracking",
+            f"{desc} : formulaire rempli et envoyé, mais aucun événement {attendu} "
+            f"(crochet data-track posé, suivi déclaré)", cta["nom"]))
+    else:
+        constats.append(constat(
+            "avertissement", "tracking",
+            f"{desc} : aucun événement à l'envoi du formulaire (il peut partir après la réponse "
+            f"du serveur : à vérifier en préproduction)", cta["nom"]))
+    return constats
+
+
 def auditer_suivi(suivi: str, primaires: list[dict], clics: dict | None) -> list[dict]:
-    """Suivi déclaré : un événement part au clic. Sinon : le crochet data-track est posé."""
+    """Suivi déclaré : un événement part au clic ou à l'envoi. Sinon : le crochet data-track est posé."""
     constats: list[dict] = []
     if suivi:
         for cta in primaires:
@@ -1112,18 +1260,17 @@ def auditer_suivi(suivi: str, primaires: list[dict], clics: dict | None) -> list
                 continue
             if resultat.get("evenements"):
                 cta["evenements"] = resultat["evenements"]
+            if resultat.get("requetes"):
+                cta["requetes"] = resultat["requetes"]
+            if cta["genre"] == "envoi" or resultat.get("envoi"):
+                constats += auditer_envoi(cta, resultat)
                 continue
-            if cta["genre"] == "envoi":
-                constats.append(constat(
-                    "avertissement", "tracking",
-                    f"{cta['nom']} « {cta['libelle']} » : aucun événement à l'envoi du formulaire "
-                    f"(il peut partir après la réponse du serveur : à vérifier en préproduction)",
-                    cta["nom"]))
-            else:
-                constats.append(constat(
-                    "erreur", "tracking",
-                    f"{cta['nom']} « {cta['libelle']} » : suivi déclaré ({suivi}) mais aucun "
-                    f"événement dataLayer / gtag au clic", cta["nom"]))
+            if resultat.get("evenements"):
+                continue
+            constats.append(constat(
+                "erreur", "tracking",
+                f"{cta['nom']} « {cta['libelle']} » : suivi déclaré ({suivi}) mais aucun "
+                f"événement dataLayer / gtag au clic", cta["nom"]))
     else:
         if primaires and not any(c.get("crochet") for c in primaires):
             constats.append(constat(
@@ -1252,7 +1399,8 @@ def collecteur_vue() -> str:
     return COLLECTEUR_VUE.replace("__COLLECTE_TEXTES__", qa_common.JS_TEXTES.strip())
 
 
-def passe_vue(navigateur, url: str, viewport: dict, attente: int, capture: Path | None) -> dict:
+def passe_vue(navigateur, url: str, viewport: dict, attente: int, capture: Path | None,
+              max_textes: int = MAX_TEXTES) -> dict:
     """Une taille d'écran : pli, défilement complet, état final."""
     contexte = navigateur.new_context(viewport=viewport, reduced_motion="no-preference")
     try:
@@ -1264,7 +1412,7 @@ def passe_vue(navigateur, url: str, viewport: dict, attente: int, capture: Path 
         page.add_style_tag(content=SETTLE_CSS)
         page.evaluate(DEFILER, [0.7, 60, 400])
         page.wait_for_timeout(300)
-        releve = page.evaluate(collecteur_vue(), [MAX_TEXTES, est_mobile(viewport)])
+        releve = page.evaluate(collecteur_vue(), [max_textes, est_mobile(viewport)])
         releve["pli"] = pli
         releve["page"] = page.evaluate(COLLECTEUR_PAGE)
         releve["masques"] = page.evaluate(COLLECTEUR_MASQUES)
@@ -1299,25 +1447,53 @@ def passe_mouvement(navigateur, url: str, viewport: dict, attente: int) -> dict:
         contexte.close()
 
 
+def intercepter(route, envois: list[dict]) -> None:
+    """Fichiers locaux servis ; toute autre requête reçoit un 200 vide et n'est jamais envoyée."""
+    requete = route.request
+    if requete.url.startswith("file:"):
+        route.continue_()
+        return
+    envois.append({"methode": requete.method, "url": requete.url})
+    route.fulfill(status=200, body="", headers={"Access-Control-Allow-Origin": "*",
+                                                "Content-Type": "text/plain"})
+
+
 def passe_suivi(navigateur, url: str, viewport: dict, attente: int, chemins: list[str]) -> dict:
-    """Clique chaque CTA primaire, navigation empêchée et réseau coupé hors fichiers locaux."""
+    """Clique chaque CTA primaire (formulaires remplis et envoyés), navigation empêchée.
+
+    Aucune requête ne quitte la machine : Playwright intercepte tout ce qui n'est
+    pas un fichier local et répond 200 sans rien transmettre. Les requêtes
+    interceptées pendant chaque envoi sont rendues avec son résultat.
+    """
     contexte = navigateur.new_context(viewport=viewport, reduced_motion="reduce")
     resultats: dict = {}
+    envois: list[dict] = []
     try:
-        contexte.route("**/*", lambda route: route.continue_()
-                       if route.request.url.startswith("file:") else route.abort())
+        contexte.route("**/*", lambda route: intercepter(route, envois))
         contexte.add_init_script(ESPION_SUIVI)
-        page = contexte.new_page()
-        page.goto(url, wait_until="load")
-        page.wait_for_timeout(attente)
+
+        def ouvrir():
+            nouvelle = contexte.new_page()
+            nouvelle.goto(url, wait_until="load")
+            nouvelle.wait_for_timeout(attente)
+            return nouvelle
+
+        page = ouvrir()
         for chemin in chemins:
+            debut = len(envois)
             try:
-                resultats[chemin] = page.evaluate(CLIQUER, [chemin, CLIC_MS])
+                resultat = page.evaluate(CLIQUER, [chemin])
             except Exception:  # noqa: BLE001 - une navigation forcée a détruit la page
-                page = contexte.new_page()
-                page.goto(url, wait_until="load")
-                page.wait_for_timeout(attente)
+                page = ouvrir()
                 resultats[chemin] = {"trouve": True, "evenements": []}
+                continue
+            page.wait_for_timeout(CLIC_MS)
+            try:
+                resultat["evenements"] = page.evaluate(RELIRE, resultat.get("avant", 0))
+            except Exception:  # noqa: BLE001 - la page a navigué après l'envoi : garder le premier relevé
+                page = ouvrir()
+            resultat["requetes"] = envois[debut:]
+            resultats[chemin] = resultat
         return resultats
     finally:
         contexte.close()
@@ -1420,6 +1596,9 @@ def construire_parseur() -> argparse.ArgumentParser:
     parseur.add_argument("--max-par-type", type=int, default=MAX_PAR_TYPE, metavar="N",
                          help=f"constats listés par type et par bloc (défaut : {MAX_PAR_TYPE}, 0 = tout). "
                               "Les totaux sont toujours calculés avant plafond")
+    parseur.add_argument("--max-textes", type=int, default=MAX_TEXTES, metavar="N",
+                         help=f"textes relevés par taille d'écran (défaut : {MAX_TEXTES}) ; au-delà, "
+                              "avertissement troncature : ils ne sont pas audités")
     parseur.add_argument("--format", choices=("text", "json"), default="text",
                          help="forme de la sortie (défaut : text)")
     parseur.add_argument("--captures", metavar="DOSSIER",
@@ -1462,7 +1641,8 @@ def executer(args: argparse.Namespace) -> int:
         navigateur = playwright.chromium.launch()
         try:
             for viewport in viewports:
-                releves.append((viewport, passe_vue(navigateur, url, viewport, args.attente, capture)))
+                releves.append((viewport, passe_vue(navigateur, url, viewport, args.attente, capture,
+                                                    args.max_textes)))
             mouvement = passe_mouvement(navigateur, url, large, args.attente)
 
             releve_large = next(r for v, r in releves if v is large)
@@ -1520,6 +1700,7 @@ def executer(args: argparse.Namespace) -> int:
         "libelle": c["libelle"], "nom": c["nom"], "genre": c["genre"], "destination": c.get("dest"),
         "primaire": c.get("primaire", False), "visible": c["visible"], "fixe": c["fixe"],
         "crochet": c.get("crochet") or None, "evenements": c.get("evenements"),
+        "requetes_interceptees": c.get("requetes"),
         "au_dessus_du_pli": c.get("au_dessus_du_pli", {}),
     } for c in ctas]
     resume = {

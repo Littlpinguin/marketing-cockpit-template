@@ -1,0 +1,1138 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "demonstrator",
+  "name": "Démonstrateur",
+  "objection": "Est-ce que ça marche vraiment, pour mon cas",
+  "when": "Produit, méthode ou service dont le résultat se montre mieux qu’il ne se décrit. Deux modes (slot mode). replay\u00a0: une demande s’écrit dans un champ, puis le résultat se compose ligne à ligne\u202f; le visiteur choisit parmi 2 à 4 demandes, et les boutons Pause et Rejouer restent à portée. calculator\u00a0: le visiteur règle 2 à 4 valeurs et lit une estimation calculée sur la page, avec son détail et la source de chaque coefficient. Place\u00a0: après le «\u00a0comment\u00a0» (journey, process), avant les preuves (testimonials, cases) ou la conversion.",
+  "avoid": "Démo truquée ou résultat que le client n’obtiendra pas chez lui, coefficient sans source, estimation présentée comme une promesse, plus de quatre demandes ou réglages, texte important seulement dans l’animation, deux démonstrateurs sur la même page.",
+  "reduced_motion": "Rien ne s’écrit ni ne se compose\u00a0: chaque demande et son résultat complet s’affichent d’emblée, les boutons de demande changent l’exemple sans transition, aucun enchaînement automatique, et les boutons Pause et Rejouer disparaissent. Le calculateur ne bouge jamais. Sans JavaScript\u00a0: toutes les demandes et leurs résultats à la suite (replay), l’exemple calculé et son détail (calculator).",
+  "region": "main",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point, coupure décidée par <br>.", "example": "Votre dossier répond<br><span class=\"hl\">à vos clients</span>"},
+    "intro": {"type": "text", "doc": "Chapô : ce que le visiteur peut essayer, et d’où vient le résultat. Vide : rien.", "example": "Choisissez une demande que vous recevez déjà. La trame du parcours la remplit depuis le dossier de bilan d’une entreprise fictive, et signale ce que le dossier ne couvre pas."},
+    "mode": {"type": "text", "doc": "replay (une demande s’écrit, le résultat se compose) ou calculator (le visiteur règle des valeurs et lit une estimation). Mettre le slot de l’autre mode à null : sinon son exemple est assemblé puis écarté par le navigateur.", "example": "replay"},
+    "dark": {"type": "bool", "doc": "true : bande sombre (le résultat garde son papier clair) ; false : fond clair.", "example": false},
+    "replay": {"type": "object", "doc": "Mode replay, ou null. context : barre de la console, moins de 12 mots (vide : pas de barre) ; ask_label, presets_label : étiquettes courtes ; pause_label, resume_label, replay_label : boutons ; todo_label : pastille d’une ligne que le résultat laisse à compléter ; type_ms (frappe par caractère, 20 à 40), row_ms (une ligne du résultat, 250 à 500), hold_ms (pause avant la demande suivante, 4 000 au moins) ; cycle : true enchaîne les demandes une seule fois, puis s’arrête, sur grand écran seulement (choisir une demande ou Rejouer reprend la main). presets : 2 à 4 demandes. key : identifiant (mesure) ; label : bouton, 2 à 4 mots ; request : la demande, une phrase ; doc_kind, doc_title (h3), doc_meta : en-tête du résultat, qui dit que les chiffres sont fictifs tant qu’ils le sont ; rows : 3 à 6 lignes {q, a, src, todo} ; status : phrase annoncée une fois quand le résultat est prêt.", "fields": {"context": "barre de la console", "ask_label": "étiquette du champ", "presets_label": "étiquette des demandes", "pause_label": "bouton pause", "resume_label": "bouton reprise", "replay_label": "bouton rejouer", "todo_label": "pastille à compléter", "type_ms": "ms par caractère", "row_ms": "ms par ligne", "hold_ms": "ms avant la suivante", "cycle": "true ou false", "presets": "liste {key, label, request, doc_kind, doc_title, doc_meta, rows, status}"}, "example": {
+      "context": "Bilan 2026 · entreprise fictive",
+      "ask_label": "La demande",
+      "presets_label": "Essayez une autre demande",
+      "pause_label": "Pause",
+      "resume_label": "Reprendre",
+      "replay_label": "Rejouer",
+      "todo_label": "À compléter",
+      "type_ms": 28,
+      "row_ms": 380,
+      "hold_ms": 6000,
+      "cycle": true,
+      "presets": [
+        {"key": "client", "label": "Questionnaire d’un client", "request": "Préparer nos réponses au questionnaire climat de notre client distributeur, à rendre vendredi", "doc_kind": "Fiche réponse", "doc_title": "Questionnaire climat<br>d’un client distributeur", "doc_meta": "6 questions · chiffres d’une entreprise fictive", "rows": [
+          {"q": "Avez-vous mesuré vos émissions de gaz à effet de serre ?", "a": "Oui, un bilan complet de l’année 2026, terminé en mai 2027.", "src": "Dossier de bilan, p. 2"},
+          {"q": "Quelles sont vos émissions des scopes 1 et 2 ?", "a": "186 t CO₂e, dont 71 % pour le chauffage au gaz des deux sites.", "src": "Dossier, poste énergie"},
+          {"q": "Avez-vous estimé votre scope 3 ?", "a": "Oui, 2 140 t CO₂e, les achats de matières en tête.", "src": "Dossier, poste achats"},
+          {"q": "Quelle méthode et quels facteurs d’émission utilisez-vous ?", "a": "Une méthode documentée, chaque facteur cité avec sa source et son année.", "src": "Dossier, annexe méthode"},
+          {"q": "Avez-vous un objectif de réduction chiffré ?", "a": "L’objectif se décide en comité de direction.", "todo": true},
+          {"q": "Pouvez-vous donner l’empreinte par produit livré ?", "a": "Demande un calcul par référence, hors du périmètre du bilan.", "todo": true}
+        ], "status": "Fiche prête : 4 réponses tirées du dossier, 2 à compléter par vous"},
+        {"key": "appel-offres", "label": "Appel d’offres public", "request": "Rédiger le volet environnemental de notre réponse à l’appel d’offres de la métropole", "doc_kind": "Mémoire technique", "doc_title": "Appel d’offres<br>volet environnemental", "doc_meta": "5 critères · chiffres d’une entreprise fictive", "rows": [
+          {"q": "Démarche de mesure des émissions", "a": "Un bilan chaque année depuis 2027, méthode et facteurs joints en annexe.", "src": "Dossier, synthèse"},
+          {"q": "Émissions liées à la prestation", "a": "Environ 3,2 t CO₂e par an, surtout les déplacements des équipes.", "src": "Dossier, poste déplacements"},
+          {"q": "Actions de réduction engagées", "a": "6 véhicules sur 14 passent à l’électrique d’ici fin 2028.", "src": "Plan d’action, ligne 3"},
+          {"q": "Indicateurs de suivi", "a": "Émissions par chantier et kilomètres parcourus, relevés chaque trimestre.", "src": "Plan d’action, suivi"},
+          {"q": "Attestation sur l’honneur", "a": "Signature du dirigeant.", "todo": true}
+        ], "status": "Volet rédigé : 4 critères couverts par le dossier, 1 pièce à signer"},
+        {"key": "banque", "label": "Demande de la banque", "request": "Répondre à la banque, qui demande nos émissions pour financer la nouvelle ligne de production", "doc_kind": "Réponse", "doc_title": "Banque<br>dossier de financement", "doc_meta": "4 éléments · chiffres d’une entreprise fictive", "rows": [
+          {"q": "Émissions totales de l’année", "a": "2 326 t CO₂e en 2026, scopes 1, 2 et 3.", "src": "Dossier, synthèse"},
+          {"q": "Part calculée sur des données réelles", "a": "88 % des émissions, le reste estimé par des ratios monétaires.", "src": "Dossier, annexe méthode"},
+          {"q": "Effet attendu de la nouvelle ligne", "a": "Estimation à faire avec le fournisseur de la machine.", "todo": true},
+          {"q": "Personne référente", "a": "La directrice financière, qui a piloté le bilan.", "src": "Dossier, page de garde"}
+        ], "status": "Réponse prête : 3 éléments tirés du dossier, 1 à compléter"}
+      ]
+    }},
+    "calculator": {"type": "object", "doc": "Mode calculator, ou null. legend : titre du groupe de réglages ; inputs : 2 à 4 réglages {name (identifiant de la formule, minuscules et tirets bas), label, hint, value (valeur de l’exemple), min, max, step, slider (true : curseur, avec unit affichée), unit, choices (liste {label, value, selected} : menu, libellés de 25 caractères au plus)} ; lines : détail du calcul, dans l’ordre {key (réutilisable plus bas), label, expr, unit, decimals, example} ; result : {label, expr, unit, decimals, example, announce (phrase lue une fois, {value} reçoit le résultat)} ; coefficients : {key, value, display, label, source}, affichés sous le résultat, chacun avec sa source (« Source fictive » tant qu’elle l’est ; key vide : hypothèse affichée seulement) ; expr : nombres, noms des réglages, coefficients et lignes, + - * / et parenthèses ; example : valeur affichée sans JavaScript, à recalculer à la main pour les valeurs d’exemple (la console signale un écart) ; invalid_text : phrase lue quand une valeur sort des bornes ; noscript : note de l’exemple statique.", "fields": {"legend": "titre des réglages", "inputs": "liste {name, label, hint, value, min, max, step, slider, unit, choices}", "lines": "liste {key, label, expr, unit, decimals, example}", "result": "objet {label, expr, unit, decimals, example, announce}", "coefficients": "liste {key, value, display, label, source}", "sources_label": "titre des hypothèses", "invalid_text": "phrase hors bornes", "noscript": "note sans JavaScript"}, "example": {
+      "legend": "Vos questionnaires aujourd’hui",
+      "inputs": [
+        {"name": "questionnaires", "label": "Questionnaires reçus par mois", "hint": "Clients, appels d’offres, banque : tout compte. Entre 1 et 60.", "value": 5, "min": 1, "max": 60, "step": 1},
+        {"name": "questions", "label": "Questions par questionnaire, en moyenne", "slider": true, "unit": "questions", "value": 40, "min": 10, "max": 120, "step": 5},
+        {"name": "couverture", "label": "Ce que couvre votre dossier", "choices": [
+          {"label": "Énergie seulement", "value": 0.3},
+          {"label": "Bilan complet", "value": 0.6, "selected": true},
+          {"label": "Bilan et plan d’action", "value": 0.75}
+        ]}
+      ],
+      "lines": [
+        {"key": "total", "label": "Questions reçues par mois", "expr": "questionnaires * questions", "unit": "questions", "decimals": 0, "example": "200"},
+        {"key": "main", "label": "Temps passé aujourd’hui, tout à la main", "expr": "total * minutes_main / 60", "unit": "h", "decimals": 0, "example": "30"},
+        {"key": "pre", "label": "Réponses pré-remplies par le dossier", "expr": "total * couverture", "unit": "réponses", "decimals": 0, "example": "120"}
+      ],
+      "result": {"label": "Temps gagné chaque mois", "expr": "pre * (minutes_main - minutes_relecture) / 60", "unit": "heures", "decimals": 0, "example": "14", "announce": "Estimation : {value} heures gagnées par mois"},
+      "coefficients": [
+        {"key": "minutes_main", "value": 9, "display": "9 min", "label": "par question traitée à la main.", "source": "Source fictive : chronométrage de 30 questionnaires par Meridian Conseil, cabinet inventé pour cet exemple."},
+        {"key": "minutes_relecture", "value": 2, "display": "2 min", "label": "pour relire une réponse pré-remplie.", "source": "Source fictive : même relevé, réponses tirées du dossier puis relues."},
+        {"key": "", "value": "", "display": "30 à 75 %", "label": "des questions couvertes, selon le dossier.", "source": "Source fictive : part des questions dont la réponse figure dans le dossier, sur les mêmes 30 questionnaires."}
+      ],
+      "sources_label": "Hypothèses et sources",
+      "invalid_text": "Saisissez un nombre entre les bornes indiquées pour voir l’estimation.",
+      "noscript": "Exemple calculé pour les valeurs ci-dessus."
+    }},
+    "cta_label": {"type": "text", "doc": "Verbe du bouton sous le résultat.", "example": "Réserver ma place"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion.", "example": "#offre"},
+    "primary": {"type": "bool", "doc": "true : bouton de conversion (accent fort, data-cta=\"primaire\"). false (conseillé) : bouton secondaire qui mène au même endroit, la page garde un seul accent.", "example": false},
+    "position": {"type": "text", "doc": "Position mesurée du bouton (cta_position).", "example": "demonstrateur"},
+    "cta_note": {"type": "text", "doc": "Phrase courte à côté du bouton (vide : rien).", "example": "Le parcours vous laisse la trame et votre propre dossier."},
+    "track_type": {"type": "text", "doc": "content_type mesuré : select_content au choix d’une demande (content_id = key), et événement du calculateur.", "example": "demonstrateur"},
+    "track_event": {"type": "text", "doc": "Calculator : événement envoyé une fois, au premier réglage du visiteur (content_type, content_id = id de la section). Vide : aucun.", "example": "demo_calculate"}
+  }
+}
+</script>
+<style data-section-style="demonstrator">
+/* Two modes, one block each. The browser keeps the chosen one (script);
+   without script, CSS hides the other. */
+.s-demo[data-demo-mode="replay"] [data-demo-block="calculator"],
+.s-demo[data-demo-mode="calculator"] [data-demo-block="replay"] {
+  display: none;
+}
+
+/* The result reads as paper in both bands. */
+.band-dark .s-demo__paper {
+  --ink: var(--brand-dark);
+  --paper: var(--brand-light);
+  --surface: var(--brand-white);
+  --surface-2: var(--brand-surface-2);
+  --muted: var(--brand-muted);
+  --hl: var(--brand-primary-text);
+  --tint: var(--brand-primary-soft);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-field-border);
+  --focus: var(--brand-dark);
+  color: var(--ink);
+}
+
+.s-demo__paper {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) - 2px);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+}
+
+/* The signature gradient as the top edge of the result. */
+.s-demo__paper::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gradient);
+}
+
+/* ---------- Replay ---------- */
+.s-demo__console {
+  position: relative;
+  display: grid;
+  gap: clamp(20px, 0.9rem + 1vw, 28px);
+  padding: clamp(14px, 0.4rem + 1.8vw, 40px);
+  background: var(--surface-2);
+}
+
+.s-demo__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.s-demo__bar svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.s-demo__panel {
+  display: grid;
+  gap: 20px;
+}
+
+.s-demo__ask {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+}
+
+.s-demo__console:not(.is-live) .s-demo__ask {
+  max-width: 46rem;
+}
+
+/* The request field: the typed copy, and a hidden full copy that sizes it,
+   share one cell, so nothing below moves while it types. */
+.s-demo__field {
+  display: grid;
+  padding: 16px 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-input);
+  background: var(--paper);
+  font-size: var(--t-lead);
+  line-height: 1.45;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+.s-demo__field > * {
+  grid-area: 1 / 1;
+}
+
+.s-demo__ghost {
+  visibility: hidden;
+}
+
+.s-demo__caret {
+  display: none;
+  width: 2px;
+  height: 1.15em;
+  margin-left: 2px;
+  vertical-align: -0.2em;
+  background: var(--ink);
+}
+
+.s-demo__panel.is-typing .s-demo__caret {
+  display: inline-block;
+}
+
+.s-demo__sheet {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: clamp(16px, 0.6rem + 1.4vw, 32px);
+}
+
+.s-demo__doc-head {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-demo__doc-title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-demo__doc-meta {
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.s-demo__rows {
+  display: grid;
+  counter-reset: s-demo-row;
+}
+
+.s-demo__row {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 4px 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  counter-increment: s-demo-row;
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
+}
+
+.s-demo__row::before {
+  content: counter(s-demo-row, decimal-leading-zero);
+  grid-row: 1 / span 3;
+  padding-top: 0.35em;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 600;
+}
+
+.s-demo__row > * {
+  grid-column: 2;
+}
+
+.s-demo__ans {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+
+.s-demo__q {
+  font-weight: 700;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.s-demo__a {
+  text-wrap: pretty;
+}
+
+.s-demo__row--todo .s-demo__a {
+  color: var(--muted);
+}
+
+.s-demo__src {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.s-demo__done {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 14px;
+  font-weight: 600;
+  text-wrap: pretty;
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
+}
+
+.s-demo__done svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 0.15em;
+  color: var(--hl);
+}
+
+/* Composing (script, motion allowed): lines enter one by one. */
+.s-demo__panel.is-composing .s-demo__row:not(.is-on),
+.s-demo__panel.is-composing .s-demo__done:not(.is-on) {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+}
+
+.s-demo__ctrl,
+.s-demo__chips {
+  display: none;
+}
+
+.s-demo__ctrl {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.s-demo__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.s-demo__btn:hover {
+  border-color: var(--ink);
+}
+
+.s-demo__btn svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.s-demo__btn[aria-disabled="true"] {
+  border-style: dashed;
+  color: var(--muted);
+  cursor: default;
+}
+
+.s-demo__btn[aria-disabled="true"]:hover {
+  border-color: var(--line-strong);
+}
+
+.s-demo__ico-play,
+.s-demo__console.is-paused .s-demo__ico-pause {
+  display: none;
+}
+
+.s-demo__console.is-paused .s-demo__ico-play {
+  display: block;
+}
+
+.s-demo__chips {
+  gap: 12px;
+  align-content: start;
+}
+
+.s-demo__chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.s-demo__chip {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-badge);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.s-demo__chip:hover {
+  border-color: var(--ink);
+}
+
+.s-demo__chip[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Visible timer before the next request (cycle only): the advance is
+   predictable, and it stops with the Pause button. */
+.s-demo__chip::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: 6px;
+  left: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.s-demo__console.is-timing .s-demo__chip[aria-pressed="true"]::after {
+  animation: s-demo-hold var(--hold, 6s) linear forwards;
+}
+
+.s-demo__console.is-paused .s-demo__chip::after,
+.s-demo__console.is-away .s-demo__chip::after {
+  animation-play-state: paused;
+}
+
+@keyframes s-demo-hold {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Live console (script): one request at a time. On wide screens the panels
+   stack in the same cells, so the console keeps the height of its tallest
+   example while the cycle runs. */
+.s-demo__console.is-live {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "bar" "ask" "ctrl" "chips" "sheet";
+}
+
+.s-demo__console.is-live .s-demo__panel {
+  display: contents;
+}
+
+.s-demo__console.is-live .s-demo__panel.is-off {
+  visibility: hidden;
+}
+
+/* Narrow screens: no cycle (the visitor scrolls), so the console takes the
+   height of the chosen example; it only changes on a click. */
+@media (max-width: 899px) {
+  .s-demo__console.is-live .s-demo__panel.is-off {
+    display: none;
+  }
+}
+
+.s-demo__console.is-live .s-demo__bar {
+  grid-area: bar;
+}
+
+.s-demo__console.is-live .s-demo__ask {
+  grid-area: ask;
+}
+
+.s-demo__console.is-live .s-demo__sheet {
+  grid-area: sheet;
+}
+
+.s-demo__console.is-live .s-demo__ctrl {
+  display: flex;
+  grid-area: ctrl;
+}
+
+.s-demo__console.is-live .s-demo__chips {
+  display: grid;
+  grid-area: chips;
+}
+
+/* Wide: the request and the other requests side by side, the controls on
+   the console bar, the result across the whole width below. */
+@media (min-width: 900px) {
+  .s-demo__console.is-live {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas:
+      "bar ctrl"
+      "ask chips"
+      "sheet sheet";
+    column-gap: clamp(24px, 1rem + 2vw, 48px);
+  }
+
+  .s-demo__console.is-live .s-demo__ctrl {
+    align-self: center;
+    justify-self: end;
+  }
+}
+
+@media (min-width: 1100px) {
+  .s-demo__row {
+    grid-template-columns: 1.75rem minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.55fr);
+    align-items: start;
+    gap: 4px 20px;
+  }
+
+  .s-demo__row::before {
+    grid-row: auto;
+  }
+
+  .s-demo__row > * {
+    grid-column: auto;
+  }
+
+  .s-demo__src {
+    padding-top: 0.3em;
+  }
+}
+
+/* ---------- Calculator ---------- */
+.s-demo__calc {
+  display: grid;
+  gap: clamp(20px, 1rem + 2vw, 40px);
+}
+
+.s-demo__form {
+  padding: clamp(20px, 0.8rem + 1.6vw, 36px);
+}
+
+.s-demo__fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.s-demo__legend {
+  padding: 0;
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.s-demo__inputs {
+  display: grid;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.s-demo__number {
+  max-width: 12rem;
+}
+
+.s-demo__range-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.s-demo__val {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.s-demo__range {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+/* No script: the example values stay readable, not greyed. */
+.s-demo__fields:disabled .field__input {
+  opacity: 1;
+  -webkit-text-fill-color: currentColor;
+}
+
+.s-demo__result {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(22px, 1rem + 1.6vw, 40px);
+}
+
+.s-demo__total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  color: var(--hl);
+  font-size: var(--t-number);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-demo__total-unit {
+  color: var(--ink);
+  font-size: var(--t-lead);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.s-demo__lines {
+  border-top: 1px solid var(--line);
+}
+
+.s-demo__lines > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-demo__lines dt {
+  flex: 1 1 8rem;
+}
+
+.s-demo__lines dd {
+  margin-left: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.s-demo__invalid {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.s-demo__sources {
+  display: grid;
+  gap: 10px;
+}
+
+.s-demo__sources-title {
+  font-weight: 700;
+}
+
+.s-demo__sources ul {
+  display: grid;
+  gap: 10px;
+}
+
+.s-demo__sources li {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.s-demo__sources b {
+  color: var(--ink);
+}
+
+.s-demo__noscript {
+  color: var(--muted);
+}
+
+@media (min-width: 900px) {
+  .s-demo__calc {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+}
+
+/* ---------- Action under the result ---------- */
+.s-demo__action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  margin-top: clamp(24px, 1rem + 1.5vw, 40px);
+}
+
+.s-demo__note {
+  max-width: 34em;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-demo section{{#dark}} band-dark{{/dark}}" aria-labelledby="{{id}}-titre" data-section="demonstrator" data-demo-mode="{{mode}}">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+      {{#intro}}<p class="section-intro">{{intro}}</p>{{/intro}}
+    </div>
+    {{#replay}}<div class="s-demo__console card" data-demo-block="replay" data-type-ms="{{type_ms}}" data-row-ms="{{row_ms}}" data-hold-ms="{{hold_ms}}" data-cycle="{{cycle}}">
+      {{#context}}<p class="s-demo__bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span>{{context}}</span></p>{{/context}}
+      {{#presets}}<div class="s-demo__panel" data-demo-panel="{{key}}" data-status="{{status}}">
+        <div class="s-demo__ask">
+          <p class="label">{{ask_label}}</p>
+          <p class="s-demo__field"><span class="sr-only">{{request}}</span><span class="s-demo__ghost" aria-hidden="true">{{request}}</span><span class="s-demo__typing" aria-hidden="true"><span data-demo-typed>{{request}}</span><span class="s-demo__caret"></span></span></p>
+        </div>
+        <div class="s-demo__sheet s-demo__paper">
+          <div class="s-demo__doc-head">
+            <p class="label">{{doc_kind}}</p>
+            <h3 class="s-demo__doc-title">{{{doc_title}}}</h3>
+            <p class="s-demo__doc-meta">{{doc_meta}}</p>
+          </div>
+          <ol class="s-demo__rows" role="list">
+            {{#rows}}<li class="s-demo__row{{#todo}} s-demo__row--todo{{/todo}}" data-demo-row>
+              <p class="s-demo__q">{{q}}</p>
+              <div class="s-demo__ans">{{#todo}}<p class="badge">{{todo_label}}</p>{{/todo}}<p class="s-demo__a">{{a}}</p></div>
+              {{^todo}}{{#src}}<p class="s-demo__src">{{src}}</p>{{/src}}{{/todo}}
+            </li>{{/rows}}
+          </ol>
+          <p class="s-demo__done" data-demo-done><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/></svg><span>{{status}}</span></p>
+        </div>
+      </div>{{/presets}}
+      <div class="s-demo__ctrl" data-demo-ctrl>
+        <button type="button" class="s-demo__btn" data-demo-toggle data-pause="{{pause_label}}" data-resume="{{resume_label}}"><svg class="s-demo__ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg><svg class="s-demo__ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg><span data-demo-toggle-text>{{pause_label}}</span></button>
+        <button type="button" class="s-demo__btn" data-demo-again><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>{{replay_label}}</button>
+      </div>
+      <div class="s-demo__chips" role="group" aria-labelledby="{{id}}-demandes" data-demo-chips>
+        <p class="label" id="{{id}}-demandes">{{presets_label}}</p>
+        <ul class="s-demo__chip-list" role="list">
+          {{#presets}}<li><button type="button" class="s-demo__chip" aria-pressed="{{#@first}}true{{/@first}}{{^@first}}false{{/@first}}" data-demo-pick="{{@index0}}" data-track="select_content" data-track-content_type="{{track_type}}" data-track-content_id="{{key}}">{{label}}</button></li>{{/presets}}
+        </ul>
+      </div>
+      <p class="sr-only" role="status" aria-live="polite" data-demo-live></p>
+    </div>{{/replay}}
+    {{#calculator}}<div class="s-demo__calc" data-demo-block="calculator" data-announce="{{result.announce}}" data-invalid-text="{{invalid_text}}" data-demo-event="{{track_event}}" data-demo-type="{{track_type}}">
+      <div class="s-demo__form card">
+        <fieldset class="s-demo__fields" disabled data-demo-fields>
+          <legend class="s-demo__legend">{{legend}}</legend>
+          <div class="s-demo__inputs">
+            {{#inputs}}<div class="field">
+              {{#choices.length}}<label class="field__label" for="{{id}}-{{name}}">{{label}}</label>
+              <div class="field__select"><select class="field__input" id="{{id}}-{{name}}" name="{{name}}" data-demo-input{{#hint}} aria-describedby="{{id}}-{{name}}-aide"{{/hint}}>{{#choices}}<option value="{{value}}"{{#selected}} selected{{/selected}}>{{label}}</option>{{/choices}}</select></div>{{/choices.length}}
+              {{^choices.length}}{{#slider}}<div class="s-demo__range-head"><label class="field__label" for="{{id}}-{{name}}">{{label}}</label><span class="s-demo__val" aria-hidden="true" data-demo-show="{{name}}">{{value}}{{#unit}}&nbsp;{{unit}}{{/unit}}</span></div>
+              <input class="s-demo__range" type="range" id="{{id}}-{{name}}" name="{{name}}" value="{{value}}" min="{{min}}" max="{{max}}" step="{{step}}" data-unit="{{unit}}" data-demo-input{{#hint}} aria-describedby="{{id}}-{{name}}-aide"{{/hint}}>{{/slider}}
+              {{^slider}}<label class="field__label" for="{{id}}-{{name}}">{{label}}</label>
+              <input class="field__input s-demo__number" type="number" inputmode="numeric" id="{{id}}-{{name}}" name="{{name}}" value="{{value}}" min="{{min}}" max="{{max}}" step="{{step}}" data-demo-input{{#hint}} aria-describedby="{{id}}-{{name}}-aide"{{/hint}}>{{/slider}}{{/choices.length}}
+              {{#hint}}<p class="field__hint" id="{{id}}-{{name}}-aide">{{hint}}</p>{{/hint}}
+            </div>{{/inputs}}
+          </div>
+        </fieldset>
+      </div>
+      <div class="s-demo__result s-demo__paper">
+        <p class="label">{{result.label}}</p>
+        <p class="s-demo__total"><span data-demo-total data-demo-expr="{{result.expr}}" data-decimals="{{result.decimals}}">{{result.example}}</span><span class="s-demo__total-unit">{{result.unit}}</span></p>
+        <p class="s-demo__invalid" data-demo-invalid hidden>{{invalid_text}}</p>
+        <dl class="s-demo__lines">
+          {{#lines}}<div><dt>{{label}}</dt><dd><span data-demo-line data-key="{{key}}" data-demo-expr="{{expr}}" data-decimals="{{decimals}}">{{example}}</span>&nbsp;{{unit}}</dd></div>{{/lines}}
+        </dl>
+        <div class="s-demo__sources">
+          <p class="s-demo__sources-title">{{sources_label}}</p>
+          <ul role="list">
+            {{#coefficients}}<li data-demo-coef="{{key}}" data-value="{{value}}"><b>{{display}}</b> {{label}} {{source}}</li>{{/coefficients}}
+          </ul>
+        </div>
+        <noscript><p class="s-demo__noscript">{{noscript}}</p></noscript>
+      </div>
+      <p class="sr-only" role="status" aria-live="polite" data-demo-live></p>
+    </div>{{/calculator}}
+    <div class="s-demo__action">
+      <a class="btn {{#primary}}btn--primary{{/primary}}{{^primary}}btn--secondary{{/primary}}" href="{{cta_href}}" data-track="cta_click" data-cta-position="{{position}}"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      {{#cta_note}}<p class="s-demo__note">{{cta_note}}</p>{{/cta_note}}
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->
+<script data-section-script="demonstrator">
+/* Demonstrator: a scripted replay (a request types itself, the result composes
+   line by line) or a calculator (values in, estimate and breakdown out).
+   Principle of the request / result console: the maintainer's workshop page,
+   rewritten (pause, replay, no announced typing, no endless cycle). */
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var lang = document.documentElement.getAttribute('lang') || 'fr';
+  var each = function (list, fn) { Array.prototype.forEach.call(list, fn); };
+  var num = function (v, d) { var n = parseFloat(v); return isFinite(n) && n >= 0 ? n : d; };
+
+  // Polite live region: emptied first, so that the same sentence is read again.
+  function say(live, text) {
+    if (!live || !text) return;
+    live.textContent = '';
+    window.setTimeout(function () { live.textContent = text; }, 80);
+  }
+
+  /* ---------- Replay ---------- */
+  function initReplay(box) {
+    var panels = Array.prototype.slice.call(box.querySelectorAll('[data-demo-panel]'));
+    if (!panels.length) return;
+    var chips = Array.prototype.slice.call(box.querySelectorAll('[data-demo-pick]'));
+    var ctrl = box.querySelector('[data-demo-ctrl]');
+    var toggle = box.querySelector('[data-demo-toggle]');
+    var toggleText = box.querySelector('[data-demo-toggle-text]');
+    var again = box.querySelector('[data-demo-again]');
+    var live = box.querySelector('[data-demo-live]');
+    var motion = !reduce && 'IntersectionObserver' in window;
+    var typeMs = num(box.getAttribute('data-type-ms'), 28);
+    var rowMs = num(box.getAttribute('data-row-ms'), 380);
+    var holdMs = Math.max(4000, num(box.getAttribute('data-hold-ms'), 6000));
+    // The one-round cycle runs on wide screens only (see the CSS).
+    var auto = box.getAttribute('data-cycle') === 'true' && window.matchMedia('(min-width: 900px)').matches;
+    var current = 0, steps = [], at = 0, timer = null, due = 0, left = 0, gen = 0;
+    var running = false, userPaused = false, inView = false;
+
+    panels.forEach(function (p) {
+      var typed = p.querySelector('[data-demo-typed]');
+      p.__full = typed ? Array.from(typed.textContent) : [];
+    });
+    box.classList.add('is-live');
+
+    function show(i) {
+      current = i;
+      panels.forEach(function (p, k) { p.classList.toggle('is-off', k !== i); });
+      chips.forEach(function (c, k) { c.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+    }
+    function settle(p) {
+      p.classList.remove('is-composing', 'is-typing');
+      var typed = p.querySelector('[data-demo-typed]');
+      if (typed) typed.textContent = p.__full.join('');
+      each(p.querySelectorAll('[data-demo-row], [data-demo-done]'), function (r) { r.classList.add('is-on'); });
+    }
+    function arm(p) {
+      p.classList.add('is-composing');
+      p.classList.remove('is-typing');
+      var typed = p.querySelector('[data-demo-typed]');
+      if (typed) typed.textContent = '';
+      each(p.querySelectorAll('[data-demo-row], [data-demo-done]'), function (r) { r.classList.remove('is-on'); });
+    }
+    function setToggle(state) {
+      box.classList.toggle('is-paused', state === 'paused');
+      if (!toggle) return;
+      toggle.setAttribute('aria-disabled', state === 'done' ? 'true' : 'false');
+      if (toggleText) toggleText.textContent = toggle.getAttribute(state === 'paused' ? 'data-resume' : 'data-pause');
+    }
+    function finish() {
+      running = false;
+      box.classList.remove('is-timing');
+      setToggle('done');
+    }
+    function schedule() {
+      window.clearTimeout(timer);
+      timer = null;
+      if (!running || userPaused || !inView) return;
+      if (at >= steps.length) { finish(); return; }
+      var step = steps[at], wait = left || step.d, g = gen;
+      left = 0;
+      due = Date.now() + wait;
+      timer = window.setTimeout(function () {
+        timer = null;
+        at += 1;
+        step.f();
+        if (g === gen) schedule();
+      }, wait);
+    }
+    function halt() {
+      if (!timer) return;
+      window.clearTimeout(timer);
+      timer = null;
+      left = Math.max(0, due - Date.now());
+    }
+    function typeStep(el, chars, k) {
+      return { d: Math.round(typeMs * (0.65 + Math.random() * 0.7)), f: function () { el.textContent = chars.slice(0, k).join(''); } };
+    }
+    function play(i, byVisitor) {
+      gen += 1;
+      halt();
+      left = 0;
+      at = 0;
+      box.classList.remove('is-timing');
+      show(i);
+      var p = panels[i];
+      if (!motion) {
+        settle(p);
+        if (byVisitor) say(live, p.getAttribute('data-status'));
+        return;
+      }
+      arm(p);
+      var typed = p.querySelector('[data-demo-typed]');
+      steps = [{ d: 500, f: function () { p.classList.add('is-typing'); } }];
+      for (var k = 1; typed && k <= p.__full.length; k++) steps.push(typeStep(typed, p.__full, k));
+      steps.push({ d: 420, f: function () { p.classList.remove('is-typing'); } });
+      each(p.querySelectorAll('[data-demo-row]'), function (r) {
+        steps.push({ d: rowMs, f: function () { r.classList.add('is-on'); } });
+      });
+      steps.push({ d: rowMs, f: function () {
+        var done = p.querySelector('[data-demo-done]');
+        if (done) done.classList.add('is-on');
+        p.classList.remove('is-composing');
+        // The result is announced once, when the visitor asked for it.
+        if (byVisitor) say(live, p.getAttribute('data-status'));
+        if (auto && i < panels.length - 1) {
+          box.style.setProperty('--hold', holdMs + 'ms');
+          box.classList.add('is-timing');
+          steps.push({ d: holdMs, f: function () {
+            box.classList.remove('is-timing');
+            if (auto) play(i + 1, false);
+          } });
+        }
+      } });
+      running = true;
+      userPaused = false;
+      setToggle('play');
+      schedule();
+    }
+    // The visitor takes the console in hand: the one-round cycle stops.
+    function stopCycle() {
+      if (!auto) return;
+      auto = false;
+      if (box.classList.contains('is-timing')) {
+        halt();
+        left = 0;
+        finish();
+      }
+    }
+
+    chips.forEach(function (chip, k) {
+      chip.addEventListener('click', function () {
+        stopCycle();
+        play(k, true);
+      });
+    });
+
+    if (!motion) {
+      if (ctrl) ctrl.hidden = true;
+      show(0);
+      return;
+    }
+
+    if (toggle) toggle.addEventListener('click', function () {
+      if (toggle.getAttribute('aria-disabled') === 'true') return;
+      if (userPaused) {
+        userPaused = false;
+        setToggle('play');
+        schedule();
+      } else {
+        userPaused = true;
+        halt();
+        setToggle('paused');
+      }
+    });
+    if (again) again.addEventListener('click', function () {
+      stopCycle();
+      play(current, true);
+    });
+    chips.forEach(function (chip) { chip.addEventListener('focus', stopCycle); });
+
+    play(0, false);
+    // Starts, and goes on, only while the console is on screen.
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        inView = entry.isIntersecting && entry.intersectionRatio >= 0.19;
+        box.classList.toggle('is-away', !inView);
+        if (inView) schedule(); else halt();
+      });
+    }, { threshold: [0, 0.2] }).observe(box);
+  }
+
+  /* ---------- Calculator ---------- */
+  // Arithmetic only: numbers, names, + - * / and parentheses (no eval).
+  function compile(source) {
+    var src = String(source || '');
+    var tokens = src.match(/\d+(?:\.\d+)?|[A-Za-z_][A-Za-z0-9_]*|[-+*\/()]/g) || [];
+    if (!tokens.length || tokens.join('') !== src.replace(/\s+/g, '')) return null;
+    var i = 0;
+    function bin(op, a, b) {
+      if (op === '+') return function (s) { return a(s) + b(s); };
+      if (op === '-') return function (s) { return a(s) - b(s); };
+      if (op === '*') return function (s) { return a(s) * b(s); };
+      return function (s) { return a(s) / b(s); };
+    }
+    function atom() {
+      var t = tokens[i++];
+      if (t === '(') {
+        var inner = sum();
+        if (tokens[i++] !== ')') throw new Error('parenthèse');
+        return inner;
+      }
+      if (t === '-') {
+        var neg = atom();
+        return function (s) { return -neg(s); };
+      }
+      if (t !== undefined && /^\d/.test(t)) {
+        var n = parseFloat(t);
+        return function () { return n; };
+      }
+      if (t !== undefined && /^[A-Za-z_]/.test(t)) {
+        return function (s) { return Object.prototype.hasOwnProperty.call(s, t) ? s[t] : NaN; };
+      }
+      throw new Error('terme');
+    }
+    function product() {
+      var left = atom();
+      while (tokens[i] === '*' || tokens[i] === '/') { var op = tokens[i++]; left = bin(op, left, atom()); }
+      return left;
+    }
+    function sum() {
+      var left = product();
+      while (tokens[i] === '+' || tokens[i] === '-') { var op = tokens[i++]; left = bin(op, left, product()); }
+      return left;
+    }
+    try {
+      var fn = sum();
+      return i === tokens.length ? fn : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function initCalc(section, box) {
+    var fields = box.querySelector('[data-demo-fields]');
+    var inputs = Array.prototype.slice.call(box.querySelectorAll('[data-demo-input]'));
+    var lines = Array.prototype.slice.call(box.querySelectorAll('[data-demo-line]'));
+    var total = box.querySelector('[data-demo-total]');
+    var outs = total ? lines.concat([total]) : lines;
+    var invalid = box.querySelector('[data-demo-invalid]');
+    var live = box.querySelector('[data-demo-live]');
+    var coefs = {};
+    each(box.querySelectorAll('[data-demo-coef]'), function (li) {
+      var key = li.getAttribute('data-demo-coef');
+      var v = parseFloat(li.getAttribute('data-value'));
+      if (key && isFinite(v)) coefs[key] = v;
+    });
+    outs.forEach(function (el) {
+      el.__fn = compile(el.getAttribute('data-demo-expr'));
+      if (!el.__fn) console.warn('[demonstrator] #' + section.id + ' : formule illisible « ' + el.getAttribute('data-demo-expr') + ' »');
+    });
+    function format(v, decimals) {
+      try {
+        return new Intl.NumberFormat(lang, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(v);
+      } catch (e) {
+        return v.toFixed(decimals);
+      }
+    }
+    function decimalsOf(step) {
+      var m = String(step || '').match(/\.(\d+)/);
+      return m ? m[1].length : 0;
+    }
+    function read(input) {
+      var v = input.tagName === 'SELECT' ? parseFloat(input.value) : parseFloat(input.value.replace(',', '.'));
+      var min = parseFloat(input.getAttribute('min')), max = parseFloat(input.getAttribute('max'));
+      if (!isFinite(v) || (isFinite(min) && v < min) || (isFinite(max) && v > max)) return NaN;
+      return v;
+    }
+    function compute() {
+      var scope = {}, ok = true;
+      Object.keys(coefs).forEach(function (k) { scope[k] = coefs[k]; });
+      inputs.forEach(function (input) {
+        var v = read(input);
+        if (input.type === 'number') {
+          if (isFinite(v)) input.removeAttribute('aria-invalid'); else input.setAttribute('aria-invalid', 'true');
+        }
+        if (input.type === 'range' && isFinite(v)) {
+          var unit = input.getAttribute('data-unit');
+          var text = format(v, decimalsOf(input.getAttribute('step'))) + (unit ? ' ' + unit : '');
+          input.setAttribute('aria-valuetext', text);
+          var shown = box.querySelector('[data-demo-show="' + input.name + '"]');
+          if (shown) shown.textContent = text;
+        }
+        if (!isFinite(v)) ok = false;
+        scope[input.name] = v;
+      });
+      outs.forEach(function (el) {
+        var v = ok && el.__fn ? el.__fn(scope) : NaN;
+        var key = el.getAttribute('data-key');
+        if (key) scope[key] = v;
+        el.textContent = isFinite(v) ? format(v, parseInt(el.getAttribute('data-decimals'), 10) || 0) : '–';
+        if (!isFinite(v)) ok = false;
+      });
+      if (invalid) invalid.hidden = ok;
+      return ok && total ? total.textContent : null;
+    }
+
+    // The static example (shown without script) must match the formula.
+    var squash = function (s) { return String(s || '').replace(/\s+/g, ''); };
+    var before = outs.map(function (el) { return squash(el.textContent); });
+    if (fields) fields.disabled = false;
+    compute();
+    outs.forEach(function (el, k) {
+      if (before[k] !== squash(el.textContent)) {
+        console.warn('[demonstrator] #' + section.id + ' : exemple « ' + before[k] + ' » au lieu de « ' + squash(el.textContent) + ' » (slot example à corriger)');
+      }
+    });
+
+    var pending = null, said = '', tracked = false;
+    function changed() {
+      var result = compute();
+      window.clearTimeout(pending);
+      // One announcement after the visitor stops, never one per step.
+      pending = window.setTimeout(function () {
+        var text = result === null
+          ? (box.getAttribute('data-invalid-text') || '')
+          : (box.getAttribute('data-announce') || '{value}').replace('{value}', result);
+        if (text && text !== said) {
+          said = text;
+          say(live, text);
+        }
+        var name = box.getAttribute('data-demo-event');
+        if (!tracked && result !== null && name && typeof window.landingTrack === 'function') {
+          tracked = true;
+          window.landingTrack(name, { content_type: box.getAttribute('data-demo-type') || 'demonstrateur', content_id: section.id });
+        }
+      }, 700);
+    }
+    inputs.forEach(function (input) {
+      input.addEventListener('input', changed);
+      input.addEventListener('change', changed);
+    });
+  }
+
+  document.querySelectorAll('.s-demo').forEach(function (section) {
+    var mode = section.getAttribute('data-demo-mode');
+    if (mode === 'replay' || mode === 'calculator') {
+      each(section.querySelectorAll('[data-demo-block]'), function (block) {
+        if (block.getAttribute('data-demo-block') !== mode) block.parentNode.removeChild(block);
+      });
+    }
+    var replay = section.querySelector('[data-demo-block="replay"]');
+    var calc = section.querySelector('[data-demo-block="calculator"]');
+    if (replay) initReplay(replay);
+    if (calc) initCalc(section, calc);
+  });
+})();
+</script>

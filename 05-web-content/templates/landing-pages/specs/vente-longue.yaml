@@ -1,0 +1,531 @@
+# ============================================================================
+# Modèle de landing « vente-longue » : une seule offre achetée en ligne
+# ----------------------------------------------------------------------------
+# Conversion unique : l'envoi du ticket vers l'outil de paiement (événement
+# begin_checkout, avec la formule, la valeur, la devise et les articles du
+# ticket). Le ticket vend la saison complète ou une sélection à l'unité :
+# formule « saison-2027 » ou « a-l-unite » (champ articles). Tous les CTA de
+# la page (barre du haut, hero, carte de la FAQ, CTA final, barre mobile)
+# mènent à l'ancre #offre, qui porte le ticket.
+#
+# Assembler (depuis la racine du dépôt) :
+#   python3 05-web-content/scripts/assemble-landing.py 05-web-content/templates/landing-pages/specs/vente-longue.yaml
+#   python3 05-web-content/scripts/qa-landing.py 05-web-content/templates/landing-pages/vente-longue.html
+# Pour une vraie page : copier cette spec dans
+# 05-web-content/landing-pages/<slug>/pilotage/page.yaml, changer « output »,
+# réécrire chaque texte (skills copywriting puis copy-editing) et dérouler la
+# skill landing-page.
+#
+# CONTENU FICTIF. La marque « Terre Voisine », son programme « La Saison du
+# Carré », les avis, les chiffres, les dates et le prix sont inventés pour la
+# démonstration. Aucun ne se publie tel quel : chaque chiffre vient de
+# 01-brand/messaging-framework.md ou d'une source citée, le tableau comparatif
+# se vérifie et se date, chaque avis est réel et signé avec l'accord de son
+# auteur.
+#
+# Archétype : un programme saisonnier vendu en ligne au grand public (un
+# produit numérique, une part de service et un objet livré), à paiement
+# unique. Pour une formation en cohorte ou un atelier daté, partir plutôt du
+# modèle « formation ».
+#
+# Récit (une objection par section, dans l'ordre de la pensée du visiteur) :
+#   hero        De quoi s'agit-il, pour qui, jusqu'à quand : le plan du carré,
+#               objet signature, repris dans le problème et le parcours.
+#   sommaire    Où en suis-je, où est ce qui m'intéresse : sept chapitres en
+#               liens d'ancre, puis un rail dans la marge (dès 1101 px) ou une
+#               barre « Chapitre n sur 7 » qui suit la lecture (chapters).
+#               Chaque chapitre vise un id de la page : renommer un id, c'est
+#               corriger le sommaire.
+#   preuves     Est-ce sérieux : les faits de l'offre, pas des statistiques.
+#   probleme    Pourquoi maintenant : quatre déconvenues de premier potager
+#               (épinglé, 55 vh par constat).
+#   pivot       Et donc : une phrase, puis l'offre comme réponse (épinglé).
+#   kit         Qu'est-ce que je reçois : bande sombre. Placé entre le pivot
+#               et le parcours pour que deux épinglages ne se suivent pas sans
+#               respiration.
+#   parcours    Concrètement, que fais-je : cinq temps de février à octobre
+#               (épinglé, 60 vh par étape), une jauge « Lettre n sur 32 »
+#               dans la marge.
+#   resultats   Qu'est-ce que ça change : respiration sans carte.
+#   avis        D'autres l'ont-ils fait, et sont-ils nombreux : douze avis dont
+#               six repliés, une note moyenne avec son effectif et sa source,
+#               un témoignage vidéo sous-titré avec sa transcription (wall).
+#   comparatif  Pourquoi cette option : tableau daté, catégories et non marques.
+#   pour-qui    Est-ce pour moi : le volet « pas pour vous » qualifie.
+#   offre       Combien à l'unité, combien en saison complète : le ticket se
+#               remplit à chaque case et propose la saison dès qu'elle revient
+#               moins cher (bundle-receipt ; les prix à l'unité sont la vraie
+#               somme de prix pratiqués, jamais gonflés pour fabriquer une
+#               économie).
+#   garantie    Et si ça ne me sert pas : sceau et conditions exactes.
+#   questions   Les dernières questions, carte collante vers le ticket.
+#   final       Je passe à l'action : bande sombre, rideau.
+# Épinglages : probleme, pivot, parcours (3 au plus, ~6,5 écrans captifs).
+# Le couple probleme → pivot suit la composition de la bibliothèque ; le
+# pivot, une phrase seule à l'écran, sert de respiration.
+#
+# À BRANCHER avant publication (marqueurs en majuscules, signalés par la QA) :
+#   {{URL_CHECKOUT}}           page de paiement de votre outil de vente en
+#                              ligne : le ticket y part en GET avec
+#                              ?formule=… (et ?articles=… pour une sélection
+#                              à l'unité) et les UTM de la visite.
+#   {{URL_LISTE_ATTENTE}}      formulaire « être prévenu de la saison
+#                              suivante », utilisé une fois closes_at passée
+#                              (état waitlist) et par le lien de l'état closed.
+#   {{URL_MENTIONS_LEGALES}}, {{URL_CGV}}, {{URL_CONFIDENTIALITE}}  pied de page
+#   bonjour@example.com        adresse de contact (garantie, FAQ, pied)
+# État de l'offre : la clé « offer » ci-dessous est la seule configuration.
+# closes_at est la vraie date de clôture des inscriptions : le hero et le
+# ticket comptent les jours restants (jamais les secondes), puis la page passe
+# d'elle-même à after_close. Mettre à jour les dates écrites dans les textes
+# (hero, ticket, parcours, garantie, FAQ, final, barre mobile) en même temps.
+# Prix : ceux du ticket (à l'unité et saison complète) se reprennent tels
+# quels dans le sommaire, le comparatif, la carte de la FAQ et la barre
+# mobile. Une offre vendue en une seule formule prend offer-ticket à la place
+# du ticket (voir specs/formation.yaml).
+# Mesure : tracking.mode datalayer par défaut. Passer en « gtm » (gtm: GTM-…)
+# ou « gtag » (ga4: G-…), puis marquer begin_checkout (et purchase, côté
+# outil de paiement) comme conversions clés dans GA4.
+# ============================================================================
+
+output: 05-web-content/templates/landing-pages/vente-longue.html
+title: "La Saison du Carré 2027 · Terre Voisine"
+description: "Le plan de votre carré potager dessiné pour vous, puis une lettre chaque lundi de février à septembre pour récolter de mai à octobre. Inscriptions jusqu’au 10 février 2027."
+lang: fr
+page: saison-du-carre-2027
+robots: "noindex, nofollow"
+og:
+  title: "Un potager qui donne de mai à octobre"
+  description: "Le plan de votre carré dessiné pour vous et une lettre chaque lundi pour savoir quoi faire au jardin."
+fonts: ["Inter:wght@400;500;600;700;800", "JetBrains Mono:wght@500;600"]
+ground: dots
+theatre: {progress: true}
+tracking: {mode: datalayer, utm: true}
+offer: {state: open, closes_at: "2027-02-10T23:59:00+01:00", after_close: waitlist}
+
+sections:
+  - use: topbar
+    slots:
+      brand: "<svg class=\"s-topbar__mark\" viewBox=\"0 0 32 32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 28V15\"/><path d=\"M16 16c0-6 4-10 10-10 0 6-4 10-10 10Z\"/><path d=\"M16 20c0-5-3.5-8-9-8 0 5 3.5 8 9 8Z\"/><path d=\"M8 28h16\"/></svg><span>Terre Voisine</span>"
+      cta_label: "Réserver"
+      cta_href: "#offre"
+      primary: true
+
+  - use: hero
+    slots:
+      title: "Un potager<br>qui donne<br><span class=\"hl\">de mai à octobre</span>"
+      lede: "Le plan de votre carré dessiné pour vous, puis une lettre chaque lundi de février à septembre pour savoir quoi faire au jardin."
+      cta_label: "Réserver ma saison"
+      cta_href: "#offre"
+      primary: true
+      deadline: "Inscriptions jusqu’au 10 février 2027"
+      countdown: {many: "Inscriptions closes dans {n} jours", one: "Inscriptions closes demain", zero: "Inscriptions closes ce soir"}
+      detail: "300 plans par saison"
+      image: null
+      object: >-
+        <div class="obj s-hero__doc" aria-hidden="true" data-qa-decor>
+        <div class="obj-stack"><div class="obj-sheet">
+        <div class="obj-head"><span class="obj-mark"></span><b>Plan du carré · saison 2027</b><span class="obj-stamp obj-push">Plein sud</span></div>
+        <div class="obj-rule"></div>
+        <div class="obj-grid" style="--cols:4">
+        <span class="is-head">Tomate</span><span class="is-head">Tomate</span><span>Basilic</span><span>Persil</span>
+        <span>Laitue · 1</span><span>Laitue · 2</span><span>Laitue · 3</span><span>Radis</span>
+        <span>Carotte</span><span>Carotte</span><span>Oignon</span><span class="is-warn">Mâche · sept.</span>
+        <span>Haricot</span><span>Haricot</span><span>Capucine</span><span class="is-warn">Épinard · sept.</span>
+        </div>
+        <div class="obj-rule"></div>
+        <p class="obj-small">1,20 m de côté · 16 cases · récoltes de mai à octobre</p>
+        </div></div>
+        <span class="obj-chip s-hero__chip"><i></i>Lettre du lundi 15 mars</span>
+        </div>
+
+  - use: chapters
+    id: sommaire
+    slots:
+      title: "Au sommaire<br><span class=\"hl\">de la saison 2027</span>"
+      intro: "Sept parties, des déconvenues d’un premier potager jusqu’à la commande. Le prix et la garantie sont dans la sixième."
+      chapters:
+        - {label: "Le constat", anchor: probleme, desc: "Les quatre déconvenues d’un premier potager"}
+        - {label: "Le contenu", anchor: kit, desc: "Le plan, 32 lettres, 30 fiches et le calendrier"}
+        - {label: "La saison", anchor: parcours, desc: "Cinq temps, de février à octobre"}
+        - {label: "Les avis", anchor: avis, desc: "Trois jardiniers, trois carrés occupés jusqu’en octobre"}
+        - {label: "Les options", anchor: comparatif, desc: "Un livre, une application ou la saison"}
+        - {label: "Prix et garantie", anchor: offre, desc: "69 € pour la saison, soixante jours pour juger"}
+        - {label: "Questions", anchor: questions, desc: "Climat, petit carré, temps à y passer"}
+      nav_label: "Chapitres de la page"
+      count_label: "Chapitre {n} sur {total}"
+      bar: true
+      progress: true
+
+  - use: proof-band
+    id: preuves
+    slots:
+      title: "La saison en chiffres"
+      facts:
+        - {value: "32", unit: "lettres", label: "une chaque lundi, de février à septembre", source: ""}
+        - {value: "30", unit: "fiches", label: "de culture, légume par légume", source: ""}
+        - {value: "1", unit: "plan", label: "dessiné pour votre carré en cinq jours", source: ""}
+        - {value: "300", unit: "plans", label: "par saison, pas un de plus", source: ""}
+
+  - use: problem-pinned
+    id: probleme
+    slots:
+      title: "Ce qui fait rater<br><span class=\"hl\">un premier potager</span>"
+      intro: "Quatre déconvenues que nous racontent les jardiniers débutants, saison après saison."
+      items:
+        - title: "Tout est semé le même samedi"
+          text: "Le premier beau week-end d’avril, tout part en terre. Fin juin, trente laitues montent en graine en même temps."
+          visual: >-
+            <div class="obj obj-window s-problem__obj"><div class="obj-window__bar"><i></i><i></i><i></i><span>Carnet de jardin</span></div>
+            <div class="obj-window__body"><div class="obj-check">
+            <span class="is-done">Samedi 10 avril · 30 laitues</span>
+            <span class="is-done">Samedi 10 avril · 2 rangs de radis</span>
+            <span class="is-done">Samedi 10 avril · 6 pieds de courgette</span>
+            <span class="is-done">Samedi 10 avril · carottes</span>
+            </div><div class="obj-rule"></div><p><span class="obj-stamp">Tout le même jour</span></p></div></div>
+        - title: "Les limaces passent avant vous"
+          text: "Les jeunes plants disparaissent en une nuit, juste après la pluie, faute d’avoir été protégés à temps."
+          visual: >-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Plan du carré · mai</b></div><div class="obj-rule"></div>
+            <div class="obj-grid" style="--cols:4"><span class="is-warn">Mangée</span><span class="is-warn">Mangée</span><span>Radis</span><span class="is-warn">Mangée</span>
+            <span>Carotte</span><span>Oignon</span><span class="is-warn">Mangé</span><span>Persil</span></div>
+            <div class="obj-rule"></div><p class="obj-small">Nuit du 12 mai, après la pluie</p></div>
+        - title: "Six courgettes pour deux personnes"
+          text: "En août, le carré déborde de ce que personne ne mange, et il ne reste de place pour rien d’autre."
+          visual: >-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Récoltes d’août</b></div><div class="obj-rule"></div>
+            <div class="obj-bars"><div class="obj-bar is-hl" style="--v:.82"><span>Courgettes</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>82 %</b></div>
+            <div class="obj-bar" style="--v:.12"><span>Tomates</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>12 %</b></div>
+            <div class="obj-bar" style="--v:.06"><span>Haricots</span><span class="obj-bar__track"><i class="obj-bar__fill"></i></span><b>6 %</b></div></div>
+            <div class="obj-rule"></div><p class="obj-small">18 kg de courgettes pour deux personnes</p></div>
+        - title: "Un carré vide dès septembre"
+          text: "Personne n’a prévu la suite. La saison s’arrête fin août alors qu’elle pourrait durer jusqu’en octobre."
+          visual: >-
+            <div class="obj obj-sheet s-problem__obj"><div class="obj-head"><span class="obj-mark"></span><b>Récoltes par mois</b><span class="obj-push">avril à novembre</span></div><div class="obj-rule"></div>
+            <div class="obj-chart"><i style="--v:.06"></i><i style="--v:.22"></i><i style="--v:.5"></i><i class="is-hl" style="--v:.95"></i><i class="is-hl" style="--v:.8"></i><i style="--v:.08"></i><i style="--v:.03"></i><i style="--v:.02"></i></div>
+            <div class="obj-rule"></div><p class="obj-small">Septembre à novembre : presque rien</p></div>
+
+  - use: pivot
+    slots:
+      statement: "Un bon potager se plante d’abord sur un calendrier"
+      answer_highlight: "La Saison du Carré"
+      answer_rest: "vous donne ce calendrier semaine après semaine"
+      answer_body: "Un plan dessiné pour votre carré en février, puis une lettre chaque lundi qui dit quoi faire et quand."
+
+  - use: showcase-dark
+    id: kit
+    slots:
+      title: "Ce que vous recevez <span class=\"hl\">pour toute la saison</span>"
+      intro: "Le plan et le calendrier arrivent en février, les lettres chaque lundi jusqu’en septembre."
+      parts:
+        - {tab: "Plan", title: "Le plan de votre carré", text: "Dessiné à partir de vos mesures, de votre exposition et des légumes que vous aimez manger."}
+        - {tab: "Lettres", title: "Les 32 lettres du lundi", text: "Ce qu’il faut faire au carré cette semaine-là, en dix minutes de lecture."}
+        - {tab: "Fiches", title: "Les 30 fiches de culture", text: "Semis, arrosage, bons voisins et ravageurs, légume par légume."}
+        - {tab: "Calendrier", title: "Le calendrier imprimé", text: "Un format A3 livré chez vous, à punaiser près de la porte du jardin."}
+
+  - use: journey
+    id: parcours
+    slots:
+      title: "De février à octobre <span class=\"hl\">un carré toujours occupé</span>"
+      intro: "Une lettre le lundi, puis une heure au jardin dans la semaine, un peu plus en mai."
+      counter_label: "Étape"
+      outcome_label: "Résultat :"
+      steps:
+        - when: "Février"
+          gauge: "Lettre <b>1</b> sur 32"
+          title: "Recevoir son plan"
+          text: "Vous donnez vos mesures, votre exposition et vos légumes préférés. Le plan arrive sous cinq jours."
+          outcome: "un plan case par case et la liste des graines à acheter"
+          scene: >-
+            <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Questionnaire · 5 minutes</b></div><div class="obj-rule"></div>
+            <div class="obj-check"><span class="is-done">Mesures : 1,20 m × 1,20 m</span><span class="is-done">Exposition : plein sud</span><span class="is-done">Code postal : 35000</span><span class="is-done">Légumes aimés : tomates, salades, haricots</span><span>Envoyer</span></div></div>
+        - when: "Mars"
+          gauge: "Lettre <b>2</b> sur 32"
+          title: "Les premiers semis à l’abri"
+          text: "Tomates et basilic démarrent sur un rebord de fenêtre pendant que le carré se prépare."
+          outcome: "des plants prêts à sortir en mai"
+          scene: >-
+            <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Rebord de fenêtre · mars</b></div><div class="obj-rule"></div>
+            <div class="obj-check"><span class="is-done">Tomate cerise · 4 godets</span><span class="is-done">Tomate ronde · 2 godets</span><span class="is-done">Basilic · 2 godets</span><span>Persil · le 22 mars</span></div>
+            <div class="obj-rule"></div><p class="obj-small">Lever des semis attendu sous 8 à 10 jours</p></div>
+        - when: "Avril"
+          gauge: "Lettre <b>7</b> sur 32"
+          title: "Semer en décalé"
+          text: "Salades et radis partent par petites lignes toutes les deux semaines, jamais tout le même jour."
+          outcome: "des récoltes étalées au lieu d’une seule vague"
+          scene: >-
+            <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Laitues · semis en décalé</b></div><div class="obj-rule"></div>
+            <div class="obj-grid" style="--cols:3"><span class="is-head">Ligne</span><span class="is-head">Semée</span><span class="is-head">Récoltée</span>
+            <span>Laitue 1</span><span>5 avril</span><span>mi-mai</span><span>Laitue 2</span><span>19 avril</span><span>fin mai</span>
+            <span>Laitue 3</span><span>3 mai</span><span>mi-juin</span><span>Laitue 4</span><span>17 mai</span><span>fin juin</span></div></div>
+        - when: "Mai à juillet"
+          gauge: "Lettre <b>11</b> sur 32"
+          title: "Planter et pailler"
+          text: "Les plants passent dehors après les dernières gelées. Le paillage garde l’eau, les pièges retiennent les limaces."
+          outcome: "un carré qui tient la chaleur de juillet"
+          scene: >-
+            <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Lettre du lundi 17 mai</b><span class="obj-push">n° 13</span></div><div class="obj-rule"></div>
+            <p class="obj-title">Cette semaine au carré</p>
+            <div class="obj-check"><span class="is-done">Planter les tomates après le 15 mai</span><span class="is-done">Pailler toutes les cases</span><span>Poser deux pièges à limaces</span><span>Semer la ligne de laitues n° 4</span></div></div>
+        - when: "Août et septembre"
+          gauge: "Lettre <b>24</b> sur 32"
+          title: "La deuxième saison"
+          text: "Les cases libérées reçoivent mâche, épinards et radis d’hiver pour récolter jusqu’en octobre."
+          outcome: "un carré qui produit encore à l’automne"
+          scene: >-
+            <div class="obj obj-sheet"><div class="obj-head"><span class="obj-mark"></span><b>Plan du carré · septembre</b></div><div class="obj-rule"></div>
+            <div class="obj-grid" style="--cols:4"><span>Tomate</span><span>Tomate</span><span>Basilic</span><span>Persil</span>
+            <span class="is-warn">Mâche</span><span class="is-warn">Mâche</span><span class="is-warn">Épinard</span><span class="is-warn">Radis noir</span>
+            <span>Carotte</span><span>Carotte</span><span>Poireau</span><span class="is-warn">Épinard</span></div>
+            <div class="obj-rule"></div><p class="obj-small">Cases semées en août : 5 sur 16</p></div>
+
+  - use: outcomes
+    id: resultats
+    slots:
+      title: "Ce qui change <span class=\"hl\">dans votre assiette</span>"
+      items:
+        - {number: "01", title: "Des récoltes étalées", text: "Quelques salades chaque semaine, de mai à octobre."}
+        - {number: "02", title: "Moins de pertes", text: "Chaque légume a sa place, et sa protection avant le passage des limaces."}
+        - {number: "03", title: "Une saison allongée", text: "La deuxième saison prolonge les récoltes jusqu’aux premières gelées."}
+        - {number: "04", title: "Un plan qui resservira", text: "Votre plan annoté devient la base de la saison suivante."}
+
+  - use: wall
+    id: avis
+    slots:
+      title: Ils ont jardiné<br><span class="hl">la saison 2026</span>
+      intro: Des avis envoyés à la fin de la saison 2026, ici fictifs. Sur une vraie page, chacun se publie avec l’accord de son auteur.
+      summary:
+        value: 4,7 sur 5
+        detail: note moyenne donnée par 212 jardiniers en fin de saison
+        source: Questionnaire de fin de saison 2026 (chiffres fictifs)
+      pull:
+        quote: En octobre, le carré donnait encore. Je n’avais jamais tenu un potager aussi longtemps.
+        name: Bertrand V.
+        role: Première saison, jardin en Touraine (avis fictif)
+        initials: BV
+      quotes:
+      - result: Des salades chaque semaine de mai à septembre
+        quote: L’an dernier, j’avais trente laitues en même temps. Cette année, la lettre du lundi me disait quand semer la ligne suivante.
+        name: Amandine L.
+        role: Première saison, jardin de ville (avis fictif)
+        initials: AL
+      - result: Les tomates plantées au bon moment
+        quote: Je plantais toujours trop tôt et je perdais tout au premier coup de froid. Le calendrier m’a fait attendre deux semaines de plus.
+        name: Gérard P.
+        role: Retraité, quatre carrés en Auvergne (avis fictif)
+        initials: GP
+        video:
+          src: "https://www.example.com/videos/saison-gerard.mp4"
+          poster: ''
+          duration: 1 min 32
+          captions: "https://www.example.com/videos/saison-gerard.vtt"
+          transcript: Je jardine depuis longtemps, mais toujours en rangs. Le carré, c’était nouveau. Le plan m’a dit quoi mettre dans chaque case, et surtout quand. Les tomates sont parties deux semaines plus tard que d’habitude, et pour la première fois je n’ai rien perdu en mai.
+      - result: Un carré occupé jusqu’en octobre
+        quote: Je n’avais jamais pensé à la deuxième saison. En octobre, on mangeait encore nos radis noirs et nos épinards.
+        name: Inès D.
+        role: Jardin partagé dans le Nord (avis fictif)
+        initials: ID
+      - result: ''
+        quote: Dix minutes le lundi matin avec mon café, et je savais ce que j’avais à faire dans la semaine. Je n’ai jamais eu besoin de chercher ailleurs.
+        name: Romain S.
+        role: Deux carrés, maison en Bretagne (avis fictif)
+        initials: RS
+      - result: Plus de limaces sur les salades
+        quote: La fiche sur les protections m’a fait poser les planches avant la pluie. Les années précédentes, je découvrais les dégâts le lendemain.
+        name: Chantal M.
+        role: Jardin familial en Gironde (avis fictif)
+        initials: CM
+      - result: Un carré pensé pour les enfants
+        quote: Le plan a mis les fraises et les radis du côté où les enfants passent. Ils allaient voir chaque matin si quelque chose avait poussé.
+        name: Julie B.
+        role: Mère de deux enfants, jardin en ville (avis fictif)
+        initials: JB
+      - result: ''
+        quote: Le groupe d’entraide m’a sauvé en juin, quand mes courgettes jaunissaient. Une réponse en une heure, photo à l’appui.
+        name: Hervé T.
+        role: Première saison, Alsace (avis fictif)
+        initials: HT
+      - result: Le calendrier collé dans l’abri
+        quote: Le calendrier imprimé est resté punaisé dans l’abri toute l’année. Je cochais les semis au crayon, et je l’ai gardé pour la saison prochaine.
+        name: Martine F.
+        role: Retraitée, potager en Normandie (avis fictif)
+        initials: MF
+      - result: ''
+        quote: J’avais peur que le plan ne tienne pas compte de l’ombre du noisetier. Il en tenait compte, et les salades sont allées de ce côté.
+        name: Laurent G.
+        role: Carré à mi-ombre, Isère (avis fictif)
+        initials: LG
+      - result: Trois paniers de haricots en août
+        quote: Je n’en avais jamais récolté autant sur si peu de place. Le semis en deux fois, conseillé dans la lettre de mai, a tout changé.
+        name: Nadia K.
+        role: Deuxième saison, Lyon (avis fictif)
+        initials: NK
+      - result: ''
+        quote: Les lettres sont courtes et on sent qu’elles sont écrites par quelqu’un qui jardine vraiment. Pas de jargon, des gestes.
+        name: Pierre-Yves C.
+        role: Jardin ouvrier, Lille (avis fictif)
+        initials: PC
+      - result: Une saison réussie malgré un mois de juin pluvieux
+        quote: Quand il a plu trois semaines, la lettre a changé le programme et proposé de semer sous voile. Le carré est reparti en juillet.
+        name: Sylvie R.
+        role: Carré surélevé, Vosges (avis fictif)
+        initials: SR
+      fold_after: 6
+      more_label: Lire les {n} autres avis
+      less_label: Replier les avis
+      video_label: Voir le témoignage
+      transcript_label: Lire la transcription
+
+  - use: comparison
+    id: comparatif
+    slots:
+      title: "Trois façons <span class=\"hl\">de démarrer un carré</span>"
+      intro: "Notre lecture des options courantes, établie en octobre 2026 pour un carré de 1,20 m de côté."
+      caption: "Comparaison de La Saison du Carré, d’un livre de jardinage et d’une application de potager"
+      criteria_label: "Ce dont vous avez besoin"
+      scroll_hint: "Faites glisser le tableau pour voir les autres colonnes"
+      columns:
+        - {name: "La Saison du Carré"}
+        - {name: "Un livre de jardinage"}
+        - {name: "Une application"}
+      rows:
+        - label: "Un plan dessiné pour votre carré"
+          cells: [{"yes": true, text: "Oui, sous cinq jours"}, {"no": true, text: "Des plans types"}, {partial: true, text: "Généré automatiquement"}]
+        - label: "Ce qu’il faut faire cette semaine"
+          cells: [{"yes": true, text: "La lettre du lundi"}, {"no": true, text: "À retrouver soi-même"}, {"yes": true, text: "Des notifications"}]
+        - label: "Des dates adaptées à votre climat"
+          cells: [{"yes": true, text: "Selon votre code postal"}, {partial: true, text: "Par grande région"}, {partial: true, text: "Selon les réglages"}]
+        - label: "Une personne pour répondre"
+          cells: [{"yes": true, text: "Le groupe d’entraide"}, {"no": true, text: "Non"}, {"no": true, text: "Non"}]
+        - label: "Le prix"
+          cells: [{text: "69 € pour la saison"}, {text: "20 à 35 € une fois"}, {text: "Un abonnement mensuel"}]
+
+  - use: for-whom
+    id: pour-qui
+    slots:
+      title: "Une saison pensée <span class=\"hl\">pour les débutants</span>"
+      fit_title: "C’est pour vous si"
+      fit:
+        - "Vous avez un carré potager, ou la place d’en installer un, au soleil six heures par jour."
+        - "Vous avez déjà essayé, et la récolte s’est arrêtée en juillet."
+        - "Vous pouvez passer une heure par semaine au jardin de mars à septembre."
+      not_fit_title: "Ce n’est pas pour vous si"
+      not_fit:
+        - "Vous cultivez déjà un grand potager en rangs : nos plans sont pensés pour des carrés."
+        - "Votre seul espace est un balcon à l’ombre, où peu de légumes poussent bien."
+
+  - use: bundle-receipt
+    id: offre
+    slots:
+      title: "Juste le plan<br><span class=\"hl\">ou toute la saison</span>"
+      intro: "Le plan, les lettres et les fiches existent aussi à l’unité. Cochez ce qui vous manque : le ticket vous dit quand la saison complète revient moins cher."
+      list_legend: "À l’unité"
+      items:
+        - {value: "plan", name: "Le plan de votre carré", text: "Dessiné à partir de vos mesures, livré sous cinq jours.", price: 39, price_label: "39 € TTC", checked: true}
+        - {value: "lettres", name: "Les 32 lettres du lundi", text: "De février à septembre, quoi faire au carré cette semaine-là.", price: 29, price_label: "29 € TTC", checked: false}
+        - {value: "fiches", name: "Les 30 fiches de culture", text: "Semis, arrosage, bons voisins et ravageurs, à télécharger.", price: 12, price_label: "12 € TTC", checked: false}
+        - {value: "calendrier", name: "Le calendrier imprimé", text: "Format A3, livré chez vous en février.", price: 9, price_label: "9 € TTC", checked: false}
+      receipt_title: "Votre sélection"
+      receipt_note: "Prix TTC, livraison comprise"
+      empty_text: "Cochez un élément pour l’ajouter au ticket."
+      total_label: "Total"
+      full_label: "À l’unité"
+      amount_format: "{n} € TTC"
+      pack:
+        value: "saison-2027"
+        name: "La Saison du Carré 2027"
+        price: 69
+        price_label: "69 € TTC"
+        text: "Les quatre éléments, plus le groupe d’entraide de la saison."
+        switch_label: "Passer à la saison complète"
+        undo_label: "Revenir à ma sélection"
+      saving_text: "La saison complète coûte {saving} de moins que votre sélection"
+      same_text: "La saison complète coûte le même prix que votre sélection"
+      chosen_text: "Saison complète retenue : {saving} de moins qu’à l’unité"
+      announce_text: "Total de votre sélection : {total}"
+      action: "{{URL_CHECKOUT}}"
+      action_waitlist: "{{URL_LISTE_ATTENTE}}"
+      currency: "EUR"
+      primary: true
+      carte_value: "a-l-unite"
+      cta_carte: "Commander ma sélection"
+      cta_pack: "Réserver ma saison"
+      cta_waitlist: "Être prévenu de la saison 2028"
+      cta_closed: "Inscriptions closes"
+      cta_notify: "Être prévenu de la saison 2028"
+      notify_href: "{{URL_LISTE_ATTENTE}}"
+      deadline: "Inscriptions jusqu’au 10 février 2027"
+      countdown: {many: "Inscriptions closes dans {n} jours", one: "Inscriptions closes demain", zero: "Inscriptions closes ce soir"}
+      badge_waitlist: "Saison 2027 close"
+      badge_closed: "Inscriptions closes"
+      conditions: "Paiement par carte à la commande. Confirmation et questionnaire par email dans l’heure, plan sous cinq jours. Les conditions de vente précisent votre droit de rétractation."
+
+  - use: guarantee
+    id: garantie
+    slots:
+      title: "Deux mois <span class=\"hl\">pour juger au jardin</span>"
+      intro: "Si les lettres ne vous servent pas, écrivez-nous dans les soixante jours qui suivent la première. Vous êtes remboursé en entier et vous gardez le calendrier."
+      seal: {big: "60", small: "jours d’essai", ring: "REMBOURSÉ EN ENTIER · CALENDRIER CONSERVÉ · SANS JUSTIFICATION · "}
+      terms:
+        - {term: "Échéance", text: "Le vendredi 23 avril 2027 à minuit, soixante jours après la première lettre."}
+        - {term: "Comment", text: "Un email à bonjour@example.com suffit, sans justification. Le remboursement arrive sous sept jours, sur la carte utilisée pour la commande."}
+        - {term: "À l’unité", text: "Un élément commandé seul se rembourse de la même façon, dans les soixante jours qui suivent sa livraison."}
+
+  - use: faq
+    id: questions
+    slots:
+      title: "Vos questions <span class=\"hl\">avant de commencer</span>"
+      intro: ""
+      jsonld: false
+      items:
+        - q: "Faut‑il déjà savoir jardiner ?"
+          a: "Non. Les lettres partent du principe que c’est votre première saison, et chaque fiche explique les gestes de base."
+        - q: "Combien de temps faut‑il y passer ?"
+          a: "Dix minutes pour lire la lettre du lundi, puis une heure au jardin dans la semaine. Comptez un peu plus en mai, au moment des plantations."
+        - q: "Et si mon carré est plus petit ?"
+          a: "Le plan s’adapte à vos mesures, à partir d’un mètre de côté. Pour plusieurs carrés, indiquez-les tous dans le questionnaire."
+        - q: "Les dates valent‑elles pour ma région ?"
+          a: "Le calendrier tient compte de votre code postal. Les dates de semis et de plantation se décalent selon votre climat."
+        - q: "Que se passe‑t‑il après septembre ?"
+          a: "Vous gardez le plan, les fiches et les lettres. L’inscription à la saison suivante n’est jamais automatique."
+        - q: "Le calendrier est‑il livré partout ?"
+          a: "En France métropolitaine et en Belgique, sans frais. Ailleurs, vous le recevez en PDF à imprimer."
+      card_label: "La saison"
+      card_title: "La Saison du Carré 2027"
+      card_meta: "69 € TTC · jusqu’au 10 février 2027"
+      cta_label: "Réserver ma saison"
+      cta_href: "#offre"
+      contact: "Une autre question : <a href=\"mailto:bonjour@example.com\">bonjour@example.com</a>"
+
+  - use: final-cta
+    id: final
+    slots:
+      title: "Première lettre<br><span class=\"hl\">le 22 février</span>"
+      text: "Le plan arrive avant la première lettre, et le calendrier avant le premier semis."
+      cta_label: "Réserver ma saison"
+      cta_href: "#offre"
+      primary: true
+      note: "Inscriptions jusqu’au 10 février 2027"
+      decor: rings
+      decor_html: ""
+
+  - use: footer
+    id: pied
+    slots:
+      brand: "<svg class=\"s-footer__mark\" viewBox=\"0 0 32 32\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 28V15\"/><path d=\"M16 16c0-6 4-10 10-10 0 6-4 10-10 10Z\"/><path d=\"M16 20c0-5-3.5-8-9-8 0 5 3.5 8 9 8Z\"/><path d=\"M8 28h16\"/></svg><span>Terre Voisine</span>"
+      links:
+        - {label: "Mentions légales", href: "{{URL_MENTIONS_LEGALES}}"}
+        - {label: "Conditions de vente", href: "{{URL_CGV}}"}
+        - {label: "Confidentialité", href: "{{URL_CONFIDENTIALITE}}"}
+        - {label: "bonjour@example.com", href: "mailto:bonjour@example.com"}
+      legal: "© 2026 Terre Voisine · modèle de démonstration, contenus fictifs"
+
+  - use: sticky-bar
+    id: barre-mobile
+    slots:
+      label: "Réserver votre saison"
+      title: "Saison 2027 · 69 €"
+      detail: "Jusqu’au 10 février 2027"
+      cta_label: "Réserver"
+      cta_href: "#offre"
+      primary: true

@@ -1,0 +1,127 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "testimonials",
+  "name": "Témoignages",
+  "objection": "D’autres comme moi l’ont-ils fait",
+  "when": "Avec de vrais avis signés (nom, rôle, contexte) et leur accord. Trois avis choisis, chacun porteur d’un résultat, de préférence près du bloc de conversion.",
+  "avoid": "Avis inventés ou anonymes, compliments sans résultat, carrousel automatique, initiales sur un dégradé illisible, étoiles sans source.",
+  "reduced_motion": "Statique.",
+  "slots": {
+    "title": {"type": "html", "doc": "h2 sans virgule ni point.", "example": "Ils ont rendu leur bilan <span class=\"hl\">dans les temps</span>"},
+    "quotes": {"type": "list", "doc": "3 avis réels. result : le résultat en quelques mots ; quote : la citation exacte ; name, role : signature ; initials : avatar sans photo.", "fields": {"result": "résultat court", "quote": "citation", "name": "nom", "role": "fonction et entreprise", "initials": "deux lettres"}, "example": [
+      {"result": "Questionnaire client rendu en cinq semaines", "quote": "Notre plus gros client nous avait donné jusqu’à fin mai. Nous avons envoyé le bilan le 19, avec les sources, et il n’est revenu avec aucune question.", "name": "Hélène V.", "role": "Dirigeante, fabricant de mobilier, 42 salariés (avis fictif)", "initials": "HV"},
+      {"result": "Le fret identifié comme premier poste", "quote": "Je pensais que l’énergie pesait le plus. Le calcul de l’atelier 3 a montré que le transport amont comptait trois fois plus.", "name": "Marc T.", "role": "Responsable des achats, négoce alimentaire (avis fictif)", "initials": "MT"},
+      {"result": "Bilan refait seule l’année suivante", "quote": "Le modèle de collecte m’a resservi douze mois plus tard. Deux jours de travail au lieu de six semaines.", "name": "Sonia R.", "role": "Directrice administrative, agence de 18 personnes (avis fictif)", "initials": "SR"}
+    ]}
+  }
+}
+</script>
+<style data-section-style="testimonials">
+.s-testi__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 0.6rem + 1.4vw, 28px);
+  align-items: start;
+}
+
+.s-testi__card {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 1rem + 1.2vw, 32px);
+}
+
+.s-testi__card:nth-child(2) {
+  margin-top: clamp(0px, 3vw, 40px);
+}
+
+.s-testi__result {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.s-testi__result::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-bottom: 14px;
+  border-radius: 3px;
+  background: var(--gradient);
+}
+
+.s-testi__quote p {
+  text-wrap: pretty;
+}
+
+.s-testi__quote p::before {
+  content: "«\00a0";
+}
+
+.s-testi__quote p::after {
+  content: "\00a0»";
+}
+
+.s-testi__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.s-testi__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--hl);
+  font-size: var(--t-small);
+  font-weight: 800;
+}
+
+.s-testi__name {
+  display: block;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.s-testi__role {
+  display: block;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.4;
+}
+
+@media (max-width: 1100px) {
+  .s-testi__grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 680px;
+  }
+
+  .s-testi__card:nth-child(2) {
+    margin-top: 0;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-testi section" aria-labelledby="{{id}}-titre" data-section="testimonials">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="{{id}}-titre" class="section-title">{{{title}}}</h2>
+    </div>
+    <div class="s-testi__grid" data-reveal-group>
+      {{#quotes}}<figure class="s-testi__card card" data-reveal>
+        <p class="s-testi__result">{{result}}</p>
+        <blockquote class="s-testi__quote"><p>{{quote}}</p></blockquote>
+        <figcaption class="s-testi__who"><span class="s-testi__avatar" aria-hidden="true">{{initials}}</span><span><span class="s-testi__name">{{name}}</span><span class="s-testi__role">{{role}}</span></span></figcaption>
+      </figure>{{/quotes}}
+    </div>
+  </div>
+</section>
+<!-- /section:{{id}} -->

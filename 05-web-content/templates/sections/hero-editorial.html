@@ -1,0 +1,257 @@
+<script type="application/json" data-section-meta>
+{
+  "id": "hero-editorial",
+  "name": "Hero éditorial (titre en pleine largeur)",
+  "objection": "De quoi s’agit-il, quand, où, combien",
+  "when": "En première section, à la place de hero, quand le titre suffit à faire l’affiche : un événement, une édition datée, une prise de position. Un très grand titre sur toute la largeur de la grille, posé sur un filet tracé, une accroche courte, un seul bouton, la ligne d’échéance, puis une ligne de faits (date, lieu, format, prix). Pas d’objet à droite : la typographie porte la page.",
+  "avoid": "Titre de plus de trois lignes ou de plus de cinq mots par ligne, étiquette au-dessus du h1, accroche de plus de deux phrases, second bouton (le lien secondaire est un lien de lecture), plus de quatre faits, deux pages de la même marque ouvertes de la même façon. Filets fins partout et coins carrés : le cliché broadsheet, à éviter.",
+  "reduced_motion": "Le filet est tracé d’emblée, tout est immobile.",
+  "slots": {
+    "level": {"type": "number", "doc": "Niveau du titre : 1 sur une page (un seul h1). 2 seulement dans le catalogue, où un autre hero porte déjà le h1.", "example": 1},
+    "title": {"type": "html", "doc": "Le titre, trois lignes au plus, coupées en <br>, sans virgule ni point. Segment accentué en <span class=\"hl\">…</span>. Classe facultative s-hedit__in sur un segment : il passe à la ligne en retrait de deux colonnes sur grand écran (mise en page d’affiche), sans retrait sur mobile.", "example": "Le carbone<br>de vos achats<br><span class=\"hl s-hedit__in\">en une matinée</span>"},
+    "rule": {"type": "bool", "doc": "Filet aux couleurs de la marque sous le titre, tracé à l’arrivée. false : pas de filet.", "example": true},
+    "lede": {"type": "text", "doc": "Une ou deux phrases courtes : pour qui, et ce qu’on en rapporte.", "example": "Trois acheteurs de PME industrielles montrent comment ils ont chiffré le carbone de leurs fournisseurs, à Lyon et en direct."},
+    "cta_label": {"type": "text", "doc": "Libellé du bouton : un verbe, sans prix.", "example": "M’inscrire"},
+    "cta_href": {"type": "url", "doc": "Ancre du bloc de conversion (#inscription, #offre) ou URL de la conversion.", "example": "#inscription"},
+    "primary": {"type": "bool", "doc": "Pose data-cta=\"primaire\" sur le bouton (le CTA que la QA protège).", "example": true},
+    "secondary_label": {"type": "text", "doc": "Lien de lecture facultatif à côté du bouton (« Voir le programme »), jamais un second objectif. Mesuré en cta_click, position hero-lien : la QA le signale (cta-hors-objectif) s’il ne mène pas à la conversion. Vide : rien.", "example": "Voir le programme"},
+    "secondary_href": {"type": "url", "doc": "Ancre de la section visée par le lien de lecture.", "example": "#programme"},
+    "deadline": {"type": "text", "doc": "Ligne d’échéance statique, toujours vraie (une date, pas un compte). Vide : pas de ligne.", "example": "Inscriptions jusqu’au 16 mars 2027"},
+    "countdown": {"type": "object", "doc": "Optionnel : remplace la date par les jours restants (moteur offer). Champs many (« … {n} jours »), one, zero. null : la date reste.", "fields": {"many": "texte avec {n}", "one": "veille de la clôture", "zero": "jour de la clôture"}, "example": {"many": "Inscriptions closes dans {n} jours", "one": "Inscriptions closes demain", "zero": "Inscriptions closes ce soir"}},
+    "detail": {"type": "text", "doc": "Fait court après l’échéance (places, format). Vide : rien.", "example": "80 places dans la salle"},
+    "proof": {"type": "text", "doc": "Ligne de preuve facultative sous le bouton : un fait vérifiable et sa source, moins de douze mots. Vide : rien.", "example": "Troisième édition, 140 inscrits en 2026 (chiffre d’exemple)"},
+    "facts": {"type": "list", "doc": "2 à 4 faits pratiques sous le filet. label : un ou deux mots ; value : court. Liste vide : pas de ligne.", "fields": {"label": "étiquette (Quand, Où, Format, Prix)", "value": "le fait"}, "example": [
+      {"label": "Quand", "value": "Jeudi 18 mars 2027, 8 h 30"},
+      {"label": "Où", "value": "Lyon 7e, et en direct"},
+      {"label": "Format", "value": "Une matinée, quatre heures"},
+      {"label": "Prix", "value": "Gratuit, sur inscription"}
+    ]},
+    "object": {"type": "html", "doc": "Petit objet composé facultatif (kit .obj de base.css), posé sous la ligne de faits, à droite sur grand écran, dans un conteneur aria-hidden=\"true\" data-qa-decor. Vide : rien (le cas normal).", "example": ""}
+  }
+}
+</script>
+<style data-section-style="hero-editorial">
+/* Editorial opening: the title is the poster. A 12-column grid on wide
+   screens, the title across it, a brand rule drawn under it, then the lede
+   and the action side by side, then a line of practical facts. */
+.s-hedit {
+  padding-block: clamp(40px, 1.5rem + 5vw, 104px) clamp(56px, 2rem + 5vw, 112px);
+}
+
+.s-hedit__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+}
+
+.s-hedit__title {
+  font-size: clamp(2.75rem, 0.6rem + 7.3vw, 7rem);
+  line-height: 0.98;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+/* Optical alignment: the title box starts at its cap height and ends on its
+   baseline, so the rule sits at a true distance from the letters. */
+@supports (text-box: trim-both cap alphabetic) {
+  .s-hedit__title {
+    text-box: trim-both cap alphabetic;
+  }
+}
+
+.s-hedit__in {
+  display: inline-block;
+}
+
+.s-hedit__rule {
+  display: block;
+  height: 4px;
+  margin-block: clamp(28px, 1rem + 2.6vw, 60px) clamp(24px, 1rem + 1.6vw, 44px);
+  border-radius: 4px;
+  background: var(--gradient);
+  transform-origin: 0 50%;
+}
+
+.rv-on .s-hedit__rule[data-reveal] {
+  opacity: 1;
+  transform: scaleX(0);
+  transition: transform 1.2s var(--ease) 0.15s;
+}
+
+.rv-on .s-hedit__rule[data-reveal].is-in {
+  transform: none;
+}
+
+.s-hedit__lede {
+  max-width: 32em;
+  color: var(--muted);
+}
+
+.s-hedit__actions {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  margin-top: clamp(24px, 1rem + 1vw, 32px);
+}
+
+.s-hedit__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+}
+
+/* Deadline line: a status dot, then the deadline and its detail. The
+   separator sits in the gap before the detail, inside it: when the detail
+   starts a line of its own, the separator is clipped with the edge, so it
+   never ends or starts a line. A wrapped detail lines up with the deadline
+   text, after the dot. */
+.s-hedit__deadline {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.s-hedit__deadline::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-top: calc(0.7em - 4px);
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 4px var(--tint-accent);
+}
+
+.s-hedit__when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 24px;
+  overflow: hidden;
+}
+
+.s-hedit__detail {
+  position: relative;
+}
+
+/* Centred in the 24 px gap (4 + 16 + 4), its box wholly outside the line
+   once the detail starts it. */
+.s-hedit__sep {
+  position: absolute;
+  inset-inline-end: calc(100% + 4px);
+  width: 16px;
+  text-align: center;
+}
+
+.s-hedit__proof {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.s-hedit__proof svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--hl);
+  transform: translateY(3px);
+}
+
+/* Facts: a colophon under the action, one hairline above, labels in the
+   utility face. */
+.s-hedit__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px var(--gutter);
+  margin-top: clamp(40px, 1.6rem + 3vw, 80px);
+  padding-top: clamp(18px, 0.8rem + 0.8vw, 26px);
+  border-top: 1px solid var(--line);
+}
+
+.s-hedit__fact {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.s-hedit__fact dd {
+  font-weight: 600;
+  line-height: var(--lh-snug);
+  text-wrap: balance;
+}
+
+.s-hedit__object {
+  max-width: 520px;
+  margin-top: clamp(32px, 1.4rem + 2vw, 56px);
+}
+
+@media (min-width: 900px) {
+  .s-hedit__facts {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+
+  .s-hedit__in {
+    margin-inline-start: 16.666%;
+  }
+}
+
+@media (min-width: 1101px) {
+  .s-hedit__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .s-hedit__title,
+  .s-hedit__rule,
+  .s-hedit__facts {
+    grid-column: 1 / -1;
+  }
+
+  .s-hedit__lede {
+    grid-column: 1 / span 6;
+  }
+
+  .s-hedit__actions {
+    grid-column: 8 / -1;
+    margin-top: 0;
+  }
+
+  .s-hedit__object {
+    grid-column: 7 / -1;
+    justify-self: end;
+    width: 100%;
+  }
+}
+</style>
+<!-- section:{{id}} -->
+<section id="{{id}}" class="s-hedit section" aria-labelledby="{{id}}-titre" data-section="hero-editorial">
+  <div class="wrap s-hedit__grid">
+    <h{{level}} id="{{id}}-titre" class="s-hedit__title">{{{title}}}</h{{level}}>
+    {{#rule}}<span class="s-hedit__rule" aria-hidden="true" data-reveal></span>{{/rule}}
+    <p class="s-hedit__lede lede">{{lede}}</p>
+    <div class="s-hedit__actions">
+      <div class="s-hedit__buttons">
+        <a class="btn btn--primary" href="{{cta_href}}" data-track="cta_click" data-cta-position="hero"{{#primary}} data-cta="primaire"{{/primary}}>{{cta_label}}<svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        {{#secondary_label}}<a class="link-arrow" href="{{secondary_href}}" data-track="cta_click" data-cta-position="hero-lien">{{secondary_label}}</a>{{/secondary_label}}
+      </div>
+      {{#deadline}}<p class="s-hedit__deadline"><span class="s-hedit__when"><span{{#countdown}} data-offer-countdown data-many="{{many}}" data-one="{{one}}" data-zero="{{zero}}"{{/countdown}}>{{deadline}}</span>{{#detail}} <span class="s-hedit__detail"><span class="s-hedit__sep" aria-hidden="true">·</span>{{detail}}</span>{{/detail}}</span></p>{{/deadline}}
+      {{#proof}}<p class="s-hedit__proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>{{proof}}</span></p>{{/proof}}
+    </div>
+    {{#facts.length}}<dl class="s-hedit__facts">
+      {{#facts}}<div class="s-hedit__fact"><dt class="label">{{label}}</dt><dd>{{value}}</dd></div>{{/facts}}
+    </dl>{{/facts.length}}
+    {{#object}}<div class="s-hedit__object" data-reveal>{{{object}}}</div>{{/object}}
+  </div>
+</section>
+<!-- /section:{{id}} -->
