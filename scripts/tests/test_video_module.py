@@ -527,9 +527,14 @@ def test_registre_complet():
         assert terme in registre, terme
 
 
+def _section_changelog(version: str) -> str:
+    """Le corps d'une section du CHANGELOG (« Unreleased », « 2.3.0 »…), jusqu'à la suivante."""
+    return texte("CHANGELOG.md").split(f"## [{version}]")[1].split("\n## [")[0]
+
+
 def test_changelog_non_publie():
-    changelog = texte("CHANGELOG.md")
-    non_publie = changelog.split("## [Unreleased]")[1].split("\n## [")[0]
+    """Les notes du studio vidéo, publiées en 2.3.0 (le nom du test date d'avant la release)."""
+    non_publie = _section_changelog("2.3.0")
     for terme in ("HyperFrames", ANCIEN_EDITEUR.capitalize(), "OpenMontage", "qa-video.py", "Migration"):
         assert terme in non_publie, terme
     for terme in ("gemini-nano-banana-2.1", "GOOGLE_AI_IMAGE_MODEL", "awesome-opus5-5-videos", "`gemini-3-pro-image`",
@@ -684,11 +689,21 @@ def test_mineurs_de_la_revue_finale():
     for skill in ("manim-composer", "manim-ce"):
         note = texte(f".claude/skills/{skill}/SKILL.md")
         assert "-r 1080,1920" in note and "1920 × 1080" in note, skill
-    unreleased = texte("CHANGELOG.md").split("## [Unreleased]")[1].split("\n## [")[0]
-    migration = unreleased.split("**Migration (configured forks).**")[1]
+    migration = _section_changelog("2.3.0").split("**Migration (configured forks).**")[1]
     assert "AAAA-MM-JJ-<sujet>" in migration and "`statut`" in migration
     assert "install and version-tracking path" in texte("README.md")
     inspiration = texte("08-video/inspiration.md")
     assert "hyperframes:product-launch-video" in _ligne(inspiration, "| `motion` |")
     for terme in ("`--source`", "`--cache`", "4 lettres"):
         assert terme in inspiration, terme
+
+
+def test_suivis_de_revue_2_3_0():
+    repurpose = texte(".claude/skills/video-repurpose/SKILL.md")
+    avant_de_couper = repurpose.split("## Avant de couper")[1].split("\n## ")[0]
+    assert "**attendre la validation explicite** (validation 1 de `video-production`)" in avant_de_couper
+    assert avant_de_couper.index("**Rangement.**") < avant_de_couper.index("attendre la validation explicite")
+    documentaire = texte(".claude/skills/video-documentary/SKILL.md")
+    storyboard = _ligne(documentaire, "- **Storyboard** (validation 3)")
+    assert "à la fin de l'étape 5, avant le montage (étape 7)" in storyboard
+    assert "## Étape 7 : monter" in documentaire

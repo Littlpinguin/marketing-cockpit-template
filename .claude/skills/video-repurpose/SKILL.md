@@ -31,6 +31,8 @@ Le montage passe ensuite à `video-editing`, storyboard déjà validé : en voie
 - **Ce que la source permet.** Y a-t-il une image exploitable, ou seulement du son ? Combien de personnes parlent ? Le son est-il propre ? Sans image, les clips reposent sur un visuel de marque animé par `motion-design` et sur les sous-titres. Un son médiocre se nettoie avant la transcription.
 - **Rangement.** La source dans `rushes/`, la notation dans `candidats.md`, les extraits de texte des clips dans `clips/`, les rendus dans `exports/`.
 
+Présenter le traitement de la série (plateformes et toiles visées, habillage, voie des sous-titres, ce que les droits et la source permettent) et **attendre la validation explicite** (validation 1 de `video-production`). Rien ne passe à l'étape 1 avant l'accord : la plateforme retenue fixe la durée des clips à repérer.
+
 ## Étape 1 : transcription horodatée au mot
 
 ```bash
