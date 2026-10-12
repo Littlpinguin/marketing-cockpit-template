@@ -1,6 +1,6 @@
 ---
 name: image-generation
-description: Génération de visuels brand-compliant pour {{COMPANY_NAME}} — via Gemini direct (nano-banana, défaut) ou le MCP Magnific si connecté (Nano Banana 2, Seedream, upscaling). Étape obligatoire avant toute génération - consulter 01-brand/assets/index.md et proposer la réutilisation d'assets existants. Chaque prompt est automatiquement préfixé par les contraintes du style-guide (palette, typo, style d'illustration, interdits visuels). Règle d'or - générer la matière, composer le visuel final en HTML.
+description: Génération de visuels brand-compliant pour {{COMPANY_NAME}} — via Gemini direct (nano-banana, défaut) ou le MCP Magnific si connecté (Nano Banana 2.1, Seedream, upscaling). Étape obligatoire avant toute génération - consulter 01-brand/assets/index.md et proposer la réutilisation d'assets existants. Chaque prompt est automatiquement préfixé par les contraintes du style-guide (palette, typo, style d'illustration, interdits visuels). Règle d'or - générer la matière, composer le visuel final en HTML.
 ---
 
 # image-generation — visuels brand-compliant {{COMPANY_NAME}}
@@ -30,12 +30,12 @@ Deux chemins de génération, **mêmes règles de préfixage marque dans les deu
 
 ### A. Gemini direct (défaut — « nano-banana »)
 
-- `GOOGLE_AI_API_KEY` dans `.env` ; modèle `GOOGLE_AI_IMAGE_MODEL` (défaut `gemini-3-pro-image-preview`).
+- `GOOGLE_AI_API_KEY` dans `.env` ; modèle `GOOGLE_AI_IMAGE_MODEL` (défaut `gemini-nano-banana-2.1`).
 
 ```python
 import os, requests
 API_KEY = os.environ["GOOGLE_AI_API_KEY"]
-MODEL = os.environ.get("GOOGLE_AI_IMAGE_MODEL", "gemini-3-pro-image-preview")
+MODEL = os.environ.get("GOOGLE_AI_IMAGE_MODEL", "gemini-nano-banana-2.1")
 url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 payload = {
     "contents": [{"parts": [{"text": full_prompt}]}],   # + part image inline pour l'img2img
@@ -56,7 +56,7 @@ r = requests.post(url, params={"key": API_KEY}, json=payload, timeout=120)
 
 Si un serveur MCP Magnific est configuré (vérifier ses outils en session), l'utiliser comme routeur multi-modèles :
 
-- **Génération** : Nano Banana 2, Seedream, et tout modèle exposé par le MCP — choisir selon le besoin (photoréalisme, illustration, texte dans l'image).
+- **Génération** : Nano Banana 2.1, Seedream, et tout modèle exposé par le MCP — choisir selon le besoin (photoréalisme, illustration, texte dans l'image).
 - **Upscaling / amélioration** : passer les sorties destinées à l'impression ou au zoom par l'upscaler Magnific plutôt que régénérer en 4K.
 - **Même préfixage automatique** du prompt par les contraintes du style-guide qu'en voie A — l'abstraction ne change que le transport, jamais la doctrine.
 
@@ -140,7 +140,7 @@ dépendance réseau). En un geste, il :
 import sys; sys.path.insert(0, "06-graphic-design/scripts")
 import genmeta
 final = genmeta.finalize_output(chemin, {
-    "model": "gemini-3-pro-image-preview",
+    "model": "gemini-nano-banana-2.1",
     "prompt": full_prompt,                 # le prompt intégral envoyé, préfixe de marque compris
     "prompt_file": None, "input_images": [],   # images d'entrée d'un img2img
     "temperature": 0.4, "aspect_ratio": "16:9", "image_size": "2K",

@@ -41,7 +41,7 @@ def ecrire_jpeg(chemin: Path) -> Path:
 
 
 META = {
-    "model": "gemini-3-pro-image-preview",
+    "model": "gemini-nano-banana-2.1",
     "prompt": "Une scène de marque fictive, fond clair, trait bleu nuit",
     "prompt_file": "06-graphic-design/prompts/exemple.md",
     "input_images": ["06-graphic-design/outputs/reference.jpg"],
@@ -202,9 +202,9 @@ def test_tag_png_relu_par_pil(tmp_path):
     from PIL import Image
 
     img = ecrire_png(tmp_path / "visuel.png")
-    assert genmeta.tag_png(img, genmeta.TAG_KEY, "gemini-3-pro-image-preview") is True
+    assert genmeta.tag_png(img, genmeta.TAG_KEY, "gemini-nano-banana-2.1") is True
     with Image.open(img) as im:
-        assert im.text[genmeta.TAG_KEY] == "gemini-3-pro-image-preview"
+        assert im.text[genmeta.TAG_KEY] == "gemini-nano-banana-2.1"
 
 
 def test_tag_png_conserve_les_tags_deja_presents(tmp_path):

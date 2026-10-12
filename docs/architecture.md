@@ -54,7 +54,8 @@ Three principles drive every design decision.
 │                                                                  │
 │  Optional modules (enable via /modules, state in                 │
 │  .setup-completed.modules)                                       │
-│  08-video/           → video-editing + captions skills           │
+│  08-video/           → video-production (entry), HyperFrames,    │
+│                        motion-design, QA qa-video.py             │
 │  10-automatisations/ → n8n workflows                             │
 │  11-reporting/       → performance-report skill                  │
 │  12-acquisition/     → scraping + outreach (n8n, Apify, Lemlist) │

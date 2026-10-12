@@ -58,7 +58,7 @@
       "additionalProperties": false,
       "required": ["video", "automatisations", "reporting", "acquisition", "veille", "publication-sociale", "espace-client"],
       "properties": {
-        "video":               { "$ref": "#/$defs/moduleEntry" },
+        "video":               { "$ref": "#/$defs/moduleVideo" },
         "automatisations":     { "$ref": "#/$defs/moduleEntry" },
         "reporting":           { "$ref": "#/$defs/moduleEntry" },
         "acquisition":         { "$ref": "#/$defs/moduleEntry" },
@@ -122,7 +122,7 @@
           "required": ["enabled"],
           "properties": {
             "enabled": { "type": "boolean" },
-            "model":   { "type": "string", "description": "Ex. 'gemini-3-pro-image-preview'." }
+            "model":   { "type": "string", "description": "Ex. 'gemini-nano-banana-2.1'." }
           }
         },
         "weekly_cron": {
@@ -179,6 +179,21 @@
         "enabled":    { "type": "boolean" },
         "checked_at": { "type": "string", "format": "date-time", "description": "Dernière vérification des prérequis par /modules." },
         "notes":      { "type": "string" }
+      }
+    },
+    "moduleVideo": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled":     { "type": "boolean" },
+        "checked_at":  { "type": "string", "format": "date-time", "description": "Dernière vérification des prérequis par /modules." },
+        "notes":       { "type": "string" },
+        "hyperframes": { "type": "string", "description": "Version du plugin hyperframes@hyperframes installé par /modules." },
+        "capacites": {
+          "type": "object",
+          "description": "Capacités facultatives détectées : whisper, manim, corpus (open_clip + torch).",
+          "additionalProperties": { "type": "boolean" }
+        }
       }
     }
   }

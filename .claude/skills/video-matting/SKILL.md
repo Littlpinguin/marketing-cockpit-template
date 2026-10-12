@@ -43,10 +43,10 @@ Extraire l'alpha (`alphaextract`) et suivre sa moyenne par frame (`signalstats`)
 
 Quand la source est en basse définition et que le montage la recadre fortement (zooms ×2-3), le calque détouré restera **mou face à des plans générés en HD** — et aucun rattrapage (matte pleine résolution, débruitage, upscale IA) ne comblera l'écart de définition. **Vérifier la définition effective de la source avant de bâtir une architecture sur son détourage.** Le détourage garde son sens entre sources de définition équivalente ; sinon, régénérer le plan entier (→ `video-generation`) est la voie qui tient.
 
-Autre échec documenté : un compositing local sujet/fond sans **light wrap** « se voit » toujours — l'incrustation et la lumière (halo, vignette, grain commun) se font dans l'éditeur (→ `video-editing`), pas en compositing ffmpeg.
+Autre échec documenté : un compositing sujet/fond sans **light wrap** « se voit » toujours. L'incrustation et la lumière (halo, vignette, grain commun) se règlent au montage (→ `video-editing`) : dans une composition HyperFrames, où le calque détouré se pose comme une vidéo à canal alpha au-dessus du fond et où vignette et grain vont sur un calque commun (skills `hyperframes:hyperframes-core` et `hyperframes:hyperframes-media`), ou par des filtres ffmpeg dans le plan de montage (voie B). Jamais une simple superposition du calque sur le fond. Pour une composition HyperFrames, le calque se livre en WebM VP9 avec alpha, le format que Chrome lit en transparence ; le ProRes 4444 sert aux échanges et à ffmpeg.
 
 ## Ce que cette skill ne fait pas
 
 - ❌ Incruster le fond et régler la lumière (→ `video-editing` : glow, vignette, grain commun, étalonnage)
 - ❌ Générer le fond (→ `image-generation`)
-- ❌ Le chroma key sur fond vert (l'éditeur le fait nativement)
+- ❌ Le chroma key sur fond vert : un fond uni se découpe au montage, par le filtre ffmpeg `chromakey` dans le plan de montage de `video-editing` (voie B), sans modèle de détourage. La documentation d'HyperFrames ne propose pas de keyer : sa commande `remove-background` (skill `hyperframes:hyperframes-media`) détoure une personne, comme cette skill

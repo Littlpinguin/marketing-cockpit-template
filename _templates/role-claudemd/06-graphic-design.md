@@ -183,7 +183,7 @@ Quick summary:
 - Always check `../01-brand/assets/` before generating new visuals
 - Always verify text legibility on background (contrast sensitive)
 - Produce visuals at 2× resolution minimum for flexibility
-- Sign AI outputs in metadata (`generated_by: gemini-3-pro-image-preview, date: ...`)
+- Sign AI outputs in metadata (`generated_by: gemini-nano-banana-2.1, date: ...`)
 
 ## AI disclosure
 

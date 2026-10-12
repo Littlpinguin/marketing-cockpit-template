@@ -1,0 +1,6 @@
+# Dépendances facultatives du corpus documentaire (corpus.py index et search)
+# pip install -r 08-video/requirements-corpus.txt
+# Premier lancement : téléchargement des poids du modèle CLIP (~600 Mo)
+open_clip_torch>=2.24
+torch>=2.2
+pillow>=10.0

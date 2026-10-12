@@ -1,0 +1,39 @@
+# Thème d'exemple du corpus documentaire (08-video/documentaire.md).
+# Un thème découpe le film en emplacements décrits en langage visuel, et donne
+# pour chacun des requêtes de recherche en anglais (les archives sont indexées
+# en anglais). La description sert à la recherche CLIP
+# (corpus.py search <nom> --emplacement <id>) : elle s'écrit en anglais, car le
+# modèle CLIP par défaut a appris sur des légendes en anglais. Sa traduction
+# française suit en commentaire.
+#
+# python3 08-video/scripts/corpus.py build 08-video/corpus/themes/exemple-savoir-faire.toml
+
+nom = "savoir-faire"                    # nom du corpus : 08-video/corpus/savoir-faire/
+sources = ["archive", "wikimedia", "nasa", "pexels", "pixabay"]
+par_requete = 3                         # résultats gardés par requête et par source
+duree_max = 120                         # secondes ; un clip plus long est écarté
+# licences = ["domaine-public", "cc0", "cc-by", "pexels", "pixabay"]   # défaut
+
+[[emplacements]]
+id = "ouverture"
+# gros plan de mains d'artisan qui travaillent une matière, lumière d'atelier
+description = "close-up of a craftsman's hands working a material, workshop light"
+requetes = ["craftsman hands close up", "workshop hands working"]
+
+[[emplacements]]
+id = "heritage"
+# atelier ou usine filmé en noir et blanc, ouvriers au travail, archives anciennes
+description = "black and white archive footage of a workshop or factory, workers at work"
+requetes = ["vintage factory workers", "1950s workshop film"]
+
+[[emplacements]]
+id = "geste"
+# outil qui façonne une pièce, copeaux ou étincelles, plan serré
+description = "tight shot of a tool shaping a piece, wood shavings or sparks"
+requetes = ["wood shavings plane tool", "metal grinding sparks"]
+
+[[emplacements]]
+id = "aujourd-hui"
+# atelier contemporain lumineux, machine moderne de précision
+description = "bright contemporary workshop, modern precision machine"
+requetes = ["modern workshop precision machine", "cnc machine close up"]

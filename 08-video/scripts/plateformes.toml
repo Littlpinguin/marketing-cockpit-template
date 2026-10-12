@@ -1,0 +1,46 @@
+# Données des plateformes lues par 08-video/scripts/qa-video.py.
+#
+# Référence lisible : 08-video/formats.md. Les deux concordent : un test
+# vérifie que le « nom » de chaque plateforme figure dans formats.md. Les
+# plateformes changent leurs specs : en cas de doute sur une limite dure,
+# vérifier la documentation officielle, puis mettre à jour les deux fichiers.
+#
+#   nom              nom de la plateforme tel qu'écrit dans formats.md
+#   formats          résolutions admises « largeurxhauteur » (dimensions affichées)
+#   duree_max        durée maximale en secondes
+#   debit_min_kbps   plancher de débit vidéo (avertissement en dessous)
+#   lufs             loudness intégrée visée (cible de montage.md ; la tolérance de
+#                    ±1 LU est celle de qa-video.py, pas de montage.md)
+#   crete_dbtp       plafond de crête vraie (montage.md : crête ≤ -1,5 dBTP)
+
+[reels]
+nom = "Instagram Reels"
+formats = ["1080x1920"]
+duree_max = 180
+debit_min_kbps = 8000
+lufs = -14.0
+crete_dbtp = -1.5
+
+[tiktok]
+nom = "TikTok"
+formats = ["1080x1920"]
+duree_max = 600
+debit_min_kbps = 8000
+lufs = -14.0
+crete_dbtp = -1.5
+
+[shorts]
+nom = "YouTube Shorts"
+formats = ["1080x1920"]
+duree_max = 180
+debit_min_kbps = 8000
+lufs = -14.0
+crete_dbtp = -1.5
+
+[linkedin]
+nom = "LinkedIn"
+formats = ["1080x1920", "1080x1350", "1080x1080", "1920x1080"]
+duree_max = 900
+debit_min_kbps = 8000
+lufs = -14.0
+crete_dbtp = -1.5

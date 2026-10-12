@@ -1,0 +1,67 @@
+{
+  "clips": [
+    {
+      "nom": "assis",
+      "fichier": "assis.json",
+      "source": "CMU 143_18",
+      "plan": "frontal",
+      "fps": 30.0,
+      "images": 181,
+      "duree": 6.0
+    },
+    {
+      "nom": "coup-de-pied",
+      "fichier": "coup-de-pied.json",
+      "source": "CMU 10_01",
+      "plan": "sagittal",
+      "fps": 30.0,
+      "images": 61,
+      "duree": 2.0
+    },
+    {
+      "nom": "course",
+      "fichier": "course.json",
+      "source": "CMU 09_01",
+      "plan": "sagittal",
+      "fps": 60.0,
+      "images": 45,
+      "duree": 0.733
+    },
+    {
+      "nom": "danse",
+      "fichier": "danse.json",
+      "source": "CMU 05_02",
+      "plan": "frontal",
+      "fps": 30.0,
+      "images": 181,
+      "duree": 6.0
+    },
+    {
+      "nom": "marche",
+      "fichier": "marche.json",
+      "source": "CMU 02_01",
+      "plan": "sagittal",
+      "fps": 30.0,
+      "images": 33,
+      "duree": 1.067
+    },
+    {
+      "nom": "salut",
+      "fichier": "salut.json",
+      "source": "CMU 111_37",
+      "plan": "frontal",
+      "fps": 30.0,
+      "images": 78,
+      "duree": 2.567
+    },
+    {
+      "nom": "saut",
+      "fichier": "saut.json",
+      "source": "CMU 13_11",
+      "plan": "sagittal",
+      "fps": 30.0,
+      "images": 101,
+      "duree": 3.333
+    }
+  ]
+}

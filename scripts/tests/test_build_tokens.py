@@ -25,6 +25,7 @@ GABARIT_TOKENS = REPO / "_templates" / "brand" / "tokens.json"
 GABARIT_STYLE_GUIDE = REPO / "_templates" / "brand" / "style-guide.md"
 TOKENS_CSS_DECKS = "06-graphic-design/presentations/tokens.css"
 TOKENS_CSS_LANDINGS = "05-web-content/templates/assets/tokens.css"
+TOKENS_CSS_VIDEO = "08-video/lib/brand.css"
 TOKENS = "01-brand/tokens.json"
 
 
@@ -338,7 +339,7 @@ def racine_du_template_apres_wizard(tmp_path: Path) -> Path:
     (root / TOKENS).write_text(rempli, encoding="utf-8")
     (root / "01-brand/style-guide.md").write_text(
         GABARIT_STYLE_GUIDE.read_text(encoding="utf-8"), encoding="utf-8")
-    for cible in (TOKENS_CSS_DECKS, TOKENS_CSS_LANDINGS):
+    for cible in (TOKENS_CSS_DECKS, TOKENS_CSS_LANDINGS, TOKENS_CSS_VIDEO):
         dst = root / cible
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_text((REPO / cible).read_text(encoding="utf-8"), encoding="utf-8")
@@ -383,6 +384,9 @@ def test_cibles_livrees_generees_sans_placeholder(tmp_path):
     debut = guide.index(build_tokens.MARKER_START)
     assert build_tokens.PLACEHOLDER_RE.search(guide[debut:]) is None
     assert "--color-primary: #1E40AF;" in guide
+    video = (root / TOKENS_CSS_VIDEO).read_text(encoding="utf-8")
+    assert build_tokens.PLACEHOLDER_RE.search(video) is None
+    assert "--brand-primary: #1E40AF;" in video and "--font-display: 'Inter'" in video
 
 
 # Une déclaration CSS de variable : « --nom: ».
@@ -539,6 +543,19 @@ def test_tokens_css_des_landings_livre_est_la_sortie_de_la_palette_d_exemple(tmp
     assert run(root, config=CONFIG_LIVREE).returncode == 0
     assert (root / TOKENS_CSS_LANDINGS).read_text(encoding="utf-8") == \
         (REPO / TOKENS_CSS_LANDINGS).read_text(encoding="utf-8")
+
+
+# --------------------------------------------------------------------------
+# Fichier de marque du module vidéo (projets HyperFrames)
+# --------------------------------------------------------------------------
+
+@template_non_configure
+def test_brand_css_video_livre_est_la_sortie_de_la_palette_d_exemple(tmp_path):
+    """Le bloc livré dans 08-video/lib/brand.css est celui que le script écrit."""
+    root = racine_du_template_apres_wizard(tmp_path)
+    assert run(root, config=CONFIG_LIVREE).returncode == 0
+    assert (root / TOKENS_CSS_VIDEO).read_text(encoding="utf-8") == \
+        (REPO / TOKENS_CSS_VIDEO).read_text(encoding="utf-8")
 
 
 def _valeurs_landings(tokens: dict) -> dict[str, str]:

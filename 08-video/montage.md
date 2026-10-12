@@ -29,14 +29,42 @@ Règles de coupe, de rythme et de son pour tout montage narratif (talking-head, 
 
 - **Voix d'abord** : débruiter avant tout traitement (jamais normaliser avant de débruiter), passe-haut ~85 Hz, normalisation en dernier. Cible master : **−14 LUFS intégré** (contrôle : `ffmpeg -af ebur128`), crête vraie ≤ −1,5 dBTP.
 - **Musique** : entrée fondue après l'accroche, ducking net sous la voix (~10-12 dB d'écart voix/musique), et **au moins un silence total** posé sur le moment le plus fort — le moment le plus puissant d'un plan sonore est un silence, pas un effet.
-- **SFX : 5 maximum par film, ≥ 6 dB sous la voix, sons de banque** (la synthèse n'a pas la texture ; l'éditeur importe n'importe quelle URL HTTPS de banque). Impacts posés sur les mots durs, ticks discrets sur les cartons (2 frames avant l'apparition).
+- **SFX : 5 maximum par film, ≥ 6 dB sous la voix, sons de banque** (la synthèse n'a pas la texture ; le son de banque se télécharge dans le dossier du projet, jamais lu depuis une URL au rendu). Impacts posés sur les mots durs, ticks discrets sur les cartons (2 frames avant l'apparition).
 - **J-cut sonore** : whoosh ou riser posé quelques frames **avant** la coupe image, jamais dessus.
 - Après toute réparation/repose d'un clip SFX, **reposer son gain** — un effet recréé revient à plein volume et traverse tous les contrôles.
 
 ## Sous-titres et cartons
 
-- Karaoké mot à mot : → skill `captions` (méthode éditeur, timings par token).
+- Karaoké mot à mot : skill `captions`, section « Karaoké mot à mot » (timings au mot).
 - Cartons : peu, courts (~2 s), un style unique (pastille de marque, police du style-guide), calés sur le mot qu'ils illustrent.
+
+## Démo produit et capture d'écran
+
+Pour toute vidéo qui montre un logiciel, une application ou un site en fonctionnement : démo, tutoriel, vidéo de lancement.
+
+**Capture.**
+
+- Enregistrer à la résolution native de l'écran : plus la capture dépasse la toile de sortie, plus on peut zoomer avant que le texte devienne flou.
+- Couper les notifications, fermer les fenêtres et onglets sans rapport, masquer favoris et barres personnelles.
+- Données fictives ou anonymisées uniquement : un compte de démonstration, jamais l'espace d'un vrai client (noms, courriels, montants, adresses). Ce qui aurait échappé à la capture se floute au montage, sur toute la durée où c'est visible.
+- Agrandir le curseur dans les réglages du système avant d'enregistrer.
+
+**Montage.**
+
+- Une action par plan : un clic, une saisie, un résultat.
+- Zoomer sur la zone d'action au moment où elle se produit, puis revenir au plan large, pour qu'on sache toujours où l'on est dans l'écran. Pas de zoom décoratif.
+- Annotations sobres aux couleurs de la marque (variables de `brand.css`) : une seule à la fois, qui pointe l'élément concerné et disparaît une fois l'action faite.
+- Temps morts (chargement, saisie longue, installation) : les accélérer, avec un repère discret si besoin, plutôt que couper sec au milieu d'une interaction, ce qui fait sauter l'écran sans explication. L'accélération s'arrête quand le résultat apparaît.
+- Mouvement du curseur lissé, sans tremblement.
+- Tenir chaque écran le temps de le lire (même règle que les cartons, `formats.md` § « Texte à l'écran »).
+
+**Recadrage par format.**
+
+- 16:9 : l'écran entier tient dans la toile.
+- 9:16 et 1:1 : recadrer sur la zone utile de chaque plan plutôt que réduire l'écran entier, illisible sur un téléphone.
+- Si un écran reste illisible une fois recadré en vertical, le signaler au storyboard et proposer à l'humain soit une version 16:9 seule, soit une version verticale qui montre moins d'écrans.
+
+**Habillage.** Titres, chiffres, annotations animées et plan de fin passent par la skill `motion-design`. Pour une démo marketing tirée d'un site ou d'une application, la filière est `hyperframes:product-launch-video` (choix de filière dans `video-production`).
 
 ## Check-list mesurable avant export
 
@@ -48,3 +76,8 @@ Règles de coupe, de rythme et de son pour tout montage narratif (talking-head, 
 - [ ] Un silence total posé sur le beat principal
 - [ ] Master à −14 LUFS, crête ≤ −1,5 dBTP
 - [ ] Transcription du master comparée au texte attendu (fidélité mot à mot)
+- [ ] Démo produit : aucune donnée réelle de client à l'écran
+
+---
+
+Méthode inspirée d'OpenMontage (calesthio/OpenMontage, AGPLv3), réécrite pour le template : aucun texte ni code repris. Registre : docs/vendored-video.md.

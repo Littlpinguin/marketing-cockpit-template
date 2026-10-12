@@ -17,7 +17,7 @@ Commande réentrante : relancée, elle affiche l'état courant et demande quoi c
 
 | Module | Dossier / périmètre | Prérequis à vérifier |
 |---|---|---|
-| `video` | `08-video/` | macOS (`uname -s` == `Darwin`) **et** Palmier Pro installé (demander confirmation à l'utilisateur ; vérifier l'application si un chemin est fourni) |
+| `video` | `08-video/` (point d'entrée : skill `video-production` ; moteur : plugin HyperFrames) | Tout système : `ffmpeg -version` et `ffprobe -version` répondent, `node --version` ≥ 22, `npx --version` répond. L'activation installe ensuite le plugin HyperFrames (sous-section « Activation du module `video` ») |
 | `automatisations` | `10-automatisations/` | Instance n8n accessible : `N8N_BASE_URL` (+ `N8N_API_KEY`) présents dans `.env`, test de reachability (GET `<base>/healthz` ou équivalent) |
 | `reporting` | `11-reporting/` | Au moins une source de données configurée via `/tools-setup` (GA4/Search Console, Postiz ou outil emailing) |
 | `acquisition` | `12-acquisition/` | Instance n8n (comme `automatisations`) ; si scraping : compte Apify (`APIFY_TOKEN` dans `.env`) |
@@ -47,13 +47,42 @@ Pour chaque module à activer, vérifier les prérequis du registre ci-dessus :
 
 Si un prérequis manque : refuser l'activation, expliquer quoi faire (souvent : passer par `/tools-setup` pour configurer le connecteur), proposer de réessayer ensuite.
 
+#### Activation du module `video`
+
+Le moteur s'installe comme plugin Claude Code officiel : `hyperframes@hyperframes`, marketplace `heygen-com/hyperframes`, licence Apache-2.0. Aucun fichier HyperFrames n'est copié dans le dépôt.
+
+1. **Vérifier les outils locaux**, sans rien modifier ni télécharger : `ffmpeg -version`, `ffprobe -version`, `node --version` (22 ou plus), `npx --version`. Un outil absent : le dire, ne rien télécharger, ne pas activer.
+2. **Montrer à l'utilisateur les commandes qui téléchargent ou installent**, et attendre son accord avant de lancer la première, depuis la racine du dépôt :
+
+   ```bash
+   npx --yes hyperframes doctor --json
+   claude plugin marketplace add heygen-com/hyperframes --scope local
+   claude plugin install hyperframes@hyperframes --scope local
+   ```
+
+   La première télécharge la dernière version publiée du paquet npm `hyperframes` dans le cache de npx (hors du dépôt) et contrôle l'environnement de rendu, Chrome headless compris. Elle passe avant les deux autres : en sortie `--json`, son code de sortie vaut toujours 0, lire le champ `ok`. Un prérequis absent ou `ok` faux : afficher les manques tels quels, ne rien installer, ne pas activer. Les deux suivantes installent le plugin, en portée `local` : seul `.claude/settings.local.json`, non versionné, est modifié. Rien n'entre dans le dépôt ni dans la configuration des autres projets.
+3. **Contrôler après l'installation** : `claude plugin list` (ou `claude plugin list --json`) doit lister `hyperframes@hyperframes`. Ne pas relancer `npx hyperframes doctor` à ce stade : une fois le plugin installé, les commandes HyperFrames passent par le lanceur du plugin, qui choisit la version du CLI fixée par son manifeste (règles d'exécution en plugin de la skill `hyperframes:hyperframes`), et l'environnement de rendu a déjà été contrôlé avant l'installation (point 2). Si le plugin n'apparaît pas, ne pas activer, et proposer de retirer ce qui vient d'être installé (`claude plugin uninstall hyperframes@hyperframes --scope local`, puis `claude plugin marketplace remove hyperframes --scope local`).
+4. **Relever la version installée** du plugin dans `claude plugin list` (ou `claude plugin list --json`), pour l'écrire dans `modules.video.hyperframes` à l'étape 4.
+5. **Prévenir l'utilisateur** : les skills `hyperframes:*` se chargent au démarrage d'une session. Redémarrer Claude Code avant la première production vidéo.
+6. **Détecter les capacités facultatives**, les afficher, sans jamais bloquer l'activation :
+
+   | Capacité | Détection | Ce qu'elle ouvre |
+   |---|---|---|
+   | `whisper` | `command -v whisper-cli` répond et `WHISPER_MODEL` est renseigné dans `.env` (présence seulement) | Transcription locale : `qa-video.py --script`, skills `captions` et `video-repurpose` |
+   | `manim` | `manim --version` répond | Skills `manim-composer` et `manim-ce` |
+   | `corpus` | `python3 -c "import open_clip, torch"` réussit | Index et recherche CLIP du corpus documentaire (`pip install -r 08-video/requirements-corpus.txt`, skill `video-documentary`) |
+   | clés de stock | `PEXELS_API_KEY` et `PIXABAY_API_KEY` renseignées dans `.env` (présence seulement) | Sources Pexels et Pixabay du corpus ; sans elles, Internet Archive, Wikimedia Commons et NASA restent disponibles |
+
+   Les trois premières s'écrivent dans `modules.video.capacites` ; les clés de stock s'affichent seulement.
+
 ### Étape 4 — Écriture de l'état
 
 Mettre à jour la clé `modules` de `.setup-completed` (créer la clé si absente) :
 
 ```json
 "modules": {
-  "video":                { "enabled": false, "checked_at": "ISO 8601" },
+  "video":                { "enabled": true,  "checked_at": "ISO 8601", "hyperframes": "0.8.149",
+                            "capacites": { "whisper": true, "manim": false, "corpus": false } },
   "automatisations":      { "enabled": true,  "checked_at": "ISO 8601" },
   "reporting":            { "enabled": false, "checked_at": "ISO 8601" },
   "acquisition":          { "enabled": false, "checked_at": "ISO 8601" },
@@ -66,6 +95,8 @@ Mettre à jour la clé `modules` de `.setup-completed` (créer la clé si absent
 
 Présenter le diff avant écriture. Ne rien écrire d'autre dans `.setup-completed`.
 
+Pour `video`, `hyperframes` porte la version du plugin relevée à l'activation (`claude plugin list`), et `capacites` les trois booléens détectés (`whisper`, `manim`, `corpus`). Les autres modules gardent la forme courte.
+
 ### Étape 5 — Chargement conditionnel
 
 Le contrat de chargement, appliqué par toutes les sessions :
@@ -73,6 +104,8 @@ Le contrat de chargement, appliqué par toutes les sessions :
 - **Module actif** → le `CLAUDE.md` du dossier concerné fait foi ; ses workflows sont disponibles ; `/health-check` vérifie ses prérequis à chaque passage.
 - **Module inactif** → ne pas lire ni appliquer le `CLAUDE.md` du module, ne pas proposer ses workflows, ne pas exiger ses variables `.env`. Si l'utilisateur demande explicitement une tâche du module, répondre : « Ce module n'est pas actif — lancez `/modules` pour l'activer. »
 - À l'activation, si le dossier du module ne contient que son `CLAUDE.md`, créer l'arborescence décrite dans ce `CLAUDE.md` (sous-dossiers + `.gitkeep`).
+- À l'activation de `video` : aucune arborescence à créer, `08-video/projets/<slug>/` naît au cadrage de chaque vidéo (skill `video-production`).
+- À la désactivation de `video` : proposer, sans l'imposer, `claude plugin uninstall hyperframes@hyperframes --scope local`, puis `claude plugin marketplace remove hyperframes --scope local` si plus rien ne sert de cette marketplace. Le plugin peut servir hors du cockpit : l'utilisateur décide.
 - À l'activation de `print` : substituer `{{COMPANY_NAME}}` dans `14-print/CLAUDE.md`, puis reporter les valeurs de `01-brand/style-guide.md` dans les variables `:root` de `14-print/gabarits/print-a5.css` (commentaires `← BRAND_*`), en couleurs pleines, et signaler si la police de marque n'est pas disponible en local (`01-brand/assets/fonts/`).
 
 ### Étape 6 — Récapitulatif

@@ -2,12 +2,12 @@
 
 **Your marketing department, running inside Claude Code, on a brand your agents can read, apply and check.**
 
-54 production skills · 20 specialist agents · 120 slide layouts · 44 landing sections · 16 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+60 production skills · 21 specialist agents · 120 slide layouts · 44 landing sections · 16 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
-[![Skills](https://img.shields.io/badge/skills-54-blue.svg)](#whats-inside)
-[![Agents](https://img.shields.io/badge/agents-20-blue.svg)](#whats-inside)
+[![Skills](https://img.shields.io/badge/skills-60-blue.svg)](#whats-inside)
+[![Agents](https://img.shields.io/badge/agents-21-blue.svg)](#whats-inside)
 
 Clone it once per company, run the wizard, and get a role-based cockpit that operates like a marketing director: strategy, social, email, landing pages, design, presentations, SEO, plus optional modules for video, n8n automation, client-facing reporting, outbound acquisition and print production. Every deliverable is a file in your repo. Every word passes a brand gate before it ships.
 
@@ -132,7 +132,7 @@ This template is the actual working tool of an externalized marketing practice. 
 ```
 Core (always on)                          Optional modules (/modules)
 ┌───────────────────────────────┐         ┌────────────────────────────────────┐
-│ 00-intel     field intel      │         │ 08-video            Palmier Pro    │
+│ 00-intel     field intel      │         │ 08-video            HyperFrames    │
 │ 01-brand     brand brain      │         │ 10-automatisations  n8n engine     │
 │ 02-strategy  calendar + KPIs  │────────▶│ 11-reporting        client-site    │
 │ 03→07, 09    production roles │         │                     dashboard      │
@@ -188,7 +188,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 
 ## What's inside
 
-**54 skills**, organized by function (all in `.claude/skills/`):
+**60 skills**, organized by function (all in `.claude/skills/`):
 
 | Category | Skills | Count |
 |---|---|---|
@@ -199,12 +199,12 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 | Strategy & intelligence | `content-strategy`, `veille-strategy` (market watch), `scraping`, `performance-report`, `strategy-challenger` (challenge any strategy) | 5 |
 | Governance & plumbing | `cockpit-setup` (wizard), `brand-check` (the quality gate, step 0 = brand linter), `inventory` (script-built anti-repetition index), `sync-template`, `backport-to-template` | 5 |
 | Paid acquisition | `sea-google-ads`, `ads-audit` (Google/Meta/LinkedIn audit grids, ~157 checks) | 2 |
-| Video | `video-editing`, `captions`, `video-generation` (t2v/i2v rushes + text-fidelity check), `video-matting`, `reel-talking-head` (orchestrator, two validation gates) | 5 |
+| Video | `video-production` (single entry point: route, three approvals, cost contract, QA), `motion-design` (brand bridge to HyperFrames), `video-editing`, `captions`, `video-generation` (t2v/i2v rushes + text-fidelity check), `video-matting`, `reel-talking-head` (orchestrator, two validation gates), `video-repurpose` (long video → scored clips), `video-documentary` (archive montage, CLIP search), `manim-composer`, `manim-ce` | 11 |
 | Automation | `n8n-builder`, `n8n-audit` | 2 |
 | Print | `print` (flatplan → grid layout → opaque plate → PDF/X-4 CMYK chain → prepress checks) | 1 |
 | Web animation | `animation-gsap` (GSAP + ScrollTrigger), `animation-animejs`, `animation-lottie`, `animation-scroll-reveal` (AOS & co) | 4 |
 
-**20 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger`, `video-art-director`, `video-model-scout`, `print-preflight`, `print-editorial`, and the six landing agents (`landing-researcher`, `landing-section-builder`, `landing-reviewer-design`, `landing-reviewer-brand`, `landing-reviewer-cro`, `landing-reviewer-a11y`), dispatched in parallel for audits, landing pages and multi-channel campaigns.
+**21 agents** (`.claude/agents/`): `brand-guardian`, `qa-visuel`, `a11y-auditor`, `seo-technical`, `seo-content`, `seo-google`, `sea-analyst`, `veille-analyst`, `performance-analyst`, `n8n-debugger`, `video-reviewer`, `video-art-director`, `video-model-scout`, `print-preflight`, `print-editorial`, and the six landing agents (`landing-researcher`, `landing-section-builder`, `landing-reviewer-design`, `landing-reviewer-brand`, `landing-reviewer-cro`, `landing-reviewer-a11y`), dispatched in parallel for audits, landing pages and multi-channel campaigns.
 
 **Brand-as-code tooling.** The brand brain's scripts carry no brand value in their code: they read `01-brand/tokens.json` and a TOML config next to them. `build-tokens`, `lint-brand` and `build-inventory` need nothing beyond the Python standard library; tests run with `python3 -m pytest scripts/tests -q` (fictional brand fixtures).
 
@@ -219,6 +219,8 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 | `06-graphic-design/scripts/genmeta.py` | Image provenance: real file extension, PNG tag, `<image>.gen.json` sidecar (model, full prompt, inputs, settings, sha256), C2PA guard |
 | `06-graphic-design/scripts/promote-asset.py` | Moves a validated asset into `01-brand/assets/` under a conforming name and adds its catalogue entry; refuses it without source, rights and author |
 | `06-graphic-design/scripts/new-deck.py` | Creates a deck from the vendored starter with the brand `:root` of `presentations/tokens.css` |
+| `08-video/scripts/qa-video.py` | Measured QA of a video render (module `video`): streams, duration, platform format, codec, faststart, bitrate, loudness and true peak, black and frozen frames, silences, shot length and rhythm, narration coverage against the script; one frame per shot and a contact sheet for the `video-reviewer` agent; exit code usable as a gate |
+| `08-video/scripts/brand-frame.py` | Writes the brand frame of a HyperFrames project (`frame.md` and `brand.css`, a new `build-tokens` target) from `tokens.json`; `--check` exits 1 on drift |
 | `scripts/sync-intel.py` | Copies new Drive transcript exports into `00-intel/inbox/`, incremental, with a dry run |
 | `scripts/sync-slides-engine.py` | Re-vendors the slides engine from slides-agent; `--check` exits 1 when a vendored file drifted |
 | `scripts/relativize-paths.py` | Rewrites machine-absolute paths in HTML/CSS compositions into relative ones |
@@ -238,7 +240,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 | Module | What it adds | Prerequisites |
 |---|---|---|
 | `veille` | Multi-level market watch (competitors, sector, trends) feeding the calendar with **sourced** content ideas | None |
-| `video` | AI-assisted editing & captions, AI rushes (t2v/i2v with text-fidelity check), local matting, talking-head reel orchestration, editing doctrine (`08-video/montage.md`) | macOS + [Palmier Pro](https://github.com/palmier-io/palmier-pro); generation needs a multi-model MCP |
+| `video` | A video studio with one entry point (`video-production`): project folder, three human approvals before any spend, cost contract, decision log. Brand motion design, explainers and launch videos through [HyperFrames](https://github.com/heygen-com/hyperframes) workflows, with `frame.md` and `brand.css` generated from your tokens; rushes editing (HyperFrames or ffmpeg), talking-head reels, long video → clips, documentary montage on free archives (licence-filtered corpus, optional CLIP search), a deterministic ink-drawing engine with a stick figure driven by motion-capture clips, 3D, Manim, AI rushes, captions, an inspiration library of example videos. Measured render QA (`qa-video.py`) and a `video-reviewer` agent before delivery; doctrine in `08-video/` | ffmpeg, Node 22; the HyperFrames plugin is installed by `/modules`. Optional: whisper, Manim, CLIP corpus dependencies; generation needs a multi-model MCP |
 | `automatisations` | Build, debug and evolve n8n workflows from Claude (5-phase method, 5,100+ template libraries, `n8n-builder`/`n8n-audit`/`n8n-debugger`); feeds `00-intel/`, watch, reports | Self-hosted n8n (VPS guide included) |
 | `reporting` | Brand-styled performance dashboard hosted on the client's site (FTP + access code), monthly snapshots, month-to-month navigation, written analysis | ≥ 1 data source (GA4/GSC, Postiz, email tool) |
 | `acquisition` | Outbound campaigns: the cockpit does ICP + brand-voice sequences + lists, [Lemlist MCP](https://developer.lemlist.com/mcp/setup) does sending & deliverability; plus Google Ads operations and multi-platform ads audits | Lemlist account |
@@ -293,8 +295,11 @@ The best community skills are **vendored** (copied, adapted, attributed) rather 
 | [email-marketing-bible](https://github.com/CosmoBlk/email-marketing-bible) | CosmoBlk | Deliverability triage, compliance table, dark-mode-safe design | MIT |
 | [accessibility-agents](https://github.com/Community-Access/accessibility-agents) | Taylor Arndt | WCAG 2.2 AA web referential + a11y audit agent | MIT |
 | [slides-agent](https://github.com/Littlpinguin/slides-agent) | Jessy Martin (same author) | The slides engine: starter, components, 120-layout catalogue, QA, PDF export, tests, as a mechanical mirror (`scripts/sync-slides-engine.py`, register `docs/vendored-slides.md`) | MIT |
+| [manim_skill](https://github.com/adithya-s-k/manim_skill) | Adithya S Kolavi | Manim scene planning and Manim Community best practices (`manim-composer`, `manim-ce`), Markdown only, no Python examples copied | MIT |
 
-Each register documents what was kept, what was cut and why, plus a re-sync procedure. If you're an upstream author and want anything changed, open an issue.
+The video module also builds on projects it does not copy. [HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen, Apache-2.0) is installed by `/modules` as the official Claude Code plugin, so its workflows and CLI keep their upstream release pace. The production method of [OpenMontage](https://github.com/calesthio/OpenMontage) (calesthio, AGPLv3) was read and rewritten in our own words; no text or code was copied, and the heavier tools (ink-theater engine, BVH converter, documentary corpus) were written clean-room from a functional spec. Example videos for inspiration are fetched at use time from [awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos) and never stored in the repo. Register: [`docs/vendored-video.md`](docs/vendored-video.md).
+
+Each register documents what was kept, what was cut and why. Vendored sources also come with a re-sync procedure; a source installed rather than copied (HyperFrames) comes with its install and version-tracking path, and a source read for its method or consulted for inspiration (OpenMontage, the example videos) with what was taken and how nothing was copied. If you're an upstream author and want anything changed, open an issue.
 
 ## Roadmap
 
