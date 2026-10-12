@@ -13,6 +13,7 @@ Cette skill porte la marque jusqu'à HyperFrames pour tout ce qui bouge : titres
 - `01-brand/design-anti-generique.md` : marqueurs du look générique et méthode pour s'en écarter.
 - `08-video/motion.md` : principes, profil de goût, revue de singularité, choix du moteur, repères typographiques, interdits.
 - La skill `design-taste` : mêmes curseurs côté web, pour une campagne qui a aussi une landing.
+- `08-video/inspiration.md` : chercher des vidéos de référence (`08-video/scripts/inspiration.py`), en extraire le mécanisme et le transposer dans la marque, sans reprendre ni look, ni prompt, ni code d'un créateur.
 - Selon le besoin, une des références de cette skill (section « Références »).
 
 Si `01-brand/style-guide.md` manque ou porte encore des `{{...}}`, s'arrêter et proposer `/start-cockpit`.
@@ -101,7 +102,8 @@ Charger seulement celle dont la vidéo a besoin :
 - [ ] Aucune couleur, police ni rayon en dur : uniquement les variables de `brand.css`
 - [ ] Police de marque embarquée par `@font-face` si besoin, droits vérifiés dans `01-brand/droits.md`
 - [ ] Profil de goût et revue de singularité consignés dans `decisions.md`
-- [ ] Aucun preset `frame-presets`, aucun effet interdit par `08-video/motion.md`, blocs du registre repeints aux couleurs de la marque
+- [ ] Aucun preset `frame-presets` (hors la peau de sous-titres), aucun effet interdit par `08-video/motion.md`, blocs du registre repeints aux couleurs de la marque
+- [ ] Si la pièce s'inspire de vidéos de référence : mécanisme transposé selon `08-video/inspiration.md`, créateurs cités, rien de leur look ni de leur prompt repris
 - [ ] Logo seulement au plan de fin, ou discret en zone sûre
 - [ ] `npx hyperframes lint` et `npx hyperframes check` propres
 - [ ] Rendu fait après accord, puis QA et revue par `video-production`

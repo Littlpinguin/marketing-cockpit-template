@@ -174,3 +174,98 @@ def test_theme_d_exemple_decrit_en_anglais():
     geste = next(e for e in theme["emplacements"] if e["id"] == "geste")
     assert f'description = "{geste["description"]}"' in texte("08-video/documentaire.md"), \
         "l'extrait de documentaire.md doit reprendre le thème livré"
+
+
+# ------------------------------------------------------------------ bibliothèque d'inspiration (tâche 16)
+
+INSPIRATION_SECTIONS = ["## Rôle", "## Chercher des références", "## Extraire le mécanisme, pas le look",
+                        "## Transposer dans la marque", "## De la catégorie à la filière",
+                        "## Montrer une référence au client", "## Interdits", "## Check-list"]
+
+
+def _ligne(contenu: str, debut: str) -> str:
+    """La ligne (puce) d'un fichier qui commence par `debut`."""
+    trouvees = [ligne for ligne in contenu.splitlines() if ligne.startswith(debut)]
+    assert len(trouvees) == 1, f"{debut!r} : {len(trouvees)} ligne(s)"
+    return trouvees[0]
+
+
+def test_doctrine_inspiration():
+    contenu = texte("08-video/inspiration.md")
+    positions = [contenu.find(titre) for titre in INSPIRATION_SECTIONS]
+    assert all(p >= 0 for p in positions), [t for t, p in zip(INSPIRATION_SECTIONS, positions) if p < 0]
+    assert positions == sorted(positions), "sections dans l'ordre de la spec"
+    assert "—" not in contenu, "tiret cadratin"
+    for terme in ("inspiration.py", "references.md", "frame.md", "brand.css", "01-brand/voice.md", "08-video/motion.md",
+                  "revue de singularité", "profil de goût", "tropes bannis", "référence → transposition",
+                  "mécanisme", "Structure dans le temps", "Rythme", "Transitions", "en anglais", "Check-list"):
+        assert terme in contenu, terme
+    pied = contenu.rstrip().splitlines()[-1]
+    assert "https://github.com/yihui-dev/awesome-opus5-5-videos" in pied
+    assert "chaque vidéo et chaque prompt appartient à son créateur" in pied
+
+
+def test_inspiration_table_categorie_filiere_et_techs():
+    contenu = texte("08-video/inspiration.md")
+    production = texte(".claude/skills/video-production/SKILL.md")
+    for filiere in ("hyperframes:motion-graphics", "hyperframes:general-video", "hyperframes:faceless-explainer"):
+        assert filiere in contenu and filiere in production, f"{filiere} : même nom dans la doctrine et dans la skill"
+    for terme in ("`motion`", "`explainer`", "`3d`", "`interactive`", ".claude/skills/motion-design/references/3d.md",
+                  "landing-page", "Démo produit et capture d'écran", "hyperframes:hyperframes-audio", "hf-seek",
+                  "Three.js", "`gsap`", "`canvas`", "`shader`", "`threejs`", "`audio`"):
+        assert terme in contenu, terme
+    assert (REPO / ".claude/skills/motion-design/references/3d.md").is_file()
+
+
+def test_inspiration_interdits_et_propriete():
+    contenu = texte("08-video/inspiration.md")
+    interdits = contenu.split("## Interdits")[1].split("## Check-list")[0]
+    for idee in ("Recopier le prompt", "visuels ou le code", "création de l'agence", "vidéo virale identifiable",
+                 "données tierces"):
+        assert idee in interdits, idee
+    assert "jamais une capture" in contenu
+    assert ".cache/inspiration/" in contenu
+
+
+def test_inspiration_cablee_dans_les_skills():
+    production = texte(".claude/skills/video-production/SKILL.md")
+    concepts = production.split("2. **Concepts.**")[1].split("→ **Validation 1")[0]
+    for terme in ("08-video/scripts/inspiration.py", "08-video/inspiration.md", "références", "lien", "créateur",
+                  "references.md"):
+        assert terme in concepts, f"étape Concepts : {terme}"
+    storyboard = production.split("4. **Storyboard.**")[1].split("→ **Validation 3")[0]
+    assert "référence → transposition" in storyboard and "references.md" in storyboard
+    assert "references.md" in production.split("### `brief.md`")[0], "références.md figure dans l'arborescence du projet"
+    motion = texte(".claude/skills/motion-design/SKILL.md")
+    assert "08-video/inspiration.md" in motion.split("## Charte du projet")[0], "renvoi dans « Références à charger »"
+    assert (REPO / "08-video/scripts/inspiration.py").is_file()
+
+
+def test_pas_de_musique_hors_ligne_pour_les_workflows_scriptes():
+    production = texte(".claude/skills/video-production/SKILL.md")
+    connexion = _ligne(production, "- **Connexion et médias.**")
+    musique = _ligne(production, "- **Musique : la licence d'abord, même gratuite.**")
+    for ligne in (connexion, musique):
+        for workflow in ("faceless-explainer", "product-launch-video", "pr-to-video"):
+            assert workflow in ligne, workflow
+        assert "hyperframes:general-video" in ligne and "usage direct du moteur" in ligne
+        assert "MusicGen" in ligne and "Lyria" in ligne
+    assert "aucune musique" in connexion and "récupérer chez HeyGen" in connexion
+    assert "n'en ont aucune hors ligne" in musique
+    assert "CC BY-NC 4.0" in musique and "01-brand/droits.md" in production, "contrôle de licence MusicGen conservé"
+    assert "la musique est générée (Lyria" not in production, "ancienne affirmation retirée"
+
+
+def test_frame_presets_hors_peau_de_sous_titres():
+    production = texte(".claude/skills/video-production/SKILL.md")
+    assert "(hors la peau de sous-titres)" in _ligne(production, "Rappels : jamais de preset `frame-presets`")
+    motion = texte(".claude/skills/motion-design/SKILL.md")
+    assert "(hors la peau de sous-titres)" in _ligne(motion, "- [ ] Aucun preset `frame-presets`")
+
+
+def test_voix_payante_met_a_jour_voice_apres_l_echantillon():
+    production = texte(".claude/skills/video-production/SKILL.md")
+    bloc = _ligne(production, "- **Voix et storyboard.**")
+    apres = bloc.split("échantillon payant annoncé et validé")[1]
+    assert "validation 3" in apres and "mettre `voice:` à jour dans `BRIEF.md`" in apres
+    assert apres.index("mettre `voice:` à jour") < apres.index("avant de lancer l'étape audio")
