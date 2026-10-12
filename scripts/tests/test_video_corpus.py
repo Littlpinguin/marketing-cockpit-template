@@ -1634,6 +1634,58 @@ def test_normaliser_licence_garde_fous(brute, attendue):
     assert licences.normaliser(brute) == attendue
 
 
+@pytest.mark.parametrize("brute, attendue", [
+    # toute la ponctuation de catégorie Pd est repliée sur « - »
+    ("CC BY﹣NC 4.0", "cc-by-nc"),                # petit trait d'union-moins
+    ("CC BY－SA 4.0", "cc-by-sa"),                # trait d'union-moins pleine chasse
+    ("CC BY⸺ND 4.0", "cc-by-nd"),                # tiret double cadratin
+    ("CC BY⸗NC", "cc-by-nc"),                    # double trait d'union oblique
+    ("CC BY֊NC֊SA", "cc-by-nc-sa"),         # trait d'union arménien
+    ("CC BY〜NC", "cc-by-nc"),                    # tiret ondulé
+    ("CC BY﹘ND", "cc-by-nd"),                    # petit tiret cadratin
+    # caractères de format invisibles (catégorie Cf) retirés
+    ("CC BY­-NC 4.0", "cc-by-nc"),               # trait d'union conditionnel
+    ("CC BY​-NC 4.0", "cc-by-nc"),               # espace sans chasse
+    ("CC BY-N­C 4.0", "cc-by-nc"),
+    ("CC BY⁠-SA", "cc-by-sa"),                   # gluon de mots
+    ("CC BY Non­Commercial 4.0", "cc-by-nc"),
+    ("CC BY­NC 4.0", "inconnue"),                # collé une fois le caractère retiré : jamais cc-by
+    ("CC BY​SA", "inconnue"),
+    # séparateurs ASCII entre BY et la restriction
+    ("CC BY/NC 4.0", "cc-by-nc"),
+    ("CC BY_NC 4.0", "cc-by-nc"),
+    ("CC BY.NC 4.0", "cc-by-nc"),
+    ("CC BY+NC 4.0", "cc-by-nc"),
+    ("CC BY, NC 4.0", "cc-by-nc"),
+    ("CC BY (NC) 4.0", "cc-by-nc"),
+    ("CC BY: ND", "cc-by-nd"),
+    ("CC BY/NC/SA", "cc-by-nc-sa"),
+    ("CC BY_NC_ND 4.0", "cc-by-nc-nd"),
+    ("CC BY+SA+ND", "inconnue"),                      # contradictoire
+    # restrictions en toutes lettres, mêmes séparateurs
+    ("CC BY Non_Commercial 4.0", "cc-by-nc"),
+    ("CC BY Share_Alike", "cc-by-sa"),
+    ("CC BY No_Derivs", "cc-by-nd"),
+    ("CC BY Non.Commercial 4.0", "cc-by-nc"),
+    ("Public domain, Non_Commercial use only", "inconnue"),
+    ("Public domain, Share_Alike", "inconnue"),
+])
+def test_normaliser_licence_separateurs_exotiques(brute, attendue):
+    assert licences.normaliser(brute) == attendue
+
+
+@pytest.mark.parametrize("brute, attendue", [        # un mot qui commence par nc/sa/nd n'est pas une restriction
+    ("CC BY - Sandra Martin", "cc-by"),
+    ("CC BY / Ndiaye", "cc-by"),
+    ("CC BY. Ncube", "cc-by"),
+    ("CC BY, voir sa page", "cc-by"),                 # seul ce qui suit immédiatement « BY » compte
+    ("﻿CC BY 4.0", "cc-by"),
+    ("​pexels", "pexels"),
+])
+def test_normaliser_licence_separateurs_garde_fous(brute, attendue):
+    assert licences.normaliser(brute) == attendue
+
+
 # --- sources
 
 def test_wikimedia_decode_les_entites_html(monkeypatch):
