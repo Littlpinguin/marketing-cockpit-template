@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.1] - 2026-10-12
+
 Follow-ups from the video studio 2.3.0 reviews.
 
 **Fixed.** The documentary licence filter no longer reads a restricted Creative Commons licence as plain CC BY when it is written with an unusual separator: every Unicode dash is folded onto `-`, invisible format characters (soft hyphen, zero-width space, word joiner) are stripped, and any non-alphanumeric separator between `BY` and `NC` / `SA` / `ND` counts (`CC BY/NC`, `CC BY_NC`, `CC BY, NC`, `Non_Commercial`). Two words glued together once an invisible character is stripped give `inconnue`, never `cc-by`.
