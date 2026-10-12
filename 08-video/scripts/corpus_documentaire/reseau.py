@@ -43,6 +43,16 @@ def _verifier_schema(url: str) -> None:
         raise ErreurReseau(f"{_base(url)} : adresse refusée (http et https seulement)")
 
 
+def _longueur_annoncee(reponse) -> int | None:
+    """Content-Length si le serveur en donne une utilisable, sinon None (transfert en morceaux, en-tête absent)."""
+    entetes = getattr(reponse, "headers", None)
+    try:
+        longueur = int(entetes.get("Content-Length")) if entetes is not None else None
+    except (TypeError, ValueError):
+        return None
+    return longueur if longueur is not None and longueur >= 0 else None
+
+
 def obtenir_json(url: str, params: dict | None = None, entetes: dict | None = None, delai: int = 30) -> Any:
     _verifier_schema(url)
     try:
@@ -50,6 +60,7 @@ def obtenir_json(url: str, params: dict | None = None, entetes: dict | None = No
         with urllib.request.urlopen(requete, timeout=delai) as reponse:
             donnees = json.loads(reponse.read().decode("utf-8"))
     except urllib.error.HTTPError as err:
+        time.sleep(PAUSE)       # après un refus (429 surtout), ne pas relancer la requête suivante aussitôt
         raise ErreurReseau(f"HTTP {err.code} sur {_base(url)}") from None
     except (OSError, http.client.HTTPException, ValueError) as err:     # URLError, délai, coupure, JSON, UTF-8
         raise ErreurReseau(f"{_base(url)} : {type(err).__name__}") from None
@@ -63,13 +74,23 @@ def telecharger(url: str, destination: Path, delai: int = 120) -> Path:
     try:
         requete = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(requete, timeout=delai) as reponse, partiel.open("wb") as sortie:
+            annonce = _longueur_annoncee(reponse)
             shutil.copyfileobj(reponse, sortie)
-        if partiel.stat().st_size == 0:
+        recu = partiel.stat().st_size
+        # Une coupure en route n'est pas toujours une exception : on compare à ce que le serveur annonçait.
+        if recu == 0:
+            probleme = "fichier vide"
+        elif annonce is not None and recu != annonce:
+            probleme = f"téléchargement incomplet ({recu} octets reçus sur {annonce})"
+        else:
+            probleme = ""
+        if probleme:
             partiel.unlink(missing_ok=True)
-            raise ErreurReseau(f"{_base(url)} : fichier vide")
+            raise ErreurReseau(f"{_base(url)} : {probleme}")
         partiel.replace(destination)
     except urllib.error.HTTPError as err:
         partiel.unlink(missing_ok=True)
+        time.sleep(PAUSE)
         raise ErreurReseau(f"HTTP {err.code} sur {_base(url)}") from None
     except (OSError, http.client.HTTPException, ValueError) as err:
         partiel.unlink(missing_ok=True)

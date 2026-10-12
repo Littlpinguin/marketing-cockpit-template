@@ -29,7 +29,10 @@ class Nasa(Source):
             ident, manifeste = data.get("nasa_id"), item.get("href")
             if not ident or not manifeste:
                 continue
-            url = _mp4(reseau.obtenir_json(manifeste))
+            try:
+                url = _mp4(reseau.obtenir_json(manifeste))
+            except reseau.ErreurReseau:
+                continue        # un manifeste en panne ne fait pas perdre les autres résultats de la requête
             if not url:
                 continue
             resultats.append(Resultat(

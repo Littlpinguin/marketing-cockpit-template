@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import urlparse
 
-from . import reseau
+from . import images_cles, reseau
 from .licences import ADMISES_DEFAUT, CONNUES, admise, attribution_exigee
 from .sources import SOURCES
 from .sources.base import Source
@@ -23,6 +23,10 @@ REPONSE_INATTENDUE = (KeyError, TypeError, ValueError, AttributeError, IndexErro
 
 class ErreurConversion(Exception):
     """Conversion en mp4 impossible (ffmpeg absent ou en échec)."""
+
+
+class ErreurMesure(Exception):
+    """Durée impossible à mesurer parce que ffprobe est absent."""
 
 
 @dataclass
@@ -50,6 +54,7 @@ class Rapport:
     ecartes_duree: int = 0
     erreurs: list[str] = field(default_factory=list)
     sources_ignorees: list[str] = field(default_factory=list)
+    avertissements: list[str] = field(default_factory=list)     # contrôle non fait, clip conservé
 
 
 def _liste_de_textes(valeur, nom: str) -> list[str]:
@@ -117,9 +122,23 @@ def convertir_en_mp4(source: Path, cible: Path) -> Path:
     return cible
 
 
+def mesurer_duree(video: Path) -> float | None:
+    """Durée mesurée par ffprobe ; None si le fichier est illisible ; ErreurMesure si ffprobe manque."""
+    if shutil.which("ffprobe") is None:
+        raise ErreurMesure("ffprobe introuvable")
+    duree = images_cles.duree_video(video)
+    return duree if duree > 0 else None
+
+
 def construire(theme: Theme, dossier: Path, sources: list[Source], *,
-               telecharger=None, convertir=convertir_en_mp4) -> Rapport:
+               telecharger=None, convertir=convertir_en_mp4, mesurer=None) -> Rapport:
+    """Cherche, filtre, télécharge. `mesurer(video)` donne la durée quand la source n'en donne pas
+    (par défaut ffprobe) ; un convertisseur injecté est présumé prêt, le convertisseur par défaut exige ffmpeg."""
     telecharger = telecharger or reseau.telecharger
+    mesurer = mesurer or mesurer_duree
+    conversion_possible = convertir is not convertir_en_mp4 or shutil.which("ffmpeg") is not None
+    non_mesures: list[str] = []
+    rejetes: set[str] = set()       # trouvés trop longs ou illisibles : pas de nouveau téléchargement dans le même lot
     clips = dossier / "clips"
     clips.mkdir(parents=True, exist_ok=True)
     rapport = Rapport()
@@ -155,11 +174,38 @@ def construire(theme: Theme, dossier: Path, sources: list[Source], *,
                     if fiche.exists() and video.exists():
                         rapport.deja_presents += 1
                         continue
+                    if resultat.nom_fichier in rejetes:
+                        continue
+                    extension = _extension(resultat.url_fichier)
+                    if extension != ".mp4" and not conversion_possible:      # inutile de télécharger ce qu'on ne saura pas convertir
+                        ligne = (f"{resultat.nom_fichier} : format {extension} à convertir en mp4 mais ffmpeg est "
+                                 "introuvable, non téléchargé")
+                        if ligne not in rapport.erreurs:
+                            rapport.erreurs.append(ligne)
+                        continue
                     try:
-                        brut = telecharger(resultat.url_fichier,
-                                           clips / f"{resultat.nom_fichier}{_extension(resultat.url_fichier)}")
+                        brut = telecharger(resultat.url_fichier, clips / f"{resultat.nom_fichier}{extension}")
                         if brut.suffix.lower() != ".mp4":
                             convertir(brut, video)
+                        if theme.duree_max and resultat.duree is None:
+                            # La source ne donne pas de durée (NASA jamais, Wikimedia rarement) : on la mesure,
+                            # sinon la limite du thème serait contournée.
+                            try:
+                                mesuree = mesurer(video)
+                            except ErreurMesure:
+                                non_mesures.append(resultat.nom_fichier)
+                            else:
+                                if mesuree is None:
+                                    video.unlink(missing_ok=True)
+                                    rejetes.add(resultat.nom_fichier)
+                                    rapport.erreurs.append(f"{resultat.nom_fichier} : fichier illisible par ffprobe, écarté")
+                                    continue
+                                if mesuree > theme.duree_max:
+                                    video.unlink(missing_ok=True)
+                                    rejetes.add(resultat.nom_fichier)
+                                    rapport.ecartes_duree += 1
+                                    continue
+                                resultat.duree = mesuree
                         # La fiche vient en dernier : elle atteste que le clip est complet.
                         fiche.write_text(json.dumps(
                             {**resultat.fiche(), "fichier": video.name,
@@ -169,4 +215,9 @@ def construire(theme: Theme, dossier: Path, sources: list[Source], *,
                         rapport.erreurs.append(f"{resultat.nom_fichier} : {err}")
                         continue
                     rapport.telecharges += 1
+    if non_mesures:
+        noms = sorted(set(non_mesures))
+        rapport.avertissements.append(
+            f"durée inconnue et non mesurée (ffprobe introuvable) pour {len(noms)} clip(s), "
+            f"limite de {theme.duree_max:g} s non vérifiée : {', '.join(noms[:5])}{' …' if len(noms) > 5 else ''}")
     return rapport

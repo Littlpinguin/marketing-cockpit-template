@@ -57,7 +57,10 @@ class Archive(Source):
             ident = doc.get("identifier")
             if not ident:
                 continue
-            meta = reseau.obtenir_json(self.METADONNEES + quote(ident))
+            try:
+                meta = reseau.obtenir_json(self.METADONNEES + quote(ident))
+            except reseau.ErreurReseau:
+                continue        # une fiche en panne ne fait pas perdre les autres résultats de la requête
             fichier = _mp4(meta.get("files", []))
             if not fichier:
                 continue

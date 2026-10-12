@@ -20,8 +20,47 @@ LIBELLES = {
 }
 
 
+# Mentions Creative Commons : abréviations collées à « CC BY », adresses de licence, noms en toutes lettres.
+_CC_MENTION = re.compile(r"\bcc[\s-]*by((?:[\s-]+(?:nc|sa|nd))*)(?![a-z])")      # « cc by sand » n'est pas « sa nd »
+_CC_ADRESSE = re.compile(r"licenses/by((?:-nc)?(?:-sa|-nd)?)/")
+_CC_EN_TOUTES_LETTRES = re.compile(
+    r"\bcc[\s-]*attribution|creative\s*commons[\s,:-]*attribution"
+    r"|attribution[\s-]*(?:non[\s-]?commercial|no[\s-]?deriv|share[\s-]?alike)")
+# Restrictions écrites en toutes lettres : elles comptent même quand la mention s'arrête à « CC BY ».
+_RESTRICTIONS = {
+    "nc": re.compile(r"non[\s-]?commercial"),
+    "nd": re.compile(r"no[\s-]?deriv"),
+    "sa": re.compile(r"share[\s-]?alike"),
+}
+# Un texte libre qui parle d'autre chose que du domaine public ne vaut pas domaine public.
+_AUTRES_TERMES = re.compile(
+    r"all rights reserved|tous droits|copyright|©|\bgfdl\b|\bgpl\b|\blgpl\b|\bmit\b|\bbsd\b|apache"
+    r"|attribution|creative\s*commons|\bcc\b|\bfal\b|free art|licen[cs]e|non[\s-]?commercial|no[\s-]?deriv"
+    r"|share[\s-]?alike")
+
+
+def _creative_commons(texte: str) -> str | None:
+    """Identifiant cc-by… d'un texte qui nomme une licence Creative Commons, « inconnue » si elle est ambiguë."""
+    identifications = {frozenset(m.group(1).split("-")[1:]) for m in _CC_ADRESSE.finditer(texte)}
+    identifications |= {frozenset(re.findall(r"nc|sa|nd", m.group(1))) for m in _CC_MENTION.finditer(texte)}
+    en_toutes_lettres = bool(_CC_EN_TOUTES_LETTRES.search(texte))
+    if not identifications and not en_toutes_lettres:
+        return None
+    if len(identifications) > 1:                    # « CC BY 4.0 / CC BY-NC 3.0 » : on ne choisit pas la plus large
+        return "inconnue"
+    restrictions = set().union(*identifications) if identifications else set()
+    restrictions |= {code for code, motif in _RESTRICTIONS.items() if motif.search(texte)}
+    if {"sa", "nd"} <= restrictions:                # contradictoire
+        return "inconnue"
+    return "cc-by" + "".join(f"-{code}" for code in ("nc", "sa", "nd") if code in restrictions)
+
+
 def normaliser(brute: str | list | None) -> str:
-    """Identifiant canonique d'une mention de licence (texte libre, URL, ou liste de valeurs d'une API)."""
+    """Identifiant canonique d'une mention de licence (texte libre, URL, ou liste de valeurs d'une API).
+
+    Dans le doute, « inconnue » : une licence plus large que la vraie ferait entrer dans un film
+    un plan dont l'usage commercial ou la modification est interdit.
+    """
     if isinstance(brute, (list, tuple)):         # plusieurs valeurs : retenues seulement si elles s'accordent
         valeurs = {normaliser(v) for v in brute if v}
         return valeurs.pop() if len(valeurs) == 1 else "inconnue"
@@ -32,15 +71,16 @@ def normaliser(brute: str | list | None) -> str:
         return texte
     if "publicdomain/zero" in texte or re.search(r"\bcc0\b", texte) or "cc-zero" in texte:
         return "cc0"
-    if ("publicdomain/mark" in texte or "public domain" in texte or texte.startswith("pd-")
-            or texte in ("pd", "public-domain", "domaine public", "domaine-public")):
+    creative_commons = _creative_commons(texte)       # avant le domaine public : « CC BY-NC (œuvre dérivée du domaine public) »
+    if creative_commons:
+        return creative_commons
+    if "publicdomain/mark" in texte:
         return "domaine-public"
-    url = re.search(r"licenses/(by(?:-nc)?(?:-sa|-nd)?)/", texte)
-    if url:
-        return "cc-" + url.group(1)
-    mention = re.search(r"\bcc[\s-]*(by(?:[\s-]*nc)?(?:[\s-]*(?:sa|nd))?)\b", texte)
-    if mention:
-        return "cc-" + re.sub(r"[\s-]+", "-", mention.group(1))
+    if texte in ("pd", "public-domain", "domaine public", "domaine-public"):
+        return "domaine-public"
+    if "public domain" in texte or "domaine public" in texte or texte.startswith("pd-"):
+        reste = texte.replace("public domain", " ").replace("domaine public", " ")
+        return "inconnue" if _AUTRES_TERMES.search(reste) else "domaine-public"
     return "inconnue"
 
 

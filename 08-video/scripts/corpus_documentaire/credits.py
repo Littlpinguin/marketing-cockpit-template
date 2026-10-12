@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .licences import LIBELLES
+from .licences import LIBELLES, attribution_exigee
 
 
 def lire_fiches(dossier: Path) -> list[dict]:
@@ -62,11 +62,15 @@ def ecrire_credits(dossier: Path, selection: Path | None = None) -> Path:
     for fiche in sorted(fiches, key=lambda f: (_ligne(f.get("source")), _ligne(f.get("titre")))):
         licence = _ligne(fiche.get("licence")) or "inconnue"
         mention = LIBELLES.get(licence, licence)
-        attribution = " Attribution obligatoire au générique ou en légende." if fiche.get("attribution_exigee") else ""
+        exigee = bool(fiche.get("attribution_exigee")) or attribution_exigee(licence)
+        attribution = " Attribution obligatoire au générique ou en légende." if exigee else ""
+        # Une licence à attribution se cite avec sa version ou son adresse d'origine (CC BY 3.0, URL de la licence).
+        brute = _ligne(fiche.get("licence_brute"))
+        precision = f" ({brute})" if exigee and brute and brute.lower() not in (licence.lower(), mention.lower()) else ""
         auteur = _ligne(fiche.get("auteur")) or "auteur non renseigné"
         titre = _ligne(fiche.get("titre")) or _ligne(fiche.get("id")) or "sans titre"
         lignes.append(f"- « {titre} », {auteur}. Source : {_ligne(fiche.get('source'))} "
-                      f"({_ligne(fiche.get('page'))}). Licence : {mention}.{attribution}")
+                      f"({_ligne(fiche.get('page'))}). Licence : {mention}{precision}.{attribution}")
     sortie = dossier / "credits.md"
     sortie.write_text("\n".join(lignes) + "\n", encoding="utf-8")
     return sortie

@@ -97,6 +97,8 @@ def cmd_build(args) -> int:
           f"{rapport.ecartes_licence} écarté(s) pour licence, {rapport.ecartes_duree} pour durée")
     for ligne in rapport.sources_ignorees:
         print(f"source ignorée : {ligne}")
+    for ligne in rapport.avertissements:
+        print(f"avertissement : {ligne}")
     for ligne in rapport.erreurs:
         print(f"erreur : {ligne}")
     if rapport.telecharges + rapport.deja_presents == 0:
@@ -219,7 +221,10 @@ def cmd_search(args) -> int:
         return 2
     try:
         resultats = index.rechercher(dossier, texte, encodeur, top=args.top)
-    except (ValueError, OSError) as err:
+    except index.ErreurFiche as err:        # donnée du corpus invalide : même code que list et credits
+        print(f"ERREUR : {err}", file=sys.stderr)
+        return 1
+    except (ValueError, OSError, RuntimeError) as err:      # index périmé ou abîmé, fichier manquant, encodeur en échec
         print(f"ERREUR : {err}", file=sys.stderr)
         return 2
     for r in resultats:

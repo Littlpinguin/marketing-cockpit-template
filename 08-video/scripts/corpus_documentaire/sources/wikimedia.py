@@ -1,6 +1,7 @@
 """Wikimedia Commons, fichiers vidéo (sans clé ; webm et ogv convertis en mp4 au téléchargement)."""
 from __future__ import annotations
 
+import html
 import re
 
 from .. import reseau
@@ -10,7 +11,8 @@ from .base import Source, flottant
 
 
 def _sans_html(texte: str) -> str:
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", texte or "")).strip()
+    """Texte brut d'un champ HTML de Commons : balises retirées d'abord, puis entités décodées."""
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", texte or ""))).strip()
 
 
 class Wikimedia(Source):

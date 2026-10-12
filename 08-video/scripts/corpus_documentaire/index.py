@@ -16,6 +16,10 @@ from . import images_cles
 INSTALLATION = "pip install -r 08-video/requirements-corpus.txt"
 
 
+class ErreurFiche(ValueError):
+    """Fiche de clip illisible (JSON invalide ou qui n'est pas un objet) : donnée du corpus à corriger."""
+
+
 class DependanceManquante(Exception):
     """open_clip, torch ou pillow absent, ou modèle CLIP impossible à charger."""
 
@@ -133,12 +137,16 @@ def _lire_index(dossier: Path) -> tuple[dict, array]:
 
 
 def _lire_fiche(chemin: Path) -> dict | None:
+    """La fiche d'un clip, None s'il n'en a pas ; ErreurFiche si elle existe mais est inutilisable."""
     if not chemin.exists():
         return None
     try:
-        return json.loads(chemin.read_text(encoding="utf-8"))
+        fiche = json.loads(chemin.read_text(encoding="utf-8"))
     except ValueError as err:
-        raise ValueError(f"fiche {chemin.name} illisible : {err}") from None
+        raise ErreurFiche(f"fiche {chemin.name} illisible : {err}") from None
+    if not isinstance(fiche, dict):
+        raise ErreurFiche(f"fiche {chemin.name} illisible : un objet JSON est attendu")
+    return fiche
 
 
 def rechercher(dossier: Path, texte: str, encodeur, top: int = 5) -> list[dict]:

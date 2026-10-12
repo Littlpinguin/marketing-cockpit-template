@@ -1377,3 +1377,327 @@ def test_cli_search_sans_index_ni_dependances(tmp_path):
     res = _cli("search", "savoir-faire", "un chameau", "--racine", racine)
     assert res.returncode == 2 and res.stderr.startswith("ERREUR : ") and "Traceback" not in res.stderr
     assert _cli("search", "absent", "x", "--racine", racine).returncode == 2
+
+
+# ------------------------------------------------------------------ revue 1 : téléchargements, durées, licences, crédits
+
+@pytest.fixture(autouse=True)
+def _sans_pause_reseau(monkeypatch):
+    """Les pauses de politesse envers les API n'ont pas leur place dans des tests hors ligne."""
+    monkeypatch.setattr(reseau, "PAUSE", 0)
+
+
+class _ReponseAvecEntetes(io.BytesIO):
+    def __init__(self, corps: bytes, **entetes):
+        super().__init__(corps)
+        self.headers = entetes
+
+
+def test_telecharger_refuse_un_telechargement_tronque(tmp_path, monkeypatch):
+    """Le serveur annonce 100000 octets et coupe après 10 : ce n'est pas un clip complet."""
+    monkeypatch.setattr(reseau.urllib.request, "urlopen", lambda requete, timeout=0:
+                        _ReponseAvecEntetes(b"0123456789", **{"Content-Length": "100000"}))
+    with pytest.raises(reseau.ErreurReseau, match="incomplet") as err:
+        reseau.telecharger("https://exemple.org/f.mp4?jeton=secret", tmp_path / "f.mp4")
+    assert "secret" not in str(err.value) and "10" in str(err.value) and "100000" in str(err.value)
+    assert list(tmp_path.iterdir()) == []                      # ni clip, ni .part
+
+
+def test_telecharger_compare_a_la_longueur_annoncee_sans_la_croire_aveuglement(tmp_path, monkeypatch):
+    for annonce, accepte in (("5", True), ("pas un nombre", True), ("-3", True), ("6", False)):
+        monkeypatch.setattr(reseau.urllib.request, "urlopen", lambda requete, timeout=0, a=annonce:
+                            _ReponseAvecEntetes(b"video", **{"Content-Length": a}))
+        cible = tmp_path / f"f{annonce[:2]}.mp4"
+        if accepte:
+            assert reseau.telecharger("https://exemple.org/f.mp4", cible).read_bytes() == b"video"
+        else:
+            with pytest.raises(reseau.ErreurReseau, match="incomplet"):
+                reseau.telecharger("https://exemple.org/f.mp4", cible)
+
+
+def test_reseau_fait_une_pause_apres_une_erreur_http(tmp_path, monkeypatch):
+    """Un 429 suivi aussitôt d'une autre requête aggraverait le refus : on temporise aussi à l'échec."""
+    pauses = []
+    monkeypatch.setattr(reseau, "PAUSE", 0.25)
+    monkeypatch.setattr(reseau.time, "sleep", pauses.append)
+    monkeypatch.setattr(reseau.urllib.request, "urlopen", _urlopen_qui_leve(
+        urllib.error.HTTPError("https://exemple.org/api", 429, "Too Many Requests", {}, None)))
+    with pytest.raises(reseau.ErreurReseau):
+        reseau.obtenir_json("https://exemple.org/api")
+    with pytest.raises(reseau.ErreurReseau):
+        reseau.telecharger("https://exemple.org/f.mp4", tmp_path / "f.mp4")
+    assert pauses == [0.25, 0.25]
+
+
+# --- durée maximale quand la source ne donne pas de durée
+
+def _theme_limite(tmp_path):
+    return _theme(tmp_path)          # duree_max = 60
+
+
+def _sans_duree(ident, **options):
+    resultat = _resultat(ident, **options)
+    resultat.duree = None
+    return resultat
+
+
+def test_duree_inconnue_mesuree_apres_telechargement_et_ecartee_si_trop_longue(tmp_path):
+    mesures = []
+
+    def mesurer(video):
+        mesures.append(video.name)
+        return {"factice-long.mp4": 300.0, "factice-court.mp4": 20.5}[video.name]
+
+    dossier = tmp_path / "c"
+    rapport = cons.construire(_theme_limite(tmp_path), dossier,
+                              [SourceFactice([_sans_duree("long"), _sans_duree("court")])],
+                              telecharger=_telecharger, mesurer=mesurer)
+    clips = dossier / "clips"
+    assert not (clips / "factice-long.mp4").exists() and not (clips / "factice-long.json").exists()
+    assert rapport.ecartes_duree >= 1 and rapport.telecharges == 1
+    fiche = json.loads((clips / "factice-court.json").read_text(encoding="utf-8"))
+    assert fiche["duree"] == 20.5                              # la durée mesurée est conservée
+    assert "factice-long.mp4" in mesures
+
+
+def test_un_clip_trop_long_n_est_pas_retelecharge_par_la_requete_suivante(tmp_path):
+    appels = []
+
+    def telecharger(url, destination):
+        appels.append(url)
+        return _telecharger(url, destination)
+
+    rapport = cons.construire(_theme_limite(tmp_path), tmp_path / "c", [SourceFactice([_sans_duree("long")])],
+                              telecharger=telecharger, mesurer=lambda video: 300.0)      # le thème a deux requêtes
+    assert appels == ["https://exemple/long.mp4"] and rapport.ecartes_duree == 1
+
+
+def test_duree_connue_n_est_pas_remesuree_et_sans_limite_on_ne_mesure_pas(tmp_path):
+    def mesurer(video):
+        raise AssertionError("ffprobe ne doit pas être appelé")
+
+    cons.construire(_theme_limite(tmp_path), tmp_path / "c", [SourceFactice([_resultat("a")])],
+                    telecharger=_telecharger, mesurer=mesurer)
+    sans_limite = tmp_path / "sans-limite.toml"
+    sans_limite.write_text(THEME.replace("duree_max = 60\n", "").replace('["archive", "nasa"]', '["archive"]'),
+                           encoding="utf-8")
+    theme = cons.charger_theme(sans_limite)
+    assert theme.duree_max is None
+    cons.construire(theme, tmp_path / "d", [SourceFactice([_sans_duree("x")])],
+                    telecharger=_telecharger, mesurer=mesurer)
+    assert (tmp_path / "d" / "clips" / "factice-x.json").exists()
+
+
+def test_ffprobe_absent_garde_le_clip_et_le_dit(tmp_path):
+    def mesurer(video):
+        raise cons.ErreurMesure("ffprobe introuvable")
+
+    rapport = cons.construire(_theme_limite(tmp_path), tmp_path / "c",
+                              [SourceFactice([_sans_duree("a"), _sans_duree("b")])],
+                              telecharger=_telecharger, mesurer=mesurer)
+    assert rapport.telecharges == 2
+    assert len(rapport.avertissements) == 1                    # une ligne pour le lot, pas une par clip et par requête
+    assert "ffprobe" in rapport.avertissements[0] and "2 clip" in rapport.avertissements[0]
+    fiche = json.loads((tmp_path / "c" / "clips" / "factice-a.json").read_text(encoding="utf-8"))
+    assert fiche["duree"] is None
+
+
+def test_fichier_illisible_pour_ffprobe_est_ecarte(tmp_path):
+    rapport = cons.construire(_theme_limite(tmp_path), tmp_path / "c", [SourceFactice([_sans_duree("a")])],
+                              telecharger=_telecharger, mesurer=lambda video: None)
+    assert rapport.telecharges == 0 and any("factice-a" in e and "illisible" in e for e in rapport.erreurs)
+    assert not list((tmp_path / "c" / "clips").iterdir())
+
+
+@requiert_ffmpeg
+def test_mesure_reelle_avec_ffprobe(tmp_path):
+    clip = _mire(tmp_path / "mire.mp4", duree=4)
+    assert cons.mesurer_duree(clip) == pytest.approx(4.0, abs=0.2)
+    casse = tmp_path / "casse.mp4"
+    casse.write_bytes(b"ce n'est pas une video")
+    assert cons.mesurer_duree(casse) is None
+
+
+def test_mesure_sans_ffprobe(tmp_path, monkeypatch):
+    monkeypatch.setattr(cons.shutil, "which", lambda nom: None)
+    with pytest.raises(cons.ErreurMesure, match="ffprobe"):
+        cons.mesurer_duree(tmp_path / "x.mp4")
+
+
+def test_build_signale_les_durees_non_verifiees(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(corpus_cli, "RACINE", tmp_path)
+    monkeypatch.setattr(corpus_cli.sources, "construire", lambda noms, env: [SourceFactice([_sans_duree("a")])])
+    monkeypatch.setattr(reseau, "telecharger", _telecharger)
+    monkeypatch.setattr(cons.shutil, "which", lambda nom: None)       # ni ffprobe ni ffmpeg
+    theme = tmp_path / "t.toml"
+    theme.write_text(THEME.replace('["archive", "nasa"]', '["archive"]'), encoding="utf-8")
+    assert corpus_cli.main(["build", str(theme), "--racine", str(tmp_path / "corpus")]) == 0
+    assert "avertissement : " in capsys.readouterr().out
+
+
+# --- conversion impossible : on ne télécharge pas pour rien
+
+def test_un_format_a_convertir_n_est_pas_telecharge_sans_ffmpeg(tmp_path, monkeypatch):
+    monkeypatch.setattr(cons.shutil, "which", lambda nom: None)
+    webm = _resultat("w")
+    webm.url_fichier = "https://exemple/w.webm"
+    telecharges = []
+
+    def telecharger(url, destination):
+        telecharges.append(url)
+        return _telecharger(url, destination)
+
+    rapport = cons.construire(_theme(tmp_path), tmp_path / "c", [SourceFactice([webm, _resultat("m")])],
+                              telecharger=telecharger)
+    assert telecharges == ["https://exemple/m.mp4"] and rapport.telecharges == 1
+    assert len([e for e in rapport.erreurs if "factice-w" in e and "ffmpeg" in e]) == 1     # dite une fois, pas par requête
+    assert not list((tmp_path / "c" / "clips").glob("factice-w*"))
+
+
+# --- crédits : la mention d'origine des licences Creative Commons
+
+@pytest.mark.parametrize("brute, attendu", [
+    ("CC BY 3.0", "Licence : CC BY (CC BY 3.0)."),
+    ("https://creativecommons.org/licenses/by/4.0/", "Licence : CC BY (https://creativecommons.org/licenses/by/4.0/)."),
+    ("CC BY", "Licence : CC BY."),                      # rien à ajouter quand la mention est déjà le libellé
+    ("cc-by", "Licence : CC BY."),
+])
+def test_credits_reprennent_la_mention_d_origine_des_cc(tmp_path, brute, attendu):
+    dossier = _corpus_pret(tmp_path)
+    fiche = dossier / "clips" / "factice-a.json"
+    donnees = json.loads(fiche.read_text(encoding="utf-8"))
+    donnees["licence_brute"] = brute
+    fiche.write_text(json.dumps(donnees), encoding="utf-8")
+    ligne = next(l for l in credits.ecrire_credits(dossier).read_text(encoding="utf-8").splitlines()
+                 if "Titre a" in l)
+    assert attendu in ligne and ligne.endswith("Attribution obligatoire au générique ou en légende.")
+
+
+def test_credits_sans_attribution_ne_citent_pas_la_mention_brute(tmp_path):
+    dossier = _corpus_pret(tmp_path)
+    fiche = dossier / "clips" / "factice-b.json"
+    donnees = json.loads(fiche.read_text(encoding="utf-8"))
+    donnees["licence_brute"] = "http://creativecommons.org/publicdomain/mark/1.0/"
+    fiche.write_text(json.dumps(donnees), encoding="utf-8")
+    ligne = next(l for l in credits.ecrire_credits(dossier).read_text(encoding="utf-8").splitlines()
+                 if "Titre b" in l)
+    assert "Licence : domaine public." in ligne and "creativecommons" not in ligne
+
+
+# --- licences : le texte libre ambigu ne passe pas pour une licence plus large
+
+@pytest.mark.parametrize("brute, attendue", [
+    ("CC BY-NC-SA 2.0 (derived from a public domain work)", "cc-by-nc-sa"),
+    ("CC BY Non-Commercial 4.0", "cc-by-nc"),
+    ("CC BY NonCommercial 4.0", "cc-by-nc"),
+    ("Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International", "cc-by-nc-sa"),
+    ("Creative Commons Attribution-NoDerivatives 4.0", "cc-by-nd"),
+    ("CC BY No Derivatives 3.0", "cc-by-nd"),
+    ("CC BY ShareAlike 4.0", "cc-by-sa"),
+    ("CC BY Non Commercial, No Derivs 4.0", "cc-by-nc-nd"),
+    ("Attribution-NonCommercial 2.0 Generic", "cc-by-nc"),
+    ("https://creativecommons.org/licenses/by/4.0/ (non-commercial use only)", "cc-by-nc"),
+    ("CC BY-SA with No Derivatives", "inconnue"),                    # contradictoire
+    ("CC BY 4.0 / CC BY-NC 3.0", "inconnue"),                         # deux licences : on ne choisit pas la plus large
+    ("Public domain, all rights reserved", "inconnue"),
+    ("Public domain or GFDL", "inconnue"),
+    ("PD-self, GFDL", "inconnue"),
+    ("Public domain for non-commercial use only", "inconnue"),
+])
+def test_normaliser_licence_ambigue(brute, attendue):
+    assert licences.normaliser(brute) == attendue
+
+
+@pytest.mark.parametrize("brute, attendue", [        # garde-fous : le durcissement ne doit pas refuser l'évident
+    ("PD-old-70", "domaine-public"),
+    ("Public domain in the United States", "domaine-public"),
+    ("public domain", "domaine-public"),
+    ("CC0 1.0 Universal Public Domain Dedication", "cc0"),
+    ("CC BY 4.0 International", "cc-by"),
+    ("cc-by-sa", "cc-by-sa"),
+    ("Non-commercial use only", "inconnue"),
+    ("CC BY-NC-ND 4.0", "cc-by-nc-nd"),
+    ("cc by sand", "cc-by"),                          # « sand » n'est pas « sa »
+])
+def test_normaliser_licence_garde_fous(brute, attendue):
+    assert licences.normaliser(brute) == attendue
+
+
+# --- sources
+
+def test_wikimedia_decode_les_entites_html(monkeypatch):
+    _faux_reseau(monkeypatch, {"https://commons.wikimedia.org/w/api.php": {"query": {"pages": {
+        "9": {"pageid": 9, "index": 1, "title": "File:X.webm", "imageinfo": [{
+            "url": "https://upload.wikimedia.org/x.webm", "descriptionurl": "https://commons/x",
+            "extmetadata": {"LicenseShortName": {"value": "CC BY 4.0"},
+                            "Artist": {"value": '<a href="x">Tom &amp; Jerry &#039;s</a>'},
+                            "ObjectName": {"value": "Caf&eacute; &lt;b&gt;"}}}]}}}}})
+    r = sources.SOURCES["wikimedia"]().rechercher("x", 1)[0]
+    assert r.auteur == "Tom & Jerry 's" and r.titre == "Café <b>"
+
+
+def _panne(url, params):
+    raise reseau.ErreurReseau(f"HTTP 503 sur {url}")
+
+
+def test_archive_ignore_un_element_en_panne_et_garde_les_autres(monkeypatch):
+    _faux_reseau(monkeypatch, {
+        "https://archive.org/advancedsearch.php": {"response": {"docs": [
+            {"identifier": "casse", "title": "A", "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"},
+            {"identifier": "bon", "title": "B", "licenseurl": "http://creativecommons.org/publicdomain/mark/1.0/"}]}},
+        "https://archive.org/metadata/casse": _panne,
+        "https://archive.org/metadata/bon": {"files": [{"name": "bon.mp4", "size": "1000", "length": "10"}]}})
+    resultats = sources.SOURCES["archive"]().rechercher("x", 2)
+    assert [r.id for r in resultats] == ["bon"]
+
+
+def test_nasa_ignore_un_element_en_panne_et_garde_les_autres(monkeypatch):
+    _faux_reseau(monkeypatch, {
+        "https://images-api.nasa.gov/search": {"collection": {"items": [
+            {"href": "https://images-assets.nasa.gov/video/A/collection.json", "data": [{"nasa_id": "A"}]},
+            {"href": "https://images-assets.nasa.gov/video/B/collection.json", "data": [{"nasa_id": "B"}]}]}},
+        "https://images-assets.nasa.gov/video/A/collection.json": _panne,
+        "https://images-assets.nasa.gov/video/B/collection.json": ["http://images-assets.nasa.gov/video/B/B~medium.mp4"]})
+    assert [r.id for r in sources.SOURCES["nasa"]().rechercher("x", 2)] == ["B"]
+
+
+def test_la_requete_de_recherche_en_panne_reste_une_erreur(monkeypatch):
+    """Seul l'élément isolé est ignoré : une recherche qui échoue remonte, pour que build la consigne."""
+    _faux_reseau(monkeypatch, {"https://archive.org/advancedsearch.php": _panne})
+    with pytest.raises(reseau.ErreurReseau):
+        sources.SOURCES["archive"]().rechercher("x", 2)
+
+
+# --- search : fiches et encodeur
+
+def _corpus_indexe(tmp_path, monkeypatch, capsys):
+    dossier = _corpus_a_deux_emplacements(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    capsys.readouterr()
+    return dossier, racine
+
+
+@pytest.mark.parametrize("contenu", ["{pas du json", "[1, 2]", '"texte"', "null"])
+def test_search_fiche_illisible_meme_code_que_list_et_credits(tmp_path, monkeypatch, capsys, contenu):
+    dossier, racine = _corpus_indexe(tmp_path, monkeypatch, capsys)
+    (dossier / "clips" / "factice-chameau.json").write_text(contenu, encoding="utf-8")
+    assert corpus_cli.main(["list", "savoir-faire", "--racine", racine]) == 1
+    capsys.readouterr()
+    assert corpus_cli.main(["search", "savoir-faire", "un chameau", "--racine", racine]) == 1
+    erreur = capsys.readouterr().err
+    assert erreur.startswith("ERREUR : ") and "factice-chameau.json" in erreur
+    assert not (dossier / "selections.json").exists()
+
+
+def test_search_encodeur_en_echec_est_une_erreur_propre(tmp_path, monkeypatch, capsys):
+    dossier, racine = _corpus_indexe(tmp_path, monkeypatch, capsys)
+
+    class Tombe(EncodeurFactice):
+        def texte(self, texte):
+            raise RuntimeError("CUDA out of memory")
+
+    monkeypatch.setattr(corpus_cli, "_encodeur", lambda args: Tombe())
+    assert corpus_cli.main(["search", "savoir-faire", "un chameau", "--racine", racine]) == 2
+    assert "CUDA" in capsys.readouterr().err
