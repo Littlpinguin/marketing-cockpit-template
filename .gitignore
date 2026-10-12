@@ -93,6 +93,28 @@ _sources/research/**/*
 14-print/**/output/
 14-print/**/*.pdf
 
+# 08-video (module video): project sources (brief, script, storyboard,
+# references, subtitles, HyperFrames compositions) are versionable in a fork;
+# media, renders, QA images and documentary corpora are not (heavy, archived
+# on the client drive). Corpus themes (08-video/corpus/themes/) stay versioned.
+08-video/rushes/
+08-video/exports/
+08-video/projets/*/rushes/
+08-video/projets/*/exports/
+08-video/projets/*/hyperframes/node_modules/
+08-video/projets/*/hyperframes/renders/
+08-video/projets/*/hyperframes/snapshots/
+08-video/projets/**/*.mp4
+08-video/projets/**/*.mov
+08-video/projets/**/*.webm
+08-video/projets/**/*.wav
+08-video/projets/**/*.mp3
+08-video/projets/**/*.m4a
+08-video/projets/*/qa/**/*.jpg
+08-video/projets/*/qa/**/rapport.json
+08-video/corpus/*
+!08-video/corpus/themes/
+
 # Local caches (Pexels search results and contact sheets of the slides engine)
 .cache/
 

@@ -395,6 +395,19 @@ def test_livrable_plan_de_com_evenementiel(tmp_path):
     assert livrable.sujet == "Plan de communication du salon d'automne"
 
 
+def test_livrable_video_indexe_par_son_script(tmp_path):
+    root = make_root(tmp_path)
+    script = root / "08-video/projets/2026-10-12-explainer-reporting/script.md"
+    script.parent.mkdir(parents=True)
+    script.write_text("# Explainer sur le reporting hebdomadaire\n\n| # | Temps | Image | Voix |\n",
+                      encoding="utf-8")
+    (script.parent / "brief.md").write_text("# Brief\n", encoding="utf-8")
+    livrable = build_inventory.extraire(root, Path("08-video/projets/2026-10-12-explainer-reporting/script.md"))
+    assert (livrable.canal, livrable.type) == ("video", "video")
+    assert livrable.date == "2026-10-12"
+    assert build_inventory.source_de(Path("08-video/projets/2026-10-12-explainer-reporting/brief.md")) is None
+
+
 def test_un_gabarit_n_est_jamais_un_livrable(tmp_path):
     root = make_root(tmp_path)
     assert build_inventory.source_de(Path("07-events/templates/comm-plan.md")) is None

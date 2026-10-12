@@ -5,8 +5,8 @@
 #   motifs   motifs de fichiers sous ce dossier (« *.md », « */index.html »...) ;
 #            la profondeur du motif est stricte : « *.md » ne descend pas
 #   canal    linkedin, discord, whatsapp, newsletter, email-promo, web, blog,
-#            event, slides, visuel (vocabulaire de _templates/inventory.md)
-#   type     post, carrousel, email, article, landing, deck, image, plan-comm
+#            event, slides, visuel, video (vocabulaire de _templates/inventory.md)
+#   type     post, carrousel, email, article, landing, deck, image, plan-comm, video
 #
 # Extensions retenues de fait : .md et .html. Les PDF, images et exports sont
 # ignorés : l'inventaire indexe le livrable source, pas ses dérivés.
@@ -94,3 +94,10 @@ dossier = "07-events"
 motifs = ["*/comm-plan.md"]
 canal = "event"
 type = "plan-comm"
+
+# Vidéos : un dossier par projet, le script minuté fait foi (module video).
+[[sources]]
+dossier = "08-video/projets"
+motifs = ["*/script.md"]
+canal = "video"
+type = "video"

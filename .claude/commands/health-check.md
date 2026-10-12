@@ -41,7 +41,7 @@ Rapporter le code de sortie et les placeholders restants.
 ### 4. Serveurs MCP réellement connectés
 
 - **Hygiène `.mcp.json`** (avant tout) :
-  - Si des outils MCP sont attendus (n8n-mcp, google-ads, lemlist en mode clé API, Palmier Pro…) : `.mcp.json` existe à la racine ? Absent = 🟠 → suggérer `cp .mcp.json.example .mcp.json` puis remplir les valeurs réelles.
+  - Si des outils MCP sont attendus (n8n-mcp, google-ads, lemlist en mode clé API…) : `.mcp.json` existe à la racine ? Absent = 🟠 → suggérer `cp .mcp.json.example .mcp.json` puis remplir les valeurs réelles.
   - `git check-ignore -q .mcp.json` doit réussir ET `git ls-files .mcp.json` doit être vide. `.mcp.json` tracké ou non ignoré = 🔴 (risque de commit de tokens) → `git rm --cached .mcp.json` + vérifier `.gitignore`, et révoquer tout token déjà poussé.
   - Détecter le pattern cassé : `grep -n '\${' .mcp.json` — des références `${VAR}` présentes = 🟠 (Claude Code ne les développe pas depuis le `.env` du projet → 401) → remplacer par les valeurs réelles dans ce fichier local (voir `SECURITY.md`).
 - `claude mcp list` — comparer avec `.mcp.json` et les MCP attendus par les outils configurés (ex. `magnific` si installé).
@@ -53,7 +53,7 @@ Pour chaque module `enabled: true` dans `.setup-completed.modules` :
 
 | Module | Vérification |
 |---|---|
-| `video` | macOS (`uname -s` == `Darwin`) + Palmier Pro toujours installé |
+| `video` | Prérequis de l'activation (`ffmpeg -version`, `ffprobe -version`, `node --version` ≥ 22, `npx --version`) ; le plugin `hyperframes@hyperframes` figure dans `claude plugin list` et sa version égale `modules.video.hyperframes`, sinon proposer `/modules` (réinstallation, ou mise à jour de la version notée) ; `python3 scripts/build-tokens.py --check` propre (il couvre `08-video/lib/brand.css`) ; chaque capacité notée `true` dans `modules.video.capacites` toujours détectée (mêmes tests que `/modules`), sinon 🟠 |
 | `automatisations` | `N8N_BASE_URL` set + instance joignable (GET healthz) |
 | `reporting` | Au moins une source de données valide (check 3) |
 | `acquisition` | n8n joignable ; `APIFY_TOKEN` set si scraping configuré |

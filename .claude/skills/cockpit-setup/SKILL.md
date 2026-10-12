@@ -99,7 +99,8 @@ Seul `/validate-setup` écrit ce fichier (exception : `/modules` peut mettre à 
     "client_space_ftp":   { "name": "ftp|none", "enabled": false }
   },
   "modules": {
-    "video":               { "enabled": false, "checked_at": "ISO 8601" },
+    "video":               { "enabled": true,  "checked_at": "ISO 8601", "hyperframes": "0.8.149",
+                             "capacites": { "whisper": true, "manim": false, "corpus": false } },
     "automatisations":     { "enabled": false, "checked_at": "ISO 8601" },
     "reporting":           { "enabled": false, "checked_at": "ISO 8601" },
     "acquisition":         { "enabled": false, "checked_at": "ISO 8601" },

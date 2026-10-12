@@ -8,11 +8,11 @@
 
 ## Note d'usage
 
-- **Rôle** : index unique des livrables produits par le cockpit (posts, carrousels, emails, articles, decks, landing pages, plans de com). C'est la mémoire de production du repo : **toute skill de production le consulte avant de créer** (anti-répétition), et y ajoute sa ligne après livraison avec `python3 scripts/build-inventory.py --add <chemin>`.
+- **Rôle** : index unique des livrables produits par le cockpit (posts, carrousels, emails, articles, decks, landing pages, plans de com, vidéos). C'est la mémoire de production du repo : **toute skill de production le consulte avant de créer** (anti-répétition), et y ajoute sa ligne après livraison avec `python3 scripts/build-inventory.py --add <chemin>`.
 - **Tri** : du plus récent au plus ancien (nouvelle ligne en tête de tableau).
 - **Date** : date de création du livrable (`YYYY-MM-DD`), pas la date d'indexation. Le script la prend dans le champ `date` du frontmatter, sinon dans le nom du fichier, sinon dans celui du dossier. Un livrable sans date exploitable n'est pas indexé et le script le signale : le renommer en `AAAA-MM-JJ-…` suffit à le faire entrer.
-- **Canal** : `linkedin`, `discord`, `whatsapp`, `newsletter`, `email-promo`, `web`, `blog`, `event`, `slides`, `visuel`. Les emails de prospection et de nurturing sont indexés sous `email-promo` ; leur chemin les distingue des promos.
-- **Type** : `post`, `carrousel`, `email`, `article`, `landing`, `deck`, `image`, `plan-comm`.
+- **Canal** : `linkedin`, `discord`, `whatsapp`, `newsletter`, `email-promo`, `web`, `blog`, `event`, `slides`, `visuel`, `video`. Les emails de prospection et de nurturing sont indexés sous `email-promo` ; leur chemin les distingue des promos.
+- **Type** : `post`, `carrousel`, `email`, `article`, `landing`, `deck`, `image`, `plan-comm`, `video`. Une vidéo est indexée par le `script.md` de son projet (`08-video/projets/<slug>/`) : sa date vient du champ `date` de son frontmatter, ou d'un slug qui commence par `AAAA-MM-JJ`.
 - **Sujet** : 5-10 mots, assez précis pour détecter un doublon à la lecture. Source, dans l'ordre : `subject` du frontmatter, titre (`# ` en markdown, `<title>` ou `<h1>` en HTML), premiers mots du corps, nom du dossier. Les tirets longs des titres d'origine deviennent des points médians.
 - **Chemin** : relatif à la racine du repo.
 - **Statut** : `brouillon`, `validé`, `publié`, `archivé`. Le script lit `statut` s'il est déclaré, sinon il écrit `publié` dès qu'un champ de diffusion (`sent`, `url`, `likes`) est renseigné, et `validé` sinon ; un contenu `rejeté` ou `abandonné` devient `archivé`. Mettre à jour la ligne existante à chaque changement de statut, ne jamais dupliquer.

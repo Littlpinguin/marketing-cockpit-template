@@ -309,3 +309,81 @@ def test_agent_video_reviewer():
                   "01-brand/divulgation-ia.md", "01-brand/droits.md", "brief.md", "lecture seule"):
         assert terme in contenu, terme
     assert "palmier" not in contenu.lower() and "—" not in contenu
+
+
+# ------------------------------------------------------------------ câblage du module (tâche 12)
+
+import json
+import subprocess
+
+
+def test_commande_modules():
+    modules = texte(".claude/commands/modules.md")
+    for terme in ("claude plugin marketplace add heygen-com/hyperframes --scope local",
+                  "claude plugin install hyperframes@hyperframes --scope local",
+                  "npx --yes hyperframes doctor", "node --version", "ffprobe", "WHISPER_MODEL",
+                  "import open_clip", "manim --version", '"capacites"', '"hyperframes"'):
+        assert terme in modules, terme
+    assert "palmier" not in modules.lower()
+    sante = texte(".claude/commands/health-check.md")
+    assert "hyperframes@hyperframes" in sante and "palmier" not in sante.lower()
+
+
+def test_schema_du_module_video():
+    jsonschema = pytest.importorskip("jsonschema")
+    schema = json.loads(texte("docs/setup-completed.schema.json"))
+    video = {"enabled": True, "checked_at": "2026-10-12T10:00:00Z", "hyperframes": "0.8.149",
+             "capacites": {"whisper": True, "manim": False, "corpus": False}}
+    sous_schema = schema["properties"]["modules"]["properties"]["video"]
+    resolveur = {"$defs": schema["$defs"], **sous_schema}
+    jsonschema.validate(video, resolveur)
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate({**video, "capacites": {"whisper": "oui"}}, resolveur)
+
+
+@pytest.mark.parametrize("chemin, ignore", [
+    ("08-video/projets/demo/rushes/a.mp4", True),
+    ("08-video/projets/demo/exports/demo-reels.mp4", True),
+    ("08-video/projets/demo/hyperframes/node_modules/x.js", True),
+    ("08-video/projets/demo/hyperframes/assets/voix.wav", True),
+    ("08-video/projets/demo/hyperframes/renders/demo_2026-10-12_10-00-00.mp4", True),
+    ("08-video/projets/demo/hyperframes/snapshots/frame-01.png", True),
+    ("08-video/projets/demo/qa/demo-reels/planche.jpg", True),
+    ("08-video/projets/demo/qa/demo-reels/rapport.json", True),
+    ("08-video/projets/demo/qa/demo-reels/rapport.md", False),
+    ("08-video/projets/demo/brief.md", False),
+    ("08-video/projets/demo/references.md", False),
+    ("08-video/projets/demo/sous-titres/demo-reels.srt", False),
+    ("08-video/projets/demo/hyperframes/index.html", False),
+    ("08-video/corpus/savoir-faire/clips/a.mp4", True),
+    ("08-video/corpus/themes/exemple-savoir-faire.toml", False),
+    ("08-video/rushes/vieux.mp4", True),
+    ("08-video/exports/vieux-reels.mp4", True),
+])
+def test_gitignore_du_module(chemin, ignore):
+    res = subprocess.run(["git", "check-ignore", "-q", "--no-index", chemin], cwd=REPO)
+    assert (res.returncode == 0) is ignore, chemin
+
+
+def test_env_et_inventaire():
+    env = texte(".env.example")
+    assert 'PIXABAY_API_KEY=""' in env and 'WHISPER_MODEL=""' in env
+    assert 'dossier = "08-video/projets"' in texte("scripts/build-inventory.toml")
+    assert "`video`" in texte("_templates/inventory.md")
+
+
+def test_role_08_video():
+    role = texte("08-video/CLAUDE.md")
+    readme = texte("08-video/README.md")
+    for terme in ("video-production", "hyperframes", "qa-video.py", "brand-frame.py", "08-video/projets/<slug>/"):
+        assert terme in role, terme
+    for skill in ("video-production", "motion-design", "video-editing", "captions", "reel-talking-head",
+                  "video-generation", "video-matting", "video-repurpose", "video-documentary", "manim-composer",
+                  "manim-ce"):
+        assert skill in readme, skill
+    for terme in ("inspiration.py", "inspiration.md", "references.md"):
+        assert terme in role and terme in readme, terme
+    for script in ("qa-video.py", "brand-frame.py", "bvh2clip.py", "corpus.py", "inspiration.py"):
+        assert f"`{script}`" in readme, script
+    assert "palmier" not in (role + readme).lower()
+    assert "—" not in role + readme
