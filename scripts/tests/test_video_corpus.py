@@ -793,3 +793,587 @@ def test_lire_env_illisible_previent_sans_planter(tmp_path, monkeypatch, capsys)
     (tmp_path / ".env").write_bytes(b"PEXELS_API_KEY=\xff\xfe")
     assert corpus_cli.lire_env() == {}
     assert ".env" in capsys.readouterr().err
+
+
+# ------------------------------------------------------------------ images clés, index, recherche (tâche 7)
+
+from corpus_documentaire import images_cles, index  # noqa: E402
+
+
+def test_temps_images_cles():
+    assert images_cles.temps_images_cles(10.0, [4.0]) == [0.5, 3.5, 4.1, 6.5, 9.5]
+    assert images_cles.temps_images_cles(0.6, []) == [0.3]
+    assert images_cles.temps_images_cles(10.0, [3.6]) == [0.5, 3.5, 6.5, 9.5]   # 3.7 trop proche de 3.5
+
+
+class EncodeurFactice:
+    """Vecteur [1, 0, 0] pour tout ce qui parle de chameau, [0, 1, 0] sinon."""
+    nom = "factice/1"
+
+    @staticmethod
+    def _vecteur(texte: str) -> list[float]:
+        return [1.0, 0.0, 0.0] if "chameau" in texte else [0.0, 1.0, 0.0]
+
+    def images(self, chemins):
+        return [self._vecteur(Path(c).name) for c in chemins]
+
+    def texte(self, texte):
+        return self._vecteur(texte)
+
+
+def _extraire_factice(clip, dossier, intervalle=3.0):
+    sorties = []
+    for i, t in enumerate((0.5, 3.5)):
+        chemin = dossier / f"{clip.stem}-{i:03d}.jpg"
+        chemin.write_bytes(b"jpg")
+        sorties.append((t, chemin))
+    return sorties
+
+
+def test_index_et_recherche(tmp_path):
+    dossier = _corpus_pret(tmp_path)
+    (dossier / "clips" / "factice-chameau.mp4").write_bytes(b"x")
+    (dossier / "clips" / "factice-chameau.json").write_text(json.dumps(
+        {**_resultat("chameau").fiche(), "fichier": "factice-chameau.mp4"}), encoding="utf-8")
+    assert index.construire_index(dossier, EncodeurFactice(), extraire=_extraire_factice) == 6
+    resultats = index.rechercher(dossier, "un chameau dans le désert", EncodeurFactice(), top=2)
+    assert resultats[0]["clip"] == "factice-chameau.mp4"
+    assert resultats[0]["score"] == pytest.approx(1.0)
+    assert resultats[0]["fiche"]["titre"] == "Titre chameau"
+    assert len({r["clip"] for r in resultats}) == len(resultats) == 2
+
+
+def test_recherche_refuse_un_autre_encodeur(tmp_path):
+    dossier = _corpus_pret(tmp_path)
+    index.construire_index(dossier, EncodeurFactice(), extraire=_extraire_factice)
+    autre = EncodeurFactice()
+    autre.nom = "autre/2"
+    with pytest.raises(ValueError, match="reconstruire"):
+        index.rechercher(dossier, "x", autre)
+
+
+def test_index_vide_refuse(tmp_path):
+    dossier = tmp_path / "vide"
+    (dossier / "clips").mkdir(parents=True)
+    with pytest.raises(ValueError, match="build"):
+        index.construire_index(dossier, EncodeurFactice(), extraire=_extraire_factice)
+
+
+@requiert_ffmpeg
+def test_extraction_reelle(tmp_path):
+    clip = tmp_path / "mire.mp4"
+    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-f", "lavfi", "-i",
+                    "testsrc2=s=320x240:r=25:d=4", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(clip)], check=True)
+    images = images_cles.extraire(clip, tmp_path / "images")
+    assert len(images) >= 2 and all(chemin.exists() for _, chemin in images)
+
+
+def test_cli_index_sans_dependances(tmp_path):
+    try:
+        import open_clip  # noqa: F401
+        pytest.skip("open_clip installé : le message d'absence ne s'applique pas")
+    except ImportError:
+        pass
+    _corpus_pret(tmp_path)
+    res = _cli("index", "savoir-faire", "--racine", str(tmp_path / "corpus"))
+    assert res.returncode == 2 and "requirements-corpus.txt" in res.stderr
+
+
+# ------------------------------------------------------------------ durcissement : images clés
+
+def test_intervalle_nul_ou_negatif_refuse():
+    for intervalle in (0, -1.0, float("nan")):
+        with pytest.raises(ValueError, match="intervalle"):
+            images_cles.temps_images_cles(10.0, [], intervalle)
+
+
+def test_coupe_en_fin_de_clip_ignoree_et_ecart_minimal():
+    assert images_cles.temps_images_cles(5.0, [4.95]) == [0.5, 3.5]          # 5.05 dépasse la durée
+    instants = images_cles.temps_images_cles(30.0, [1.0, 1.2, 1.3, 7.7, 20.0])
+    assert all(b - a >= images_cles.ECART_MIN for a, b in zip(instants, instants[1:]))
+    assert 1.1 in instants and 20.1 in instants and 1.3 not in instants
+
+
+def _mire(chemin: Path, duree: int = 4) -> Path:
+    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-f", "lavfi", "-i",
+                    f"testsrc2=s=320x240:r=25:d={duree}", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(chemin)],
+                   check=True)
+    return chemin
+
+
+@requiert_ffmpeg
+def test_extraction_refait_les_images_quand_l_intervalle_change(tmp_path):
+    """Une image en cache sous le même numéro mais pour un autre instant fausserait l'index."""
+    clip = _mire(tmp_path / "mire.mp4")
+    images_cles.extraire(clip, tmp_path / "cache", intervalle=3.0)
+    apres = images_cles.extraire(clip, tmp_path / "cache", intervalle=1.0)
+    neuves = images_cles.extraire(clip, tmp_path / "neuf", intervalle=1.0)
+    assert [t for t, _ in apres] == [t for t, _ in neuves] and len(apres) >= 4
+    for (_, a), (_, b) in zip(apres, neuves):
+        assert a.read_bytes() == b.read_bytes(), a.name
+
+
+@requiert_ffmpeg
+def test_extraction_retire_les_images_devenues_inutiles(tmp_path):
+    clip = _mire(tmp_path / "mire.mp4")
+    longue = images_cles.extraire(clip, tmp_path / "images", intervalle=1.0)
+    courte = images_cles.extraire(clip, tmp_path / "images", intervalle=3.0)
+    restantes = sorted(p.name for p in (tmp_path / "images").glob("mire-*.jpg"))
+    assert len(longue) > len(courte) and restantes == sorted(p.name for _, p in courte)
+
+
+def test_extraction_ecarte_une_image_vide(tmp_path, monkeypatch):
+    """ffmpeg peut laisser un fichier de 0 octet (instant hors du clip) : pas d'image, pas d'entrée d'index."""
+    def faux(commande):
+        if commande[0] == "ffprobe":
+            return subprocess.CompletedProcess(commande, 0, '{"format": {"duration": "4.0"}}', "")
+        if "-frames:v" in commande:
+            Path(commande[-1]).write_bytes(b"" if "0.50" in commande else b"jpg")
+        return subprocess.CompletedProcess(commande, 0, "", "")
+
+    monkeypatch.setattr(images_cles.shutil, "which", lambda nom: "/usr/bin/" + nom)
+    monkeypatch.setattr(images_cles, "_executer", faux)
+    sorties = images_cles.extraire(tmp_path / "c.mp4", tmp_path / "images")
+    assert [t for t, _ in sorties] == [3.5] and not (tmp_path / "images" / "c-000.jpg").exists()
+
+
+@requiert_ffmpeg
+def test_extraction_d_un_fichier_illisible_ne_rend_rien(tmp_path):
+    casse = tmp_path / "casse.mp4"
+    casse.write_bytes(b"ce n'est pas une video")
+    assert images_cles.extraire(casse, tmp_path / "images") == []
+
+
+def test_extraction_sans_ffmpeg(tmp_path, monkeypatch):
+    monkeypatch.setattr(images_cles.shutil, "which", lambda nom: None)
+    with pytest.raises(images_cles.OutilAbsent, match="ffmpeg"):
+        images_cles.extraire(tmp_path / "x.mp4", tmp_path / "images")
+    assert issubclass(images_cles.OutilAbsent, RuntimeError)
+
+
+def test_ffmpeg_et_ffprobe_decodes_sans_planter(tmp_path, monkeypatch):
+    """Sortie d'outil en octets quelconques : décodée avec remplacement, jamais fatale."""
+    appels = []
+
+    def faux_run(commande, **options):
+        appels.append(options)
+        sortie = '{"format": {"duration": "4.0"}}' if commande[0] == "ffprobe" else "pts_time:2.5 �"
+        return subprocess.CompletedProcess(commande, 0, sortie, sortie)
+
+    monkeypatch.setattr(images_cles.shutil, "which", lambda nom: "/usr/bin/" + nom)
+    monkeypatch.setattr(images_cles.subprocess, "run", faux_run)
+    assert images_cles.duree_video(tmp_path / "x.mp4") == 4.0
+    assert images_cles.coupes_video(tmp_path / "x.mp4") == [2.5]
+    assert all(o["encoding"] == "utf-8" and o["errors"] == "replace" for o in appels) and len(appels) == 2
+
+
+@pytest.mark.parametrize("sortie, code", [("", 1), ("pas du json", 0), ('{"format": {}}', 0),
+                                          ('{"format": {"duration": "N/A"}}', 0),
+                                          ('{"format": {"duration": "nan"}}', 0)])
+def test_duree_illisible_vaut_zero(tmp_path, monkeypatch, sortie, code):
+    monkeypatch.setattr(images_cles.subprocess, "run",
+                        lambda commande, **options: subprocess.CompletedProcess(commande, code, sortie, ""))
+    assert images_cles.duree_video(tmp_path / "x.mp4") == 0.0
+
+
+# ------------------------------------------------------------------ durcissement : index
+
+def _extraire_sans_images_pour_a(clip, dossier, intervalle=3.0):
+    return [] if clip.name == "factice-a.mp4" else _extraire_factice(clip, dossier, intervalle)
+
+
+def test_un_clip_sans_image_cle_est_signale_pas_tu(tmp_path):
+    dossier = _corpus_pret(tmp_path)
+    ignores = []
+    nombre = index.construire_index(dossier, EncodeurFactice(), extraire=_extraire_sans_images_pour_a,
+                                    avertir=ignores.append)
+    assert nombre == 2 and len(ignores) == 1 and "factice-a.mp4" in ignores[0]
+    meta = json.loads((dossier / "index.json").read_text(encoding="utf-8"))
+    assert {e["clip"] for e in meta["images"]} == {"factice-b.mp4"}
+
+
+def test_aucune_image_cle_nommee_comme_telle(tmp_path):
+    dossier = _corpus_pret(tmp_path)
+    with pytest.raises(ValueError, match="aucune image clé extraite de 2 clip"):
+        index.construire_index(dossier, EncodeurFactice(), extraire=lambda clip, d, i=3.0: [])
+    assert not (dossier / "index.json").exists()
+
+
+def test_un_index_refait_remplace_le_precedent_sans_reste(tmp_path):
+    dossier = _corpus_pret(tmp_path)
+    index.construire_index(dossier, EncodeurFactice(), extraire=_extraire_factice)
+    (dossier / "clips" / "factice-a.mp4").unlink()
+    assert index.construire_index(dossier, EncodeurFactice(), extraire=_extraire_factice) == 2
+    meta = json.loads((dossier / "index.json").read_text(encoding="utf-8"))
+    assert len(meta["images"]) == 2 and (dossier / "index.f32").stat().st_size == 2 * meta["dimension"] * 4
+    assert not list(dossier.glob("*.tmp"))
+
+
+class EncodeurQuiPerdDesImages(EncodeurFactice):
+    def images(self, chemins):
+        return super().images(chemins)[:-1]
+
+
+class EncodeurDeDimensionsMelangees(EncodeurFactice):
+    def images(self, chemins):
+        vecteurs = super().images(chemins)
+        vecteurs[-1] = vecteurs[-1] + [0.0]
+        return vecteurs
+
+
+@pytest.mark.parametrize("encodeur", [EncodeurQuiPerdDesImages(), EncodeurDeDimensionsMelangees()])
+def test_encodeur_incoherent_ne_produit_pas_d_index(tmp_path, encodeur):
+    dossier = _corpus_pret(tmp_path)
+    with pytest.raises(ValueError, match="encodeur"):
+        index.construire_index(dossier, encodeur, extraire=_extraire_factice)
+    assert not (dossier / "index.json").exists() and not (dossier / "index.f32").exists()
+
+
+def _index_pret(tmp_path) -> Path:
+    dossier = _corpus_pret(tmp_path)
+    index.construire_index(dossier, EncodeurFactice(), extraire=_extraire_factice)
+    return dossier
+
+
+def test_recherche_refuse_un_index_f32_tronque(tmp_path):
+    dossier = _index_pret(tmp_path)
+    brut = (dossier / "index.f32").read_bytes()
+    for tronque in (brut[:-4], brut[:-3]):                 # un vecteur de moins ; un octet de travers
+        (dossier / "index.f32").write_bytes(tronque)
+        with pytest.raises(ValueError, match="reconstruire"):
+            index.rechercher(dossier, "x", EncodeurFactice())
+
+
+@pytest.mark.parametrize("contenu", ["pas du json", "[]", '{"encodeur": "factice/1"}',
+                                     '{"encodeur": "factice/1", "dimension": 3, "images": [{"clip": "a"}]}',
+                                     '{"encodeur": "factice/1", "dimension": 0, "images": []}'])
+def test_recherche_refuse_un_index_json_abime(tmp_path, contenu):
+    dossier = _index_pret(tmp_path)
+    (dossier / "index.json").write_text(contenu, encoding="utf-8")
+    with pytest.raises(ValueError, match="reconstruire"):
+        index.rechercher(dossier, "x", EncodeurFactice())
+
+
+@pytest.mark.parametrize("abimer", [
+    lambda meta: meta["images"][0].pop("t"),               # une entrée sans instant, nombre d'entrées intact
+    lambda meta: meta.update(dimension="3"),               # dimension qui n'est pas un entier
+    lambda meta: meta.update(encodeur=7),
+], ids=["entree-sans-instant", "dimension-texte", "encodeur-numerique"])
+def test_recherche_refuse_un_index_json_de_structure_fausse_mais_de_bonne_taille(tmp_path, abimer):
+    dossier = _index_pret(tmp_path)
+    meta = json.loads((dossier / "index.json").read_text(encoding="utf-8"))
+    abimer(meta)
+    (dossier / "index.json").write_text(json.dumps(meta), encoding="utf-8")
+    with pytest.raises(ValueError, match="reconstruire"):
+        index.rechercher(dossier, "x", EncodeurFactice())
+
+
+def test_recherche_top_invalide(tmp_path):
+    dossier = _index_pret(tmp_path)
+    for top in (0, -2):
+        with pytest.raises(ValueError, match="top"):
+            index.rechercher(dossier, "x", EncodeurFactice(), top=top)
+
+
+def test_recherche_nomme_la_fiche_illisible(tmp_path):
+    dossier = _index_pret(tmp_path)
+    (dossier / "clips" / "factice-b.json").write_text("{pas du json", encoding="utf-8")
+    with pytest.raises(ValueError, match="factice-b.json"):
+        index.rechercher(dossier, "x", EncodeurFactice(), top=10)
+
+
+def test_recherche_refuse_une_requete_de_mauvaise_dimension(tmp_path):
+    dossier = _index_pret(tmp_path)
+
+    class Large(EncodeurFactice):
+        def texte(self, texte):
+            return [1.0, 0.0, 0.0, 0.0]
+
+    with pytest.raises(ValueError, match="dimension"):
+        index.rechercher(dossier, "x", Large())
+
+
+def test_recherche_top_et_fiche_absente(tmp_path):
+    dossier = _index_pret(tmp_path)
+    (dossier / "clips" / "factice-b.json").unlink()
+    resultats = index.rechercher(dossier, "chameau", EncodeurFactice(), top=10)
+    assert len(resultats) == 2                                          # top plafonné au nombre de clips
+    assert {r["clip"]: r["fiche"] is None for r in resultats} == {"factice-a.mp4": False, "factice-b.mp4": True}
+
+
+# ------------------------------------------------------------------ durcissement : encodeur réel (modules fictifs)
+
+class _Tenseur:
+    """Le strict nécessaire de torch.Tensor pour EncodeurClip : norm, division, indexation, tolist."""
+
+    def __init__(self, lignes):
+        self.lignes = lignes
+
+    def norm(self, dim=-1, keepdim=False):
+        return _Tenseur([[sum(x * x for x in ligne) ** 0.5] for ligne in self.lignes])
+
+    def __truediv__(self, autre):
+        return _Tenseur([[x / n[0] for x in ligne] for ligne, n in zip(self.lignes, autre.lignes)])
+
+    def __getitem__(self, i):
+        return _Tenseur(self.lignes[i])
+
+    def tolist(self):
+        return self.lignes
+
+
+class _FausseImage:
+    def __init__(self, nom):
+        self.nom = nom
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *erreur):
+        return False
+
+    def convert(self, mode):
+        assert mode == "RGB"
+        return self
+
+
+def _modules_fictifs(monkeypatch, *, echec_modele=None):
+    import contextlib
+    import types
+
+    torch = types.ModuleType("torch")
+    torch.no_grad = contextlib.nullcontext
+    torch.stack = lambda elements: _Tenseur([e for e in elements])
+    pil, pil_image = types.ModuleType("PIL"), types.ModuleType("PIL.Image")
+    pil_image.open = lambda chemin: _FausseImage(Path(chemin).name)
+    pil.Image = pil_image
+
+    class Modele:
+        def eval(self):
+            return self
+
+        def encode_image(self, lot):         # un vecteur par image : sa longueur de nom, puis 1
+            return _Tenseur([[float(len(image.nom)), 1.0] for image in lot.lignes])
+
+        def encode_text(self, jetons):
+            return _Tenseur([[3.0, 4.0]])
+
+    def creer(modele, pretrained):
+        if echec_modele:
+            raise echec_modele
+        return Modele(), None, lambda image: image          # (modèle, prétraitement d'entraînement, de validation)
+
+    open_clip = types.ModuleType("open_clip")
+    open_clip.create_model_and_transforms = creer
+    open_clip.get_tokenizer = lambda modele: (lambda textes: textes)
+    for nom, module in (("torch", torch), ("PIL", pil), ("PIL.Image", pil_image), ("open_clip", open_clip)):
+        monkeypatch.setitem(sys.modules, nom, module)
+
+
+def test_encodeur_clip_normalise_et_garde_l_ordre(monkeypatch):
+    _modules_fictifs(monkeypatch)
+    encodeur = index.EncodeurClip("ViT-B-32", "poids-x")
+    assert encodeur.nom == "ViT-B-32/poids-x"
+    chemins = [Path(f"image-{i}" + "x" * i + ".jpg") for i in range(70)]       # 3 lots de 32, 32 et 6
+    vecteurs = encodeur.images(chemins)
+    assert len(vecteurs) == 70
+    for chemin, vecteur in zip(chemins, vecteurs):
+        longueur = float(len(chemin.name))
+        norme = (longueur ** 2 + 1) ** 0.5
+        assert vecteur == pytest.approx([longueur / norme, 1 / norme])
+    assert encodeur.texte("un chameau") == pytest.approx([0.6, 0.8])
+
+
+@pytest.mark.parametrize("manquant", ["open_clip", "torch", "PIL"])
+def test_encodeur_clip_dependance_absente(monkeypatch, manquant):
+    _modules_fictifs(monkeypatch)
+    monkeypatch.setitem(sys.modules, manquant, None)                # import impossible
+    with pytest.raises(index.DependanceManquante, match="requirements-corpus.txt"):
+        index.EncodeurClip()
+
+
+def test_encodeur_clip_modele_indisponible_est_une_dependance_manquante(monkeypatch):
+    _modules_fictifs(monkeypatch, echec_modele=RuntimeError("Model config for ViT-Z not found"))
+    with pytest.raises(index.DependanceManquante, match="ViT-Z"):
+        index.EncodeurClip("ViT-Z", "poids-x")
+
+
+# ------------------------------------------------------------------ durcissement : commandes index et search
+
+def _avec_encodeur_factice(monkeypatch, extraire=_extraire_factice):
+    """index et search en processus : encodeur CLIP et extraction ffmpeg remplacés."""
+    monkeypatch.setattr(corpus_cli, "_encodeur", lambda args: EncodeurFactice())
+    original = corpus_cli.index.construire_index
+    monkeypatch.setattr(corpus_cli.index, "construire_index",
+                        lambda dossier, encodeur, **options: original(dossier, encodeur, extraire=extraire,
+                                                                      **options))
+
+
+def _corpus_a_deux_emplacements(tmp_path) -> Path:
+    dossier = _corpus_pret(tmp_path)
+    (dossier / "clips" / "factice-chameau.mp4").write_bytes(b"x")
+    (dossier / "clips" / "factice-chameau.json").write_text(json.dumps(
+        {**_resultat("chameau").fiche(), "fichier": "factice-chameau.mp4",
+         "attribution_exigee": False}), encoding="utf-8")
+    (dossier / "theme.toml").write_text(THEME.replace("mains d'artisan qui travaillent le bois, gros plan",
+                                                      "un chameau dans le sable") + """
+[[emplacements]]
+id = "fin"
+description = "un atelier vide au crépuscule"
+requetes = ["empty workshop"]
+""", encoding="utf-8")
+    return dossier
+
+
+def test_index_puis_search_par_emplacement_enregistre_la_selection(tmp_path, monkeypatch, capsys):
+    dossier = _corpus_a_deux_emplacements(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    assert "6 image(s) clé(s) (factice/1)" in capsys.readouterr().out
+    assert corpus_cli.main(["search", "savoir-faire", "--emplacement", "ouverture", "--top", "2",
+                            "--racine", racine]) == 0
+    sortie = capsys.readouterr().out
+    assert sortie.splitlines()[0].startswith("1.000  factice-chameau.mp4 à 0.5 s  « Titre chameau » (cc0)")
+    assert "sélection enregistrée" in sortie
+    assert corpus_cli.main(["search", "savoir-faire", "--emplacement", "fin", "--top", "1", "--racine", racine]) == 0
+    selections = json.loads((dossier / "selections.json").read_text(encoding="utf-8"))
+    assert set(selections) == {"ouverture", "fin"}                    # la deuxième recherche n'efface pas la première
+    assert len(selections["ouverture"]) == 2 and len(selections["fin"]) == 1
+    assert selections["ouverture"][0]["clip"] == "factice-chameau.mp4"
+    assert set(selections["ouverture"][0]) == {"clip", "t", "score", "image"}        # sans la fiche
+    assert not list(dossier.glob("*.tmp"))
+    # La sélection nourrit les crédits : seulement les clips retenus.
+    assert corpus_cli.main(["credits", "savoir-faire", "--selection", str(dossier / "selections.json"),
+                            "--racine", racine]) == 0
+    texte = (dossier / "credits.md").read_text(encoding="utf-8")
+    assert "Titre chameau" in texte
+
+
+def test_search_par_texte_libre_n_ecrit_pas_de_selection(tmp_path, monkeypatch, capsys):
+    dossier = _corpus_a_deux_emplacements(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    assert corpus_cli.main(["search", "savoir-faire", "un chameau", "--racine", racine]) == 0
+    assert "factice-chameau.mp4" in capsys.readouterr().out and not (dossier / "selections.json").exists()
+
+
+def test_search_erreurs_d_usage(tmp_path, monkeypatch, capsys):
+    dossier = _corpus_a_deux_emplacements(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch)
+
+    def chercher(*args) -> tuple[int, str]:
+        code = corpus_cli.main(["search", "savoir-faire", *args, "--racine", racine])
+        return code, capsys.readouterr().err
+
+    code, err = chercher("un chameau")
+    assert code == 2 and "index absent" in err                         # pas encore d'index
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    capsys.readouterr()
+    code, err = chercher()
+    assert code == 2 and "texte ou --emplacement" in err
+    code, err = chercher("un chameau", "--emplacement", "ouverture")
+    assert code == 2 and "pas les deux" in err
+    code, err = chercher("--emplacement", "inconnu")
+    assert code == 2 and "inconnu" in err
+    for top in ("0", "-3", "beaucoup"):
+        with pytest.raises(SystemExit) as sortie:
+            chercher("un chameau", "--top", top)
+        assert sortie.value.code == 2
+        assert "--top" in capsys.readouterr().err
+    (dossier / "theme.toml").write_text("nom = ", encoding="utf-8")
+    code, err = chercher("--emplacement", "ouverture")
+    assert code == 2 and err.startswith("ERREUR : ") and "theme.toml" in err
+    (dossier / "theme.toml").unlink()
+    code, err = chercher("--emplacement", "ouverture")
+    assert code == 2 and err.startswith("ERREUR : ")
+
+
+def test_search_ne_ecrase_pas_une_selection_illisible(tmp_path, monkeypatch, capsys):
+    dossier = _corpus_a_deux_emplacements(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    capsys.readouterr()
+    (dossier / "selections.json").write_text('{"ouverture": 3}', encoding="utf-8")
+    code = corpus_cli.main(["search", "savoir-faire", "--emplacement", "fin", "--racine", racine])
+    assert code == 1 and "selections.json" in capsys.readouterr().err
+    assert (dossier / "selections.json").read_text(encoding="utf-8") == '{"ouverture": 3}'
+
+
+def test_search_avec_un_index_incomplet_est_une_erreur_propre(tmp_path, monkeypatch, capsys):
+    dossier = _corpus_a_deux_emplacements(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    capsys.readouterr()
+    (dossier / "index.f32").unlink()
+    assert corpus_cli.main(["search", "savoir-faire", "un chameau", "--racine", racine]) == 2
+    assert capsys.readouterr().err.startswith("ERREUR : ")
+    assert not (dossier / "selections.json").exists()
+
+
+def test_search_avec_un_index_d_un_autre_encodeur_demande_de_reconstruire(tmp_path, monkeypatch, capsys):
+    _corpus_a_deux_emplacements(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    capsys.readouterr()
+
+    class Autre(EncodeurFactice):
+        nom = "autre/2"
+
+    monkeypatch.setattr(corpus_cli, "_encodeur", lambda args: Autre())
+    assert corpus_cli.main(["search", "savoir-faire", "un chameau", "--racine", racine]) == 2
+    assert "reconstruire" in capsys.readouterr().err
+
+
+def test_index_signale_les_clips_non_indexes_et_reste_a_zero(tmp_path, monkeypatch, capsys):
+    _corpus_pret(tmp_path)
+    racine = str(tmp_path / "corpus")
+    _avec_encodeur_factice(monkeypatch, extraire=_extraire_sans_images_pour_a)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", racine]) == 0
+    sortie = capsys.readouterr()
+    assert "avertissement" in sortie.err and "factice-a.mp4" in sortie.err
+    assert "2 image(s) clé(s)" in sortie.out and "1 clip(s) non indexé(s)" in sortie.out
+
+
+def test_index_sans_aucune_image_cle_echoue(tmp_path, monkeypatch, capsys):
+    _corpus_pret(tmp_path)
+    _avec_encodeur_factice(monkeypatch, extraire=lambda clip, dossier, intervalle=3.0: [])
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", str(tmp_path / "corpus")]) == 1
+    assert capsys.readouterr().err.startswith("ERREUR : aucune image clé")
+
+
+def test_index_sans_ffmpeg_est_un_outil_absent(tmp_path, monkeypatch, capsys):
+    _corpus_pret(tmp_path)
+    monkeypatch.setattr(corpus_cli, "_encodeur", lambda args: EncodeurFactice())
+    monkeypatch.setattr(images_cles.shutil, "which", lambda nom: None)
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", str(tmp_path / "corpus")]) == 2
+    assert "ffmpeg" in capsys.readouterr().err
+
+
+def test_index_image_illisible_est_une_erreur_propre(tmp_path, monkeypatch, capsys):
+    _corpus_pret(tmp_path)
+
+    class Illisible(EncodeurFactice):
+        def images(self, chemins):
+            raise OSError("cannot identify image file")
+
+    monkeypatch.setattr(corpus_cli, "_encodeur", lambda args: Illisible())
+    original = corpus_cli.index.construire_index
+    monkeypatch.setattr(corpus_cli.index, "construire_index",
+                        lambda dossier, encodeur, **options: original(dossier, encodeur,
+                                                                      extraire=_extraire_factice, **options))
+    assert corpus_cli.main(["index", "savoir-faire", "--racine", str(tmp_path / "corpus")]) == 1
+    assert capsys.readouterr().err.startswith("ERREUR : ")
+
+
+def test_cli_search_sans_index_ni_dependances(tmp_path):
+    _corpus_pret(tmp_path)
+    racine = str(tmp_path / "corpus")
+    res = _cli("search", "savoir-faire", "un chameau", "--racine", racine)
+    assert res.returncode == 2 and res.stderr.startswith("ERREUR : ") and "Traceback" not in res.stderr
+    assert _cli("search", "absent", "x", "--racine", racine).returncode == 2

@@ -21,19 +21,24 @@ def lire_fiches(dossier: Path) -> list[dict]:
     return fiches
 
 
-def _clips_choisis(selection: Path) -> set[str]:
-    """Les noms de clips d'un selections.json ({emplacement: [{clip, ...}]})."""
+def lire_selections(selection: Path) -> dict[str, list[dict]]:
+    """Un selections.json ({emplacement: [{clip, ...}]}) vérifié ; ValueError qui nomme le fichier sinon."""
+    nom = Path(selection).name
     try:
         donnees = json.loads(Path(selection).read_text(encoding="utf-8"))
-    except ValueError as err:
-        raise ValueError(f"{Path(selection).name} illisible : {err}") from None
+    except ValueError as err:       # JSON invalide ou UTF-8 invalide
+        raise ValueError(f"{nom} illisible : {err}") from None
     forme = (isinstance(donnees, dict)
              and all(isinstance(resultats, list) and all(isinstance(r, dict) and isinstance(r.get("clip"), str)
                                                          for r in resultats)
                      for resultats in donnees.values()))
     if not forme:
-        raise ValueError(f"{Path(selection).name} mal formé : attendu {{emplacement: [{{\"clip\": \"...mp4\"}}]}}")
-    return {r["clip"] for resultats in donnees.values() for r in resultats}
+        raise ValueError(f"{nom} mal formé : attendu {{emplacement: [{{\"clip\": \"...mp4\"}}]}}")
+    return donnees
+
+
+def _clips_choisis(selection: Path) -> set[str]:
+    return {r["clip"] for resultats in lire_selections(selection).values() for r in resultats}
 
 
 def _ligne(texte) -> str:
