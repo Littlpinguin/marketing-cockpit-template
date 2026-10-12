@@ -121,7 +121,7 @@
     return trembler(points, {
       amplitude: options.amplitude,
       frequence: options.frequence,
-      graine: graineDuBoil(options.graine || 1, t, cadence)
+      graine: graineDuBoil(options.graine == null ? 1 : options.graine, t, cadence)
     });
   }
 
@@ -135,20 +135,24 @@
     }).join(" ");
   }
 
-  /** Calendrier d'écriture : une lettre après l'autre, une espace compte pour un tiers de lettre. */
+  /**
+   * Calendrier d'écriture : une lettre après l'autre, une espace compte pour un tiers de lettre.
+   * Le texte est découpé par point de code (un émoji est un seul caractère, pas deux moitiés).
+   */
   function lettres(texte, debut, duree) {
+    var caracteres = Array.from(texte);
     var poids = [];
     var total = 0;
-    for (var i = 0; i < texte.length; i++) {
-      var w = texte[i] === " " ? 1 / 3 : 1;
+    for (var i = 0; i < caracteres.length; i++) {
+      var w = caracteres[i] === " " ? 1 / 3 : 1;
       poids.push(w);
       total += w;
     }
     var t = debut;
     var resultat = [];
-    for (var j = 0; j < texte.length; j++) {
+    for (var j = 0; j < caracteres.length; j++) {
       var d = total ? (duree * poids[j]) / total : 0;
-      resultat.push({ car: texte[j], debut: t, duree: d });
+      resultat.push({ car: caracteres[j], debut: t, duree: d });
       t += d;
     }
     return resultat;
@@ -160,7 +164,8 @@
    * Lie un rendu à une timeline GSAP en pause pilotée par HyperFrames.
    * Un mandataire porte une propriété `t` à accesseur : GSAP l'écrit à chaque
    * rendu de la timeline, y compris lors d'un seek qui supprime les callbacks,
-   * et l'accesseur appelle rendre(t). L'événement `hf-seek` est aussi écouté.
+   * et l'accesseur appelle rendre(t). L'événement `hf-seek` est aussi écouté ;
+   * son temps est borné à [0, duree], comme celui que la timeline écrit.
    */
   function attach(timeline, rendre, duree) {
     var courant = 0;
@@ -173,7 +178,9 @@
     timeline.fromTo(mandataire, { t: 0 }, { t: duree, duration: duree, ease: "none", immediateRender: true }, 0);
     if (typeof window !== "undefined" && window.addEventListener) {
       window.addEventListener("hf-seek", function (e) {
-        if (e && e.detail && typeof e.detail.time === "number") rendre(e.detail.time);
+        if (e && e.detail && typeof e.detail.time === "number" && !isNaN(e.detail.time)) {
+          rendre(borner(e.detail.time, 0, duree));
+        }
       });
     }
     rendre(0);
@@ -224,7 +231,7 @@
     var duree = options.duree == null ? 1 : options.duree;
     function rendre(t) {
       var pts = boil(base, t, { amplitude: options.tremble == null ? 1.5 : options.tremble,
-        cadence: options.cadence, graine: options.graine || 1 });
+        cadence: options.cadence, graine: options.graine == null ? 1 : options.graine });
       var total = longueur(pts);
       var p = adoucir(progression(t, debut, duree));
       el.setAttribute("d", versChemin(pts));
@@ -257,7 +264,7 @@
     });
     var cadence = options.cadence == null ? 8 : options.cadence;
     function rendre(t) {
-      var g = graineDuBoil(options.graine || 7, t, cadence);
+      var g = graineDuBoil(options.graine == null ? 7 : options.graine, t, cadence);
       for (var i = 0; i < spans.length; i++) {
         spans[i].setAttribute("opacity", t >= plan[i].debut ? "1" : "0");
         spans[i].setAttribute("rotate", String(arrondir((hacher(g, i) * 2 - 1) * 2)));
@@ -266,23 +273,35 @@
     return { element: el, rendre: rendre };
   }
 
-  /** Fond papier : aplat teinté et grain fixe (feTurbulence à graine constante). */
+  /**
+   * Fond papier : aplat teinté et grain fixe (feTurbulence à graine constante).
+   * Le fond est toujours le premier enfant du SVG : il passe sous tout ce qui
+   * est dessiné, avant ou après l'appel. Le filtre est partagé par graine :
+   * deux appels avec la même graine réutilisent le même filtre (grain et
+   * intensité du premier appel), il faut une autre graine pour un autre grain.
+   * options : couleur, graine, grain, intensite.
+   */
   function paper(svg, options) {
     options = options || {};
-    var graine = (options.graine || 3) >>> 0;
+    var graine = (options.graine == null ? 3 : options.graine) >>> 0;
     var id = "ink-papier-" + graine;
-    var defs = svg.querySelector("defs") || creer("defs", {}, null);
-    if (!defs.parentNode) svg.insertBefore(defs, svg.firstChild);
-    var filtre = creer("filter", { id: id, x: "0", y: "0", width: "100%", height: "100%" }, defs);
-    creer("feTurbulence", { type: "fractalNoise", baseFrequency: options.grain || 0.9,
-      numOctaves: 2, seed: graine, result: "bruit" }, filtre);
-    creer("feColorMatrix", { type: "saturate", values: "0", "in": "bruit", result: "gris" }, filtre);
-    var transfert = creer("feComponentTransfer", { "in": "gris", result: "doux" }, filtre);
-    creer("feFuncA", { type: "linear", slope: options.intensite == null ? 0.08 : options.intensite }, transfert);
-    creer("feBlend", { "in": "SourceGraphic", in2: "doux", mode: "multiply" }, filtre);
+    if (!svg.querySelector('[id="' + id + '"]')) {
+      var defs = svg.querySelector(":scope > defs");
+      if (!defs) {
+        defs = creer("defs", {}, null);
+        svg.insertBefore(defs, svg.firstChild);
+      }
+      var filtre = creer("filter", { id: id, x: "0", y: "0", width: "100%", height: "100%" }, defs);
+      creer("feTurbulence", { type: "fractalNoise", baseFrequency: options.grain || 0.9,
+        numOctaves: 2, seed: graine, result: "bruit" }, filtre);
+      creer("feColorMatrix", { type: "saturate", values: "0", "in": "bruit", result: "gris" }, filtre);
+      var transfert = creer("feComponentTransfer", { "in": "gris", result: "doux" }, filtre);
+      creer("feFuncA", { type: "linear", slope: options.intensite == null ? 0.08 : options.intensite }, transfert);
+      creer("feBlend", { "in": "SourceGraphic", in2: "doux", mode: "multiply" }, filtre);
+    }
     var fond = creer("rect", { x: 0, y: 0, width: "100%", height: "100%",
       fill: options.couleur || "#F5F1E8", filter: "url(#" + id + ")" }, null);
-    svg.insertBefore(fond, defs.nextSibling);
+    svg.insertBefore(fond, svg.firstChild);
     return { element: fond, rendre: function () {} };
   }
 

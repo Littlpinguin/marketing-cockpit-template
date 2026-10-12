@@ -32,8 +32,8 @@
 
   function valider(clip) {
     if (!clip || typeof clip !== "object") throw new Error("clip absent");
-    var nom = "clip « " + clip.nom + " »";
-    if (!(clip.fps > 0)) throw new Error(nom + " : fps invalide");
+    var nom = clip.nom ? "clip « " + clip.nom + " »" : "clip sans nom";
+    if (!(Number.isFinite(clip.fps) && clip.fps > 0)) throw new Error(nom + " : fps invalide");
     if (!Array.isArray(clip.articulations) || clip.articulations.join() !== ARTICULATIONS.join()) {
       throw new Error(nom + " : articulations attendues " + ARTICULATIONS.join(", "));
     }
@@ -43,7 +43,7 @@
         throw new Error(nom + ", image " + n + " : 13 points attendus");
       }
       image.forEach(function (p) {
-        if (!Array.isArray(p) || p.length !== 2 || !isFinite(p[0]) || !isFinite(p[1])) {
+        if (!Array.isArray(p) || p.length !== 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
           throw new Error(nom + ", image " + n + " : point invalide");
         }
       });
@@ -57,12 +57,15 @@
     });
   }
 
-  /** Pose à l'instant t ; en boucle (défaut), la dernière image rejoint la première. */
+  /**
+   * Pose à l'instant t ; en boucle (défaut), la dernière image rejoint la première.
+   * Un instant négatif vaut 0 ; un instant non fini (NaN, infini) est traité comme 0.
+   */
   function pose(clip, t, options) {
     var boucle = !options || options.boucle !== false;
     var n = clip.images.length;
     if (n === 1) return clip.images[0].map(function (p) { return [p[0], p[1]]; });
-    var f = Math.max(0, t) * clip.fps;
+    var f = (Number.isFinite(t) ? Math.max(0, t) : 0) * clip.fps;
     var i, j;
     if (boucle) {
       f = f % n;
@@ -76,27 +79,46 @@
     return melanger(clip.images[i], clip.images[j], f - i);
   }
 
+  function debutEntree(e) {
+    return e.debut == null ? 0 : e.debut;
+  }
+
+  /**
+   * Temps (en s) pendant lequel une entrée avance avant de se figer sur sa dernière pose :
+   * `duree` si elle est donnée ; sinon sans limite pour une entrée en boucle (elle boucle
+   * jusqu'à l'entrée suivante) et (images - 1) / fps pour une entrée `boucle: false`.
+   */
   function dureeEntree(e) {
-    return e.duree == null ? (e.clip.images.length - 1) / e.clip.fps : e.duree;
+    if (e.duree != null) return e.duree;
+    if (e.boucle !== false) return Infinity;
+    return (e.clip.images.length - 1) / e.clip.fps;
   }
 
   function poseEntree(e, local) {
     return pose(e.clip, local, { boucle: e.boucle !== false });
   }
 
-  /** Pose d'une séquence [{clip, debut, duree, boucle}] à l'instant t, fondu de FONDU s entre deux entrées. */
+  /**
+   * Pose d'une séquence [{clip, debut, duree, boucle}] à l'instant t, fondu de FONDU s entre
+   * deux entrées. Avant la première entrée, la première image de la première entrée est tenue.
+   * Une entrée en boucle sans `duree` boucle jusqu'à l'entrée suivante (la dernière, sans fin) ;
+   * avec `duree` elle se fige ensuite sur sa dernière pose ; avec `boucle: false` et sans
+   * `duree` elle se fige sur sa dernière image. Le fondu part de la pose que l'entrée
+   * précédente a, selon la même règle, à l'instant où la nouvelle démarre.
+   */
   function sequenceAt(entrees, t) {
     if (!entrees.length) throw new Error("séquence vide");
-    var tri = entrees.slice().sort(function (a, b) { return a.debut - b.debut; });
+    var tri = entrees.slice().sort(function (a, b) { return debutEntree(a) - debutEntree(b); });
     var k = 0;
-    for (var i = 0; i < tri.length; i++) if (t >= tri[i].debut) k = i;
+    for (var i = 0; i < tri.length; i++) if (t >= debutEntree(tri[i])) k = i;
     var e = tri[k];
-    var local = Math.max(0, Math.min(t - e.debut, dureeEntree(e)));
+    var depuis = t - debutEntree(e);
+    var local = Math.max(0, Math.min(depuis, dureeEntree(e)));
     var courante = poseEntree(e, local);
-    if (k > 0 && t - e.debut < FONDU) {
+    if (k > 0 && depuis < FONDU) {
       var precedente = tri[k - 1];
-      var finPrecedente = Math.min(e.debut - precedente.debut, dureeEntree(precedente));
-      return melanger(poseEntree(precedente, finPrecedente), courante, Math.max(0, t - e.debut) / FONDU);
+      var finPrecedente = Math.min(debutEntree(e) - debutEntree(precedente), dureeEntree(precedente));
+      return melanger(poseEntree(precedente, finPrecedente), courante, Math.max(0, depuis) / FONDU);
     }
     return courante;
   }
@@ -146,6 +168,7 @@
    * tremble, parent, theatre (InkTheater ; défaut : le global).
    */
   function create(svg, options) {
+    if (!options || !(options.clip || options.sequence)) throw new Error("options requises : clip ou sequence");
     var theatre = options.theatre || racine.InkTheater;
     if (!theatre) throw new Error("InkTheater introuvable : charger ink-theater.js avant ink-puppet.js");
     var source;
@@ -163,7 +186,7 @@
     var tremble = options.tremble == null ? 1.2 : options.tremble;
     function rendre(t) {
       var pts = versSVG(source.at(t), options);
-      var g = theatre.graineDuBoil(options.graine || 11, t, cadence);
+      var g = theatre.graineDuBoil(options.graine == null ? 11 : options.graine, t, cadence);
       SEGMENTS.forEach(function (s, k) {
         var ligne = subdiviser(pts[INDICE[s[0]]], pts[INDICE[s[1]]], 6);
         traits[k].setAttribute("d", theatre.versChemin(theatre.trembler(ligne, { amplitude: tremble, graine: g + k })));
@@ -172,7 +195,9 @@
       var sommet = pts[INDICE.tete];
       var centre = [(cou[0] + sommet[0]) / 2, (cou[1] + sommet[1]) / 2];
       var rayon = Math.hypot(sommet[0] - cou[0], sommet[1] - cou[1]) / 2;
-      tete.setAttribute("d", theatre.versChemin(theatre.trembler(cercle(centre, rayon, 18), { amplitude: tremble, graine: g + 99 })));
+      var contour = theatre.trembler(cercle(centre, rayon, 18), { amplitude: tremble, graine: g + 99 });
+      contour[contour.length - 1] = [contour[0][0], contour[0][1]];
+      tete.setAttribute("d", theatre.versChemin(contour));
     }
     return { element: groupe, rendre: rendre };
   }
