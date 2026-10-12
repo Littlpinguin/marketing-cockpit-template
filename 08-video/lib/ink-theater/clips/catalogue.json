@@ -15,17 +15,17 @@
       "source": "CMU 10_01",
       "plan": "sagittal",
       "fps": 30.0,
-      "images": 121,
-      "duree": 4.0
+      "images": 61,
+      "duree": 2.0
     },
     {
       "nom": "course",
       "fichier": "course.json",
       "source": "CMU 09_01",
       "plan": "sagittal",
-      "fps": 30.0,
-      "images": 34,
-      "duree": 1.1
+      "fps": 60.0,
+      "images": 45,
+      "duree": 0.733
     },
     {
       "nom": "danse",

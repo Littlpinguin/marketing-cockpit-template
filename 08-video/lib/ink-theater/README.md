@@ -54,7 +54,7 @@ HyperFrames rend la composition en la parcourant instant par instant. Pour que l
 1. **Attendre la police**, puis construire la scène dans `document.fonts.ready.then(…)`. Sans cela, les premières images risquent de s'afficher avec la police de repli.
 2. **Créer la timeline en pause** : `gsap.timeline({ paused: true })`.
 3. **La lier au rendu** : `InkTheater.attach(tl, scene.rendre, duree)`, avec `duree` égale au `data-duration` de la racine. À appeler **une seule fois par composition** : `attach` ajoute un écouteur `hf-seek` à la fenêtre, et un second appel en ajouterait un second. Le temps reçu par l'écouteur est borné à `[0, duree]`, comme celui que la timeline écrit.
-4. **Enregistrer la timeline en dernier** : `window.__timelines["<id>"] = tl`, avec `<id>` identique au `data-composition-id` de la racine, à la fin de la construction. Une timeline enregistrée avant que la scène soit construite est vide pour HyperFrames : le rendu sort blanc.
+4. **Enregistrer la timeline en dernier** : `window.__timelines["<id>"] = tl`, avec `<id>` identique au `data-composition-id` de la racine, à la fin de la construction. Une timeline enregistrée avant que la scène soit construite est vide pour HyperFrames : le rendu sort blanc. La ligne `window.__timelines = window.__timelines || {};` qui précède l'enregistrement est sans effet dans le runtime HyperFrames, qui crée lui-même le registre : elle évite seulement une erreur à l'ouverture de la page hors runtime (aperçu dans un navigateur, test).
 5. **`data-duration` sur la racine** (et sur le SVG, avec `class="clip"` et `data-start`).
 6. **Jamais d'horloge ni de hasard non semé** : ni `Math.random`, ni `Date.now`, ni `requestAnimationFrame`, `setTimeout`, `setInterval`. Un test du dépôt refuse ces appels dans le moteur ; la même règle vaut pour vos compositions. Pour varier un trait, changer sa `graine`.
 
@@ -84,7 +84,7 @@ Ordre de superposition : `paper()` se glisse toujours en premier enfant du SVG, 
 
 ## 4. API
 
-Tous les temps sont en secondes, toutes les longueurs en pixels du SVG. Chaque fabrique (`drawPath`, `writeText`, `paper`, `InkPuppet.create`) renvoie `{ element, rendre }` : `element` est le nœud SVG créé, `rendre(t)` dessine l'instant `t`. On les passe à `scene.ajouter(…)`.
+Tous les temps sont en secondes, toutes les longueurs en pixels du SVG. Chaque fabrique (`drawPath`, `writeText`, `paper`, `InkPuppet.create`) renvoie `{ element, rendre }` : `element` est le nœud SVG créé, `rendre(t)` dessine l'instant `t`. On les passe à `scene.ajouter(…)`. Les graines sont des entiers ; `graine: 0` est une graine explicite et valide, distincte de l'absence d'option (qui prend le défaut de l'objet : 1 pour un trait, 7 pour un texte, 3 pour le papier, 11 pour la silhouette).
 
 ### InkTheater
 
@@ -200,7 +200,7 @@ Dans l'exemple, la marche tourne de 0 à 3,5 s, puis le salut démarre à 3,5 s 
 |---|---|
 | `InkPuppet.sequence(entrees)` | Valide les clips et renvoie `{ at(t) }`, la pose de la séquence à l'instant `t` |
 | `InkPuppet.pose(clip, t, { boucle })` | Les 13 points du clip à l'instant `t`, interpolés entre deux images (`boucle` : `true` par défaut). Un `t` négatif ou non fini vaut 0 |
-| `InkPuppet.valider(clip)` | Renvoie `true` ou lève une erreur : fps non fini ou nul, articulations inattendues, aucune image, image qui n'a pas 13 points, point non fini |
+| `InkPuppet.valider(clip)` | Renvoie `true` ou lève une erreur : fps non fini, nul ou négatif, articulations inattendues, aucune image, image qui n'a pas 13 points, point non fini |
 | `InkPuppet.melanger(a, b, x)`, `sequenceAt(entrees, t)`, `versSVG(pose, { x, y, echelle })`, `subdiviser(a, b, n)` | Briques internes, exportées pour les tests |
 | `InkPuppet.ARTICULATIONS`, `SEGMENTS`, `FONDU` | Les 13 noms d'articulations, les 11 segments, la durée du fondu (0,2 s) |
 
@@ -210,17 +210,17 @@ Dans l'exemple, la marche tourne de 0 à 3,5 s, puis le salut démarre à 3,5 s 
 
 Tableau tiré de `clips/catalogue.json`. `InkClips` est un objet global (chargé par `clips/clips.js`) indexé par le nom du clip : `InkClips.marche`, `InkClips["coup-de-pied"]`.
 
-| Clip | Durée | Plan | Essai CMU | Boucle |
+| Clip | Durée | Plan | Essai CMU | Contenu et boucle |
 |---|---|---|---|---|
-| `marche` | 1,07 s | sagittal, sur place | 02_01 | oui : un cycle de pas complet (1,1 s) |
-| `course` | 1,10 s | sagittal, sur place | 09_01 | non : le fichier source dure 1,2 s, trop peu pour une fenêtre de 30 images ou plus qui boucle ; joint visible, à jouer avec `boucle: false` |
-| `saut` | 3,33 s | sagittal | 13_11 | non : saut en avant, à jouer une fois |
-| `salut` | 2,57 s | frontal | 111_37 | non : geste, à jouer une fois |
-| `assis` | 6,00 s | frontal | 143_18 | oui, avec un léger raccord (s'assoit puis se relève) |
-| `danse` | 6,00 s | frontal | 05_02 | non : à jouer une fois |
-| `coup-de-pied` | 4,00 s | sagittal | 10_01 | non : à jouer une fois |
+| `marche` | 1,07 s | sagittal, sur place | 02_01 | Marche. Boucle : oui, un cycle de pas complet (1,1 s) |
+| `course` | 0,73 s | sagittal, sur place | 09_01 | Course. Boucle : oui, un cycle de deux pas complet (0,75 s), enregistré à 60 i/s |
+| `saut` | 3,33 s | sagittal | 13_11 | Saut en avant. Boucle : non, à jouer une fois |
+| `salut` | 2,57 s | frontal | 111_37 | Bras levé tenu pendant environ 2,2 s : le bras ne redescend qu'à la toute fin de cet essai CMU, très court. Boucle : non, à jouer une fois |
+| `assis` | 6,00 s | frontal | 143_18 | S'assoit puis se relève. Boucle : oui, avec un léger raccord |
+| `danse` | 6,00 s | frontal | 05_02 | Danse, bras expressifs. Fenêtre de 2,9 s à 8,9 s du fichier, dont les trois premières secondes sont immobiles. Boucle : non, à jouer une fois |
+| `coup-de-pied` | 2,00 s | sagittal | 10_01 | Dernier pas, coup de pied du pied droit, retour au calme. Fenêtre de 4,2 s à 6,2 s du fichier (les pieds restent au sol avant). Le personnage avance d'environ 0,8 hauteur de corps : le clip n'est pas sur place. Boucle : non, à jouer une fois |
 
-La durée est celle du catalogue (images moins une, divisées par la cadence de 30 i/s) ; une boucle dure une image de plus. Les clips de la base CMU sont libres de droits, avec citation : voir `THIRD_PARTY_NOTICES.md`.
+La durée est celle du catalogue : (images moins une) divisé par la cadence du clip, champ `fps` (30 i/s, sauf `course` à 60 i/s) ; une boucle dure une image de plus. Les clips de la base CMU sont libres de droits, avec citation : voir `THIRD_PARTY_NOTICES.md`.
 
 ## 6. Ajouter un clip
 
@@ -237,13 +237,15 @@ python3 08-video/scripts/bvh2clip.py 02_01.bvh --nom marche --source "CMU 02_01"
 | `--plan auto\|frontal\|sagittal` | Plan de projection. `sagittal` : de profil, vers la droite de l'image ; `frontal` : face caméra. `auto` : sagittal si la hanche se déplace de plus d'une demi-hauteur, frontal sinon |
 | `--sur-place` | Annule le déplacement horizontal de la hanche (marche, course) |
 | `--debut`, `--fin` | Fenêtre en secondes. Défaut : tout le fichier. Les clips livrés font au moins 30 images et au plus 6 s : les tests du dépôt vérifient cette plage |
-| `--fps` | Cadence du clip (défaut `30`) |
+| `--fps` | Cadence du clip (défaut `30`) ; le moteur lit le `fps` de chaque clip |
 | `--licence` | Licence écrite dans le clip (défaut : celle de la base CMU) |
 | `--sortie` | Dossier de sortie (défaut : `08-video/lib/ink-theater/clips/`) |
 
-**Piège de la pose en T.** Dans les BVH de la base CMU, la première image est souvent une pose de calibration : bras écartés à l'horizontale (de profil, mains à hauteur d'épaule). Le clip saute alors dès l'image suivante, et à chaque tour de boucle. Les sept clips livrés démarrent à `--debut 0.1` pour l'éviter ; faire de même, et décaler `--fin` d'autant. Les tests du dépôt (`scripts/tests/test_video_ink_clips.py`) refusent un clip dont la première image est une pose en T ou dont les deux premières images sont très éloignées.
+**Piège de la pose en T.** Dans les BVH de la base CMU, la première image est souvent une pose de calibration : bras écartés à l'horizontale (de profil, mains à hauteur d'épaule). Le clip saute alors dès l'image suivante, et à chaque tour de boucle. Les sept clips livrés démarrent tous après cette image (`--debut` de 0,1 s au moins) ; faire de même, et décaler `--fin` d'autant. Les tests du dépôt (`scripts/tests/test_video_ink_clips.py`) refusent un clip dont la première image est une pose en T ou dont les deux premières images sont très éloignées.
 
-**Boucler proprement.** Pour un clip qui tourne (marche, course), choisir une fenêtre qui couvre exactement un cycle de pas (début et fin dans la même phase) : c'est ce qui rend la marche livrée sans raccord (`--debut 1.266667 --fin 2.34`, un cycle de 33 images).
+**Cadrer sur l'action.** Beaucoup d'essais CMU commencent par plusieurs secondes d'attente (05_02 : environ 3 s ; 10_01 : environ 4,2 s). Repérer l'instant de l'action (hauteur des pieds, déplacement des articulations d'une image à l'autre) et régler `--debut` et `--fin` autour. Les tests vérifient que `coup-de-pied` contient un pied qui monte de plus de 0,15 et que `danse` a une énergie de pose bien au-dessus de l'immobilité.
+
+**Boucler proprement.** Pour un clip qui tourne (marche, course), choisir une fenêtre qui couvre exactement un cycle de pas (début et fin dans la même phase) : c'est ce qui rend la marche livrée sans raccord (`--debut 1.266667 --fin 2.34`, un cycle de 33 images). Un cycle de course ne dure que 22 images à 30 i/s, sous le minimum de 30 images : `course` est donc enregistrée à `--fps 60` (un cycle de 45 images, `--debut 0.316667 --fin 1.06`). Le champ `fps` du clip est lu par le moteur, la cadence n'a pas besoin d'être la même pour tous les clips.
 
 **Après l'ajout**, compléter `THIRD_PARTY_NOTICES.md` (clip, essai, description, licence de la source) : un clip sans notice ne se publie pas.
 
@@ -252,12 +254,12 @@ Commandes des sept clips livrés (BVH de la base CMU, via le miroir `una-dinosau
 ```bash
 S=08-video/scripts/bvh2clip.py
 python3 $S 02_01.bvh  --nom marche       --source "CMU 02_01"  --sur-place --debut 1.266667 --fin 2.34
-python3 $S 09_01.bvh  --nom course       --source "CMU 09_01"  --sur-place --debut 0.1 --fin 3.1
+python3 $S 09_01.bvh  --nom course       --source "CMU 09_01"  --sur-place --fps 60 --debut 0.316667 --fin 1.06
 python3 $S 13_11.bvh  --nom saut         --source "CMU 13_11"  --debut 0.1 --fin 4.1
 python3 $S 111_37.bvh --nom salut        --source "CMU 111_37" --plan frontal --debut 0.1 --fin 5.1
 python3 $S 143_18.bvh --nom assis        --source "CMU 143_18" --debut 0.1 --fin 6.1
-python3 $S 05_02.bvh  --nom danse        --source "CMU 05_02"  --plan frontal --debut 0.1 --fin 6.1
-python3 $S 10_01.bvh  --nom coup-de-pied --source "CMU 10_01"  --plan sagittal --debut 0.1 --fin 4.1
+python3 $S 05_02.bvh  --nom danse        --source "CMU 05_02"  --plan frontal --debut 2.9 --fin 8.9
+python3 $S 10_01.bvh  --nom coup-de-pied --source "CMU 10_01"  --plan sagittal --debut 4.2 --fin 6.2
 ```
 
 ## 7. Marque

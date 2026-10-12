@@ -20,7 +20,7 @@ Two kinds of third-party material ship alongside it: a handwriting font and a se
 
   > The data used in this project was obtained from mocap.cs.cmu.edu. The database was created with funding from NSF EIA-0196217.
 
-- The `source` and `licence` fields written inside each clip repeat the trial number and the terms above.
+- The `source` field written inside each clip names the CMU trial and the `licence` field states the terms of the database (free for all uses). The citation above is not repeated in the clips: it is kept in this notices file.
 
 | Clip | CMU trial | Description in the CMU index |
 |---|---|---|
