@@ -4,7 +4,7 @@
 >
 > Déjà vendorisé dans le template (hors périmètre de cette analyse) : `ui-ux-pro-max`, `frontend-design` (Anthropic), `claude-seo` (AgriciDaniel, 25 sub-skills + 18 agents), pack CRO/marketing de Corey Haines (`marketingskills` : copywriting, page-cro, email-sequence, pricing-strategy, customer-research, analytics-tracking, marketing-psychology, cold-email, paid-ads, etc.), `web-artifacts-builder` (Anthropic).
 >
-> **Bilan : 25 candidates examinées, 6 retenues (VENDORISER), 19 écartées.** La majorité des skills communautaires « marketing » sont soit des coquilles promotionnelles, soit des redites du pack Corey Haines déjà en place. Les vraies valeurs ajoutées sont concentrées chez une poignée d'auteurs (AgriciDaniel, Leonxlnx, CosmoBlk, Community-Access).
+> **Bilan : 25 candidates examinées, 6 retenues (VENDORISER), 19 écartées.** La majorité des skills communautaires « marketing » sont soit des coquilles promotionnelles, soit des redites du pack Corey Haines déjà en place. Les vraies valeurs ajoutées sont concentrées chez une poignée d'auteurs (AgriciDaniel, Leonxlnx, CosmoBlk, Community-Access). La section 10 (vidéo, ajoutée le 2026-10-12) est hors de ce décompte.
 
 ---
 

@@ -65,7 +65,7 @@ Dépôt : [calesthio/OpenMontage](https://github.com/calesthio/OpenMontage), lic
 | Montage documentaire (`skills/pipelines/documentary-montage/`) | `video-documentary`, `08-video/documentaire.md` |
 | Animation de personnages, mondes 3D (`skills/pipelines/character-animation/`, `skills/creative/3d-world-generation.md`) | `motion-design` : `references/personnages.md`, `references/3d.md` |
 
-Les fichiers qui reprennent une de ces méthodes le disent en pied de page : « Méthode inspirée d'OpenMontage (calesthio/OpenMontage, AGPLv3), réécrite pour le template : aucun texte ni code repris. Registre : docs/vendored-video.md. » Ce sont les skills `video-production`, `motion-design` (et ses trois références), `video-repurpose`, `video-documentary`, `video-generation`, `reel-talking-head`, et la doctrine `08-video/narration.md`, `motion.md` et `documentaire.md`.
+Les fichiers qui reprennent une de ces méthodes le disent en pied de page : « Méthode inspirée d'OpenMontage (calesthio/OpenMontage, AGPLv3), réécrite pour le template : aucun texte ni code repris. Registre : docs/vendored-video.md. » Ce sont les skills `video-production`, `motion-design` et ses trois références (`references/3d.md`, `references/personnages.md`, `references/encre.md`), `video-repurpose`, `video-documentary`, `video-generation`, `reel-talking-head`, et la doctrine `08-video/formats.md`, `08-video/montage.md`, `08-video/narration.md`, `08-video/motion.md` et `08-video/documentaire.md`.
 
 **Non repris** (hors périmètre du module, réévaluables plus tard) : avatars présentateurs, doublage et localisation, Backlot, Remotion, Blender, ManimGL, génération vidéo locale sur GPU, publication automatique. Le code d'OpenMontage n'est pas repris non plus, son moteur d'encre compris : le template a ses propres outils, écrits en salle blanche.
 
@@ -85,7 +85,7 @@ Le moteur d'encre (`08-video/lib/ink-theater/ink-theater.js`, `ink-puppet.js`) e
 | Police **Patrick Hand** | `fonts/PatrickHand-Regular.ttf`, `fonts/OFL.txt` | Patrick Wagesreiter, récupérée dans le dépôt Google Fonts (`ofl/patrickhand`) | SIL Open Font License 1.1 : usage commercial et incorporation dans une vidéo admis, vente seule interdite, `OFL.txt` toujours joint |
 | 7 clips de mouvement | `clips/*.json`, `clips/catalogue.json`, `clips/clips.js` | Silhouettes 2D (13 articulations projetées sur un plan et normalisées) calculées par `08-video/scripts/bvh2clip.py` depuis des fichiers BVH de la CMU Graphics Lab Motion Capture Database (`http://mocap.cs.cmu.edu`), pris sur le miroir BVH public `una-dinosauria/cmu-mocap` ; les BVH ne sont pas dans le dépôt | Libre pour tout usage, commercial compris ; la citation demandée par la CMU est conservée dans les notices |
 
-Essai CMU de chaque clip, citation exacte et règles de redistribution : `08-video/lib/ink-theater/THIRD_PARTY_NOTICES.md`. Qui copie le dossier dans un projet garde ce fichier et `fonts/OFL.txt` avec lui ; un clip ajouté par `bvh2clip.py` entre dans la table des notices avec sa source.
+Prise CMU de chaque clip (sujet et numéro de prise, le « trial » de la base, par exemple `02_01`), citation exacte et règles de redistribution : `08-video/lib/ink-theater/THIRD_PARTY_NOTICES.md`. Qui copie le dossier dans un projet garde ce fichier et `fonts/OFL.txt` avec lui ; un clip ajouté par `bvh2clip.py` entre dans la table des notices avec sa source.
 
 ## Exemples Opus 5.5 : consultés, pas copiés
 

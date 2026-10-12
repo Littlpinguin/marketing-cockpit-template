@@ -84,7 +84,7 @@ correspond plus à `01-brand/tokens.json` (le rendu peut porter d'anciennes vale
 tokens eux-mêmes sont invalides ou incomplets (placeholder non résolu, couleur invalide, token
 manquant) ; dans les deux cas c'est un P1, avec le message cité tel quel. Sortie 2 : option
 inconnue, ou toile non prise en charge (la `unit` de `frame.md` n'est pas une des toiles
-admises, message « toile non prise en charge ») ; rapporte-la telle quelle et ne juge pas la
+admises, message « toile « … » non prise en charge ») ; rapporte-la telle quelle et ne juge pas la
 charte. Montage par ffmpeg sans projet HyperFrames, ou projet de sous-titres seul
 (`hyperframes-sous-titres/`, sans `frame.md`) : « non applicable ».
 

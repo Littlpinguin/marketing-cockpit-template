@@ -66,7 +66,7 @@ Le moteur s'installe comme plugin Claude Code officiel : `hyperframes@hyperframe
    ```
 
    Portée `local` : seul `.claude/settings.local.json`, non versionné, est modifié. Rien n'entre dans le dépôt ni dans la configuration des autres projets.
-3. **Contrôler après l'installation** : relancer `npx --yes hyperframes doctor --json`. Si `ok` est faux, ne pas activer, et proposer de retirer ce qui vient d'être installé (`claude plugin uninstall hyperframes@hyperframes --scope local`, puis `claude plugin marketplace remove hyperframes --scope local`).
+3. **Contrôler après l'installation** : `claude plugin list` (ou `claude plugin list --json`) doit lister `hyperframes@hyperframes`. Ne pas relancer `npx hyperframes doctor` à ce stade : une fois le plugin installé, les commandes HyperFrames passent par le lanceur du plugin, qui choisit la version du CLI fixée par son manifeste (règles d'exécution en plugin de la skill `hyperframes:hyperframes`), et l'environnement de rendu a déjà été contrôlé avant l'installation (point 1). Si le plugin n'apparaît pas, ne pas activer, et proposer de retirer ce qui vient d'être installé (`claude plugin uninstall hyperframes@hyperframes --scope local`, puis `claude plugin marketplace remove hyperframes --scope local`).
 4. **Relever la version installée** du plugin dans `claude plugin list` (ou `claude plugin list --json`), pour l'écrire dans `modules.video.hyperframes` à l'étape 4.
 5. **Prévenir l'utilisateur** : les skills `hyperframes:*` se chargent au démarrage d'une session. Redémarrer Claude Code avant la première production vidéo.
 6. **Détecter les capacités facultatives**, les afficher, sans jamais bloquer l'activation :

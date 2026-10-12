@@ -1,7 +1,7 @@
 """Tests de structure et de câblage du module vidéo (skills, doctrine, module, documentation).
 
 Ces tests vérifient des fichiers, pas un comportement : présence, frontmatter,
-termes obligatoires, absence de reliquats (Palmier Pro), licences tierces.
+termes obligatoires, absence de reliquats de l'ancien éditeur vidéo, licences tierces.
 """
 from __future__ import annotations
 
@@ -12,6 +12,9 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 SKILLS = REPO / ".claude" / "skills"
+# Nom de l'éditeur retiré du module, construit à l'exécution : ce fichier ne le contient pas,
+# et le test d'absence peut donc le parcourir comme les autres.
+ANCIEN_EDITEUR = "pal" + "mier"
 
 
 def texte(rel: str) -> str:
@@ -125,7 +128,7 @@ def test_nouvelle_skill(nom, termes):
     manquants = [t for t in termes if t not in contenu]
     assert not manquants, f"{nom} : termes absents {manquants}"
     assert "OpenMontage" in contenu and "docs/vendored-video.md" in contenu
-    assert "palmier" not in contenu.lower() and "—" not in contenu
+    assert ANCIEN_EDITEUR not in contenu.lower() and "—" not in contenu
 
 
 @pytest.mark.parametrize("fichier, termes", REFERENCES_MOTION.items())
@@ -290,7 +293,7 @@ def test_skill_refondue(nom, termes):
     contenu = chemin.read_text(encoding="utf-8")
     manquants = [t for t in termes if t not in contenu]
     assert not manquants, f"{nom} : termes absents {manquants}"
-    assert "palmier" not in contenu.lower() and "—" not in contenu
+    assert ANCIEN_EDITEUR not in contenu.lower() and "—" not in contenu
 
 
 @pytest.mark.parametrize("nom", ["video-generation", "reel-talking-head"])
@@ -308,7 +311,7 @@ def test_agent_video_reviewer():
     for terme in ("qa-video.py", "planche", "brand-frame.py --check", "P1", "P2", "P3",
                   "01-brand/divulgation-ia.md", "01-brand/droits.md", "brief.md", "lecture seule"):
         assert terme in contenu, terme
-    assert "palmier" not in contenu.lower() and "—" not in contenu
+    assert ANCIEN_EDITEUR not in contenu.lower() and "—" not in contenu
 
 
 # ------------------------------------------------------------------ câblage du module (tâche 12)
@@ -324,9 +327,9 @@ def test_commande_modules():
                   "npx --yes hyperframes doctor", "node --version", "ffprobe", "WHISPER_MODEL",
                   "import open_clip", "manim --version", '"capacites"', '"hyperframes"'):
         assert terme in modules, terme
-    assert "palmier" not in modules.lower()
+    assert ANCIEN_EDITEUR not in modules.lower()
     sante = texte(".claude/commands/health-check.md")
-    assert "hyperframes@hyperframes" in sante and "palmier" not in sante.lower()
+    assert "hyperframes@hyperframes" in sante and ANCIEN_EDITEUR not in sante.lower()
 
 
 def test_schema_du_module_video():
@@ -394,7 +397,7 @@ def test_role_08_video():
         assert terme in role and terme in readme, terme
     for script in ("qa-video.py", "brand-frame.py", "bvh2clip.py", "corpus.py", "inspiration.py"):
         assert f"`{script}`" in readme, script
-    assert "palmier" not in (role + readme).lower()
+    assert ANCIEN_EDITEUR not in (role + readme).lower()
     assert "—" not in role + readme
 
 
@@ -487,22 +490,22 @@ def test_mineurs_de_revue():
 
 # ------------------------------------------------------------------ documentation (tâche 13)
 
-def test_plus_de_palmier_hors_changelog():
+def test_plus_d_ancien_editeur_hors_changelog():
     """Fichiers suivis ou à suivre par git (pas les fichiers locaux ignorés comme .mcp.json).
 
-    Ce fichier de tests est exclu : il nomme Palmier pour vérifier son absence ailleurs.
+    Seuls l'historique (CHANGELOG.md), l'archive de la v0.1 et les specs locales sont exclus.
     """
     liste = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"],
                            cwd=REPO, capture_output=True, text=True, check=True).stdout.splitlines()
+    suffixes = {".md", ".json", ".toml", ".py", ".yml", ".yaml", ".html", ".txt", ".example", ".js", ".sh", ".css"}
     fautifs = []
     for rel in liste:
         chemin = REPO / rel
-        if rel in ("CHANGELOG.md", "scripts/tests/test_video_module.py") or rel.startswith("docs/superpowers/") \
-                or not chemin.is_file():
+        if rel == "CHANGELOG.md" or rel.startswith((".setup-archive/", "docs/superpowers/")) or not chemin.is_file():
             continue
-        if chemin.suffix not in {".md", ".json", ".toml", ".py", ".yml", ".yaml", ".html", ".txt"}:
+        if chemin.suffix not in suffixes:
             continue
-        if "palmier" in chemin.read_text(encoding="utf-8", errors="ignore").lower():
+        if ANCIEN_EDITEUR in chemin.read_text(encoding="utf-8", errors="ignore").lower():
             fautifs.append(rel)
     assert not fautifs, fautifs
 
@@ -527,10 +530,14 @@ def test_registre_complet():
 def test_changelog_non_publie():
     changelog = texte("CHANGELOG.md")
     non_publie = changelog.split("## [Unreleased]")[1].split("\n## [")[0]
-    for terme in ("HyperFrames", "Palmier", "OpenMontage", "qa-video.py", "Migration"):
+    for terme in ("HyperFrames", ANCIEN_EDITEUR.capitalize(), "OpenMontage", "qa-video.py", "Migration"):
         assert terme in non_publie, terme
-    for terme in ("gemini-nano-banana-2.1", "GOOGLE_AI_IMAGE_MODEL", "awesome-opus5-5-videos"):
+    for terme in ("gemini-nano-banana-2.1", "GOOGLE_AI_IMAGE_MODEL", "awesome-opus5-5-videos", "`gemini-3-pro-image`",
+                  "sync-template", "build-inventory.toml", "`08-video/projets` source"):
         assert terme in non_publie, terme
+    migration = non_publie.split("**Migration (configured forks).**")[1]
+    video, image = migration.split("Every fork that uses image generation")
+    assert "GOOGLE_AI_IMAGE_MODEL" not in video and "GOOGLE_AI_IMAGE_MODEL" in image
 
 
 def test_etat_de_l_art_et_architecture():
@@ -560,7 +567,7 @@ def test_reviewer_porte_de_la_charte():
     reviewer = texte(".claude/agents/video-reviewer.md")
     etape = reviewer.split("### 3.")[1].split("### 4.")[0]
     assert "projet HyperFrames qui contient un `frame.md`" in etape
-    assert "toile non prise en charge" in etape and "dossier absent" not in etape
+    assert "toile « … » non prise en charge" in etape and "dossier absent" not in etape
 
 
 def test_projet_de_sous_titres_toujours_a_part():
@@ -589,3 +596,28 @@ def test_manim_registre_et_pieds_de_page():
     assert "Adaptations : nom" not in composer and "exemples Python" not in composer
     assert "description" in composer and "note d'intégration" in composer
     assert "manimce-best-practices" in ce and "description" in ce and "exemples Python" in ce
+
+
+def test_pieds_de_page_openmontage_exacts():
+    pied = ("Méthode inspirée d'OpenMontage (calesthio/OpenMontage, AGPLv3), réécrite pour le template : "
+            "aucun texte ni code repris. Registre : docs/vendored-video.md.")
+    porteurs = set(subprocess.run(["git", "grep", "-l", "-F", pied], cwd=REPO, capture_output=True, text=True,
+                                  check=True).stdout.split()) - {"docs/vendored-video.md"}
+    attendus = {*(f".claude/skills/{nom}/SKILL.md" for nom in ("video-production", "motion-design", "video-repurpose",
+                                                              "video-documentary", "video-generation",
+                                                              "reel-talking-head")),
+                *(f".claude/skills/motion-design/references/{nom}.md" for nom in ("3d", "personnages", "encre")),
+                *(f"08-video/{nom}.md" for nom in ("formats", "montage", "narration", "motion", "documentaire"))}
+    assert porteurs == attendus, sorted(porteurs ^ attendus)
+    phrase = _ligne(texte("docs/vendored-video.md"), "Les fichiers qui reprennent une de ces méthodes")
+    for chemin in attendus:
+        nom = chemin.split("/")[2] if chemin.endswith("SKILL.md") else chemin.split("/", 1)[1].replace("skills/motion-design/", "")
+        assert nom in phrase, nom
+
+
+def test_modules_ne_relance_pas_doctor_apres_installation():
+    modules = texte(".claude/commands/modules.md")
+    activation = modules.split("#### Activation du module `video`")[1].split("### Étape 4")[0]
+    assert activation.count("npx --yes hyperframes doctor") == 1
+    controle = _ligne(activation, "3. **Contrôler après l'installation**")
+    assert "claude plugin list" in controle and "lanceur du plugin" in controle

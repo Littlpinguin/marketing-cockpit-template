@@ -77,3 +77,7 @@ Pour toute vidéo qui montre un logiciel, une application ou un site en fonction
 - [ ] Master à −14 LUFS, crête ≤ −1,5 dBTP
 - [ ] Transcription du master comparée au texte attendu (fidélité mot à mot)
 - [ ] Démo produit : aucune donnée réelle de client à l'écran
+
+---
+
+Méthode inspirée d'OpenMontage (calesthio/OpenMontage, AGPLv3), réécrite pour le template : aucun texte ni code repris. Registre : docs/vendored-video.md.

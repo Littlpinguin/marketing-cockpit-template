@@ -121,3 +121,7 @@ Détail et exemple de calcul : `narration.md` § « Calibrer la longueur ».
 - **1:1 (1080 × 1080) et 16:9 (1920 × 1080)** : convention de ce module, une marge de titre de 5 % de chaque dimension, soit 54 px sur un côté de 1080 px et 96 px sur un côté de 1920 px. En 1:1, 54 px partout ; en 16:9, 54 px en haut et en bas, 96 px à gauche et à droite. Elle se vérifie à l'œil sur le rendu.
 - `brand-frame.py` reprend ces valeurs dans le `frame.md` de chaque projet (clés `safe-top`, `safe-bottom`, `safe-left`, `safe-right`) : les compositions les lisent là, sans les recopier.
 - `qa-video.py` ne mesure pas les zones de sécurité. L'agent `video-reviewer` les vérifie à l'œil sur les images de plans (`plan-NN.jpg`) et la planche contact que produit la QA.
+
+---
+
+Méthode inspirée d'OpenMontage (calesthio/OpenMontage, AGPLv3), réécrite pour le template : aucun texte ni code repris. Registre : docs/vendored-video.md.

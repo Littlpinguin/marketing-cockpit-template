@@ -299,7 +299,7 @@ The best community skills are **vendored** (copied, adapted, attributed) rather 
 
 The video module also builds on projects it does not copy. [HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen, Apache-2.0) is installed by `/modules` as the official Claude Code plugin, so its workflows and CLI keep their upstream release pace. The production method of [OpenMontage](https://github.com/calesthio/OpenMontage) (calesthio, AGPLv3) was read and rewritten in our own words; no text or code was copied, and the heavier tools (ink-theater engine, BVH converter, documentary corpus) were written clean-room from a functional spec. Example videos for inspiration are fetched at use time from [awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos) and never stored in the repo. Register: [`docs/vendored-video.md`](docs/vendored-video.md).
 
-Each register documents what was kept, what was cut and why, plus a re-sync procedure. If you're an upstream author and want anything changed, open an issue.
+Each register documents what was kept, what was cut and why. Vendored sources also come with a re-sync procedure; a source installed rather than copied (HyperFrames) comes with its install and update path, and a source read for its method or consulted for inspiration (OpenMontage, the example videos) with what was taken and how nothing was copied. If you're an upstream author and want anything changed, open an issue.
 
 ## Roadmap
 
