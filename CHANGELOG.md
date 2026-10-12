@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+Follow-ups from the video studio 2.3.0 reviews.
+
+**Fixed.** The documentary licence filter no longer reads a restricted Creative Commons licence as plain CC BY when it is written with an unusual separator: every Unicode dash is folded onto `-`, invisible format characters (soft hyphen, zero-width space, word joiner) are stripped, and any non-alphanumeric separator between `BY` and `NC` / `SA` / `ND` counts (`CC BY/NC`, `CC BY_NC`, `CC BY, NC`, `Non_Commercial`). Two words glued together once an invisible character is stripped give `inconnue`, never `cc-by`.
+
+**Fixed.** `qa-video.py`: `rapport.md` no longer cites a `planche-indisponible` finding that was not emitted (with no video stream it points to `flux-video`); a symlinked export keeps its `qa/` folder in the project, under the link's name; every ffmpeg pass maps the video stream chosen by ffprobe parsing, never a leading attached picture; platform findings name the platform as `plateformes.toml` writes it (« Instagram Reels », not `reels`). `bvh2clip.py` takes Mixamo's `HeadTop_End` as the top of the skull.
+
+**Changed.** `video-repurpose` stops explicitly for approval 1 (the series treatment) before transcribing; `video-documentary` places the storyboard approval at the end of step 5, before the montage (step 7). `docs/vendored-video.md` documents how to refresh the inspiration catalogue and when to update the register.
+
 ## [2.3.0] - 2026-10-12
 
 Video studio v2. The `video` module is rebuilt on HyperFrames and on a production method rewritten from OpenMontage: one entry point, three human approvals before any spend, a cost contract, measured render QA and a review agent, and new routes (brand motion design, explainers and launch videos, long video to clips, documentary montage on free archives, ink drawing, 3D, Manim). Palmier Pro is gone and the module no longer needs macOS. Configured forks with the module enabled: read the migration notes below.
