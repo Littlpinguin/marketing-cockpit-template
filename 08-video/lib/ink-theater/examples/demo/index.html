@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Ink Theater · démo</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="ink/ink-theater.js"></script>
+    <script src="ink/ink-puppet.js"></script>
+    <script src="ink/clips/clips.js"></script>
+    <style>
+      @font-face {
+        font-family: "Patrick Hand";
+        src: url("ink/fonts/PatrickHand-Regular.ttf") format("truetype");
+      }
+      html, body { margin: 0; background: #F5F1E8; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #1B1B1B; }
+      #scene { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="ink-demo" data-start="0" data-width="1080" data-height="1920" data-duration="6">
+      <svg id="scene" class="clip" data-start="0" data-duration="6" viewBox="0 0 1080 1920" width="1080" height="1920"></svg>
+    </div>
+    <script>
+      document.fonts.load('64px "Patrick Hand"').then(function () { return document.fonts.ready; }).then(function () {
+        var svg = document.getElementById("scene");
+        var I = window.InkTheater;
+        var P = window.InkPuppet;
+        var C = window.InkClips;
+        var scene = I.scene([]);
+        scene.ajouter(I.paper(svg, { couleur: "#F5F1E8", graine: 4 }));
+        scene.ajouter(I.writeText(svg, "Bonjour", { x: 540, y: 520, taille: 150, ancre: "middle", debut: 0.4, duree: 1.4, graine: 5 }));
+        scene.ajouter(I.drawPath(svg, "M 160 1520 C 420 1470, 690 1560, 920 1500", { debut: 0.3, duree: 1.2, epaisseur: 7, graine: 2 }));
+        scene.ajouter(P.create(svg, {
+          sequence: [
+            { clip: C.marche, debut: 0, duree: 3.5 },
+            { clip: C.salut, debut: 3.5, duree: 2.5, boucle: false }
+          ],
+          x: 540, y: 1170, echelle: 540, epaisseur: 8, graine: 9
+        }));
+        var tl = gsap.timeline({ paused: true });
+        InkTheater.attach(tl, scene.rendre, 6);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["ink-demo"] = tl;
+      });
+    </script>
+  </body>
+</html>
