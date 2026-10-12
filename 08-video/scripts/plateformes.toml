@@ -9,8 +9,9 @@
 #   formats          résolutions admises « largeurxhauteur » (dimensions affichées)
 #   duree_max        durée maximale en secondes
 #   debit_min_kbps   plancher de débit vidéo (avertissement en dessous)
-#   lufs             loudness intégrée visée (tolérance ±1 LU, cf. montage.md)
-#   crete_dbtp       plafond de crête vraie
+#   lufs             loudness intégrée visée (cible de montage.md ; la tolérance de
+#                    ±1 LU est celle de qa-video.py, pas de montage.md)
+#   crete_dbtp       plafond de crête vraie (montage.md : crête ≤ -1,5 dBTP)
 
 [reels]
 nom = "Instagram Reels"

@@ -24,23 +24,37 @@ Ce qu'il contrôle
   silence                     silence de 1,5 s ou plus hors de la dernière seconde  avertissement
   plan-long                   plus de --max-plan s sans changement de plan          avertissement
   rythme                      nombre de plans, médiane, plan le plus long           info
-  transcription-indisponible  ni --transcript, ni whisper-cli avec WHISPER_MODEL    info
+  transcription-indisponible  ni --transcript, ni whisper-cli avec WHISPER_MODEL,   info
+                              ou whisper-cli en échec (message distinct)
   transcription-vide          aucun mot transcrit alors qu'un script est fourni     erreur
   transcription-couverture    moins de 80 % des mots du script retrouvés            erreur
+  planche-indisponible        images ou planche contact non extraites               info
+
+La transcription n'est pas jugée sur une vidéo sans flux audio et sans --transcript :
+flux-audio signale déjà la piste manquante (sauf avec --sans-audio).
+
+Une mesure qui ne tourne pas ne valide jamais : si une passe ffmpeg échoue ou ne
+rend rien d'exploitable, le script s'arrête en erreur d'outil (code 2) au lieu de
+rendre un rapport vide. Seule la planche contact est facultative.
 
 Sorties : rapport texte ou JSON sur la sortie standard ; dans --sortie (défaut :
 qa/<nom de la vidéo>/ à côté du dossier exports/), une image au milieu de chaque
 plan (plan-NN.jpg), une planche contact (planche.jpg), rapport.md et rapport.json.
+Les valeurs non finies (crête de -inf sur un silence numérique) sont écrites null.
 
 Codes de sortie : 0 aucun constat bloquant, 1 constat(s) bloquant(s), 2 erreur
-d'usage ou d'outil (fichier absent, ffprobe introuvable, plateforme inconnue).
+d'usage ou d'outil (fichier absent, ffprobe introuvable, plateforme inconnue ou
+fichier des plateformes illisible, passe ffmpeg en échec, dossier de sortie
+non inscriptible).
 """
-# Pas de « from __future__ import annotations » : @dataclass résout alors le module de la
-# classe dans sys.modules, ce qui échoue (Python 3.11) quand le script est chargé par
-# importlib sans être enregistré. Les annotations ci-dessous valent à l'exécution dès 3.10.
+# Python 3.11 minimum (tomllib, comme le reste du dépôt). Pas de « from __future__ import
+# annotations » : @dataclass résout alors le module de la classe dans sys.modules, ce qui
+# échoue quand le script est chargé par importlib sans y être enregistré. Les annotations
+# ci-dessous sont donc évaluées à l'exécution.
 import argparse
 import difflib
 import json
+import math
 import os
 import re
 import shutil
@@ -82,6 +96,10 @@ class Constat:
 
 class ErreurOutil(Exception):
     """ffprobe ou ffmpeg absent ou en échec, fichier illisible."""
+
+
+class EchecTranscription(Exception):
+    """whisper-cli (ou l'extraction audio qui le précède) a tourné et a échoué."""
 
 
 # ---------------------------------------------------------------- plateformes
@@ -381,11 +399,16 @@ def evaluer(mesures: dict[str, Any], options: dict[str, Any]) -> list[Constat]:
                                 f"plus long {max(plans):.2f} s"))
 
     attendu = mesures.get("attendu")
-    if attendu:
-        transcrit = mesures.get("transcription")
+    transcrit = mesures.get("transcription")
+    if attendu and not (audio is None and transcrit is None):
         if transcrit is None:
-            constats.append(Constat("info", "transcription-indisponible",
-                                    "ni --transcript, ni whisper-cli avec WHISPER_MODEL : fidélité de la narration non mesurée"))
+            echec = mesures.get("transcription_echec")
+            if echec:
+                message = f"whisper-cli en échec ({echec}) : fidélité de la narration non mesurée"
+            else:
+                message = ("ni --transcript, ni whisper-cli avec WHISPER_MODEL : "
+                           "fidélité de la narration non mesurée")
+            constats.append(Constat("info", "transcription-indisponible", message))
         elif not mots(transcrit):
             constats.append(Constat("erreur", "transcription-vide", "aucun mot transcrit : audio absent ou muet"))
         else:
@@ -400,10 +423,19 @@ def evaluer(mesures: dict[str, Any], options: dict[str, Any]) -> list[Constat]:
 # ---------------------------------------------------------------- mesures (ffmpeg)
 
 def executer(commande: list[str]) -> subprocess.CompletedProcess:
+    # errors="replace" : ffmpeg recopie parfois des métadonnées dans un autre encodage que l'UTF-8.
     try:
-        return subprocess.run(commande, capture_output=True, text=True, check=False)
+        return subprocess.run(commande, capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", check=False)
     except FileNotFoundError as err:
         raise ErreurOutil(f"{commande[0]} introuvable : installer ffmpeg (brew install ffmpeg)") from err
+
+
+def exiger(res: subprocess.CompletedProcess, passe: str) -> None:
+    """Une passe de mesure en échec n'est jamais ignorée : erreur d'outil, code de sortie 2."""
+    if res.returncode != 0:
+        debut = " ".join(res.stderr.strip().splitlines()[:3])[:300]
+        raise ErreurOutil(f"ffmpeg a échoué à la passe {passe} (code {res.returncode}) : {debut or 'aucun message'}")
 
 
 def sonder(video: Path) -> dict[str, Any]:
@@ -418,8 +450,10 @@ def analyser_video(video: Path, duree: float) -> dict[str, Any]:
     detections = executer(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-map", "0:v:0",
                            "-vf", f"blackdetect=d={NOIR_MIN}:pix_th=0.10,freezedetect=n=-60dB:d={FIGE_MIN}",
                            "-f", "null", "-"])
+    exiger(detections, "blackdetect/freezedetect")
     scenes = executer(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-map", "0:v:0",
                        "-vf", f"select='gt(scene,{SEUIL_SCENE})',showinfo", "-f", "null", "-"])
+    exiger(scenes, "détection des plans (scene)")
     coupes = parse_coupes(scenes.stderr)
     return {"noirs": parse_intervalles(detections.stderr, "blackdetect", duree),
             "figes": parse_intervalles(detections.stderr, "freezedetect", duree),
@@ -430,7 +464,12 @@ def analyser_audio(video: Path, duree: float) -> dict[str, Any]:
     res = executer(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-map", "0:a:0",
                     "-af", f"ebur128=peak=true,silencedetect=noise=-50dB:d={SILENCE_MIN}",
                     "-f", "null", "-"])
-    return {"loudness": parse_ebur128(res.stderr),
+    exiger(res, "ebur128/silencedetect")
+    loudness = parse_ebur128(res.stderr)
+    if loudness["integre"] is None or loudness["crete"] is None:
+        raise ErreurOutil("la passe ebur128/silencedetect n'a rendu ni loudness intégrée ni crête vraie : "
+                          "mesure impossible, rapport non fiable")
+    return {"loudness": loudness,
             "silences": parse_intervalles(res.stderr, "silencedetect", duree)}
 
 
@@ -442,25 +481,36 @@ def milieux_de_plans(plans: list[float]) -> list[float]:
     return milieux
 
 
-def extraire_planche(video: Path, temps: list[float], dossier: Path) -> list[Path]:
-    """Une image au milieu de chaque plan, puis une planche contact."""
+def extraire_planche(video: Path, temps: list[float], dossier: Path) -> Path | None:
+    """Une image au milieu de chaque plan, puis une planche contact.
+
+    Rend le chemin de la planche, ou None si une image ou la planche n'a pas pu être
+    produite (la planche est facultative : le rapport ne dépend pas d'elle). Une erreur
+    d'écriture du dossier (OSError) remonte.
+    """
     dossier.mkdir(parents=True, exist_ok=True)
-    for ancienne in list(dossier.glob("plan-*.jpg")) + [dossier / "planche.jpg"]:
+    planche = dossier / "planche.jpg"
+    for ancienne in list(dossier.glob("plan-*.jpg")) + [planche]:
         ancienne.unlink(missing_ok=True)
     images = []
-    for index, t in enumerate(temps[:MAX_IMAGES], start=1):
-        sortie = dossier / f"plan-{index:02d}.jpg"
-        executer(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{t:.3f}",
-                  "-i", str(video), "-frames:v", "1", "-vf", "scale=540:-2", str(sortie)])
-        if sortie.exists():
+    try:
+        for index, t in enumerate(temps[:MAX_IMAGES], start=1):
+            sortie = dossier / f"plan-{index:02d}.jpg"
+            res = executer(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{t:.3f}",
+                            "-i", str(video), "-frames:v", "1", "-vf", "scale=540:-2", str(sortie)])
+            if res.returncode != 0 or not sortie.exists():
+                return None
             images.append(sortie)
-    if images:
+        if not images:
+            return None
         colonnes = min(6, len(images))
         lignes = -(-len(images) // colonnes)
-        executer(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(dossier / "plan-%02d.jpg"),
-                  "-vf", f"scale=270:-2,tile={colonnes}x{lignes}:padding=6:color=white",
-                  "-frames:v", "1", str(dossier / "planche.jpg")])
-    return images
+        res = executer(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(dossier / "plan-%02d.jpg"),
+                        "-vf", f"scale=270:-2,tile={colonnes}x{lignes}:padding=6:color=white",
+                        "-frames:v", "1", str(planche)])
+    except ErreurOutil:
+        return None
+    return planche if res.returncode == 0 and planche.exists() else None
 
 
 def modele_whisper() -> str | None:
@@ -477,20 +527,28 @@ def modele_whisper() -> str | None:
 
 
 def transcrire(video: Path, langue: str) -> str | None:
-    """Transcrit l'audio du rendu avec whisper-cli ; None si l'outil manque."""
+    """Transcrit l'audio du rendu avec whisper-cli.
+
+    Rend None si l'outil ou son modèle manque (transcription non tentée) ; lève
+    EchecTranscription si l'outil a tourné et a échoué.
+    """
     modele = modele_whisper()
     if not modele or shutil.which("whisper-cli") is None:
         return None
     with tempfile.TemporaryDirectory() as tmp:
         wav = Path(tmp) / "audio.wav"
-        executer(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(video),
-                  "-vn", "-ac", "1", "-ar", "16000", str(wav)])
+        extraction = executer(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(video),
+                               "-vn", "-ac", "1", "-ar", "16000", str(wav)])
+        if extraction.returncode != 0 or not wav.exists():
+            raise EchecTranscription("extraction audio impossible")
         base = Path(tmp) / "transcription"
         res = executer(["whisper-cli", "-m", modele, "-f", str(wav), "-l", langue,
                         "-otxt", "-of", str(base), "-np"])
         texte = base.with_suffix(".txt")
-        if res.returncode != 0 or not texte.exists():
-            return None
+        if res.returncode != 0:
+            raise EchecTranscription(f"code {res.returncode}")
+        if not texte.exists():
+            raise EchecTranscription("aucun fichier de transcription produit")
         return texte.read_text(encoding="utf-8")
 
 
@@ -532,7 +590,24 @@ def rendu_markdown(video: Path, constats: list[Constat], mesures: dict[str, Any]
     return "\n".join(lignes) + "\n"
 
 
+def sans_non_finis(valeur: Any) -> Any:
+    """Remplace par None les flottants non finis (-inf d'un silence numérique, nan), récursivement."""
+    if isinstance(valeur, float) and not math.isfinite(valeur):
+        return None
+    if isinstance(valeur, dict):
+        return {cle: sans_non_finis(v) for cle, v in valeur.items()}
+    if isinstance(valeur, (list, tuple)):
+        return [sans_non_finis(v) for v in valeur]
+    return valeur
+
+
+def serialiser_json(rapport: dict[str, Any]) -> str:
+    """JSON strict (RFC 8259) : jamais de -Infinity ni de NaN."""
+    return json.dumps(sans_non_finis(rapport), ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+
+
 def dossier_sortie(video: Path) -> Path:
+    video = video.resolve()
     base = video.parent.parent if video.parent.name == "exports" else video.parent
     return base / "qa" / video.stem
 
@@ -562,59 +637,67 @@ def main(argv: list[str] | None = None) -> int:
     if not video.is_file():
         print(f"ERREUR : {video} introuvable", file=sys.stderr)
         return 2
+    video = video.resolve()
+    try:
+        return analyser(args, video)
+    except (ErreurOutil, OSError, ValueError, tomllib.TOMLDecodeError) as err:
+        print(f"ERREUR : {err}", file=sys.stderr)
+        return 2
+
+
+def analyser(args: argparse.Namespace, video: Path) -> int:
     conf = None
     if args.plateforme:
         plateformes = charger_plateformes(Path(args.plateformes))
         if args.plateforme not in plateformes:
-            print(f"ERREUR : plateforme inconnue « {args.plateforme} » "
-                  f"(connues : {', '.join(sorted(plateformes))})", file=sys.stderr)
-            return 2
+            raise ValueError(f"plateforme inconnue « {args.plateforme} » "
+                             f"(connues : {', '.join(sorted(plateformes))})")
         conf = plateformes[args.plateforme]
-    try:
-        probe = parse_ffprobe(sonder(video))
-        mesures: dict[str, Any] = {"probe": probe}
-        if probe["video"]:
-            mesures.update(analyser_video(video, probe["duree"]))
-        if probe["audio"]:
-            mesures.update(analyser_audio(video, probe["duree"]))
-        with video.open("rb") as flux:
-            mesures["moov_avant_mdat"] = moov_avant_mdat(flux)
-        if args.script:
-            chemin = Path(args.script)
-            mesures["attendu"] = texte_attendu(chemin.read_text(encoding="utf-8"), chemin.suffix)
-            if args.transcript:
-                mesures["transcription"] = lire_transcription(Path(args.transcript))
-            elif probe["audio"]:
+
+    probe = parse_ffprobe(sonder(video))
+    mesures: dict[str, Any] = {"probe": probe}
+    if probe["video"]:
+        mesures.update(analyser_video(video, probe["duree"]))
+    if probe["audio"]:
+        mesures.update(analyser_audio(video, probe["duree"]))
+    with video.open("rb") as flux:
+        mesures["moov_avant_mdat"] = moov_avant_mdat(flux)
+    if args.script:
+        chemin = Path(args.script)
+        mesures["attendu"] = texte_attendu(chemin.read_text(encoding="utf-8"), chemin.suffix)
+        if args.transcript:
+            mesures["transcription"] = lire_transcription(Path(args.transcript))
+        elif probe["audio"]:
+            try:
                 mesures["transcription"] = transcrire(video, args.langue)
-            else:
-                mesures["transcription"] = ""
-    except ErreurOutil as err:
-        print(f"ERREUR : {err}", file=sys.stderr)
-        return 2
-    except (OSError, ValueError) as err:
-        print(f"ERREUR : {err}", file=sys.stderr)
-        return 2
+            except EchecTranscription as err:
+                mesures["transcription"] = None
+                mesures["transcription_echec"] = str(err)
+        # sans flux audio ni --transcript : rien à transcrire, flux-audio le signale déjà
 
     constats = evaluer(mesures, {"plateforme": conf, "nom_plateforme": args.plateforme,
                                  "duree": args.duree, "sans_audio": args.sans_audio,
                                  "max_plan": args.max_plan})
-    sortie = Path(args.sortie) if args.sortie else dossier_sortie(video)
+    sortie = Path(args.sortie).resolve() if args.sortie else dossier_sortie(video)
     planche = None
     if probe["video"]:
         temps = milieux_de_plans(mesures.get("plans") or [probe["duree"]])
-        if extraire_planche(video, temps, sortie):
-            planche = sortie / "planche.jpg"
+        planche = extraire_planche(video, temps, sortie)
+        if planche is None:
+            constats.append(Constat("info", "planche-indisponible",
+                                    "images ou planche contact non extraites : regarder la vidéo "
+                                    "directement ou relancer après avoir vérifié ffmpeg"))
     sortie.mkdir(parents=True, exist_ok=True)
     rapport = {"video": str(video), "plateforme": args.plateforme, "resume": resume(constats),
                "mesures": {"duree": probe["duree"], "video": probe["video"], "audio": probe["audio"],
                            "loudness": mesures.get("loudness"), "plans": mesures.get("plans")},
                "constats": [asdict(c) for c in constats],
-               "planche": str(planche) if planche and planche.exists() else None}
-    (sortie / "rapport.json").write_text(json.dumps(rapport, ensure_ascii=False, indent=2) + "\n",
-                                         encoding="utf-8")
+               "planche": str(planche) if planche else None}
+    texte_json = serialiser_json(rapport)
+    (sortie / "rapport.json").write_text(texte_json, encoding="utf-8")
     (sortie / "rapport.md").write_text(rendu_markdown(video, constats, mesures), encoding="utf-8")
     if args.format == "json":
-        print(json.dumps(rapport, ensure_ascii=False, indent=2))
+        print(texte_json, end="")
     else:
         print(rendu_texte(video, constats, planche))
     return 1 if any(c.niveau == "erreur" for c in constats) else 0

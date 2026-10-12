@@ -9,6 +9,7 @@ from __future__ import annotations
 import importlib.util
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -302,3 +303,200 @@ def test_erreurs_d_usage_code_2(tmp_path):
     factice = tmp_path / "f.mp4"
     factice.write_bytes(b"x")
     assert _lancer(str(factice), "--plateforme", "inconnue").returncode == 2
+
+
+# ------------------------------------------------------------------ une mesure qui ne tourne pas ne valide jamais
+
+def test_sans_piste_audio_la_transcription_n_est_pas_jugee():
+    """Sans flux audio et sans --transcript, la couverture n'est pas mesurable : flux-audio le dit déjà."""
+    m = _mesures(attendu="bonjour à tous")
+    m["probe"]["audio"] = None
+    m.pop("loudness")
+    ids = _ids(qa.evaluer(m, {"sans_audio": True}))
+    assert not ids & {"transcription-vide", "transcription-indisponible", "transcription-couverture"}
+    ids = _ids(qa.evaluer(m, {}))
+    assert "flux-audio" in ids
+    assert not ids & {"transcription-vide", "transcription-indisponible", "transcription-couverture"}
+
+
+def test_echec_de_transcription_a_son_propre_message():
+    m = _mesures(attendu="bonjour à tous", transcription=None,
+                 transcription_echec="code 1")
+    constat = next(c for c in qa.evaluer(m, {}) if c.id == "transcription-indisponible")
+    assert constat.niveau == "info" and "whisper-cli en échec" in constat.message
+    sans_echec = next(c for c in qa.evaluer(_mesures(attendu="bonjour", transcription=None), {})
+                      if c.id == "transcription-indisponible")
+    assert "en échec" not in sans_echec.message
+
+
+def test_valeurs_non_finies_serialisees_en_null():
+    texte = qa.serialiser_json({"loudness": {"integre": -70.0, "crete": float("-inf")},
+                                "liste": [float("inf"), float("nan"), 1.5]})
+    assert "Infinity" not in texte and "NaN" not in texte
+    assert json.loads(texte) == {"loudness": {"integre": -70.0, "crete": None},
+                                 "liste": [None, None, 1.5]}
+    # le constat reste calculé sur la vraie valeur
+    constats = qa.evaluer(_mesures(loudness={"integre": float("-inf"), "crete": float("-inf")}), {})
+    assert "loudness" in _ids(constats, "erreur")
+
+
+def test_dossier_sortie_resout_le_chemin(tmp_path, monkeypatch):
+    (tmp_path / "exports").mkdir()
+    monkeypatch.chdir(tmp_path / "exports")
+    assert qa.dossier_sortie(Path("demo.mp4")) == (tmp_path / "qa" / "demo").resolve()
+
+
+def test_plateformes_illisibles_code_2(tmp_path):
+    factice = tmp_path / "f.mp4"
+    factice.write_bytes(b"x")
+    manquant = _lancer(str(factice), "--plateforme", "reels", "--plateformes", str(tmp_path / "absent.toml"))
+    assert manquant.returncode == 2 and "ERREUR" in manquant.stderr
+    assert "Traceback" not in manquant.stderr
+    casse = tmp_path / "casse.toml"
+    casse.write_text("[reels\nnom = = 1", encoding="utf-8")
+    invalide = _lancer(str(factice), "--plateforme", "reels", "--plateformes", str(casse))
+    assert invalide.returncode == 2 and "ERREUR" in invalide.stderr
+    assert "Traceback" not in invalide.stderr
+
+
+# ---- bout en bout avec de fausses commandes ffmpeg / whisper-cli placées en tête du PATH
+
+@pytest.fixture(scope="module")
+def video_av(tmp_path_factory):
+    chemin = tmp_path_factory.mktemp("av") / "demo.mp4"
+    _video_synthetique(chemin)
+    return chemin
+
+
+@pytest.fixture(scope="module")
+def video_muette(tmp_path_factory):
+    chemin = tmp_path_factory.mktemp("muette") / "muet.mp4"
+    _video_synthetique(chemin, audio=False)
+    return chemin
+
+
+def _fausse_commande(dossier: Path, nom: str, corps: str) -> Path:
+    """Crée un script shell exécutable `nom` dans `dossier` ; rend `dossier`."""
+    dossier.mkdir(exist_ok=True)
+    chemin = dossier / nom
+    chemin.write_text("#!/bin/sh\n" + corps + "\n", encoding="utf-8")
+    chemin.chmod(0o755)
+    return dossier
+
+
+def _ffmpeg_truque(dossier: Path, avant: str) -> Path:
+    """Faux ffmpeg : exécute `avant` (shell, qui peut quitter), sinon délègue au vrai ffmpeg."""
+    return _fausse_commande(dossier, "ffmpeg", f'{avant}\nexec "{shutil.which("ffmpeg")}" "$@"')
+
+
+def _lancer_env(env: dict[str, str], *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True,
+                          env={**os.environ, **env}, cwd=cwd)
+
+
+def _devant_le_path(dossier: Path) -> dict[str, str]:
+    return {"PATH": f"{dossier}{os.pathsep}{os.environ['PATH']}"}
+
+
+def _json_strict(texte: str):
+    def refuser(constante):
+        raise AssertionError(f"JSON invalide : {constante}")
+    return json.loads(texte, parse_constant=refuser)
+
+
+@requiert_ffmpeg
+@pytest.mark.parametrize("avant, passe", [
+    ("exit 1", "blackdetect"),
+    ('case "$*" in *select=*) echo boom >&2; exit 1;; esac', "plans"),
+    ('case "$*" in *ebur128*) echo boom >&2; exit 1;; esac', "ebur128"),
+    ('case "$*" in *ebur128*) exit 0;; esac', "ebur128"),
+], ids=["tout-echoue", "passe-plans", "passe-audio", "audio-sans-mesure"])
+def test_mesure_qui_ne_tourne_pas_donne_code_2(tmp_path, video_av, avant, passe):
+    stubs = _ffmpeg_truque(tmp_path / "bin", avant)
+    res = _lancer_env(_devant_le_path(stubs), str(video_av), "--plateforme", "reels",
+                      "--format", "json", "--sortie", str(tmp_path / "qa"))
+    assert res.returncode == 2, res.stdout + res.stderr
+    assert "ERREUR" in res.stderr and passe in res.stderr
+    assert "Traceback" not in res.stderr
+    assert "erreur(s)" not in res.stdout and "constats" not in res.stdout
+
+
+@requiert_ffmpeg
+def test_planche_en_echec_ne_fait_pas_echouer_le_rapport(tmp_path, video_av):
+    stubs = _ffmpeg_truque(tmp_path / "bin", 'case " $* " in *" -ss "*) exit 1;; esac')
+    res = _lancer_env(_devant_le_path(stubs), str(video_av), "--format", "json",
+                      "--sortie", str(tmp_path / "qa"))
+    assert res.returncode in (0, 1), res.stderr
+    rapport = _json_strict(res.stdout)
+    constat = next(c for c in rapport["constats"] if c["id"] == "planche-indisponible")
+    assert constat["niveau"] == "info" and rapport["planche"] is None
+
+
+@requiert_ffmpeg
+def test_whisper_en_echec_message_distinct(tmp_path, video_av):
+    modele = tmp_path / "modele.bin"
+    modele.write_bytes(b"x")
+    stubs = _fausse_commande(tmp_path / "bin", "whisper-cli", "echo boom >&2; exit 1")
+    script = tmp_path / "script.txt"
+    script.write_text("bonjour à tous", encoding="utf-8")
+    res = _lancer_env({**_devant_le_path(stubs), "WHISPER_MODEL": str(modele)}, str(video_av),
+                      "--script", str(script), "--format", "json", "--sortie", str(tmp_path / "qa"))
+    assert res.returncode in (0, 1), res.stderr
+    constat = next(c for c in _json_strict(res.stdout)["constats"] if c["id"] == "transcription-indisponible")
+    assert constat["niveau"] == "info" and "whisper-cli en échec" in constat["message"]
+
+
+@requiert_ffmpeg
+def test_stderr_non_utf8_ne_plante_pas(tmp_path, video_av):
+    stubs = _ffmpeg_truque(tmp_path / "bin", r"printf 'titre \351\377 invalide\n' >&2")
+    res = _lancer_env(_devant_le_path(stubs), str(video_av), "--format", "json",
+                      "--sortie", str(tmp_path / "qa"))
+    assert "Traceback" not in res.stderr, res.stderr
+    assert res.returncode in (0, 1)
+    assert {"noir", "fige"} <= {c["id"] for c in _json_strict(res.stdout)["constats"]}
+
+
+@requiert_ffmpeg
+def test_sortie_non_inscriptible_code_2(tmp_path, video_av):
+    bloc = tmp_path / "bloc"
+    bloc.write_text("un fichier, pas un dossier", encoding="utf-8")
+    res = _lancer(str(video_av), "--format", "json", "--sortie", str(bloc / "qa"))
+    assert res.returncode == 2, res.stdout + res.stderr
+    assert "ERREUR" in res.stderr and "Traceback" not in res.stderr
+
+
+@requiert_ffmpeg
+def test_sans_audio_et_script_sur_video_muette(tmp_path, video_muette):
+    script = tmp_path / "script.txt"
+    script.write_text("bonjour à tous", encoding="utf-8")
+    res = _lancer(str(video_muette), "--sans-audio", "--script", str(script), "--format", "json",
+                  "--sortie", str(tmp_path / "qa"))
+    ids = {c["id"] for c in _json_strict(res.stdout)["constats"]}
+    assert not ids & {"transcription-vide", "transcription-indisponible", "flux-audio"}
+
+
+@requiert_ffmpeg
+def test_silence_numerique_donne_un_json_valide(tmp_path):
+    video = tmp_path / "silence.mp4"
+    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                    "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo",
+                    "-f", "lavfi", "-i", "testsrc2=s=1080x1920:r=30", "-t", "3",
+                    "-c:a", "aac", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+                    str(video)], check=True)
+    res = _lancer(str(video), "--format", "json", "--sortie", str(tmp_path / "qa"))
+    rapport = _json_strict(res.stdout)
+    assert rapport["mesures"]["loudness"]["crete"] is None
+    assert "loudness" in {c["id"] for c in rapport["constats"]}
+    _json_strict((tmp_path / "qa" / "rapport.json").read_text(encoding="utf-8"))
+
+
+@requiert_ffmpeg
+def test_chemins_resolus_depuis_un_chemin_relatif(tmp_path, video_av):
+    exports = tmp_path / "projet" / "exports"
+    exports.mkdir(parents=True)
+    shutil.copy(video_av, exports / "demo.mp4")
+    res = _lancer_env({}, "demo.mp4", "--format", "json", cwd=exports)
+    rapport = _json_strict(res.stdout)
+    assert Path(rapport["video"]).is_absolute()
+    assert Path(rapport["planche"]).is_absolute()
+    assert (tmp_path / "projet" / "qa" / "demo" / "rapport.json").exists()
