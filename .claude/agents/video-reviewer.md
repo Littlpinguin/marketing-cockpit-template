@@ -72,7 +72,8 @@ l'étape 4 ne sont alors pas jugés, c'est un P2.
 
 ### 3. Vérifier que la marque du projet est à jour
 
-Projet HyperFrames seulement (`brand-frame.py --check` n'écrit rien) :
+Seulement pour un projet HyperFrames qui contient un `frame.md` (en général
+`08-video/projets/<slug>/hyperframes/`). `brand-frame.py --check` n'écrit rien :
 
 ```bash
 python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --check
@@ -81,9 +82,11 @@ python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --ch
 Lis le message, pas seulement le code. Sortie 1 : soit `frame.md` ou `brand.css` ne
 correspond plus à `01-brand/tokens.json` (le rendu peut porter d'anciennes valeurs), soit les
 tokens eux-mêmes sont invalides ou incomplets (placeholder non résolu, couleur invalide, token
-manquant) ; dans les deux cas c'est un P1, avec le message cité tel quel. Sortie 2 : erreur
-d'usage (dossier absent, option inconnue) ; rapporte-la telle quelle et ne juge pas la charte.
-Montage par ffmpeg sans projet HyperFrames : « non applicable ».
+manquant) ; dans les deux cas c'est un P1, avec le message cité tel quel. Sortie 2 : option
+inconnue, ou toile non prise en charge (la `unit` de `frame.md` n'est pas une des toiles
+admises, message « toile non prise en charge ») ; rapporte-la telle quelle et ne juge pas la
+charte. Montage par ffmpeg sans projet HyperFrames, ou projet de sous-titres seul
+(`hyperframes-sous-titres/`, sans `frame.md`) : « non applicable ».
 
 ### 4. Confronter le rendu à la grille
 

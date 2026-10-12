@@ -69,6 +69,7 @@ Le dossier d'une vidéo, `08-video/projets/<slug>/`, est créé par `video-produ
 | `storyboard.md` | Plans, vignettes au vrai cadrage, sources de la matière | oui |
 | `sous-titres/` | Fichiers `.srt` relus (skill `captions`) | oui |
 | `hyperframes/` | Projet HyperFrames : `BRIEF.md`, `frame.md`, `brand.css`, `STORYBOARD.md`, compositions, `assets/` | sources, images et polices de `assets/` oui ; fichiers audio et vidéo, `renders/`, `snapshots/`, `node_modules/`, `frames_fg/`, `.media/` non |
+| `hyperframes-sous-titres/` | Projet du workflow `hyperframes:embedded-captions` (skill `captions`), toujours à part de `hyperframes/` : choix créatifs de sous-titres (`theme.json` ou `plan.json`), transcription | choix créatifs et transcription oui ; sorties `frames_fg/` et `frames_bg/` (images de détourage), `.media/`, `renders/`, fichiers audio et vidéo (dont `final.mp4`) non |
 | `rushes/` | Sources, clips générés et leurs sidecars, fichiers intermédiaires | non |
 | `exports/` | Rendus finaux par plateforme | non |
 | `qa/` | Sorties de `qa-video.py` : images de plans, planche, rapports | `rapport.md` seulement |

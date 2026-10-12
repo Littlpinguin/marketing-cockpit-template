@@ -483,3 +483,109 @@ def test_mineurs_de_revue():
     reel = texte(".claude/skills/reel-talking-head/SKILL.md")
     assert "passe la séquence telle quelle" in reel and "rushes/tmp/" in reel
     assert "08-video/projets/<slug>/hyperframes-sous-titres/" in texte(".claude/skills/captions/SKILL.md")
+
+
+# ------------------------------------------------------------------ documentation (tâche 13)
+
+def test_plus_de_palmier_hors_changelog():
+    """Fichiers suivis ou à suivre par git (pas les fichiers locaux ignorés comme .mcp.json).
+
+    Ce fichier de tests est exclu : il nomme Palmier pour vérifier son absence ailleurs.
+    """
+    liste = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+                           cwd=REPO, capture_output=True, text=True, check=True).stdout.splitlines()
+    fautifs = []
+    for rel in liste:
+        chemin = REPO / rel
+        if rel in ("CHANGELOG.md", "scripts/tests/test_video_module.py") or rel.startswith("docs/superpowers/") \
+                or not chemin.is_file():
+            continue
+        if chemin.suffix not in {".md", ".json", ".toml", ".py", ".yml", ".yaml", ".html", ".txt"}:
+            continue
+        if "palmier" in chemin.read_text(encoding="utf-8", errors="ignore").lower():
+            fautifs.append(rel)
+    assert not fautifs, fautifs
+
+
+def test_claude_md_racine():
+    racine = texte("CLAUDE.md")
+    for terme in ("video-production", "motion-design", "video-repurpose", "video-documentary", "manim-composer",
+                  "video-reviewer", "qa-video.py", "brand-frame.py --check", "hyperframes@hyperframes"):
+        assert terme in racine, terme
+
+
+def test_registre_complet():
+    registre = texte("docs/vendored-video.md")
+    for terme in ("9327439db69021ab4b0e2776729bf3b58fdb5a87", "AGPL", "Apache-2.0", "salle blanche",
+                  "hyperframes@hyperframes", "Patrick Hand", "mocap.cs.cmu.edu", "cef0450"):
+        assert terme in registre, terme
+    for terme in ("yihui-dev/awesome-opus5-5-videos", "e6c7eee870cbd6d40825d6348a0c5782b3721fe9",
+                  "08-video/scripts/inspiration.py", ".cache/inspiration/"):
+        assert terme in registre, terme
+
+
+def test_changelog_non_publie():
+    changelog = texte("CHANGELOG.md")
+    non_publie = changelog.split("## [Unreleased]")[1].split("\n## [")[0]
+    for terme in ("HyperFrames", "Palmier", "OpenMontage", "qa-video.py", "Migration"):
+        assert terme in non_publie, terme
+    for terme in ("gemini-nano-banana-2.1", "GOOGLE_AI_IMAGE_MODEL", "awesome-opus5-5-videos"):
+        assert terme in non_publie, terme
+
+
+def test_etat_de_l_art_et_architecture():
+    ecosysteme = texte("docs/etat-de-lart/ecosysteme-skills.md")
+    assert "hyperframes@hyperframes" in ecosysteme
+    assert "calesthio/OpenMontage" in ecosysteme and "adithya-s-k/manim_skill" in ecosysteme
+    sans_precision = [ligne for ligne in ecosysteme.splitlines()
+                      if re.search(r"\bhyperframes\b", ligne) and "hyperframes@hyperframes" not in ligne]
+    assert not sans_precision, "hyperframes : préciser qu'il est installé par le module vidéo"
+    architecture = texte("docs/architecture.md")
+    assert "video-editing + captions skills" not in architecture
+    assert "video-production" in architecture
+
+
+def test_readme_video_et_comptes():
+    readme = texte("README.md")
+    for terme in ("HyperFrames", "video-production", "video-reviewer", "qa-video.py", "OpenMontage"):
+        assert terme in readme, terme
+    competences = len(list(SKILLS.glob("*/SKILL.md")))
+    agents = len(list((REPO / ".claude" / "agents").glob("*.md")))
+    tableau = readme.split("organized by function")[1].split("**Brand-as-code tooling.**")[0]
+    assert sum(int(n) for n in re.findall(r"\| (\d+) \|", tableau)) == competences
+    assert f"**{competences} skills**" in readme and f"**{agents} agents**" in readme
+
+
+def test_reviewer_porte_de_la_charte():
+    reviewer = texte(".claude/agents/video-reviewer.md")
+    etape = reviewer.split("### 3.")[1].split("### 4.")[0]
+    assert "projet HyperFrames qui contient un `frame.md`" in etape
+    assert "toile non prise en charge" in etape and "dossier absent" not in etape
+
+
+def test_projet_de_sous_titres_toujours_a_part():
+    captions = texte(".claude/skills/captions/SKILL.md")
+    assert "si la vidéo n'en a pas encore" not in captions
+    assert "toujours `08-video/projets/<slug>/hyperframes-sous-titres/`" in captions
+    role = texte("08-video/CLAUDE.md")
+    ligne = _ligne(role, "| `hyperframes-sous-titres/` |")
+    assert "frames_fg/" in ligne and "frames_bg/" in ligne
+    arbre = texte(".claude/skills/video-production/SKILL.md").split("### `brief.md`")[0]
+    assert "hyperframes-sous-titres/" in arbre
+
+
+def test_matting_sans_editeur():
+    matting = texte(".claude/skills/video-matting/SKILL.md")
+    assert "éditeur" not in matting
+    for terme in ("hyperframes", "video-editing", "chromakey"):
+        assert terme in matting, terme
+
+
+def test_manim_registre_et_pieds_de_page():
+    registre = texte("docs/vendored-video.md")
+    assert "(5 exemples)" not in registre and "attention/" in registre
+    composer = (SKILLS / "manim-composer" / "SKILL.md").read_text(encoding="utf-8").rstrip().splitlines()[-1]
+    ce = (SKILLS / "manim-ce" / "SKILL.md").read_text(encoding="utf-8").rstrip().splitlines()[-1]
+    assert "Adaptations : nom" not in composer and "exemples Python" not in composer
+    assert "description" in composer and "note d'intégration" in composer
+    assert "manimce-best-practices" in ce and "description" in ce and "exemples Python" in ce

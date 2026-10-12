@@ -143,4 +143,4 @@ Apply these principles when composing scenes:
 
 ---
 
-Vendorisée depuis [adithya-s-k/manim_skill](https://github.com/adithya-s-k/manim_skill) (commit `cef0450`, licence MIT, © 2026 Adithya S Kolavi, texte dans `LICENSE.txt`). Adaptations : nom, note d'intégration, exemples Python non repris. Registre : `docs/vendored-video.md`.
+Vendorisée depuis [adithya-s-k/manim_skill](https://github.com/adithya-s-k/manim_skill) (commit `cef0450`, licence MIT, © 2026 Adithya S Kolavi, texte dans `LICENSE.txt`). Adaptations : une ligne ajoutée à la fin de la description, note d'intégration en tête. Registre : `docs/vendored-video.md`.

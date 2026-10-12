@@ -34,7 +34,7 @@ Vérifié dans le repo : les deux skills n'attaquent pas le même problème.
 |---|---|---|---|---|---|
 | **claude-ads** (AgriciDaniel) | https://github.com/AgriciDaniel/claude-ads | MIT | **6,6k★**, 994 forks, actif (mai 2026) | 22 sub-skills + 10 agents, **250+ checks d'audit vérifiés** : Google (80), Meta (50, incl. Andromeda/CAPI), LinkedIn (27), TikTok (28), Microsoft (24), Apple (35+), Amazon (30+). Harnais pytest de 41 tests (rare). La skill `paid-ads` de Corey Haines déjà vendorisée est stratégique (quel canal, quel budget) ; claude-ads est un **auditeur opérationnel** de comptes existants — rien d'équivalent dans le template | **VENDORISER** |
 | claude-marketing (thatrebeccarae) | https://github.com/thatrebeccarae/claude-marketing | — | Adoption modeste | 6 skills paid media (Google/Meta/Microsoft) : sous-ensemble strict de claude-ads | IGNORER (dominé par claude-ads) |
-| Higgsfield UGC Pipeline (AKCodez) | https://github.com/AKCodez/higgsfield-claude-skills | — | Niche | Génération de vidéos UGC via Higgsfield : dépend d'un service tiers payant spécifique ; le template a déjà `video-editing`, `ad-creative`, hyperframes | IGNORER (dépendance tierce, redondant) |
+| Higgsfield UGC Pipeline (AKCodez) | https://github.com/AKCodez/higgsfield-claude-skills | — | Niche | Génération de vidéos UGC via Higgsfield : dépend d'un service tiers payant spécifique ; le template a déjà `video-editing`, `ad-creative`, hyperframes (installé par le module vidéo, plugin `hyperframes@hyperframes`) | IGNORER (dépendance tierce, redondant) |
 | cognyai/claude-code-marketing-skills | https://github.com/cognyai/claude-code-marketing-skills | — | Vitrine produit COGNY | Connexions temps réel GSC/Google Ads/Meta : c'est un wrapper autour de leur plateforme, pas une skill autonome | IGNORER (coquille commerciale) |
 
 ---
@@ -113,10 +113,19 @@ Domaines vérifiés où **le template est déjà à l'état de l'art**, candidat
 | sales-skills/sales | https://github.com/sales-skills/sales | CRM/prospection : couvert par `revops`, `sales-enablement`, `cold-email` |
 | linkedin-skills (sergebulaev) | https://github.com/sergebulaev/linkedin-skills | 289★ MIT, v1.0.6 (juillet 2026), substantiel (16 formules de hooks, post audit, humanizer). Mais recouvre `social-content` + les skills carrousel/post maison déjà affûtées par client ; ses intégrations Apify/Publora sont des dépendances payantes. **Second couteau honorable** — à réévaluer si un besoin d'audit algorithmique LinkedIn émerge |
 | Personas / pricing / growth (divers marketplaces) | skills.sh, ClaudeSkills.info | Rien trouvé qui dépasse `customer-research`, `pricing-strategy`, `launch-strategy`, `referral-program`, `free-tool-strategy` (Corey Haines) — les skills « persona generator » des marketplaces sont des prompts d'une page sans méthodologie |
-| wilwaldon/Claude-Code-Video-Toolkit | https://github.com/wilwaldon/Claude-Code-Video-Toolkit | Remotion + Manim, 55 exemples : le template a hyperframes + `video-editing` ; Manim est orienté éducation scientifique |
-| ok-skills / Remotion (mxyhi) | https://github.com/mxyhi/ok-skills | Idem — hyperframes couvre le besoin vidéo programmatique |
+| wilwaldon/Claude-Code-Video-Toolkit | https://github.com/wilwaldon/Claude-Code-Video-Toolkit | Remotion + Manim, 55 exemples : le template a hyperframes (installé par le module vidéo, plugin `hyperframes@hyperframes`) + `video-editing` ; Manim est orienté éducation scientifique (depuis octobre 2026, Manim est couvert par les skills vendorisées de manim_skill, section 10) |
+| ok-skills / Remotion (mxyhi) | https://github.com/mxyhi/ok-skills | Idem — hyperframes (installé par le module vidéo, plugin `hyperframes@hyperframes`) couvre le besoin vidéo programmatique |
 
 ---
+
+## 10. Vidéo (mise à jour du 2026-10-12, studio vidéo v2)
+
+Ajout postérieur à la recherche de juillet : deux sources examinées pour le module vidéo, avec HyperFrames (Apache-2.0) installé comme plugin officiel par `/modules` plutôt que vendorisé. Détail, périmètre et procédure : `docs/vendored-video.md`.
+
+| Skill / repo | URL | Licence | Étoiles / activité | Apport vs template | Verdict |
+|---|---|---|---|---|---|
+| OpenMontage (calesthio) | https://github.com/calesthio/OpenMontage | AGPLv3 | Non relevé ; commit consulté `9327439` (2026-10-03) | Méthode de production vidéo (pipelines par type de vidéo, validations, contrat de coût, revue, format court, documentaire). Licence incompatible avec le MIT du template | MÉTHODE RÉÉCRITE (rien de copié ; code lourd du template écrit en salle blanche ; voir `docs/vendored-video.md`) |
+| manim_skill (adithya-s-k) | https://github.com/adithya-s-k/manim_skill | MIT | Non relevé ; commit vendorisé `cef0450` (2026-01-23) | Planification de scène et bonnes pratiques Manim Community, pour la filière « démonstration conceptuelle ou chiffrée » | VENDORISÉ (`manim-composer`, `manim-ce` ; Markdown seulement, exemples Python non repris) |
 
 ## Synthèse — plan de vendorisation recommandé (par priorité)
 

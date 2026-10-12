@@ -32,6 +32,7 @@ Un dossier par vidéo, créé au cadrage et nommé `AAAA-MM-JJ-<sujet>` : la dat
 ├── storyboard.md   plans, vignettes au vrai cadrage, sources de matière (validé)
 ├── sous-titres/    fichiers .srt relus (skill captions)
 ├── hyperframes/    racine HyperFrames : BRIEF.md, frame.md, brand.css, STORYBOARD.md, compositions/
+├── hyperframes-sous-titres/  projet hyperframes:embedded-captions (skill captions), à part de hyperframes/ ; frames_fg/, frames_bg/ non versionnés
 ├── rushes/         sources, clips générés, intermédiaires dans rushes/tmp/ (non versionnés)
 ├── exports/        rendus finaux par plateforme (non versionnés)
 └── qa/             rapports de qa-video.py et planches (seul le rapport .md final se versionne)
