@@ -8,6 +8,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import math
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -105,6 +106,43 @@ def test_ordre_xyz_et_ordre_inverse():
     assert b2c.positions(zyx, zyx.images[0])[1] == pytest.approx((-1.0, 0.0, 0.0), abs=1e-9)
 
 
+def _chaine(rot_racine: str, rot_bras: str = "0 0 0", offset: str = "0 1 0",
+            ordre: str = "Zrotation Xrotation Yrotation") -> str:
+    """Racine + un bras d'un os + son extrémité ; valeurs de rotation de la racine puis du bras."""
+    return ("HIERARCHY ROOT Hips { OFFSET 0 0 0 CHANNELS 6 Xposition Yposition Zposition "
+            f"{ordre} JOINT Arm {{ OFFSET {offset} {ROT} End Site {{ OFFSET {offset} }} }} }} "
+            f"MOTION Frames: 1 Frame Time: 0.1 0 0 0 {rot_racine} {rot_bras}")
+
+
+def _zero_negatif(clip: dict) -> list:
+    """Coordonnées égales à -0.0 (elles s'écriraient « -0.0 » dans le JSON)."""
+    return [(i, j, k) for i, image in enumerate(clip["images"]) for j, point in enumerate(image)
+            for k, v in enumerate(point) if v == 0 and math.copysign(1.0, v) < 0]
+
+
+def test_composition_parent_enfant():
+    """Racine Zrotation 90 puis bras Xrotation 90 : les rotations du parent s'appliquent d'abord."""
+    bvh = b2c.lire_bvh(_chaine("90 0 0", "0 90 0"))
+    pos = b2c.positions(bvh, bvh.images[0])
+    assert pos[1] == pytest.approx((-1.0, 0.0, 0.0), abs=1e-9)
+    assert pos[2] == pytest.approx((-1.0, 0.0, 1.0), abs=1e-9)
+
+
+def test_rotation_autour_de_y():
+    """Yrotation 90 envoie +X vers -Z (repère main droite, Y vers le haut)."""
+    bvh = b2c.lire_bvh(_chaine("0 0 90", offset="1 0 0"))
+    pos = b2c.positions(bvh, bvh.images[0])
+    assert pos[1] == pytest.approx((0.0, 0.0, -1.0), abs=1e-9)
+    assert pos[2] == pytest.approx((0.0, 0.0, -2.0), abs=1e-9)
+
+
+def test_canal_inconnu_et_axe_inconnu():
+    with pytest.raises(b2c.ErreurBVH, match="Wposition"):
+        b2c.lire_bvh(squelette(repos(2)).replace("Xposition", "Wposition", 1))
+    with pytest.raises(b2c.ErreurBVH, match="axe"):
+        b2c._rotation("W", 10.0)
+
+
 def test_noms_prefixes_et_articulation_manquante():
     texte = squelette(repos(2)).replace("JOINT Left", "JOINT mixamorig:Left")
     bvh = b2c.lire_bvh(texte)
@@ -121,7 +159,7 @@ def test_conversion_normalise_et_reechantillonne():
     assert len(clip["images"]) == 16
     premiere = clip["images"][0]
     hanche = premiere[b2c.ARTICULATIONS.index("hanche")]
-    assert hanche == [0.0, 0.0]
+    assert hanche == [0.0, 0.0] and all(math.copysign(1.0, v) > 0 for v in hanche)
     tete = premiere[b2c.ARTICULATIONS.index("tete")]
     pied = premiere[b2c.ARTICULATIONS.index("pied_g")]
     assert tete[1] - pied[1] == pytest.approx(1.0, abs=1e-3)
@@ -147,8 +185,83 @@ def test_fenetre_vide():
         b2c.convertir(bvh, nom="x", source="x", debut=5.0)
 
 
+def test_image_unique():
+    bvh = b2c.lire_bvh(squelette(repos(1)))
+    with pytest.raises(b2c.ErreurBVH, match="deux images"):
+        b2c.convertir(bvh, nom="x", source="x")
+
+
+def test_hauteur_tete_pieds_meme_main_levee():
+    """L'échelle est la hauteur tête-pieds, pas l'étendue de tous les points (main au-dessus de la tête)."""
+    bvh = b2c.lire_bvh(squelette(repos(3, c15=lambda i: 90)))     # LeftArm Zrotation 90 : bras levé
+    clip = b2c.convertir(bvh, nom="test", source="test", fps=30, plan="frontal")
+    premiere = clip["images"][0]
+    tete, main = premiere[b2c.ARTICULATIONS.index("tete")], premiere[b2c.ARTICULATIONS.index("main_g")]
+    pied = premiere[b2c.ARTICULATIONS.index("pied_g")]
+    assert main[1] > tete[1], "la main est bien au-dessus de la tête"
+    assert tete[1] - pied[1] == pytest.approx(1.0, abs=1e-3)
+
+
+def test_hanche_en_hauteur_reste_a_l_origine():
+    """Hanche à 30 unités du sol, puis qui descend : y relatif à la hanche de la première image."""
+    bvh = b2c.lire_bvh(squelette(repos(3, c1=lambda i: 30 - 5 * i)))
+    clip = b2c.convertir(bvh, nom="test", source="test", fps=30, plan="frontal")
+    hanche = [image[b2c.ARTICULATIONS.index("hanche")] for image in clip["images"]]
+    assert hanche[0] == [0.0, 0.0] and all(math.copysign(1.0, v) > 0 for v in hanche[0])
+    assert [h[1] for h in hanche] == pytest.approx([0.0, -5 / 52, -10 / 52], abs=1e-3)
+    tete = clip["images"][0][b2c.ARTICULATIONS.index("tete")]
+    assert tete[1] == pytest.approx(28 / 52, abs=1e-3)
+
+
+def test_reechantillonnage_lineaire_a_cheval_sur_les_images():
+    """7 i/s à partir de 0,05 s (entre deux images à 30 i/s) : chaque échantillon est interpolé."""
+    bvh = b2c.lire_bvh(squelette(repos(31, c2=lambda i: i * 40 / 30)))     # 40 unités par seconde
+    clip = b2c.convertir(bvh, nom="m", source="test", fps=7, debut=0.05, plan="sagittal")
+    hanche = b2c.ARTICULATIONS.index("hanche")
+    xs = [image[hanche][0] for image in clip["images"]]
+    assert len(xs) == 7
+    assert xs == pytest.approx([40 * n / 7 / 52 for n in range(7)], abs=1e-4)
+
+
+def test_aucun_zero_negatif():
+    """Un reste de calcul négatif minuscule arrondi à -0.0 s'écrit 0.0 (sinon « -0.0 » dans le JSON)."""
+    bvh = b2c.lire_bvh(squelette(repos(3, c6=lambda i: 1e-5)))              # Spine Zrotation : cou et tête à x < 0
+    clip = b2c.convertir(bvh, nom="test", source="test", fps=30, plan="frontal")
+    assert _zero_negatif(clip) == []
+
+
+def _pas_en_avant(**canaux):
+    """Jambe gauche balancée vers l'avant du personnage (+Z local) : genou à 6, pied à 12 unités."""
+    return repos(4, c34=lambda i: -30, **canaux)
+
+
+@pytest.mark.parametrize("lacet", [0, 180])
+def test_sagittal_le_personnage_regarde_vers_la_droite(lacet):
+    """Sur place, vu de profil : l'avant du personnage (ici le pied levé) va vers les x croissants,
+    quelle que soit son orientation dans le monde."""
+    bvh = b2c.lire_bvh(squelette(_pas_en_avant(c5=lambda i: lacet)))
+    clip = b2c.convertir(bvh, nom="pas", source="test", fps=30, plan="sagittal", sur_place=True)
+    image = clip["images"][0]
+    genou, pied = image[b2c.ARTICULATIONS.index("genou_g")], image[b2c.ARTICULATIONS.index("pied_g")]
+    assert genou[0] == pytest.approx(6 / 52, abs=1e-3) and pied[0] == pytest.approx(12 / 52, abs=1e-3)
+
+
+def test_sagittal_marche_arriere_va_vers_la_gauche():
+    """Le sens de l'image ne dépend pas du déplacement net : reculer fait diminuer x."""
+    bvh = b2c.lire_bvh(squelette(repos(31, c2=lambda i: -i * 40 / 30)))
+    clip = b2c.convertir(bvh, nom="recul", source="test", fps=30, plan="sagittal")
+    xs = [image[b2c.ARTICULATIONS.index("hanche")][0] for image in clip["images"]]
+    assert xs[-1] == pytest.approx(-40 / 52, abs=1e-3) and xs == sorted(xs, reverse=True)
+
+
+def test_epaules_confondues():
+    texte = squelette(repos(2)).replace("OFFSET 5 8 0", "OFFSET 0 8 0").replace("OFFSET -5 8 0", "OFFSET 0 8 0")
+    with pytest.raises(b2c.ErreurBVH, match="épaules"):
+        b2c.convertir(b2c.lire_bvh(texte), nom="x", source="x")
+
+
 def _lancer(*args: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True)
+    return subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True, timeout=30)
 
 
 def test_cli_ecrit_clip_catalogue_et_bundle(tmp_path):
@@ -174,3 +287,80 @@ def test_cli_nom_invalide_et_bvh_illisible(tmp_path):
     casse.write_text("HIERARCHY ROOT", encoding="utf-8")
     res = _lancer(str(casse), "--nom", "casse", "--source", "x", "--sortie", str(tmp_path))
     assert res.returncode == 1 and "ERREUR" in res.stderr
+
+
+def test_cli_licence_bom_et_en_tete_neutre(tmp_path):
+    bvh = tmp_path / "bom.bvh"
+    bvh.write_bytes(b"\xef\xbb\xbf" + squelette(repos(10)).encode("utf-8"))
+    sortie = tmp_path / "clips"
+    res = _lancer(str(bvh), "--nom", "maison", "--source", "capture maison", "--licence", "CC0 1.0",
+                  "--sortie", str(sortie))
+    assert res.returncode == 0, res.stderr
+    assert json.loads((sortie / "maison.json").read_text(encoding="utf-8"))["licence"] == "CC0 1.0"
+    assert "CMU" not in (sortie / "clips.js").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("fps", ["nan", "inf", "-inf", "0", "-5"])
+def test_cli_fps_invalide(tmp_path, fps):
+    bvh = tmp_path / "a.bvh"
+    bvh.write_text(squelette(repos(5)), encoding="utf-8")
+    res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--fps", fps, "--sortie", str(tmp_path / "s"))
+    assert res.returncode == 2 and "Traceback" not in res.stderr
+
+
+def _bvh_valide(tmp_path: Path) -> Path:
+    bvh = tmp_path / "a.bvh"
+    bvh.write_text(squelette(repos(5)), encoding="utf-8")
+    return bvh
+
+
+def test_cli_sortie_inecrivable_sans_trace(tmp_path):
+    bvh = _bvh_valide(tmp_path)
+    fichier = tmp_path / "un-fichier"
+    fichier.write_text("x", encoding="utf-8")
+    for sortie in (fichier, fichier / "sous-dossier"):
+        res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--sortie", str(sortie))
+        assert res.returncode == 1 and "ERREUR" in res.stderr and "Traceback" not in res.stderr, sortie
+
+
+@pytest.mark.skipif(not hasattr(os, "geteuid") or os.geteuid() == 0, reason="les droits ne s'appliquent pas à root")
+def test_cli_dossier_en_lecture_seule_sans_trace(tmp_path):
+    bvh = _bvh_valide(tmp_path)
+    sortie = tmp_path / "ro"
+    sortie.mkdir()
+    sortie.chmod(0o500)
+    try:
+        res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--sortie", str(sortie))
+    finally:
+        sortie.chmod(0o700)
+    assert res.returncode == 1 and "ERREUR" in res.stderr and "Traceback" not in res.stderr
+
+
+def test_cli_json_etrangers_ignores_dans_le_bundle(tmp_path):
+    bvh = _bvh_valide(tmp_path)
+    sortie = tmp_path / "clips"
+    sortie.mkdir()
+    (sortie / "package.json").write_text('{"name": "x", "version": "1"}', encoding="utf-8")
+    (sortie / "liste.json").write_text("[1, 2, 3]", encoding="utf-8")
+    (sortie / "texte.json").write_text('"juste une chaîne"', encoding="utf-8")
+    res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--sortie", str(sortie))
+    assert res.returncode == 0 and "Traceback" not in res.stderr, res.stderr
+    bundle = (sortie / "clips.js").read_text(encoding="utf-8")
+    assert '"a":{' in bundle and "package" not in bundle and '"version"' not in bundle
+
+
+def test_cli_json_illisible_ou_catalogue_corrompu(tmp_path):
+    bvh = _bvh_valide(tmp_path)
+    sortie = tmp_path / "clips"
+    sortie.mkdir()
+    (sortie / "catalogue.json").write_text("{pas du json", encoding="utf-8")
+    res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--sortie", str(sortie))
+    assert res.returncode == 1 and "catalogue.json" in res.stderr and "Traceback" not in res.stderr
+    assert not (sortie / "a.json").exists(), "rien n'est écrit tant que le catalogue est illisible"
+    (sortie / "catalogue.json").write_text('{"clips": 3}', encoding="utf-8")
+    res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--sortie", str(sortie))
+    assert res.returncode == 1 and "catalogue.json" in res.stderr and "Traceback" not in res.stderr
+    (sortie / "catalogue.json").unlink()
+    (sortie / "autre.json").write_text("{cassé", encoding="utf-8")
+    res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--sortie", str(sortie))
+    assert res.returncode == 1 and "autre.json" in res.stderr and "Traceback" not in res.stderr
