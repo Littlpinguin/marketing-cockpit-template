@@ -545,6 +545,19 @@ def test_tokens_css_des_landings_livre_est_la_sortie_de_la_palette_d_exemple(tmp
         (REPO / TOKENS_CSS_LANDINGS).read_text(encoding="utf-8")
 
 
+# --------------------------------------------------------------------------
+# Fichier de marque du module vidéo (projets HyperFrames)
+# --------------------------------------------------------------------------
+
+@template_non_configure
+def test_brand_css_video_livre_est_la_sortie_de_la_palette_d_exemple(tmp_path):
+    """Le bloc livré dans 08-video/lib/brand.css est celui que le script écrit."""
+    root = racine_du_template_apres_wizard(tmp_path)
+    assert run(root, config=CONFIG_LIVREE).returncode == 0
+    assert (root / TOKENS_CSS_VIDEO).read_text(encoding="utf-8") == \
+        (REPO / TOKENS_CSS_VIDEO).read_text(encoding="utf-8")
+
+
 def _valeurs_landings(tokens: dict) -> dict[str, str]:
     config = build_tokens.load_config(CONFIG_LIVREE)
     cible = next(c for c in config["targets"] if c["path"] == TOKENS_CSS_LANDINGS)

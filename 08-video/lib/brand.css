@@ -10,8 +10,13 @@
    01-brand/tokens.json by scripts/build-tokens.py (target in
    scripts/build-tokens.toml). Never edit them by hand: change
    tokens.json, re-run the script; `--check` flags any drift.
-   Same variable names as the slides engine, so a fragment moves
-   from a deck to a video without renaming.
+   Names shared with the decks target (06-graphic-design/
+   presentations/tokens.css): --brand-primary, -deep and -soft, the
+   two gradients and the two fonts. The accent, dark, light, white
+   and radius variables follow the landings library names
+   (05-web-content/templates/assets/tokens.css).
+   brand-frame.py also reads every hex colour of the block into the
+   frame.md colors; rgba tints stay out of it.
 
    Before the wizard, the block carries the NEUTRAL EXAMPLE
    PALETTE of docs/placeholders.json.
@@ -32,6 +37,7 @@
   --brand-gradient-vertical: linear-gradient(180deg, #1E40AF 0%, #F59E0B 100%);
   --brand-text-on-dark: #F8FAFC;
   --brand-accent-on-dark: #F59E0B;
+  --brand-on-accent: #0F172A;
   --font-display: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Menlo', monospace;
   --radius-card: 16px;

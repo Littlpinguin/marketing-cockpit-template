@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -40,6 +41,26 @@ def _racine(tmp_path: Path, *, tokens: dict | None = None, remplir: bool = True)
 
 def _lancer(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True)
+
+
+def _retirer(tokens: dict, chemin: str) -> None:
+    """Supprime le token « a.b » de l'arbre, comme le ferait un fork qui le retire."""
+    *parents, dernier = chemin.split(".")
+    noeud = tokens
+    for parent in parents:
+        noeud = noeud[parent]
+    del noeud[dernier]
+
+
+def _couleurs_frame(frame: str) -> dict[str, str]:
+    """Les entrées hex du bloc `colors:` du frontmatter."""
+    section = frame.split("\ncolors:\n", 1)[1].split("\n\ntypography:", 1)[0]
+    return dict(re.findall(r'^  ([a-z-]+): "(#[0-9A-Fa-f]{6})"$', section, re.M))
+
+
+def _hex_du_css(css: str) -> dict[str, str]:
+    """Les variables `--brand-*` de brand.css dont la valeur est un hex, sans le préfixe."""
+    return dict(re.findall(r"^\s*--brand-([a-z-]+):\s*(#[0-9A-Fa-f]{6});", css, re.M))
 
 
 def test_frame_porte_la_palette_et_les_polices(tmp_path):
@@ -104,14 +125,15 @@ def test_placeholders_non_resolus_refuses(tmp_path):
     assert res.returncode == 1 and "placeholders non résolus" in res.stderr
 
 
-def test_token_manquant_nomme_sans_trace(tmp_path):
+@pytest.mark.parametrize("chemin", ["typography.stat", "font.mono"])
+def test_token_manquant_nomme_sans_trace(tmp_path, chemin):
     root0 = _racine(tmp_path / "a")
     tokens = json.loads((root0 / "01-brand/tokens.json").read_text(encoding="utf-8"))
-    del tokens["typography"]["stat"]
+    _retirer(tokens, chemin)
     root = _racine(tmp_path / "b", tokens=tokens)
     res = _lancer(str(tmp_path / "projet"), "--racine", str(root))
     assert res.returncode == 1
-    assert "typography.stat" in res.stderr and "Traceback" not in res.stderr
+    assert chemin in res.stderr and "Traceback" not in res.stderr
 
 
 def test_exemple_sans_tokens(tmp_path):
@@ -119,9 +141,145 @@ def test_exemple_sans_tokens(tmp_path):
     projet = tmp_path / "projet"
     res = _lancer(str(projet), "--racine", str(root), "--exemple")
     assert res.returncode == 0, res.stderr
-    assert "Acme Inc. · Frame" in (projet / "frame.md").read_text(encoding="utf-8")
+    frame = (projet / "frame.md").read_text(encoding="utf-8")
+    assert "Acme Inc. · Frame" in frame
+    assert ".." not in frame      # un nom qui finit par un point ne double pas le point de la phrase
 
 
 def test_toile_inconnue_code_2(tmp_path):
     root = _racine(tmp_path)
     assert _lancer(str(tmp_path / "p"), "--racine", str(root), "--aspect", "800x600").returncode == 2
+
+
+# --------------------------------------------------------------------------
+# Les couleurs de frame.md viennent de la cible build-tokens, jamais recalculées
+# --------------------------------------------------------------------------
+
+PALETTES = [
+    pytest.param({}, id="exemple"),
+    # Accent sombre : il doit être éclairci pour tenir 4,5:1 sur le sombre de la marque.
+    pytest.param({"primary": "#7C3AED", "accent": "#1E3A8A"}, id="accent-sombre"),
+]
+
+
+@pytest.mark.parametrize("surcharge", PALETTES)
+def test_couleurs_du_frame_sont_celles_de_brand_css(tmp_path, surcharge):
+    tokens = bf.tokens_exemple(REPO)
+    for nom, hexa in surcharge.items():
+        tokens["color"][nom]["$value"] = hexa
+    root = _racine(tmp_path, tokens=tokens)
+    projet = tmp_path / "projet"
+    assert _lancer(str(projet), "--racine", str(root)).returncode == 0
+    frame = (projet / "frame.md").read_text(encoding="utf-8")
+    couleurs = _couleurs_frame(frame)
+    dans_css = _hex_du_css((projet / "brand.css").read_text(encoding="utf-8"))
+    assert {"primary-deep", "text-on-dark", "accent-on-dark", "on-accent"} <= set(dans_css)
+    for nom, valeur in dans_css.items():
+        assert couleurs.get(nom, "").upper() == valeur.upper(), nom
+    assert {"primary", "accent", "dark", "light", "white"} <= set(couleurs)
+    assert "primary-soft" not in couleurs and "accent-soft" not in couleurs    # rgba : hors frame.md
+    assert 'textColor: "{colors.on-accent}"' in frame
+    if surcharge:
+        assert couleurs["accent-on-dark"].upper() != couleurs["accent"].upper()
+
+
+# --------------------------------------------------------------------------
+# Familles de polices : jamais un mot-clé générique CSS comme police de marque
+# --------------------------------------------------------------------------
+
+def test_famille_saute_les_mots_cles_generiques():
+    tokens = bf.tokens_exemple(REPO)
+    tokens["font"]["mono"]["$value"] = ["ui-monospace", "Menlo", "monospace"]    # pas de police secondaire
+    frame = bf.construire_frame(tokens, entreprise="Marque", aspect="1080x1920")
+    assert 'label: { fontFamily: "Menlo"' in frame
+
+
+def test_famille_toute_generique_garde_le_premier_mot_cle():
+    tokens = bf.tokens_exemple(REPO)
+    tokens["font"]["display"]["$value"] = ["system-ui", "sans-serif"]
+    frame = bf.construire_frame(tokens, entreprise="Marque", aspect="1080x1920")
+    assert 'display: { fontFamily: "system-ui"' in frame
+
+
+# --------------------------------------------------------------------------
+# Rayons : un token absent est une erreur, pas un 0px silencieux
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize("nom", ["cta", "badge", "card"])
+def test_rayon_absent_leve_une_erreur(nom):
+    tokens = bf.tokens_exemple(REPO)
+    _retirer(tokens, f"radius.{nom}")
+    with pytest.raises(bf.TokenError, match=f"radius.{nom}"):
+        bf.construire_frame(tokens, entreprise="Marque", aspect="1080x1920")
+
+
+# --------------------------------------------------------------------------
+# --check : chaque fichier dérive indépendamment
+# --------------------------------------------------------------------------
+
+def test_check_detecte_une_retouche_de_brand_css_seule(tmp_path):
+    root = _racine(tmp_path)
+    projet = tmp_path / "projet"
+    assert _lancer(str(projet), "--racine", str(root)).returncode == 0
+    css = projet / "brand.css"
+    css.write_text(css.read_text(encoding="utf-8").replace("#1E40AF", "#FF0000"), encoding="utf-8")
+    res = _lancer(str(projet), "--racine", str(root), "--check")
+    assert res.returncode == 1
+    assert "brand.css" in res.stdout and "frame.md" not in res.stdout
+
+
+# --------------------------------------------------------------------------
+# Erreurs d'environnement : message net, code 1, jamais de trace
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize("options", [[], ["--check"]])
+def test_frame_md_illisible_donne_une_erreur_nette(tmp_path, options):
+    root = _racine(tmp_path)
+    projet = tmp_path / "projet"
+    projet.mkdir()
+    (projet / "frame.md").write_bytes(b"\xff\xfe pas de l'utf-8")
+    res = _lancer(str(projet), "--racine", str(root), *options)
+    assert res.returncode == 1
+    assert res.stderr.startswith("ERREUR") and "frame.md" in res.stderr and "Traceback" not in res.stderr
+
+
+def test_dossier_qui_est_un_fichier_donne_une_erreur_nette(tmp_path):
+    root = _racine(tmp_path)
+    projet = tmp_path / "projet"
+    projet.write_text("pas un dossier", encoding="utf-8")
+    res = _lancer(str(projet), "--racine", str(root))
+    assert res.returncode == 1
+    assert res.stderr.startswith("ERREUR") and "Traceback" not in res.stderr
+
+
+@pytest.mark.parametrize("manquant", ["scripts/build-tokens.toml", "08-video/lib/brand.css"])
+def test_racine_sans_les_fichiers_de_cible_ne_retombe_pas_sur_le_depot(tmp_path, manquant):
+    root = _racine(tmp_path)
+    (root / manquant).unlink()
+    res = _lancer(str(tmp_path / "projet"), "--racine", str(root))
+    assert res.returncode == 1
+    assert Path(manquant).name in res.stderr and "Traceback" not in res.stderr
+
+
+# --------------------------------------------------------------------------
+# Nom de l'entreprise : .setup-completed
+# --------------------------------------------------------------------------
+
+def test_nom_de_l_entreprise_vient_de_setup_completed(tmp_path):
+    root = _racine(tmp_path)
+    (root / ".setup-completed").write_text(json.dumps({"company": "Maison Test"}), encoding="utf-8")
+    projet = tmp_path / "projet"
+    assert _lancer(str(projet), "--racine", str(root)).returncode == 0
+    assert "Maison Test · Frame" in (projet / "frame.md").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("contenu", ["pas du json", "[1, 2]", '"texte"'])
+def test_setup_completed_invalide_avertit_et_garde_marque(tmp_path, contenu):
+    root = _racine(tmp_path)
+    (root / ".setup-completed").write_text(contenu, encoding="utf-8")
+    projet = tmp_path / "projet"
+    res = _lancer(str(projet), "--racine", str(root))
+    assert res.returncode == 0, res.stderr
+    assert "Marque · Frame" in (projet / "frame.md").read_text(encoding="utf-8")
+    assert ".setup-completed" in res.stderr and "Traceback" not in res.stderr
+    assert len(res.stderr.strip().splitlines()) == 1

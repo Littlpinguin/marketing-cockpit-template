@@ -133,10 +133,15 @@ auto = ["color", "gradient", "font", "radius"]
 
 # Tokens du module vidéo : le fichier de marque des projets HyperFrames.
 # 08-video/scripts/brand-frame.py le recopie dans chaque projet, à côté de
-# frame.md. Mêmes noms que les decks pour les variables communes. Valeurs
-# littérales : frame.md et la QA lisent des hex. Textes sur fond sombre
-# poussés à 4,5:1 (les sous-titres et cartons se posent souvent sur la
-# couleur sombre de la marque).
+# frame.md, et en tire les couleurs de frame.md : toute variable --brand-*
+# rendue en #RRGGBB y devient une couleur (sans le préfixe), les teintes rgba
+# restent hors de frame.md. Noms partagés avec la cible des decks :
+# --brand-primary, -deep et -soft, les deux dégradés et les deux polices.
+# Accent, dark, light, white et les rayons suivent les noms de la cible des
+# landings ; --brand-text-on-dark est propre à la vidéo. Valeurs littérales :
+# frame.md et la QA lisent des hex. Textes sur fond sombre poussés à 4,5:1
+# (les sous-titres et cartons se posent souvent sur la couleur sombre de la
+# marque) ; texte du bouton posé sur l'accent à 3:1 (grand texte).
 [[targets]]
 path = "08-video/lib/brand.css"
 mode = "block"
@@ -155,6 +160,8 @@ indent = "  "
 "--brand-gradient-vertical" = { token = "gradient.signature", angle = "180deg" }
 "--brand-text-on-dark" = { token = "color.light", mix = "#FFFFFF", min_contrast = 4.5, against = "color.dark" }
 "--brand-accent-on-dark" = { token = "color.accent", mix = "#FFFFFF", min_contrast = 4.5, against = "color.dark" }
+# Texte du bouton posé sur l'accent : même formule que la cible des landings.
+"--brand-on-accent" = { token = "color.dark", mix = "#FFFFFF", min_contrast = 3, against = "color.accent" }
 "--font-display" = "font.display"
 "--font-mono" = "font.mono"
 "--radius-card" = "radius.card"

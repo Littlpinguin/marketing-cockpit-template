@@ -5,8 +5,11 @@ HyperFrames lit `frame.md` à la racine d'un projet (avant design.md) et traite
 son frontmatter comme la vérité de marque : couleurs, polices, graisses et
 rayons y sont cités tels quels. Ce script l'écrit depuis 01-brand/tokens.json
 et écrit à côté `brand.css`, le fichier de variables CSS de la cible
-08-video/lib/brand.css de scripts/build-tokens.toml. Ne jamais éditer ces deux
-fichiers à la main dans un projet : relancer le script.
+08-video/lib/brand.css de scripts/build-tokens.toml. Les couleurs de frame.md
+sont les variables hexadécimales de cette même cible (hors teintes rgba), rendues
+par build-tokens : jamais recalculées ici, pour que frame.md et brand.css disent
+la même chose. Ne jamais éditer ces deux fichiers à la main dans un projet :
+relancer le script.
 
 Usage :
     python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes
@@ -59,12 +62,13 @@ ROLES = (
     ("label", None, 30, "font.mono"),
 )
 COULEURS = ("primary", "accent", "dark", "light", "white")
+PREFIXE_COULEUR = "--brand-"
 UNIT_RE = re.compile(r'^unit: "la frame : (\d+)×(\d+)"$', re.M)
 
 CORPS = """
 ## Overview
 
-Charte vidéo de {entreprise}. Le frontmatter est normatif : couleurs, polices, graisses et rayons se citent tels quels, sans arrondi ni invention. La composition est libre.
+Charte vidéo de {entreprise} : le frontmatter est normatif ; couleurs, polices, graisses et rayons se citent tels quels, sans arrondi ni invention. La composition est libre.
 
 ## Sources
 
@@ -103,15 +107,23 @@ BT = _charger(RACINE / "scripts" / "build-tokens.py", "build_tokens")
 TokenError = BT.TokenError
 
 
+def _lire(chemin: Path) -> str:
+    """Texte UTF-8 d'un fichier ; un contenu illisible nomme le fichier (ValueError)."""
+    try:
+        return chemin.read_text(encoding="utf-8")
+    except UnicodeDecodeError as err:
+        raise ValueError(f"{chemin} n'est pas du texte UTF-8 valide ({err.reason})") from err
+
+
 def _exemples(racine: Path) -> dict[str, str]:
-    groupes = json.loads((racine / PLACEHOLDERS).read_text(encoding="utf-8"))["groups"]
+    groupes = json.loads(_lire(racine / PLACEHOLDERS))["groups"]
     return {e["name"]: e["example"] for g in groupes.values() for e in g if "example" in e}
 
 
 def tokens_exemple(racine: Path) -> dict[str, Any]:
     """Le gabarit de tokens rempli avec les exemples de docs/placeholders.json."""
     exemples = _exemples(racine)
-    gabarit = (racine / GABARIT_TOKENS).read_text(encoding="utf-8")
+    gabarit = _lire(racine / GABARIT_TOKENS)
     rempli = re.sub(r"\{\{([A-Z0-9_]+)\}\}", lambda m: exemples.get(m.group(1), m.group(0)), gabarit)
     return json.loads(rempli)
 
@@ -120,13 +132,18 @@ def nom_entreprise(racine: Path, exemple: bool) -> str:
     if exemple:
         return _exemples(racine).get("COMPANY_NAME", "Marque")
     setup = racine / ".setup-completed"
-    if setup.exists():
-        try:
-            nom = json.loads(setup.read_text(encoding="utf-8")).get("company")
-        except json.JSONDecodeError:
-            nom = None
-        if isinstance(nom, str) and nom.strip():
-            return nom.strip()
+    if not setup.exists():
+        return "Marque"
+    try:
+        donnees = json.loads(_lire(setup))
+        if not isinstance(donnees, dict):
+            raise ValueError("un objet JSON était attendu")
+    except (OSError, ValueError) as err:    # JSONDecodeError est une ValueError
+        print(f"AVERTISSEMENT : {setup} illisible ({err}) ; nom « Marque » utilisé.", file=sys.stderr)
+        return "Marque"
+    nom = donnees.get("company")
+    if isinstance(nom, str) and nom.strip():
+        return nom.strip()
     return "Marque"
 
 
@@ -154,24 +171,42 @@ def _poids(tokens: dict[str, Any], valeur: Any, contexte: str) -> int:
 
 
 def _famille(tokens: dict[str, Any], chemin: str) -> str:
+    """Première police nommée de la pile, sinon (pile toute générique) son premier mot-clé."""
     familles = BT.lookup(tokens, chemin)
     if not isinstance(familles, list) or not familles:
         raise TokenError(f"« {chemin} » : liste de familles attendue")
-    return str(familles[0])
+    return str(next((f for f in familles if f not in BT.FAMILLES_GENERIQUES), familles[0]))
 
 
 def _rayon(tokens: dict[str, Any], nom: str) -> str:
-    try:
-        valeur = BT.lookup(tokens, f"radius.{nom}")
-    except TokenError:
-        return "0px"
+    valeur = BT.lookup(tokens, f"radius.{nom}")
     return f"{valeur}px" if isinstance(valeur, (int, float)) else str(valeur)
 
 
-def couleurs(tokens: dict[str, Any]) -> dict[str, str]:
+def cible_video(racine: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    """(configuration réduite à la cible vidéo, cible) du build-tokens.toml de la racine."""
+    config = BT.load_config(racine / "scripts" / "build-tokens.toml")
+    cibles = [c for c in config["targets"] if c["path"] == CIBLE_CSS]
+    if not cibles:
+        raise TokenError(f"cible {CIBLE_CSS} absente de scripts/build-tokens.toml")
+    return dict(config, targets=cibles), cibles[0]
+
+
+def couleurs(tokens: dict[str, Any], cible: dict[str, Any]) -> dict[str, str]:
+    """Couleurs de base, puis chaque variable --brand-* de la cible rendue en hexadécimal.
+
+    Les valeurs sont celles que build-tokens écrit dans brand.css, nommées sans le
+    préfixe (primary-deep, text-on-dark, on-accent...) ; les teintes rgba restent
+    dehors. Rien n'est recalculé ici.
+    """
     resultat = {nom: BT.color(tokens, f"color.{nom}") for nom in COULEURS}
-    resultat["primary-deep"] = BT.mix_hex(resultat["primary"], "#000000", 0.12)
-    resultat["primary-soft"] = BT.mix_hex(resultat["primary"], "#FFFFFF", 0.85)
+    for variable, spec in cible.get("vars", {}).items():
+        if not variable.startswith(PREFIXE_COULEUR):
+            continue
+        valeur = BT.render_value(tokens, spec, f"cible {CIBLE_CSS}, {variable}")
+        nom = variable[len(PREFIXE_COULEUR):]
+        if BT.HEX_RE.match(valeur) and nom not in resultat:
+            resultat[nom] = valeur
     return resultat
 
 
@@ -193,9 +228,12 @@ def typographie(tokens: dict[str, Any], echelle: float) -> list[tuple[str, dict[
     return roles
 
 
-def construire_frame(tokens: dict[str, Any], *, entreprise: str, aspect: str) -> str:
+def construire_frame(tokens: dict[str, Any], *, entreprise: str, aspect: str,
+                     racine: Path = RACINE) -> str:
     BT.validate_tokens(tokens)
     largeur, hauteur = (int(x) for x in aspect.split("x"))
+    # Vaut 1.0 pour les trois toiles prises en charge (petit côté de 1080 px) ;
+    # gardé pour une future toile d'une autre taille.
     echelle = min(largeur, hauteur) / 1080
     haut, bas, gauche, droite = MARGES[aspect]
     lignes = [
@@ -208,7 +246,7 @@ def construire_frame(tokens: dict[str, Any], *, entreprise: str, aspect: str) ->
         "principle: " + _q("atomes de marque intangibles · composition libre · chiffres tirés du script"),
         "",
         "colors:",
-        *(f"  {nom}: {_q(valeur)}" for nom, valeur in couleurs(tokens).items()),
+        *(f"  {nom}: {_q(valeur)}" for nom, valeur in couleurs(tokens, cible_video(racine)[1]).items()),
         "",
         "typography:",
         *(f"  {role}: {{ " + ", ".join(f"{cle}: {_yaml(v)}" for cle, v in style.items()) + " }"
@@ -224,7 +262,7 @@ def construire_frame(tokens: dict[str, Any], *, entreprise: str, aspect: str) ->
         "components:",
         "  cta:",
         '    backgroundColor: "{colors.accent}"',
-        '    textColor: "{colors.dark}"',
+        '    textColor: "{colors.on-accent}"',
         f"    rounded: {_q(_rayon(tokens, 'cta'))}",
         "  badge:",
         f"    rounded: {_q(_rayon(tokens, 'badge'))}",
@@ -244,23 +282,18 @@ def construire_frame(tokens: dict[str, Any], *, entreprise: str, aspect: str) ->
 
 def brand_css(racine: Path, tokens: dict[str, Any]) -> str:
     """Contenu attendu de la cible 08-video/lib/brand.css pour ces tokens."""
-    chemin_config = racine / "scripts" / "build-tokens.toml"
-    if not chemin_config.exists():
-        chemin_config = RACINE / "scripts" / "build-tokens.toml"
-    config = BT.load_config(chemin_config)
-    cibles = [c for c in config["targets"] if c["path"] == CIBLE_CSS]
-    if not cibles:
-        raise TokenError(f"cible {CIBLE_CSS} absente de scripts/build-tokens.toml")
-    config = dict(config, targets=cibles)
-    base = racine if (racine / CIBLE_CSS).exists() else RACINE
-    return BT.expected_contents(base, tokens, config, config.get("tokens", TOKENS_REL))[CIBLE_CSS]
+    config, _ = cible_video(racine)
+    if not (racine / CIBLE_CSS).exists():
+        raise TokenError(f"{racine / CIBLE_CSS} introuvable : la racine {racine} n'a pas le gabarit "
+                         "de brand.css (cible de scripts/build-tokens.toml)")
+    return BT.expected_contents(racine, tokens, config, config.get("tokens", TOKENS_REL))[CIBLE_CSS]
 
 
 def aspect_existant(dossier: Path) -> str | None:
     frame = dossier / "frame.md"
     if not frame.exists():
         return None
-    trouve = UNIT_RE.search(frame.read_text(encoding="utf-8"))
+    trouve = UNIT_RE.search(_lire(frame))
     return f"{trouve.group(1)}x{trouve.group(2)}" if trouve else None
 
 
@@ -268,7 +301,7 @@ def ecrire(dossier: Path, frame: str, css: str, *, check: bool) -> list[str]:
     """Rend les noms des fichiers qui diffèrent ; les écrit sauf en --check."""
     cibles = {dossier / "frame.md": frame, dossier / "brand.css": css}
     differents = [p for p, contenu in cibles.items()
-                  if not p.exists() or p.read_text(encoding="utf-8") != contenu]
+                  if not p.exists() or _lire(p) != contenu]
     if not check:
         dossier.mkdir(parents=True, exist_ok=True)
         for chemin in differents:
@@ -286,20 +319,22 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     dossier = Path(args.dossier)
-    aspect = args.aspect or aspect_existant(dossier) or "1080x1920"
-    if aspect not in MARGES:
-        print(f"ERREUR : toile « {aspect} » non prise en charge (admises : {', '.join(MARGES)})", file=sys.stderr)
-        return 2
     racine = Path(args.racine)
     try:
+        aspect = args.aspect or aspect_existant(dossier) or "1080x1920"
+        if aspect not in MARGES:
+            print(f"ERREUR : toile « {aspect} » non prise en charge (admises : {', '.join(MARGES)})",
+                  file=sys.stderr)
+            return 2
         tokens = tokens_exemple(racine) if args.exemple else BT.load_tokens(racine / TOKENS_REL)
-        frame = construire_frame(tokens, entreprise=nom_entreprise(racine, args.exemple), aspect=aspect)
+        frame = construire_frame(tokens, entreprise=nom_entreprise(racine, args.exemple),
+                                 aspect=aspect, racine=racine)
         css = brand_css(racine, tokens)
-    except TokenError as err:
+        fichiers = ecrire(dossier, frame, css, check=args.check)
+    except (TokenError, OSError, ValueError) as err:    # UnicodeDecodeError est une ValueError
         print(f"ERREUR : {err}", file=sys.stderr)
         return 1
 
-    fichiers = ecrire(dossier, frame, css, check=args.check)
     if args.check:
         if fichiers:
             print(f"DIVERGENCE dans {dossier} : {', '.join(fichiers)} ne correspond plus à la marque. "
