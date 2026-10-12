@@ -707,3 +707,12 @@ def test_suivis_de_revue_2_3_0():
     storyboard = _ligne(documentaire, "- **Storyboard** (validation 3)")
     assert "à la fin de l'étape 5, avant le montage (étape 7)" in storyboard
     assert "## Étape 7 : monter" in documentaire
+
+
+def test_registre_inspiration_procedure_de_rafraichissement():
+    registre = texte("docs/vendored-video.md")
+    exemples = registre.split("## Exemples Opus 5.5")[1].split("\n## ")[0]
+    procedure = exemples.split("### Rafraîchir le catalogue")[1]
+    for terme in ("--rafraichir", "categories --rafraichir --format json", "`slug`", "`tech_tags`", "`CATEGORIES`",
+                  "« De la catégorie à la filière »", "test_registre_complet", "853 entrées"):
+        assert terme in procedure, terme
