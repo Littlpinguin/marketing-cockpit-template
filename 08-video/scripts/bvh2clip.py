@@ -51,9 +51,10 @@ ARTICULATIONS = ("tete", "cou", "epaule_g", "coude_g", "main_g", "epaule_d", "co
                  "hanche", "genou_g", "pied_g", "genou_d", "pied_d")
 # Noms BVH candidats, dans l'ordre de préférence. Dans les conversions de la
 # base CMU, LeftShoulder est la clavicule et LeftArm l'épaule, LeftUpLeg la
-# hanche et LeftLeg le genou ; « Head_End » est l'extrémité du crâne.
+# hanche et LeftLeg le genou ; « Head_End » est l'extrémité du crâne. Chez Mixamo,
+# l'extrémité du crâne est une articulation à part entière, « HeadTop_End ».
 CORRESPONDANCES = {
-    "tete": ("Head_End", "Head", "head"),
+    "tete": ("Head_End", "HeadTop_End", "Head", "head"),
     "cou": ("Neck1", "Neck", "neck"),
     "epaule_g": ("LeftArm", "LeftShoulder", "l_shoulder", "lShldr"),
     "coude_g": ("LeftForeArm", "LeftElbow", "l_elbow", "lForeArm"),
