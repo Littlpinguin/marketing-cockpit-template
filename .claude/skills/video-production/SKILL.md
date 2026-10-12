@@ -1,0 +1,298 @@
+---
+name: video-production
+description: Point d'entrée unique de toute demande vidéo pour {{COMPANY_NAME}} (Reel, Short, vidéo LinkedIn, explainer, vidéo produit ou de lancement, motion design, montage de rushes, clips tirés d'une vidéo longue, montage documentaire sur archives, animation à l'encre, 3D, Manim). Cadre l'objectif business, choisit la filière, tient le dossier de projet, les trois validations humaines (concept, script, storyboard), le contrat de coût, le journal de décisions, le contrôle avant rendu, la QA mesurée (qa-video.py, agent video-reviewer) et la livraison ; passe la main aux skills spécialisées et aux workflows HyperFrames par un BRIEF.md. Ne publie pas, ne décide pas la doctrine de marque, n'écrit pas le post qui accompagne la vidéo, ne fait pas de deck (skill slides).
+---
+
+# video-production : de la demande au rendu livré
+
+Toute demande vidéo du cockpit entre ici, quelle que soit sa forme : Reel, Short, vidéo LinkedIn, explainer, vidéo produit ou de lancement, motion design, montage de rushes, clips tirés d'une vidéo longue, montage documentaire, animation à l'encre, 3D, Manim. Cette skill tient l'ordre, les validations, le budget et la QA. Chaque étape technique a sa skill, et la construction passe le plus souvent par un workflow HyperFrames.
+
+## Avant tout
+
+1. **Module actif.** `.setup-completed` porte `modules.video.enabled: true`. Sinon, proposer `/modules` et s'arrêter.
+2. **HyperFrames présent** pour les filières qui l'utilisent : le plugin `hyperframes@hyperframes`, installé par `/modules`, expose ses skills `hyperframes:*` dans la session. S'il manque, proposer `/modules` (installation) ou `/health-check` (diagnostic). Les capacités facultatives (whisper, Manim, corpus CLIP) sont notées par `/modules` dans `.setup-completed` (`modules.video.capacites`) : une filière qui en dépend le dit avant de commencer.
+3. **Objectif business d'abord** (règle (a) du `CLAUDE.md` racine) : notoriété, leads, conversion, rétention ou preuve sociale, avec l'indicateur suivi. Filière, format et durée en découlent, jamais l'inverse.
+4. **Contexte.** Lire `02-strategy/calendar/calendar.md` (ce qui est prévu, ce qui est en cours) et `00-intel/` (signaux récents). L'intel est confidentielle : on reformule, aucun fait sur une personne n'en sort.
+5. **Marque, jamais de mémoire** : `01-brand/voice.md`, `01-brand/anti-ai-writing-style.md`, `01-brand/style-guide.md`, `01-brand/divulgation-ia.md`, `01-brand/droits.md`, et le catalogue `01-brand/assets/`. Si un fichier manque ou porte encore des `{{...}}`, s'arrêter et proposer `/start-cockpit`.
+6. **Doctrine du module**, selon la filière : `08-video/formats.md`, `08-video/montage.md`, `08-video/narration.md`, `08-video/motion.md`, `08-video/documentaire.md`.
+7. **Vidéo de référence, en option.** Si l'humain montre une vidéo qu'il aime, écrire dans `brief.md` ce qu'on garde (rythme, accroche, structure, ton) et ce qu'on change (sujet, traitement, angle). On ne reprend ni ses images, ni sa musique, ni son texte.
+
+## Le projet
+
+Un dossier par vidéo, créé au cadrage :
+
+```
+08-video/projets/<slug>/
+├── brief.md        objectif business, canal, durée, persona, message unique, matière, CTA, budget
+├── REPRISE.md      état courant et prochaine action, lu en premier par une nouvelle session
+├── decisions.md    journal en ajout seul : date, sujet, choix, options écartées, raison
+├── couts.md        estimations, dépenses réelles, solde du budget
+├── script.md       script minuté (validé)
+├── storyboard.md   plans, vignettes au vrai cadrage, sources de matière (validé)
+├── hyperframes/    racine HyperFrames : BRIEF.md, frame.md, brand.css, STORYBOARD.md, compositions/
+├── rushes/         sources et clips générés (non versionnés)
+├── exports/        rendus finaux par plateforme (non versionnés)
+└── qa/             rapports de qa-video.py et planches (seul le rapport .md final se versionne)
+```
+
+### `brief.md`
+
+```markdown
+# Brief : <titre de travail>
+
+- **Objectif business** : <notoriété | leads | conversion | rétention | preuve sociale> ; indicateur suivi : <...>
+- **Canal et plateforme** : <Reels | TikTok | Shorts | LinkedIn | site | YouTube> ; toile <1080x1920 | 1080x1080 | 1920x1080>
+- **Durée visée** : <secondes>
+- **Persona** : <persona de 01-brand/personas.md> ; ce qu'elle sait déjà du sujet : <...>
+- **Message unique** : <une phrase>
+- **Matière disponible** : <rushes, captures, assets de 01-brand/assets/, chiffres sourcés, voix, musique>
+- **Appel à l'action** : <une seule action>
+- **Budget** : <montant ou crédits> ; outils payants autorisés : <liste, ou aucun>
+- **Échéance** : <date> ; entrée du calendrier : <ligne de 02-strategy/calendar/calendar.md>
+- **Filière** : <ligne de la table « Choisir la filière »>
+- **Vidéo de référence** (si fournie) : on garde <...> ; on change <...>
+```
+
+### `REPRISE.md`
+
+```markdown
+# Reprise : <slug>
+
+- **État** : <cadrage | concepts | script | storyboard | matière | construction | rendu | QA | livré>
+- **Dernière validation** : <validation, date, qui, ce qui a été validé>
+- **Prochaine action** : <une action précise>
+- **En attente de l'humain** : <question ouverte, ou rien>
+- **Fichiers clés** : <chemins>
+```
+
+### `decisions.md`
+
+```markdown
+# Décisions : <slug>
+
+Journal en ajout seul. Une décision qui change s'ajoute en nouvelle ligne, avec le même sujet ; l'ancienne ligne reste.
+
+| Date | Sujet | Choix | Options écartées | Raison |
+|---|---|---|---|---|
+| <date> | Filière | <filière> | <autres filières envisagées> | <pourquoi> |
+| <date> | Profil de goût | densité <n>, énergie <n>, audace <n> | <...> | <lecture de la vidéo> |
+| <date> | Voix | <fournisseur, modèle, voix> | <...> | <échantillon validé le ...> |
+```
+
+### `couts.md`
+
+```markdown
+# Coûts : <slug>
+
+Budget du projet : <montant ou crédits>
+
+| Date | Outil | Fournisseur | Modèle | Échantillon ou série | Estimé | Réel | Solde |
+|---|---|---|---|---|---|---|---|
+```
+
+### `script.md`
+
+Un tableau minuté, une ligne par plan. Une seule colonne a un en-tête qui contient « Voix » : c'est le texte dit, celui que `qa-video.py --script` compare à la transcription du rendu.
+
+```markdown
+| # | Temps | Image | Voix | Texte à l'écran | Jeu |
+|---|---|---|---|---|---|
+| 1 | 0:00-0:03 | <ce qu'on voit> | <texte dit> | <carton> | <intention, pause, mot appuyé> |
+```
+
+## Choisir la filière
+
+| Demande | Filière |
+|---|---|
+| Motion court sans voix (titre animé, chiffre, logo, lower-third, data viz, carte) | `motion-design` → `hyperframes:motion-graphics` |
+| Explainer narré sans tournage (article, notes, concept) | `hyperframes:faceless-explainer` |
+| Vidéo produit ou lancement depuis une URL, un site, une app | `hyperframes:product-launch-video` |
+| Annonce de fonctionnalité depuis un PR (clients SaaS) | `hyperframes:pr-to-video` |
+| Clip rythmé sur une musique | `hyperframes:music-to-video` |
+| Rushes face caméra → reel | `reel-talking-head` → `video-editing` (`hyperframes:talking-head-recut` ou ffmpeg) |
+| Vidéo longue → clips | `video-repurpose` |
+| Clips IA ou stock + narration, montage libre | `video-generation` (matière) → `hyperframes:general-video` |
+| Montage documentaire sur archives | `video-documentary` |
+| Animation à l'encre, personnages, 3D | `motion-design` (références) → `hyperframes:general-video` ou `hyperframes:motion-graphics` |
+| Démonstration conceptuelle ou mathématique | `manim-composer` → `manim-ce` → plan vidéo dans HyperFrames |
+| Sous-titres seuls | `captions` (ffmpeg, ou `hyperframes:embedded-captions` pour du designé) |
+| Présentation, deck | **toujours `slides`**, jamais `hyperframes:slideshow` |
+
+Toute composition animée passe par `motion-design`, qui porte la marque jusqu'à HyperFrames. Une démo produit filmée en capture d'écran suit `08-video/montage.md` § « Démo produit et capture d'écran ». Les skills du projet priment sur celles d'un plugin : si une skill `hyperframes:*` et une skill du template se recouvrent, celle du template décide, et le workflow HyperFrames exécute.
+
+## Étapes et validations
+
+1. **Cadrage.** Objectif business, calendrier et `00-intel/` consultés, filière choisie, dossier du projet créé, `brief.md` écrit, `REPRISE.md` initialisé.
+2. **Concepts.** Deux ou trois concepts réellement différents, chacun avec son chemin outillé honnête (ce que les outils disponibles produisent vraiment, pas ce qu'ils promettent), son coût estimé et son risque. En recommander un.
+   → **Validation 1 : choix du concept.**
+3. **Script** dans `script.md`, selon `08-video/narration.md` quand il y a une voix. Pour un format court, l'accroche en trois variantes (`08-video/formats.md` § « Format court : repères de production »). Profil de goût et moteur consignés dans `decisions.md` (`08-video/motion.md`).
+   → **Validation 2 : script validé.**
+4. **Storyboard.** Filières HyperFrames : le storyboard d'HyperFrames (`hyperframes/STORYBOARD.md` et ses croquis), produit après la passation avec `storyboard: yes`. Autres filières, et `hyperframes:motion-graphics` qui n'en produit pas : `storyboard.md`, un tableau des plans avec des vignettes au vrai cadrage et la source de chaque matière. Dans les deux cas, la revue de singularité de `08-video/motion.md` est faite.
+   → **Validation 3 : storyboard validé. Aucun crédit dépensé avant.**
+5. **Matière.** Réutiliser d'abord (`01-brand/assets/`, rushes existants), puis le stock (Magnific `stock_search` et `stock_download`, corpus documentaire), puis générer (`video-generation`, `image-generation`, voix, musique). Un échantillon avant toute série, sous le contrat de coût.
+6. **Construction.** HyperFrames ou ffmpeg selon la filière, dans `hyperframes/` ou dans le plan de montage de `video-editing`.
+7. **Contrôle avant rendu** (section dédiée).
+8. **Rendu, puis QA** : `qa-video.py` et l'agent `video-reviewer`.
+9. **Livraison** (section dédiée).
+
+Règles des validations :
+
+- À chaque validation, le tour s'arrête et attend la réponse de l'humain. Présenter ce qui est à valider, la recommandation, et ce que l'accord déclenche.
+- Une validation vaut pour une seule étape. Un « ok » sur le concept ne valide pas le script.
+- Une pré-autorisation globale (« fais tout », « je te fais confiance jusqu'au rendu ») se consigne dans `decisions.md` avec sa portée exacte : quelles validations elle couvre. Elle ne couvre jamais le premier usage d'un outil payant, un dépassement du budget, ni la revue humaine du rendu final.
+- **Aucun crédit dépensé avant le storyboard validé.** Pas d'image, pas de clip, pas de voix ni de musique payante « pour voir ».
+
+## Passer la main à HyperFrames
+
+Après la validation du script, pour toute filière HyperFrames. Dans une installation en plugin, la skill `hyperframes:hyperframes` fait passer chaque commande `npx hyperframes` par le lanceur du plugin, qui fixe la version du CLI : suivre sa règle pour toutes les commandes de cette section.
+
+**1. Choisir la toile** selon la destination :
+
+| Destination | Toile (`--aspect`, `aspect:`) | Préréglage d'`init` |
+|---|---|---|
+| Reels, TikTok, Shorts, LinkedIn vertical | `1080x1920` | `portrait` |
+| LinkedIn carré (le plus sûr sur ordinateur), fil carré | `1080x1080` | `square` |
+| Site, YouTube | `1920x1080` | `landscape` |
+
+**2. Créer le projet HyperFrames** dans un dossier qui n'existe pas encore : `init` refuse un dossier non vide, et le workflow ne relance pas `init` quand `hyperframes.json` existe déjà.
+
+```bash
+npx hyperframes init 08-video/projets/<slug>/hyperframes --non-interactive --example=blank \
+  --skill=<workflow> --resolution <portrait|square|landscape>
+```
+
+**3. Poser la charte de marque** : `frame.md` (le fichier de design qu'HyperFrames lit en premier) et `brand.css`, générés depuis `01-brand/tokens.json`.
+
+```bash
+python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --aspect <toile>
+```
+
+**4. Écrire `hyperframes/BRIEF.md`**, qui porte le brief confirmé : le workflow le lit et ne refait pas d'entretien.
+
+```markdown
+---
+workflow: faceless-explainer
+flow: automation
+storyboard: yes
+message: "La seule chose que la vidéo doit faire passer, en une phrase"
+destination: linkedin-feed
+aspect: 1080x1080
+language: fr
+length: 45s
+audience: "Persona du brief et ce qu'elle sait déjà du sujet"
+angle: concept
+narration: yes
+---
+
+## Intent
+
+Ce qu'est la vidéo, pour qui, pourquoi maintenant ; l'objectif business du brief ; le ton, dans les mots de 01-brand/voice.md.
+
+## Assets
+
+- ../script.md : script validé (validation 2), narration à reprendre mot pour mot.
+- assets/<fichier> : ce que c'est, où il sert.
+
+## Customizations
+
+- Ce que le concept validé demande en plus, par exemple un compteur animé sur le chiffre clé.
+
+## Notes
+
+- frame.md est généré par 08-video/scripts/brand-frame.py et fait foi : aucun preset de frame-presets, pas de build-frame, aucune recette adoptée, frame.md jamais réécrit.
+- VO_MODE : verbatim.
+- Voix : celle consignée dans decisions.md ; aucun fournisseur payant sans annonce de coût.
+- Rendu seulement après accord explicite, vers ../exports/<slug>-<plateforme>.mp4.
+```
+
+`workflow` prend le nom de la filière sans préfixe (`faceless-explainer`, `product-launch-video`, `pr-to-video`, `music-to-video`, `motion-graphics`, `general-video`). `flow: automation` avec `storyboard: yes` met HyperFrames en mode collaboratif : il s'arrête et attend à ses points de contrôle, ce qui recouvre nos validations. `motion-graphics` travaille en autonomie, sans ces deux champs : sa pièce est courte, et son storyboard se valide avant la passation.
+
+**5. Charger la skill de workflow `hyperframes:<workflow>`.** Elle lit `BRIEF.md` et déroule son storyboard puis la construction. Points de vigilance :
+
+- **Charte.** L'étape de design system des workflows (choix d'un preset dans `frame-presets`, script `build-frame`, recette) se saute : `frame.md` existe et fait foi. Si un `frame.md` a été réécrit, relancer `brand-frame.py`, puis `brand-frame.py --check`.
+- **Storyboard.** Le storyboard d'HyperFrames est notre validation 3 : rien de payant avant l'accord. `hyperframes:motion-graphics` n'a pas de storyboard : la validation 3 se tient sur `storyboard.md` avant de lui passer la main.
+- **Médias.** Les workflows affichent l'état de connexion HeyGen (`npx hyperframes auth status`). Fournisseurs externes (HeyGen, ElevenLabs, Lyria) seulement avec clé présente et coût ou quota annoncé ; défaut local (voix Kokoro) ou Magnific sous contrat de coût.
+- **Rendu.** Jamais automatique. Après `npx hyperframes check` propre et l'aperçu (`npx hyperframes preview`), demander l'accord, puis rendre depuis le dossier `hyperframes/` :
+
+```bash
+npx hyperframes render --quality delivery --output ../exports/<slug>-<plateforme>.mp4
+```
+
+Rappels : jamais de preset `frame-presets` dans un projet client ; `frame.md` jamais édité à la main (le modifier, c'est modifier les tokens puis relancer `brand-frame.py`).
+
+## Contrat de coût
+
+Avant tout appel payant (image, clip vidéo, voix, musique, 3D, fournisseur externe d'HyperFrames), annoncer dans la conversation :
+
+- l'outil (nom exact), le fournisseur et le modèle ;
+- la raison de ce choix ;
+- échantillon ou série ;
+- le coût estimé ;
+- le solde du budget du projet (`couts.md`) et, quand l'outil le permet, le solde du compte vérifié en direct : outil `account_balance` du MCP Magnific quand il est connecté.
+
+Règles :
+
+- **Un échantillon avant toute série.** Le coût réel de l'échantillon décide de la série.
+- **Premier usage d'un outil payant dans un projet** : validation explicite de l'humain, même sous pré-autorisation.
+- **Pas de substitution silencieuse.** Jamais changer de fournisseur ou de modèle sans le dire et le consigner dans `decisions.md`. Un modèle indisponible est un blocage, pas l'occasion d'en prendre un autre.
+- **`couts.md` à jour** à chaque appel : estimation, dépense réelle, solde du budget.
+- **Licences de la matière gratuite aussi.** Musique générée en local par MusicGen (`npx hyperframes bgm --provider musicgen`) : gratuite, mais les poids du modèle sont publiés sous licence CC BY-NC 4.0 ([fiche du modèle](https://huggingface.co/facebook/musicgen-small)). Pour une vidéo de marque, trancher son usage dans `01-brand/droits.md` avant de s'en servir.
+
+Signaler un blocage en cinq points, puis attendre :
+
+1. Ce qui bloque.
+2. Ce qui a été tenté.
+3. Les options possibles.
+4. La recommandation, avec sa raison.
+5. Ce qu'il faut de l'humain : une décision, un accès, une clé, du budget.
+
+## Contrôle avant rendu
+
+- [ ] **Promesse tenue** : une vidéo promise en mouvement a du mouvement réel, pas un diaporama d'images zoomées (`08-video/motion.md`).
+- [ ] **Variété** : jamais trois scènes du même type d'affilée.
+- [ ] **Narration plus courte que la vidéo** : durée du fichier de voix (`ffprobe -v error -show_entries format=duration -of csv=p=0 <narration.wav>`) inférieure ou égale à la durée de la composition.
+- [ ] **Musique assez longue** pour toute la vidéo, ou bouclage prévu sans coupure audible.
+- [ ] **Assets tous présents** dans le dossier du projet : `npx hyperframes check` sans requête en échec.
+- [ ] **Marque à jour** : `python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --check` sort 0.
+- [ ] **Revue de singularité** répondue dans `decisions.md`.
+
+## QA et revue
+
+```bash
+python3 08-video/scripts/qa-video.py 08-video/projets/<slug>/exports/<slug>-<plateforme>.mp4 \
+  --plateforme <reels|tiktok|shorts|linkedin> --duree <secondes> --script 08-video/projets/<slug>/script.md
+```
+
+- Sans voix : `--sans-audio`. Destination hors des quatre plateformes de `08-video/scripts/plateformes.toml` (site, YouTube) : lancer sans `--plateforme`.
+- La QA écrit dans `08-video/projets/<slug>/qa/<nom>/` une image au milieu de chaque plan, une planche contact et `rapport.md`. Code 0 : aucun constat bloquant ; 1 : constats bloquants ; 2 : erreur d'usage ou d'outil.
+- Puis dispatcher l'agent `video-reviewer` (lecture seule) avec le rendu, `brief.md`, `script.md` et la plateforme : message et appel à l'action, marque, zones de sécurité, mouvement et variété, sous-titres, divulgation, crédits.
+- **Deux tours de correction au plus** sur les constats de la QA et de la revue. Au-delà, remonter à l'humain avec l'état des constats.
+- **La revue humaine du rendu final reste obligatoire**, quel que soit le résultat de la QA.
+
+## Livraison
+
+1. **`brand-check`** sur le script et sur l'habillage du rendu.
+2. **Divulgation IA** selon `01-brand/divulgation-ia.md` : clips générés, voix de synthèse, musique générée.
+3. **Crédits et droits** : `credits.md` du corpus documentaire, licences du stock et de la musique, droit d'embarquer la police, accord des personnes filmées ; vérification dans `01-brand/droits.md`.
+4. **Calendrier** : statut de l'entrée dans `02-strategy/calendar/calendar.md` (`idée → brouillon → à-valider → validé → publié`).
+5. **Inventaire** : `python3 scripts/build-inventory.py --add 08-video/projets/<slug>/script.md`.
+6. **Capitalisation** dans `decisions.md` : prompts, voix et réglages validés, et les échecs avec leur raison, pour qu'ils ne soient pas retentés.
+7. **`REPRISE.md`** passé à l'état « livré ».
+
+## Reprendre une session
+
+1. Lire `REPRISE.md`, puis `decisions.md` (la dernière ligne de chaque sujet fait foi) et `couts.md`.
+2. Projet HyperFrames : lire `hyperframes/BRIEF.md` et `hyperframes/STORYBOARD.md` (le mode de travail en cours est dans son frontmatter) ; pour savoir ce qui est construit, `npx hyperframes timeline --json` depuis `hyperframes/`.
+3. Reprendre à la prochaine action notée, sans refaire le cadrage ni l'entretien.
+
+## Ce que cette skill ne fait pas
+
+- Publier : la publication reste une décision humaine.
+- Décider la doctrine de marque : `01-brand/`.
+- Écrire le post qui accompagne la vidéo : `social-content`.
+- Faire une présentation ou un deck : `slides`.
+- Le détail technique de chaque étape : les skills de la table « Choisir la filière ».
+
+---
+
+Méthode inspirée d'OpenMontage (calesthio/OpenMontage, AGPLv3), réécrite pour le template : aucun texte ni code repris. Registre : docs/vendored-video.md.

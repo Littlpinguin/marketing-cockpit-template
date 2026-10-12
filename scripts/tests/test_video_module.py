@@ -88,3 +88,48 @@ def test_doctrine_enrichie():
     documentaire = texte("08-video/documentaire.md")
     for terme in ("corpus.py", "credits.md", "01-brand/droits.md", "selections.json"):
         assert terme in documentaire, terme
+
+
+# ------------------------------------------------------------------ nouvelles skills (tâche 10)
+
+NOUVELLES = {
+    "video-production": ["brief.md", "REPRISE.md", "decisions.md", "couts.md", "BRIEF.md", "frame.md",
+                         "brand-frame.py", "qa-video.py", "video-reviewer", "storyboard: yes",
+                         "hyperframes:faceless-explainer", "hyperframes:product-launch-video",
+                         "hyperframes:motion-graphics", "hyperframes:general-video", "hyperframes:pr-to-video",
+                         "hyperframes:music-to-video", "reel-talking-head", "video-repurpose", "video-documentary",
+                         "manim-composer", "`slides`", "/modules", "account_balance", "02-strategy/calendar/calendar.md"],
+    "motion-design": ["frame.md", "brand.css", "brand-frame.py", "references/3d.md", "references/personnages.md",
+                      "references/encre.md", "08-video/motion.md", "design-taste", "hf-seek", "data-duration",
+                      "document.fonts.ready", "npx hyperframes lint", "frame-presets", "hyperframes:hyperframes-registry",
+                      "manim"],
+    "video-repurpose": ["se comprend sans contexte", "whisper", "captions", "9:16", "qa-video.py", "video-editing",
+                        "02-strategy/calendar/calendar.md"],
+    "video-documentary": ["corpus.py build", "corpus.py index", "corpus.py search", "corpus.py credits",
+                          "selections.json", "08-video/documentaire.md", "requirements-corpus.txt",
+                          "hyperframes:general-video", "narration.md"],
+}
+REFERENCES_MOTION = {
+    "3d.md": ["Three.js", "hf-seek", "data-duration", "Poly Haven", "01-brand/droits.md", "models3d"],
+    "personnages.md": ["Lottie", "ink-puppet", "fiche personnage", "poses"],
+    "encre.md": ["InkTheater.attach", "08-video/lib/ink-theater", "InkPuppet.create", "brand.css", "InkClips"],
+}
+
+
+@pytest.mark.parametrize("nom, termes", NOUVELLES.items())
+def test_nouvelle_skill(nom, termes):
+    chemin = SKILLS / nom / "SKILL.md"
+    assert frontmatter(chemin)["name"] == nom
+    assert len(frontmatter(chemin).get("description", "")) > 80
+    contenu = chemin.read_text(encoding="utf-8")
+    manquants = [t for t in termes if t not in contenu]
+    assert not manquants, f"{nom} : termes absents {manquants}"
+    assert "OpenMontage" in contenu and "docs/vendored-video.md" in contenu
+    assert "palmier" not in contenu.lower() and "—" not in contenu
+
+
+@pytest.mark.parametrize("fichier, termes", REFERENCES_MOTION.items())
+def test_references_motion(fichier, termes):
+    contenu = (SKILLS / "motion-design" / "references" / fichier).read_text(encoding="utf-8")
+    manquants = [t for t in termes if t not in contenu]
+    assert not manquants, f"{fichier} : termes absents {manquants}"
