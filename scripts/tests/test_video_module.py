@@ -269,3 +269,43 @@ def test_voix_payante_met_a_jour_voice_apres_l_echantillon():
     apres = bloc.split("échantillon payant annoncé et validé")[1]
     assert "validation 3" in apres and "mettre `voice:` à jour dans `BRIEF.md`" in apres
     assert apres.index("mettre `voice:` à jour") < apres.index("avant de lancer l'étape audio")
+
+
+# ------------------------------------------------------------------ skills refondues, agent (tâche 11)
+
+REFONDUES = {
+    "video-editing": ["hyperframes:talking-head-recut", "hyperframes:general-video", "silencedetect",
+                      "qa-video.py", "08-video/projets/", "montage.md", "formats.md", "loudnorm"],
+    "captions": ["hyperframes:embedded-captions", "whisper", "formats.md", ".srt"],
+    "reel-talking-head": ["qa-video.py", "video-reviewer", "video-production", "Format court"],
+    "video-generation": ["sujet", "mouvement", "scène", "espace", "caméra", "## Stock ou génération",
+                         "## Choisir un fournisseur", "video-model-scout", "video-production", "fidélité"],
+}
+
+
+@pytest.mark.parametrize("nom, termes", REFONDUES.items())
+def test_skill_refondue(nom, termes):
+    chemin = SKILLS / nom / "SKILL.md"
+    assert frontmatter(chemin)["name"] == nom
+    contenu = chemin.read_text(encoding="utf-8")
+    manquants = [t for t in termes if t not in contenu]
+    assert not manquants, f"{nom} : termes absents {manquants}"
+    assert "palmier" not in contenu.lower() and "—" not in contenu
+
+
+@pytest.mark.parametrize("nom", ["video-generation", "reel-talking-head"])
+def test_pied_de_page_openmontage(nom):
+    pied = (SKILLS / nom / "SKILL.md").read_text(encoding="utf-8").rstrip().splitlines()[-1]
+    assert "OpenMontage" in pied and "docs/vendored-video.md" in pied
+
+
+def test_agent_video_reviewer():
+    chemin = REPO / ".claude" / "agents" / "video-reviewer.md"
+    meta = frontmatter(chemin)
+    assert meta["name"] == "video-reviewer"
+    assert set(t.strip() for t in meta["tools"].split(",")) == {"Bash", "Read", "Glob", "Grep"}
+    contenu = chemin.read_text(encoding="utf-8")
+    for terme in ("qa-video.py", "planche", "brand-frame.py --check", "P1", "P2", "P3",
+                  "01-brand/divulgation-ia.md", "01-brand/droits.md", "brief.md", "lecture seule"):
+        assert terme in contenu, terme
+    assert "palmier" not in contenu.lower() and "—" not in contenu

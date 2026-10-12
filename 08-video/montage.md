@@ -29,13 +29,13 @@ Règles de coupe, de rythme et de son pour tout montage narratif (talking-head, 
 
 - **Voix d'abord** : débruiter avant tout traitement (jamais normaliser avant de débruiter), passe-haut ~85 Hz, normalisation en dernier. Cible master : **−14 LUFS intégré** (contrôle : `ffmpeg -af ebur128`), crête vraie ≤ −1,5 dBTP.
 - **Musique** : entrée fondue après l'accroche, ducking net sous la voix (~10-12 dB d'écart voix/musique), et **au moins un silence total** posé sur le moment le plus fort — le moment le plus puissant d'un plan sonore est un silence, pas un effet.
-- **SFX : 5 maximum par film, ≥ 6 dB sous la voix, sons de banque** (la synthèse n'a pas la texture ; l'éditeur importe n'importe quelle URL HTTPS de banque). Impacts posés sur les mots durs, ticks discrets sur les cartons (2 frames avant l'apparition).
+- **SFX : 5 maximum par film, ≥ 6 dB sous la voix, sons de banque** (la synthèse n'a pas la texture ; le son de banque se télécharge dans le dossier du projet, jamais lu depuis une URL au rendu). Impacts posés sur les mots durs, ticks discrets sur les cartons (2 frames avant l'apparition).
 - **J-cut sonore** : whoosh ou riser posé quelques frames **avant** la coupe image, jamais dessus.
 - Après toute réparation/repose d'un clip SFX, **reposer son gain** — un effet recréé revient à plein volume et traverse tous les contrôles.
 
 ## Sous-titres et cartons
 
-- Karaoké mot à mot : → skill `captions` (méthode éditeur, timings par token).
+- Karaoké mot à mot : skill `captions`, section « Karaoké mot à mot » (timings au mot).
 - Cartons : peu, courts (~2 s), un style unique (pastille de marque, police du style-guide), calés sur le mot qu'ils illustrent.
 
 ## Démo produit et capture d'écran
