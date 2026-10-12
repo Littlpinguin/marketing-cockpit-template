@@ -49,21 +49,27 @@ Si un prérequis manque : refuser l'activation, expliquer quoi faire (souvent : 
 
 #### Activation du module `video`
 
-Une fois les prérequis vérifiés (`ffmpeg -version`, `ffprobe -version`, `node --version` ≥ 22, `npx --version`), le moteur s'installe comme plugin Claude Code officiel : `hyperframes@hyperframes`, marketplace `heygen-com/hyperframes`, licence Apache-2.0. Aucun fichier HyperFrames n'est copié dans le dépôt.
+Le moteur s'installe comme plugin Claude Code officiel : `hyperframes@hyperframes`, marketplace `heygen-com/hyperframes`, licence Apache-2.0. Aucun fichier HyperFrames n'est copié dans le dépôt.
 
-1. **Montrer les commandes à l'utilisateur** et attendre son accord avant de les lancer, depuis la racine du dépôt :
+1. **Vérifier avant d'installer**, sans rien modifier : `ffmpeg -version`, `ffprobe -version`, `node --version` (22 ou plus), `npx --version`, puis l'environnement de rendu, Chrome headless compris :
+
+   ```bash
+   npx --yes hyperframes doctor --json
+   ```
+
+   En sortie `--json`, le code de sortie vaut toujours 0 : lire le champ `ok`. Un prérequis absent ou `ok` faux : afficher les manques tels quels, ne rien installer, ne pas activer.
+2. **Montrer les commandes d'installation à l'utilisateur** et attendre son accord avant de les lancer, depuis la racine du dépôt :
 
    ```bash
    claude plugin marketplace add heygen-com/hyperframes --scope local
    claude plugin install hyperframes@hyperframes --scope local
-   npx --yes hyperframes doctor --json
    ```
 
-   - Portée `local` : seul `.claude/settings.local.json`, non versionné, est modifié. Rien n'entre dans le dépôt ni dans la configuration des autres projets.
-   - `npx --yes hyperframes doctor` contrôle l'environnement de rendu, Chrome headless compris. En sortie `--json`, le code de sortie vaut toujours 0 : lire le champ `ok`. S'il est faux, afficher les manques tels quels et ne pas activer.
-2. **Relever la version installée** du plugin dans `claude plugin list` (ou `claude plugin list --json`), pour l'écrire dans `modules.video.hyperframes` à l'étape 4.
-3. **Prévenir l'utilisateur** : les skills `hyperframes:*` se chargent au démarrage d'une session. Redémarrer Claude Code avant la première production vidéo.
-4. **Détecter les capacités facultatives**, les afficher, sans jamais bloquer l'activation :
+   Portée `local` : seul `.claude/settings.local.json`, non versionné, est modifié. Rien n'entre dans le dépôt ni dans la configuration des autres projets.
+3. **Contrôler après l'installation** : relancer `npx --yes hyperframes doctor --json`. Si `ok` est faux, ne pas activer, et proposer de retirer ce qui vient d'être installé (`claude plugin uninstall hyperframes@hyperframes --scope local`, puis `claude plugin marketplace remove hyperframes --scope local`).
+4. **Relever la version installée** du plugin dans `claude plugin list` (ou `claude plugin list --json`), pour l'écrire dans `modules.video.hyperframes` à l'étape 4.
+5. **Prévenir l'utilisateur** : les skills `hyperframes:*` se chargent au démarrage d'une session. Redémarrer Claude Code avant la première production vidéo.
+6. **Détecter les capacités facultatives**, les afficher, sans jamais bloquer l'activation :
 
    | Capacité | Détection | Ce qu'elle ouvre |
    |---|---|---|

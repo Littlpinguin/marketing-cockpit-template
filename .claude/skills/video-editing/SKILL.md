@@ -67,7 +67,7 @@ Dans une installation en plugin, chaque commande `npx hyperframes` passe par le 
 
 ### Voie B : plan de montage ffmpeg
 
-Produire un **plan de montage** : une suite de commandes ffmpeg commentées dans `08-video/projets/<slug>/montage.sh`, exécutées après validation humaine, depuis le dossier du projet. Les fichiers intermédiaires vont dans `rushes/tmp/` (non versionné). Briques types :
+Produire un **plan de montage** : une suite de commandes ffmpeg commentées dans `08-video/projets/<slug>/montage.sh`, exécutées après validation humaine, depuis le dossier du projet (`cd 08-video/projets/<slug>` depuis la racine du dépôt) : les chemins des commandes ci-dessous en partent. Les fichiers intermédiaires vont dans `rushes/tmp/` (non versionné). Briques types :
 
 ```bash
 # Découper un segment (sans réencodage si les points tombent sur des images clés)
@@ -145,9 +145,10 @@ Sous-titres : déléguer à la skill **`captions`** (transcription, segments, `.
 
 ## Étape 5 : l'export par plateforme
 
-Un export par canal cible, nommé `08-video/projets/<slug>/exports/<slug>-<plateforme>.mp4`, aux specs de `08-video/formats.md` :
+Un export par canal cible, nommé `08-video/projets/<slug>/exports/<slug>-<plateforme>.mp4`, aux specs de `08-video/formats.md`. Comme les commandes de la voie B, celle-ci se lance depuis le dossier du projet ; la QA, elle, se lance depuis la racine du dépôt (section suivante).
 
 ```bash
+cd 08-video/projets/<slug>    # depuis la racine du dépôt
 # Export final : H.264 yuv420p, son normalisé à -14 LUFS (crête vraie -1,5 dBTP), AAC 48 kHz, lecture web rapide
 ffmpeg -i rushes/tmp/final.mp4 -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p \
   -af "loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k -ar 48000 \
@@ -156,11 +157,13 @@ ffmpeg -i rushes/tmp/final.mp4 -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420
 
 - Un rendu HyperFrames qui n'a que le son hors cible (constat `loudness` de `qa-video.py`) repasse par la même commande avec `-c:v copy` à la place des réglages vidéo : l'image n'est pas réencodée.
 - Si `qa-video.py` signale encore `loudness` après ce passage, faire la normalisation en deux passes (mesure, puis application des valeurs mesurées) décrite par la skill `hyperframes:media-use`.
+- **Sous-titres incrustés ensuite par ffmpeg** (skill `captions`) : exporter vers `rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4` (rendu HyperFrames compris : `--output ../rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4`) ; c'est l'incrustation qui écrit le livrable `exports/<slug>-<plateforme>.mp4`, celui que contrôlent la QA et la revue.
 - Garder le master avant compression (rendu HyperFrames ou `rushes/tmp/final.mp4`) : c'est lui qu'on archive sur le stockage du client, hors git.
+- **Un rendu long se surveille en tâche de fond** (sortie du processus, taille du fichier qui grossit), jamais par une boucle d'attente `sleep` au premier plan, que l'environnement d'exécution peut bloquer.
 
 ### Avant de livrer
 
-**Transcrire le master final et le comparer au texte attendu** : un master peut provenir d'un état antérieur du montage (même durée, contenu différent).
+**Transcrire le master final et le comparer au texte attendu** : un master peut provenir d'un état antérieur du montage (même durée, contenu différent). Depuis la racine du dépôt :
 
 ```bash
 python3 08-video/scripts/qa-video.py 08-video/projets/<slug>/exports/<slug>-<plateforme>.mp4 \

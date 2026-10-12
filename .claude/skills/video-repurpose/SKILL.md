@@ -5,7 +5,7 @@ description: Transforme une vidéo longue de {{COMPANY_NAME}} (webinar, podcast 
 
 # video-repurpose : d'une vidéo longue à des clips sociaux
 
-Une vidéo longue contient des moments qui tiennent seuls. Cette skill les trouve, les note, les fait valider, puis les fait monter un par un pour la plateforme visée. Elle est appelée par `video-production`, qui a ouvert le projet (`08-video/projets/<slug>/`), écrit le brief et tient le budget.
+Une vidéo longue contient des moments qui tiennent seuls. Cette skill les trouve, les note, les fait valider, puis les fait monter un par un pour la plateforme visée. Elle est appelée par `video-production`, qui a ouvert le projet (`08-video/projets/<slug>/`, slug daté `AAAA-MM-JJ-<sujet>`), écrit le brief et tient le budget.
 
 ## Références à charger
 
@@ -29,7 +29,7 @@ whisper-cli -m <modèle> -f rushes/source.wav -l fr -oj -ml 1 -sow -of rushes/tr
 ```
 
 - `-ml 1 -sow` : un mot par segment, avec son début et sa fin en millisecondes, dans `rushes/transcription.json`. `<modèle>` est le chemin déclaré dans `.env` (`WHISPER_MODEL`).
-- Autre voie : `npx hyperframes transcribe rushes/source.mp4`, la transcription au mot d'HyperFrames (par le lanceur du plugin quand HyperFrames est installé en plugin).
+- Autre voie : `npx hyperframes transcribe rushes/source.mp4 --model small --language fr`, la transcription au mot d'HyperFrames (par le lanceur du plugin quand HyperFrames est installé en plugin). Jamais sans `--model` ni `--language` : le modèle par défaut, `small.en`, traduit l'audio français en anglais.
 - whisper n'identifie pas les intervenants : sur un entretien ou une table ronde, vérifier à l'écoute qui dit quoi avant d'attribuer une phrase.
 - Les vrais silences, que la transcription aligne bord à bord : `ffmpeg -i rushes/source.wav -af silencedetect=noise=-30dB:d=0.3 -f null -`.
 
@@ -71,7 +71,7 @@ Lire la transcription du clip seule, comme quelqu'un qui n'a pas vu la vidéo :
 
 Une réponse oui : élargir le clip (reprendre la phrase d'avant), couper ailleurs, ajouter un carton de contexte d'une ligne, ou écarter. Un carton situe, il ne fait pas dire.
 
-**Validation humaine de la liste avant tout montage.** Présenter les clips retenus (numéro, plateforme, durée, première phrase, note) et les écartés notables avec leur raison, puis attendre. Rien n'est coupé avant l'accord. La liste validée devient le `script.md` du projet (une ligne par clip : numéro, début, fin, plateforme, première phrase), ce qui l'inscrit à l'inventaire à la livraison.
+**Validation humaine de la liste avant tout montage.** Présenter les clips retenus (numéro, plateforme, durée, première phrase, note) et les écartés notables avec leur raison, puis attendre. Rien n'est coupé avant l'accord. La liste validée devient le `script.md` du projet : le frontmatter du modèle de `video-production` (`date`, `subject`, `statut`), un titre, puis une ligne par clip (numéro, début, fin, plateforme, première phrase). C'est ce frontmatter qui l'inscrit à l'inventaire à la livraison.
 
 ## Étape 4 : couper au mot
 

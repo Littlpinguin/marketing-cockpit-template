@@ -30,7 +30,7 @@ L'incrustation de sous-titres par ffmpeg demande une build avec libass : `ffmpeg
 
 ## whisper (facultatif)
 
-Transcription locale et privée par `whisper-cli` (`brew install whisper-cpp`), avec un modèle ggml dont le chemin se déclare dans `.env` (`WHISPER_MODEL`, voir `.env.example`). Elle sert à `qa-video.py --script` (le rendu dit-il le script ?), à `captions` et à `video-repurpose`. Sans whisper, `qa-video.py` le signale (constat `transcription-indisponible`) sans échouer ; la transcription au mot d'HyperFrames (`npx hyperframes transcribe`) reste une autre voie.
+Transcription locale et privée par `whisper-cli` (`brew install whisper-cpp`), avec un modèle ggml dont le chemin se déclare dans `.env` (`WHISPER_MODEL`, voir `.env.example`). Elle sert à `qa-video.py --script` (le rendu dit-il le script ?), à `captions` et à `video-repurpose`. Sans whisper, `qa-video.py` le signale (constat `transcription-indisponible`) sans échouer ; la transcription au mot d'HyperFrames reste une autre voie, toujours avec un modèle multilingue et la langue (`npx hyperframes transcribe <vidéo> --model small --language fr`) : son modèle par défaut, `small.en`, traduit l'audio français en anglais.
 
 ## Manim (facultatif)
 
@@ -112,4 +112,4 @@ Agent du module : `video-reviewer`, revue d'un rendu en lecture seule avant livr
 
 ## Ce qui n'est pas versionné
 
-Les médias lourds s'archivent sur le stockage du client, pas dans Git (`.gitignore`, bloc `08-video`) : `projets/*/rushes/` et `projets/*/exports/`, tout fichier audio ou vidéo sous `projets/`, les sorties d'HyperFrames (`hyperframes/renders/`, `hyperframes/snapshots/`, `node_modules/`), les images et `rapport.json` de `qa/` (seul `rapport.md` se versionne), les corpus documentaires hors `corpus/themes/`, et les anciens dossiers `08-video/rushes/` et `08-video/exports/`. Restent versionnables dans un fork : `brief.md`, `script.md`, `storyboard.md`, `references.md`, `decisions.md`, `sous-titres/`, les compositions HyperFrames.
+Les médias lourds s'archivent sur le stockage du client, pas dans Git (`.gitignore`, bloc `08-video`) : `projets/*/rushes/` et `projets/*/exports/`, tout fichier audio ou vidéo sous `projets/`, les sorties et caches d'HyperFrames (`renders/`, `snapshots/`, `node_modules/`, `.media/`, et les images de détourage `frames_fg/` et `frames_bg/` d'un projet de sous-titres designés), les images et `rapport.json` de `qa/` (seul `rapport.md` se versionne), les corpus documentaires hors `corpus/themes/`, et les anciens dossiers `08-video/rushes/` et `08-video/exports/`. Restent versionnables dans un fork : `brief.md`, `script.md`, `storyboard.md`, `references.md`, `decisions.md`, `sous-titres/`, les compositions HyperFrames, et les images et polices de leur dossier `assets/`.

@@ -78,9 +78,12 @@ Projet HyperFrames seulement (`brand-frame.py --check` n'écrit rien) :
 python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --check
 ```
 
-Sortie 1 : `frame.md` ou `brand.css` ne correspond plus à `01-brand/tokens.json`, le rendu
-peut porter d'anciennes valeurs ; c'est un P1. Montage par ffmpeg sans projet HyperFrames :
-« non applicable ».
+Lis le message, pas seulement le code. Sortie 1 : soit `frame.md` ou `brand.css` ne
+correspond plus à `01-brand/tokens.json` (le rendu peut porter d'anciennes valeurs), soit les
+tokens eux-mêmes sont invalides ou incomplets (placeholder non résolu, couleur invalide, token
+manquant) ; dans les deux cas c'est un P1, avec le message cité tel quel. Sortie 2 : erreur
+d'usage (dossier absent, option inconnue) ; rapporte-la telle quelle et ne juge pas la charte.
+Montage par ffmpeg sans projet HyperFrames : « non applicable ».
 
 ### 4. Confronter le rendu à la grille
 
@@ -126,7 +129,7 @@ relève pas comme un défaut : cite-la sous « Acceptés ».
 ## Revue vidéo · [rendu] · [plateforme]
 
 **Verdict** : LIVRABLE | À CORRIGER (N P1, M P2)
-**Mesures** : qa-video.py code [0|1|2], N erreurs, M avertissements ; brand-frame.py --check [0|1|non applicable]
+**Mesures** : qa-video.py code [0|1|2], N erreurs, M avertissements ; brand-frame.py --check [0|1|2|non applicable]
 **Planche** : [chemin de planche.jpg]
 
 | # | Priorité | Instant | Constat | Règle citée | Correction proposée |

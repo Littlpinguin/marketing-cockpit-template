@@ -7,7 +7,7 @@ description: Chef d'orchestre de la filière face caméra pour {{COMPANY_NAME}}.
 
 Vous orchestrez la chaîne complète. Chaque étape a sa skill spécialisée ; celle-ci tient l'ordre, les validations et le budget.
 
-La skill est appelée par `video-production`, point d'entrée de toute demande vidéo, qui a cadré l'objectif business et ouvert le projet `08-video/projets/<slug>/`. Elle suit sa structure de projet (`brief.md`, `REPRISE.md`, `decisions.md`, `couts.md`, `script.md`, `storyboard.md`) et son contrat de coût, et y ajoute ses propres fichiers (section « Structure de projet »).
+La skill est appelée par `video-production`, point d'entrée de toute demande vidéo, qui a cadré l'objectif business et ouvert le projet `08-video/projets/<slug>/` (slug daté `AAAA-MM-JJ-<sujet>`). Elle suit sa structure de projet (`brief.md`, `REPRISE.md`, `decisions.md`, `couts.md`, `script.md` avec son frontmatter `date`, `subject`, `statut`, `storyboard.md`) et son contrat de coût, et y ajoute ses propres fichiers (section « Structure de projet »).
 
 ## Les deux règles qui gouvernent tout
 
@@ -58,7 +58,12 @@ Livrer le storyboard et **attendre la validation explicite** (validation 3 de `v
 
 ### Temps 6 : montage, par `video-editing`
 
-Plans selon le script, échelles et punch-ins, étalonnage, sous-titres karaoké (skill `captions`), cartons, plan sonore (`08-video/montage.md`). Puis rendu HyperFrames (`hyperframes:talking-head-recut` pour habiller un face caméra déjà coupé ; `hyperframes:general-video` dès que des angles générés et des b-rolls s'intercalent) ou plan ffmpeg, et export H.264 normalisé (skill `video-editing`, étape 5).
+Plans selon le script, échelles et punch-ins, étalonnage, sous-titres karaoké (skill `captions`), cartons, plan sonore (`08-video/montage.md`). Deux voies de rendu :
+
+- **`hyperframes:general-video`**, la voie ordinaire d'un reel : coupes, échelles, punch-ins, angles générés et b-rolls se composent dans HyperFrames.
+- **`hyperframes:talking-head-recut`**, seulement pour poser un habillage designé (cartons, lower-thirds) : ce workflow passe la séquence telle quelle. Coupes, changements d'échelle, punch-ins et étalonnage y entrent donc déjà faits, par le plan ffmpeg de `video-editing` (voie B) ou par les outils de `hyperframes:media-use`.
+
+Ou tout le montage par le plan ffmpeg. Dans tous les cas, export H.264 normalisé (skill `video-editing`, étape 5).
 
 ### Temps 7 : passe d'ajustement
 
@@ -92,8 +97,8 @@ Les fichiers de `video-production`, plus ceux de cette filière :
 ├── script-montage.md     ← le montage plan par plan (généré, pas édité à la main)
 ├── workflow.md           ← comment chaque élément a été fabriqué (réussites ET échecs)
 ├── scripts/              ← tout ce qui est réexécutable
-├── assets/               ← vignettes du storyboard, rushes intermédiaires
-├── rushes/               ← source, rushes générés et leurs sidecars .json (non versionnés)
+├── assets/               ← vignettes du storyboard
+├── rushes/               ← source, rushes générés et leurs sidecars .json, intermédiaires dans rushes/tmp/ (non versionnés)
 ├── hyperframes/          ← projet HyperFrames, si le montage passe par la voie A de video-editing
 ├── exports/              ← masters et livrables par plateforme (non versionnés)
 └── qa/                   ← rapports et planches de qa-video.py

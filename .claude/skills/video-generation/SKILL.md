@@ -17,39 +17,39 @@ Vous produisez des **rushes** (jamais le livrable final) via un MCP de générat
 
 ## Spécifier un plan en 5 aspects
 
-Un modèle vidéo invente tout ce que le prompt ne dit pas. Un prompt décrit volontiers le sujet et le décor, et laisse au modèle le mouvement, l'espace et la caméra. Chaque plan se spécifie donc sur cinq aspects : sujet, mouvement, scène, espace, caméra.
+Un prompt part d'une ligne validée de `storyboard.md`, pas d'une idée. Cette ligne se déplie en cinq aspects (sujet, mouvement, scène, espace, caméra), chacun répondant à une question de tournage. Un aspect laissé vide est un choix abandonné au modèle.
 
-- **Le sujet** : qui ou quoi, avec trois à six attributs visuels qui le distinguent (âge, tenue, matière, couleur, accessoire). Dans une série de plans, répéter ces attributs mot pour mot à chaque prompt : un pronom ou « le même personnage » ne garde pas l'identité.
-- **Le mouvement** : les actions, dans l'ordre où elles arrivent, et ce qui répond à quoi (une main presse, la matière cède). Un seul geste principal par clip court.
-- **La scène** : le lieu, le moment de la journée, la météo, ce qui vit autour. Le texte à l'écran, le logo et les sous-titres n'entrent pas dans le prompt : ils s'ajoutent au montage, avec la marque (un texte dessiné par le modèle n'est ni fiable ni aux couleurs de la marque).
-- **L'espace** : l'échelle du plan (très gros plan, gros plan, plan moyen, plan large), la place du sujet dans le cadre, ce qui est au premier plan et à l'arrière-plan, et comment tout cela change pendant le clip.
-- **La caméra** : hauteur et angle, focale et profondeur de champ, stabilité, mouvement.
+- **Sujet : que regarde-t-on ?** Le décrire comme on le reconnaît sur la vignette du storyboard : matière, couleur, tenue, objet en main. Un sujet qui revient dans plusieurs plans (le produit, une personne, une mascotte) a sa fiche dans `decisions.md` (sujet « Fiche du sujet »), reprise à l'identique dans chaque prompt de la série. Mieux encore, quand le modèle l'accepte : une image de référence du sujet (image de départ, ou références `character` et `product` du catalogue) plutôt qu'une description seule.
+- **Mouvement : que se passe-t-il ?** Le verbe du plan, avec sa vitesse et son effet visible : la pâte monte, la porte s'ouvre, la vapeur se dissipe. Un clip de quelques secondes porte une action, qui commence et s'achève dans sa durée.
+- **Scène : où et quand ?** Lieu, époque, saison, heure, météo, et ce qui vit derrière le sujet (passants, feuillage, fumée). Rien de ce qui appartient à la marque : texte, logo, sous-titres et habillage s'ajoutent au montage, aux couleurs de `brand.css`, et le prompt le dit (`no text, no logo`).
+- **Espace : d'où le voit-on ?** La valeur de plan de la vignette (gros plan, plan moyen, plan large) et la place du sujet dans la toile de destination : en 9:16, dans la zone utile de `08-video/formats.md`, loin des marges que l'interface des plateformes recouvre. Puis ce qui détache le sujet du fond : arrière-plan flou, objet net au premier plan.
+- **Caméra : comment filme-t-on ?** Immobile, ou un seul mouvement nommé (liste ci-dessous) ; l'optique (courte, l'espace s'ouvre ; longue, il se resserre) ; la netteté, et l'endroit où elle se pose.
 
-Vocabulaire de caméra, avec le terme anglais à mettre dans le prompt :
+Le mouvement de caméra se choisit par l'intention, puis s'écrit en anglais dans le prompt :
 
-- push-in (`slow push-in`), la caméra avance vers le sujet ; pull-out (`pull-out`), elle recule ;
-- dolly (`dolly in`, `dolly out`), même déplacement sur rail, plus doux ;
-- travelling latéral (`tracking shot`, `truck left`, `truck right`), la caméra longe le sujet ;
-- orbit (`orbit around the subject`), la caméra tourne autour ;
-- grue (`crane up`, `crane down`), la caméra monte ou descend en découvrant le décor ;
-- caméra à l'épaule (`handheld`), légère vie dans le cadre ;
-- plan fixe (`static shot`, `locked-off camera`) ;
-- bascule de point (`rack focus from ... to ...`), la netteté passe d'un plan à l'autre.
+- s'approcher d'un détail : push-in (`slow push-in`), ou dolly avant (`dolly in`), plus coulé ; s'en éloigner : pull-out (`pull-out`, `dolly out`) ;
+- accompagner un geste ou une personne qui marche : travelling latéral (`tracking shot`, `truck left`, `truck right`) ;
+- montrer un objet sous plusieurs faces : orbit (`orbit around the subject`) ;
+- révéler un lieu en prenant de la hauteur : grue (`crane up`) ;
+- donner une présence vivante, documentaire : caméra à l'épaule (`handheld`) ;
+- laisser toute la place au geste : plan fixe (`static shot`, `locked-off camera`) ;
+- conduire le regard d'un élément à un autre sans bouger la caméra : bascule de point (`rack focus from ... to ...`).
 
-Vocabulaire de lumière : heure dorée (`golden hour`), high key (`high-key lighting`, clair et peu contrasté), low key (`low-key lighting`, sombre et contrasté), contre-jour (`backlit`, `rim light`), sources dans le champ (`practical lights`, lampes visibles dans l'image).
+La lumière, par l'effet recherché : chaleur de fin de journée, heure dorée (`golden hour`) ; produit net et rassurant, high key (`high-key lighting`) ; tension ou mystère, low key (`low-key lighting`) ; silhouette détachée du fond, contre-jour (`backlit`, `rim light`) ; intérieur habité, lampes visibles dans l'image (`practical lights`). La palette de la scène reste compatible avec `01-brand/style-guide.md`.
 
 Certains modèles prennent le mouvement de caméra en paramètre (Seedance : `cameraMotion`, avec des valeurs comme `pushIn`, `orbitLeft`, `craneUp`, `handheld`, `static`) : le paramètre se règle en plus du texte, et les deux disent la même chose.
 
-Exemple de prompt complet (image vers vidéo, plan de 6 s) :
+Exemple de prompt complet (image vers vidéo, plan de 6 s), écrit d'une traite :
 
 ```text
-Subject: a woman in her fifties, short grey hair, navy linen apron, silver ring on her left hand.
-Motion: she presses both thumbs into a spinning lump of wet clay, the wall of the bowl rises slowly, then she lifts her hands away and the bowl keeps turning.
-Scene: small pottery workshop late in the afternoon, dust floating in the air, shelves of unglazed bowls in the background. No text, no logo, no watermark.
-Space: medium close-up on her hands and the wheel, wheel in the lower third of the frame, shelves soft in the background; the shot ends on a close-up of the bowl rim.
-Camera: eye level, 50 mm lens, shallow depth of field, slow push-in on a dolly, steady, rack focus from her hands to the bowl rim in the last second.
-Light: warm golden hour light through a side window, soft backlight on the clay dust.
+Late-afternoon pottery workshop, dust floating in warm light from a side window, shelves of unglazed bowls blurred in the background.
+Medium close-up at eye level on a potter's hands, navy linen apron, silver ring on the left hand, shaping wet clay on a spinning wheel that sits in the lower third of the frame.
+Her thumbs press in and the wall of the bowl rises slowly, then her hands lift away while the bowl keeps turning.
+Slow dolly in with a 50 mm lens and shallow depth of field; in the last second the focus shifts from her hands to the rim of the bowl.
+Golden hour light, soft backlight on the clay dust. No text, no logo, no watermark.
 ```
+
+Chaque phrase répond à l'une des cinq questions. La fiche du sujet (`navy linen apron, silver ring on the left hand`) se reprend telle quelle dans les plans suivants de la série.
 
 ## Écrire le prompt : le mouvement d'abord, en anglais
 
@@ -76,12 +76,12 @@ Tendances de ce relevé, sans promesse : le son natif et la synchronisation labi
 Ordre de `video-production` : réutiliser (`01-brand/assets/`, rushes existants), puis le stock, puis générer. Pour chaque plan :
 
 1. **Un fait réel, une preuve, un document** : stock ou archives, jamais un plan généré, qui ne prouve rien. Pour un montage d'archives : skill `video-documentary` (corpus documentaire et ses licences).
-2. **Un lieu ou un geste générique** (ville, nature, atelier, mains au travail) : le stock d'abord, s'il raccorde avec les plans voisins ; la génération sinon.
-3. **Un concept abstrait, une métaphore, ce qui n'existe pas** : génération.
+2. **Un plan d'ambiance que personne ne doit reconnaître** (une rue, un atelier, des mains au travail) : chercher au stock ; générer seulement si aucun résultat ne tient face à la vignette du storyboard.
+3. **Ce qui ne peut pas se filmer** (une idée mise en image, un objet qui n'existe pas encore) : génération.
 4. **Le produit réel** : image vers vidéo depuis des visuels validés (`01-brand/assets/`, photos du produit), avec la première et la dernière image fixées pour garder l'identité du produit. Jamais un produit redessiné par le modèle.
 5. **Une personne réelle** : tournage, ou génération seulement avec son consentement explicite (section « Garde-fous et divulgation »).
 
-Le stock se cherche par l'outil `stock_search` du MCP Magnific (`content_type: video`, `video_type: footage`, orientation selon la toile), se regarde à l'image (cadrage, lumière, raccord avec les plans voisins), puis se télécharge par `stock_download`. Licence et crédit de chaque plan vérifiés dans `01-brand/droits.md` et notés dans `decisions.md` ; une licence payante passe par le contrat de coût.
+Le stock se cherche par l'outil `stock_search` du MCP Magnific (`content_type: video`, `video_type: footage`, orientation selon la toile), se compare à la vignette du storyboard sur son aperçu, puis se télécharge par `stock_download`. Licence et crédit de chaque plan vérifiés dans `01-brand/droits.md` et notés dans `decisions.md` ; une licence payante passe par le contrat de coût.
 
 ## Choisir un fournisseur
 

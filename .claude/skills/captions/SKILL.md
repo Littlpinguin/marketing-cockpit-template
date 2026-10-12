@@ -7,20 +7,22 @@ description: Sous-titrage vidéo pour {{COMPANY_NAME}}. Transcription (whisper l
 
 Vous produisez, pour chaque vidéo, deux livrables : un **`.srt`** propre dans `08-video/projets/<slug>/sous-titres/`, et une version aux **sous-titres incrustés**, conforme aux règles de `08-video/formats.md` (lisibilité, zones de sécurité) et à la marque (`01-brand/style-guide.md`, `frame.md` du projet).
 
+**Noms des fichiers.** Le livrable que contrôlent `qa-video.py` et l'agent `video-reviewer` est `08-video/projets/<slug>/exports/<slug>-<plateforme>.mp4`. Quand les sous-titres s'incrustent par ffmpeg, le montage sans sous-titres attend dans `08-video/projets/<slug>/rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4`, et c'est l'incrustation qui écrit le livrable dans `exports/`. Dans les commandes ci-dessous, `<nom>` vaut `<slug>-<plateforme>` (ou `<slug>-clip-<nn>-<plateforme>` pour un clip de `video-repurpose`).
+
 ## Étape 1 : transcription
 
 ### Option A : whisper local (gratuit, privé, recommandé)
 
 ```bash
 # Son en mono 16 kHz, puis whisper-cli (brew install whisper-cpp) avec le modèle déclaré dans .env (WHISPER_MODEL)
-ffmpeg -i 08-video/projets/<slug>/exports/<nom>.mp4 -vn -ac 1 -ar 16000 08-video/projets/<slug>/rushes/tmp/<nom>.wav
+ffmpeg -i 08-video/projets/<slug>/rushes/tmp/<nom>-sans-sous-titres.mp4 -vn -ac 1 -ar 16000 08-video/projets/<slug>/rushes/tmp/<nom>.wav
 whisper-cli -m <modèle> -f 08-video/projets/<slug>/rushes/tmp/<nom>.wav -l fr -osrt \
   -of 08-video/projets/<slug>/sous-titres/<nom>
 ```
 
 - `<modèle>` est le chemin du modèle ggml renseigné dans `.env` (`WHISPER_MODEL`), le même que lit `qa-video.py`.
 - Timings au mot, pour le karaoké et les coupes : ajouter `-ml 1 -sow -oj` (un mot par segment, sortie JSON).
-- Autre voie locale : `npx hyperframes transcribe <vidéo>`, la transcription au mot d'HyperFrames (skill `hyperframes:media-use`), par le lanceur du plugin quand HyperFrames est installé en plugin.
+- Autre voie locale : `npx hyperframes transcribe <vidéo> --model small --language fr`, la transcription au mot d'HyperFrames (skill `hyperframes:media-use`), par le lanceur du plugin quand HyperFrames est installé en plugin. Toujours un modèle multilingue (sans suffixe `.en`) et la langue : le modèle par défaut, `small.en`, traduit l'audio français en anglais. `medium` ou `large-v3` pour un son bruité ou une musique sous la voix.
 
 ### Option B : API de transcription
 
@@ -55,7 +57,7 @@ sur VOS reportings ?
 
 ## Étape 3 : livrable 1, le `.srt`
 
-- Nommage : `08-video/projets/<slug>/sous-titres/<nom>.srt`, même nom que la vidéo (`<slug>-<plateforme>`, ou `<slug>-clip-<nn>-<plateforme>` pour un clip de `video-repurpose`).
+- Nommage : `08-video/projets/<slug>/sous-titres/<nom>.srt`, même nom que le livrable vidéo.
 - Encodage UTF-8, timecodes `HH:MM:SS,mmm`, numérotation continue.
 - Usage : téléversement YouTube (indexation, traduction automatique), archivage, réédition.
 
@@ -71,17 +73,21 @@ Les sous-titres incrustés reprennent les valeurs de la marque : police `{{BRAND
 # Police et couleurs de marque. Les couleurs ASS s'écrivent &HAABBGGRR& (ordre bleu, vert, rouge inversé) :
 # convertir {{BRAND_COLOR_LIGHT}} et {{BRAND_COLOR_DARK}} avant de remplir PrimaryColour et OutlineColour.
 # MarginV=110 place les sous-titres au-dessus de la zone basse de sécurité en 1080x1920 (formats.md).
-ffmpeg -i 08-video/projets/<slug>/exports/<slug>-tiktok.mp4 \
-  -vf "subtitles=08-video/projets/<slug>/sous-titres/<slug>-tiktok.srt:force_style='FontName={{BRAND_FONT_PRIMARY}},FontSize=15,Bold=1,PrimaryColour=&H00FFFFFF&,OutlineColour=&H00000000&,BorderStyle=1,Outline=2,Shadow=0,Alignment=2,MarginV=110'" \
+ffmpeg -i 08-video/projets/<slug>/rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4 \
+  -vf "subtitles=08-video/projets/<slug>/sous-titres/<slug>-<plateforme>.srt:force_style='FontName={{BRAND_FONT_PRIMARY}},FontSize=15,Bold=1,PrimaryColour=&H00FFFFFF&,OutlineColour=&H00000000&,BorderStyle=1,Outline=2,Shadow=0,Alignment=2,MarginV=110'" \
   -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -c:a copy -movflags +faststart \
-  08-video/projets/<slug>/exports/<slug>-tiktok-sous-titres.mp4
+  08-video/projets/<slug>/exports/<slug>-<plateforme>.mp4
 ```
 
-Prérequis : la police `{{BRAND_FONT_PRIMARY}}` installée sur la machine, sinon libass prend une police de secours sans prévenir (vérifier à l'image). `FontSize` s'exprime relativement à la résolution de la piste ASS : contrôler le rendu sur une image avant l'export complet :
+Le son, déjà normalisé à l'export du montage (`video-editing`, étape 5), est recopié tel quel (`-c:a copy`).
+
+Prérequis : la police `{{BRAND_FONT_PRIMARY}}` installée sur la machine, sinon libass prend une police de secours sans prévenir (vérifier à l'image). `FontSize` s'exprime relativement à la résolution de la piste ASS : contrôler le rendu sur une image avant l'incrustation complète :
 
 ```bash
-# Contrôle visuel rapide : une image sous-titrée à t = 2 s
-ffmpeg -ss 2 -i 08-video/projets/<slug>/exports/<slug>-tiktok-sous-titres.mp4 -frames:v 1 08-video/projets/<slug>/rushes/tmp/controle.png
+# Contrôle visuel rapide : une image sous-titrée à t = 2 s, avec le même filtre que ci-dessus
+ffmpeg -i 08-video/projets/<slug>/rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4 \
+  -vf "subtitles=08-video/projets/<slug>/sous-titres/<slug>-<plateforme>.srt:force_style='...'" \
+  -ss 2 -frames:v 1 08-video/projets/<slug>/rushes/tmp/controle.png
 ```
 
 ### Méthode fine : fichier `.ass` (style par segment, positions, karaoké)
@@ -91,7 +97,10 @@ Pour un style au segment près (mot surligné, changement de couleur, position v
 ```bash
 ffmpeg -i 08-video/projets/<slug>/sous-titres/<nom>.srt 08-video/projets/<slug>/sous-titres/<nom>.ass
 # éditer les styles, puis :
-ffmpeg -i <video>.mp4 -vf "ass=08-video/projets/<slug>/sous-titres/<nom>.ass" -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a copy <video>-sous-titres.mp4
+ffmpeg -i 08-video/projets/<slug>/rushes/tmp/<nom>-sans-sous-titres.mp4 \
+  -vf "ass=08-video/projets/<slug>/sous-titres/<nom>.ass" \
+  -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -c:a copy -movflags +faststart \
+  08-video/projets/<slug>/exports/<nom>.mp4
 ```
 
 C'est la voie ffmpeg du karaoké (section « Karaoké mot à mot »). À réserver aux vidéos à fort enjeu : le coût d'édition est réel.
@@ -103,6 +112,7 @@ Deux cas, selon ce qu'on sous-titre. Le plugin HyperFrames est installé par `/m
 ### Une vidéo face caméra : `hyperframes:embedded-captions`
 
 - **Pour** une vidéo face caméra à un seul sujet. Le workflow ajoute les sous-titres sans toucher à l'image, et fait en local la transcription et le détourage du sujet.
+- **Où** : dans le dossier de la vidéo. Le projet du workflow est `08-video/projets/<slug>/hyperframes/` si la vidéo n'en a pas encore, sinon `08-video/projets/<slug>/hyperframes-sous-titres/` ; le workflow l'initialise lui-même (`init` avec `--skill=embedded-captions`). La vidéo d'entrée est le montage sans sous-titres (`rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4`) ; le fichier final du workflow (`final.mp4`, ou `final_fx.mp4` pour une identité à thème) se copie vers `exports/<slug>-<plateforme>.mp4`, le livrable contrôlé. Les images de détourage (`frames_fg/`, `frames_bg/`), les caches (`.media/`) et les rendus ne sont pas versionnés.
 - **Refus** : plusieurs intervenants, plans coupés, pas de parole, sous-titres déjà incrustés dans la source. Un montage avec des coupes franches se découpe plan par plan avant, ou se sous-titre par la voie ffmpeg.
 - **Le style** se choisit dans le catalogue d'identités du workflow. Par défaut, le rail discret `anchor` : un sous-titre fidèle en bas de l'image, et au plus un mot fort promu derrière le sujet au temps fort. Présenter deux ou trois identités proches de la marque (`01-brand/style-guide.md`, profil de goût de `decisions.md`), en recommander une, laisser l'humain choisir, et consigner le choix dans `decisions.md`.
 - **Police et couleurs** : la cible reste celle de `frame.md`. Les identités du catalogue fixent leur propre typographie et leur palette (certaines prennent l'accent dans l'image), et le workflow ne les repeint pas. Si la charte doit être tenue à la lettre, préférer la voie ffmpeg de cette skill, avec la police et les couleurs de la marque. L'écart accepté se consigne dans `decisions.md`.

@@ -348,6 +348,15 @@ def test_schema_du_module_video():
     ("08-video/projets/demo/hyperframes/assets/voix.wav", True),
     ("08-video/projets/demo/hyperframes/renders/demo_2026-10-12_10-00-00.mp4", True),
     ("08-video/projets/demo/hyperframes/snapshots/frame-01.png", True),
+    ("08-video/projets/demo/hyperframes/frames_fg/000001.png", True),
+    ("08-video/projets/demo/hyperframes-sous-titres/frames_fg/000001.png", True),
+    ("08-video/projets/demo/hyperframes-sous-titres/frames_bg/000001.png", True),
+    ("08-video/projets/demo/hyperframes/.media/audio/voice/l1.wav", True),
+    ("08-video/projets/demo/hyperframes/.media/image/fond.png", True),
+    ("08-video/projets/demo/hyperframes-sous-titres/renders/final.mp4", True),
+    ("08-video/projets/demo/hyperframes/assets/fonts/Marque-Regular.woff2", False),
+    ("08-video/projets/demo/hyperframes/assets/logo.svg", False),
+    ("08-video/projets/demo/hyperframes-sous-titres/theme.json", False),
     ("08-video/projets/demo/qa/demo-reels/planche.jpg", True),
     ("08-video/projets/demo/qa/demo-reels/rapport.json", True),
     ("08-video/projets/demo/qa/demo-reels/rapport.md", False),
@@ -387,3 +396,90 @@ def test_role_08_video():
         assert f"`{script}`" in readme, script
     assert "palmier" not in (role + readme).lower()
     assert "—" not in role + readme
+
+
+# ------------------------------------------------------------------ correctifs de revue (tâches 11 et 12)
+
+import importlib.util
+
+
+def _charger(nom: str, chemin: Path):
+    spec = importlib.util.spec_from_file_location(nom, chemin)
+    module = importlib.util.module_from_spec(spec)
+    import sys
+    sys.modules[nom] = module    # les dataclasses ont besoin du module enregistré
+    spec.loader.exec_module(module)
+    return module
+
+
+def _modele_script() -> str:
+    """Le modèle de script.md tel que le donne video-production."""
+    production = texte(".claude/skills/video-production/SKILL.md")
+    section = production.split("### `script.md`")[1].split("## Choisir la filière")[0]
+    return section.split("```markdown\n")[1].split("```")[0]
+
+
+def test_script_du_modele_entre_a_l_inventaire(tmp_path):
+    inventaire = _charger("build_inventory_video", REPO / "scripts" / "build-inventory.py")
+    inventaire.charger_config(REPO / "scripts" / "build-inventory.toml")
+    contenu = (_modele_script()
+               .replace("<AAAA-MM-JJ>", "2026-10-12")
+               .replace("<sujet de la vidéo, 5 à 10 mots>", "Explainer sur le reporting hebdomadaire")
+               .replace("<titre de travail>", "Le reporting en 45 secondes"))
+    rel = Path("08-video/projets/2026-10-12-exemple/script.md")
+    (tmp_path / rel).parent.mkdir(parents=True)
+    (tmp_path / rel).write_text(contenu, encoding="utf-8")
+    livrable = inventaire.extraire(tmp_path, rel)
+    assert livrable is not None
+    assert (livrable.date, livrable.canal, livrable.type) == ("2026-10-12", "video", "video")
+    assert livrable.sujet == "Explainer sur le reporting hebdomadaire"
+    assert livrable.statut == "brouillon"
+    qa = _charger("qa_video_modele", REPO / "08-video" / "scripts" / "qa-video.py")
+    assert qa.texte_attendu(contenu, ".md") == "<texte dit>", "la colonne Voix reste lisible sous le frontmatter"
+
+
+def test_slug_date_et_frontmatter_documentes():
+    for rel in (".claude/skills/video-production/SKILL.md", "08-video/CLAUDE.md",
+                ".claude/skills/reel-talking-head/SKILL.md", ".claude/skills/video-repurpose/SKILL.md",
+                ".claude/skills/video-documentary/SKILL.md"):
+        contenu = texte(rel)
+        assert "AAAA-MM-JJ-<sujet>" in contenu, rel
+    for rel in ("08-video/CLAUDE.md", ".claude/skills/video-production/SKILL.md"):
+        assert "subject" in texte(rel) and "statut" in texte(rel), rel
+    assert "sous-titres/" in texte(".claude/skills/video-production/SKILL.md").split("### `brief.md`")[0]
+
+
+def test_transcription_hyperframes_toujours_en_francais():
+    chemins = [*(REPO / "08-video").glob("*.md"), *SKILLS.glob("*/SKILL.md")]
+    for chemin in chemins:
+        for ligne in chemin.read_text(encoding="utf-8").splitlines():
+            if "hyperframes transcribe <" in ligne or "hyperframes transcribe rushes" in ligne:
+                assert "--model small" in ligne and "--language fr" in ligne, f"{chemin} : {ligne}"
+
+
+def test_livrable_sous_titre_est_l_export_controle():
+    captions = texte(".claude/skills/captions/SKILL.md")
+    assert "tiktok-sous-titres.mp4" not in captions and "<video>-sous-titres" not in captions
+    assert "rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4" in captions
+    assert "exports/<slug>-<plateforme>.mp4" in captions
+
+
+def test_generation_sans_echo_openmontage():
+    generation = texte(".claude/skills/video-generation/SKILL.md")
+    for echo in ("trois à six", "mot pour mot", "le même personnage", "comment tout cela change"):
+        assert echo not in generation, echo
+
+
+def test_mineurs_de_revue():
+    modules = texte(".claude/commands/modules.md")
+    activation = modules.split("#### Activation du module `video`")[1].split("### Étape 4")[0]
+    assert activation.index("npx --yes hyperframes doctor") < activation.index("claude plugin install")
+    assert "claude plugin uninstall hyperframes@hyperframes --scope local" in activation
+    reviewer = texte(".claude/agents/video-reviewer.md")
+    assert "Sortie 2" in reviewer and "tokens eux-mêmes sont invalides" in reviewer
+    editing = texte(".claude/skills/video-editing/SKILL.md")
+    assert "tâche de fond" in editing and "cd 08-video/projets/<slug>" in editing
+    assert "~ is expanded" in texte(".env.example")
+    reel = texte(".claude/skills/reel-talking-head/SKILL.md")
+    assert "passe la séquence telle quelle" in reel and "rushes/tmp/" in reel
+    assert "08-video/projets/<slug>/hyperframes-sous-titres/" in texte(".claude/skills/captions/SKILL.md")

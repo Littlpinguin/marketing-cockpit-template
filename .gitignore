@@ -101,9 +101,12 @@ _sources/research/**/*
 08-video/exports/
 08-video/projets/*/rushes/
 08-video/projets/*/exports/
-08-video/projets/*/hyperframes/node_modules/
-08-video/projets/*/hyperframes/renders/
-08-video/projets/*/hyperframes/snapshots/
+08-video/projets/*/hyperframes*/node_modules/
+08-video/projets/*/hyperframes*/renders/
+08-video/projets/*/hyperframes*/snapshots/
+08-video/projets/**/frames_fg/
+08-video/projets/**/frames_bg/
+08-video/projets/**/.media/
 08-video/projets/**/*.mp4
 08-video/projets/**/*.mov
 08-video/projets/**/*.webm

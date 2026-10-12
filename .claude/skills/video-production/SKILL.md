@@ -19,7 +19,7 @@ Toute demande vidéo du cockpit entre ici, quelle que soit sa forme : Reel, Shor
 
 ## Le projet
 
-Un dossier par vidéo, créé au cadrage :
+Un dossier par vidéo, créé au cadrage et nommé `AAAA-MM-JJ-<sujet>` : la date du cadrage, puis le sujet en minuscules et tirets (`2026-10-12-explainer-reporting`). Ce nom est le `<slug>` de tout le module, exports compris (`<slug>-<plateforme>.mp4`).
 
 ```
 08-video/projets/<slug>/
@@ -28,10 +28,11 @@ Un dossier par vidéo, créé au cadrage :
 ├── decisions.md    journal en ajout seul : date, sujet, choix, options écartées, raison
 ├── couts.md        estimations, dépenses réelles, solde du budget
 ├── references.md   références d'inspiration retenues (créateur, lien, mécanisme) et planche référence → transposition
-├── script.md       script minuté (validé)
+├── script.md       script minuté (validé) ; son frontmatter l'inscrit à l'inventaire
 ├── storyboard.md   plans, vignettes au vrai cadrage, sources de matière (validé)
+├── sous-titres/    fichiers .srt relus (skill captions)
 ├── hyperframes/    racine HyperFrames : BRIEF.md, frame.md, brand.css, STORYBOARD.md, compositions/
-├── rushes/         sources et clips générés (non versionnés)
+├── rushes/         sources, clips générés, intermédiaires dans rushes/tmp/ (non versionnés)
 ├── exports/        rendus finaux par plateforme (non versionnés)
 └── qa/             rapports de qa-video.py et planches (seul le rapport .md final se versionne)
 ```
@@ -93,9 +94,17 @@ Budget du projet : <montant ou crédits>
 
 ### `script.md`
 
-Un tableau minuté, une ligne par plan. Une seule colonne a un en-tête qui contient « Voix » : c'est le texte dit, celui que `qa-video.py --script` compare à la transcription du rendu.
+Un frontmatter, un titre, puis un tableau minuté, une ligne par plan. Le frontmatter est ce que lit `scripts/build-inventory.py` : `date` (la date du cadrage, celle du slug), `subject` (le sujet de la vidéo en 5 à 10 mots, repris tel quel dans la colonne Sujet de l'inventaire) et `statut` (`brouillon`, puis `validé` à la validation 2, `publié` après la publication). Une seule colonne du tableau a un en-tête qui contient « Voix » : c'est le texte dit, celui que `qa-video.py --script` compare à la transcription du rendu ; le frontmatter et le titre ne la gênent pas.
 
 ```markdown
+---
+date: <AAAA-MM-JJ>
+subject: <sujet de la vidéo, 5 à 10 mots>
+statut: brouillon
+---
+
+# Script : <titre de travail>
+
 | # | Temps | Image | Voix | Texte à l'écran | Jeu |
 |---|---|---|---|---|---|
 | 1 | 0:00-0:03 | <ce qu'on voit> | <texte dit> | <carton> | <intention, pause, mot appuyé> |

@@ -56,7 +56,7 @@ Lire `README.md` pour l'outillage (HyperFrames, ffmpeg, whisper, Manim, corpus d
 └── projets/<slug>/              un dossier par vidéo
 ```
 
-Le dossier d'une vidéo, `08-video/projets/<slug>/`, est créé par `video-production` au cadrage :
+Le dossier d'une vidéo, `08-video/projets/<slug>/`, est créé par `video-production` au cadrage. Le slug est daté : `AAAA-MM-JJ-<sujet>` (date du cadrage, puis le sujet en minuscules et tirets, par exemple `2026-10-12-explainer-reporting`).
 
 | Fichier ou dossier | Contenu | Versionné |
 |---|---|---|
@@ -65,10 +65,10 @@ Le dossier d'une vidéo, `08-video/projets/<slug>/`, est créé par `video-produ
 | `decisions.md` | Journal en ajout seul : filière, profil de goût, voix, modèles, exceptions acceptées | oui |
 | `couts.md` | Estimations, dépenses réelles, solde du budget | oui |
 | `references.md` | Références d'inspiration retenues et planche « référence → transposition » | oui |
-| `script.md` | Script minuté validé ; source de l'inventaire | oui |
+| `script.md` | Script minuté validé. Son frontmatter (`date`, `subject`, `statut`) est ce que lit `scripts/build-inventory.py` : modèle dans `video-production` | oui |
 | `storyboard.md` | Plans, vignettes au vrai cadrage, sources de la matière | oui |
 | `sous-titres/` | Fichiers `.srt` relus (skill `captions`) | oui |
-| `hyperframes/` | Projet HyperFrames : `BRIEF.md`, `frame.md`, `brand.css`, `STORYBOARD.md`, compositions | sources oui ; médias, `renders/`, `snapshots/`, `node_modules/` non |
+| `hyperframes/` | Projet HyperFrames : `BRIEF.md`, `frame.md`, `brand.css`, `STORYBOARD.md`, compositions, `assets/` | sources, images et polices de `assets/` oui ; fichiers audio et vidéo, `renders/`, `snapshots/`, `node_modules/`, `frames_fg/`, `.media/` non |
 | `rushes/` | Sources, clips générés et leurs sidecars, fichiers intermédiaires | non |
 | `exports/` | Rendus finaux par plateforme | non |
 | `qa/` | Sorties de `qa-video.py` : images de plans, planche, rapports | `rapport.md` seulement |

@@ -5,7 +5,7 @@ description: Montage documentaire sur archives libres pour {{COMPANY_NAME}}, un 
 
 # video-documentary : un essai filmé sur archives libres
 
-Un montage documentaire défend une thèse avec des images réelles : des archives qui montrent que quelque chose a eu lieu, rapprochées pour faire naître un sens. Cette skill conduit le film du brief thématique aux crédits. Elle est appelée par `video-production`, qui a ouvert le projet (`08-video/projets/<slug>/`), écrit le brief et tient les validations.
+Un montage documentaire défend une thèse avec des images réelles : des archives qui montrent que quelque chose a eu lieu, rapprochées pour faire naître un sens. Cette skill conduit le film du brief thématique aux crédits. Elle est appelée par `video-production`, qui a ouvert le projet (`08-video/projets/<slug>/`, slug daté `AAAA-MM-JJ-<sujet>`, `script.md` au modèle de `video-production` avec son frontmatter `date`, `subject`, `statut`), écrit le brief et tient les validations.
 
 ## Références à charger
 
