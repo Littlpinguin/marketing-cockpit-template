@@ -235,7 +235,7 @@ def make_png(tmp_path: Path, nom: str = "sortie.png") -> Path:
 def pose_sidecar(src: Path, prompt: str = "Une scène de marque fictive, fond clair") -> Path:
     fiche = Path(str(src) + ".gen.json")
     fiche.write_text(json.dumps({
-        "model": "gemini-3-pro-image-preview",
+        "model": "gemini-nano-banana-2.1",
         "prompt": prompt,
         "prompt_file": None,
         "input_images": [],
@@ -265,7 +265,7 @@ def test_sidecar_ajoute_modele_et_prompt_a_la_fiche(tmp_path):
     pose_sidecar(src)
     assert promeut(root, src, DEST_PNG).returncode == 0
     texte = lire_index(root)
-    assert "- modèle: gemini-3-pro-image-preview" in texte
+    assert "- modèle: gemini-nano-banana-2.1" in texte
     assert "- prompt: Une scène de marque fictive, fond clair" in texte
 
 
@@ -287,7 +287,7 @@ def test_le_sidecar_suit_l_asset_promu(tmp_path):
     promu = root / "01-brand" / "assets" / DEST_PNG
     fiche = Path(str(promu) + ".gen.json")
     assert fiche.exists()
-    assert json.loads(fiche.read_text(encoding="utf-8"))["model"] == "gemini-3-pro-image-preview"
+    assert json.loads(fiche.read_text(encoding="utf-8"))["model"] == "gemini-nano-banana-2.1"
 
 
 def test_ia_non_explicite_prime_sur_le_sidecar(tmp_path):
@@ -305,7 +305,7 @@ def test_source_deduite_du_sidecar_quand_elle_manque(tmp_path):
               "--droits", "création interne", "--auteur", "équipe marketing (modèle d'image)")
     assert res.returncode == 0, res.stderr
     texte = lire_index(root)
-    assert "- source: généré par gemini-3-pro-image-preview" in texte
+    assert "- source: généré par gemini-nano-banana-2.1" in texte
 
 
 def test_droits_et_auteur_restent_obligatoires_avec_un_sidecar(tmp_path):
@@ -326,7 +326,7 @@ def test_png_promu_porte_le_tag_de_generation(tmp_path):
     assert promeut(root, src, DEST_PNG).returncode == 0
     promu = root / "01-brand" / "assets" / DEST_PNG
     with Image.open(promu) as im:
-        assert im.text["ai:generated_by"] == "gemini-3-pro-image-preview"
+        assert im.text["ai:generated_by"] == "gemini-nano-banana-2.1"
 
 
 def test_asset_promu_jamais_reecrit_apres_la_copie(tmp_path):

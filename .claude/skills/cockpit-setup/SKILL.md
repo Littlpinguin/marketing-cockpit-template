@@ -110,7 +110,7 @@ Seul `/validate-setup` écrit ce fichier (exception : `/modules` peut mettre à 
     "print":               { "enabled": false, "checked_at": "ISO 8601" }
   },
   "features": {
-    "image_generation": { "enabled": true, "model": "gemini-3-pro-image-preview" }
+    "image_generation": { "enabled": true, "model": "gemini-nano-banana-2.1" }
   },
   "wizard_log": [
     { "command": "/start-cockpit",  "at": "ISO 8601" },

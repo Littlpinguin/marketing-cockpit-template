@@ -168,7 +168,7 @@ Runtime configuration lives in `.setup-completed` (JSON). The wizard writes it a
     "print":               { "enabled": false }
   },
   "features": {
-    "image_generation": { "enabled": true, "model": "gemini-3-pro-image-preview" }
+    "image_generation": { "enabled": true, "model": "gemini-nano-banana-2.1" }
   }
 }
 ```
