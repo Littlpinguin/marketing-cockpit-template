@@ -38,6 +38,34 @@ Règles de coupe, de rythme et de son pour tout montage narratif (talking-head, 
 - Karaoké mot à mot : → skill `captions` (méthode éditeur, timings par token).
 - Cartons : peu, courts (~2 s), un style unique (pastille de marque, police du style-guide), calés sur le mot qu'ils illustrent.
 
+## Démo produit et capture d'écran
+
+Pour toute vidéo qui montre un logiciel, une application ou un site en fonctionnement : démo, tutoriel, vidéo de lancement.
+
+**Capture.**
+
+- Enregistrer à la résolution native de l'écran. Une capture plus grande que la toile de sortie laisse de la marge pour zoomer sans flou.
+- Couper les notifications, fermer les fenêtres et onglets sans rapport, masquer favoris et barres personnelles.
+- Données fictives ou anonymisées uniquement : un compte de démonstration, jamais l'espace d'un vrai client (noms, courriels, montants, adresses). Ce qui aurait échappé à la capture se floute au montage, sur toute la durée où c'est visible.
+- Agrandir le curseur dans les réglages du système avant d'enregistrer.
+
+**Montage.**
+
+- Une action par plan : un clic, une saisie, un résultat.
+- Zoomer sur la zone d'action au moment où elle se produit, puis revenir au plan large : le spectateur garde la carte de l'interface. Un zoom sert à lire ou à situer, jamais à animer pour animer.
+- Annotations sobres aux couleurs de la marque (variables de `brand.css`) : une seule à la fois, qui pointe l'élément concerné, entre juste avant l'action et sort juste après. Un zoom ou une annotation, rarement les deux ensemble.
+- Temps morts (chargement, saisie longue, installation) : les accélérer, avec un repère discret si besoin, plutôt que couper sec au milieu d'une interaction, ce qui fait sauter l'écran sans explication. Le résultat se montre à vitesse normale.
+- Mouvement du curseur lissé : ni tremblement, ni cercles autour de ce dont on parle.
+- Tenir chaque écran le temps de le lire (même règle que les cartons, `formats.md` § « Texte à l'écran »).
+
+**Recadrage par format.**
+
+- 16:9 : l'écran entier tient dans la toile.
+- 9:16 et 1:1 : recadrer sur la zone utile de chaque plan plutôt que réduire l'écran entier, illisible sur un téléphone.
+- Une étape qui ne survit pas au recadrage vertical se signale dès le storyboard : livrer cette vidéo en 16:9 seulement, ou prévoir une version verticale simplifiée.
+
+**Habillage.** Titres, chiffres, annotations animées et plan de fin passent par la skill `motion-design`. Pour une démo marketing tirée d'un site ou d'une application, la filière est `hyperframes:product-launch-video` (choix de filière dans `video-production`).
+
 ## Check-list mesurable avant export
 
 - [ ] Médiane des plans entre 2,0 et 2,5 s ; 2-3 tenues ≥ 4 s aux beats
@@ -48,3 +76,4 @@ Règles de coupe, de rythme et de son pour tout montage narratif (talking-head, 
 - [ ] Un silence total posé sur le beat principal
 - [ ] Master à −14 LUFS, crête ≤ −1,5 dBTP
 - [ ] Transcription du master comparée au texte attendu (fidélité mot à mot)
+- [ ] Démo produit : aucune donnée réelle de client à l'écran

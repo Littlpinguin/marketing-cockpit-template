@@ -52,3 +52,39 @@ def test_manim_vendorise(nom, sous_dossier, minimum):
 def test_registre_video_cite_manim():
     registre = texte("docs/vendored-video.md")
     assert "cef045011722d285692e3381d12d4d637da56e18" in registre and "MIT" in registre
+
+
+# ------------------------------------------------------------------ doctrine (tâche 9)
+
+DOCTRINE = {
+    "08-video/narration.md": ["## Arc d'un explainer", "## Écrire pour l'oreille", "## Calibrer la longueur",
+                              "## Direction de voix", "## Mix voix et musique", "## Divulgation", "## Check-list"],
+    "08-video/motion.md": ["## Profil de goût", "## Revue de singularité", "## Promesse de mouvement et variété",
+                           "## Choisir le moteur", "## Repères typographiques", "## 3D", "## Personnages",
+                           "## Encre", "## Manim", "## Interdits"],
+    "08-video/documentaire.md": ["## Ton", "## Du thème aux emplacements", "## Règles de sélection",
+                                "## Étalonnage d'archives", "## Crédits et licences", "## Outillage", "## Check-list"],
+}
+
+
+@pytest.mark.parametrize("rel, titres", DOCTRINE.items())
+def test_doctrine_nouvelle(rel, titres):
+    contenu = texte(rel)
+    for titre in titres:
+        assert titre in contenu, f"{rel} : section « {titre} » absente"
+    assert "—" not in contenu, f"{rel} : tiret cadratin"
+    assert "OpenMontage" in contenu and "docs/vendored-video.md" in contenu
+
+
+def test_doctrine_enrichie():
+    formats = texte("08-video/formats.md")
+    assert "## Format court : repères de production" in formats
+    assert "plateformes.toml" in formats and "qa-video.py" in formats
+    montage = texte("08-video/montage.md")
+    assert "## Démo produit et capture d'écran" in montage
+    motion = texte("08-video/motion.md")
+    for terme in ("brand-frame.py", "frame.md", "design-taste", "hyperframes", "manim-composer", "ink-theater"):
+        assert terme in motion, terme
+    documentaire = texte("08-video/documentaire.md")
+    for terme in ("corpus.py", "credits.md", "01-brand/droits.md", "selections.json"):
+        assert terme in documentaire, terme
