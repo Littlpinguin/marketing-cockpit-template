@@ -26,7 +26,7 @@ Les trois validations de `video-production` prennent ici cette forme :
 
 - **Concept** (validation 1) : la question du film, la thèse, le registre (étape 1).
 - **Script** (validation 2) : le découpage en emplacements, avant `corpus.py build` (étape 2) ; puis, si le film a une voix, la narration écrite sur les images retenues, avant toute génération de voix (étape 6).
-- **Storyboard** (validation 3) : la sélection validée dans `selections.json`, avec `storyboard.md` (ordre des plans, durées, cartons), avant le montage (étape 5).
+- **Storyboard** (validation 3) : la sélection validée dans `selections.json`, avec `storyboard.md` (ordre des plans, durées, cartons), à la fin de l'étape 5, avant le montage (étape 7).
 
 Constituer et indexer le corpus ne coûte aucun crédit. Une voix ou une musique payante reste sous le contrat de coût de `video-production`, et jamais avant la validation 3.
 

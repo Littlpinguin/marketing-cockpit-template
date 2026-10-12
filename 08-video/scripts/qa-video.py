@@ -44,6 +44,8 @@ rendre un rapport vide. Seule la planche contact est facultative.
 Sorties : rapport texte ou JSON sur la sortie standard ; dans --sortie (défaut :
 qa/<nom de la vidéo>/ à côté du dossier exports/), une image au milieu de chaque
 plan (plan-NN.jpg), une planche contact (planche.jpg), rapport.md et rapport.json.
+Un export qui est un lien symbolique n'est pas suivi : le dossier qa/ reste dans
+le projet et porte le nom du lien.
 Les valeurs non finies (crête de -inf sur un silence numérique) sont écrites null.
 
 Codes de sortie : 0 aucun constat bloquant, 1 constat(s) bloquant(s), 2 erreur
@@ -142,7 +144,8 @@ def parse_ffprobe(donnees: dict[str, Any]) -> dict[str, Any]:
 
     Les dimensions rendues sont celles affichées : une rotation de 90 ou 270
     degrés (vidéo de smartphone) les inverse. Une vignette attachée (pochette)
-    n'est pas le flux vidéo.
+    n'est pas le flux vidéo : son index absolu est gardé pour que les passes
+    ffmpeg visent le même flux (voir flux_video).
     """
     flux = donnees.get("streams", [])
     video = next((f for f in flux if f.get("codec_type") == "video"
@@ -158,10 +161,20 @@ def parse_ffprobe(donnees: dict[str, Any]) -> dict[str, Any]:
             largeur, hauteur = hauteur, largeur
         resume["video"] = {"codec": video.get("codec_name"), "pix_fmt": video.get("pix_fmt"),
                            "largeur": largeur, "hauteur": hauteur,
-                           "debit": _entier(video.get("bit_rate"))}
+                           "debit": _entier(video.get("bit_rate")), "index": _entier(video.get("index"))}
     if audio:
         resume["audio"] = {"codec": audio.get("codec_name")}
     return resume
+
+
+def flux_video(video: dict[str, Any]) -> str:
+    """Spécificateur -map du flux vidéo retenu par parse_ffprobe.
+
+    « 0:v:0 » viserait le premier flux vidéo du fichier, qui peut être une
+    pochette attachée placée avant le vrai flux.
+    """
+    index = video.get("index")
+    return f"0:{index}" if isinstance(index, int) else "0:v:0"
 
 
 EBUR_I_RE = re.compile(r"\bI:\s+(-?[\d.]+|-inf)\s+LUFS")
@@ -319,7 +332,7 @@ def evaluer(mesures: dict[str, Any], options: dict[str, Any]) -> list[Constat]:
     duree = probe["duree"]
     video, audio = probe["video"], probe["audio"]
     conf = options.get("plateforme")
-    nom = options.get("nom_plateforme", "plateforme")
+    nom = (conf or {}).get("nom") or options.get("nom_plateforme") or "plateforme"   # « Instagram Reels », pas « reels »
 
     if video is None:
         constats.append(Constat("erreur", "flux-video", "aucun flux vidéo"))
@@ -457,12 +470,12 @@ def sonder(video: Path) -> dict[str, Any]:
     return json.loads(res.stdout)
 
 
-def analyser_video(video: Path, duree: float) -> dict[str, Any]:
-    detections = executer(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-map", "0:v:0",
+def analyser_video(video: Path, duree: float, flux: str = "0:v:0") -> dict[str, Any]:
+    detections = executer(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-map", flux,
                            "-vf", f"blackdetect=d={NOIR_MIN}:pix_th=0.10,freezedetect=n=-60dB:d={FIGE_MIN}",
                            "-f", "null", "-"])
     exiger(detections, "blackdetect/freezedetect")
-    scenes = executer(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-map", "0:v:0",
+    scenes = executer(["ffmpeg", "-hide_banner", "-nostats", "-i", str(video), "-map", flux,
                        "-vf", f"select='gt(scene,{SEUIL_SCENE})',showinfo", "-f", "null", "-"])
     exiger(scenes, "détection des plans (scene)")
     coupes = parse_coupes(scenes.stderr)
@@ -492,7 +505,7 @@ def milieux_de_plans(plans: list[float]) -> list[float]:
     return milieux
 
 
-def extraire_planche(video: Path, temps: list[float], dossier: Path) -> Path | None:
+def extraire_planche(video: Path, temps: list[float], dossier: Path, flux: str = "0:v:0") -> Path | None:
     """Une image au milieu de chaque plan, puis une planche contact.
 
     Rend le chemin de la planche, ou None si une image ou la planche n'a pas pu être
@@ -508,7 +521,8 @@ def extraire_planche(video: Path, temps: list[float], dossier: Path) -> Path | N
         for index, t in enumerate(temps[:MAX_IMAGES], start=1):
             sortie = dossier / f"plan-{index:02d}.jpg"
             res = executer(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{t:.3f}",
-                            "-i", str(video), "-frames:v", "1", "-vf", "scale=540:-2", str(sortie)])
+                            "-i", str(video), "-map", flux, "-frames:v", "1", "-vf", "scale=540:-2",
+                            str(sortie)])
             if res.returncode != 0 or not sortie.exists():
                 return None
             images.append(sortie)
@@ -613,8 +627,12 @@ def rendu_markdown(video: Path, constats: list[Constat], mesures: dict[str, Any]
         lignes.append(f"| {c.niveau} | `{c.id}` | {'' if c.t is None else f'{c.t:.2f} s'} | {c.message} |")
     if planche:
         lignes += ["", "Planche : `planche.jpg` (une image au milieu de chaque plan)."]
-    else:
+    elif any(c.id == "planche-indisponible" for c in constats):
         lignes += ["", "Planche : indisponible (constat `planche-indisponible`)."]
+    elif probe["video"] is None:                     # flux-video le dit déjà : pas de second constat
+        lignes += ["", "Planche : sans objet, aucun flux vidéo (constat `flux-video`)."]
+    else:
+        lignes += ["", "Planche : indisponible."]
     return "\n".join(lignes) + "\n"
 
 
@@ -635,7 +653,9 @@ def serialiser_json(rapport: dict[str, Any]) -> str:
 
 
 def dossier_sortie(video: Path) -> Path:
-    video = video.resolve()
+    # abspath et non resolve : un export qui est un lien symbolique (rendu rangé sur le Drive)
+    # garde son rapport dans le projet, sous le nom du lien.
+    video = Path(os.path.abspath(video))
     base = video.parent.parent if video.parent.name == "exports" else video.parent
     return base / "qa" / video.stem
 
@@ -666,7 +686,7 @@ def main(argv: list[str] | None = None) -> int:
     if not video.is_file():
         print(f"ERREUR : {video} introuvable", file=sys.stderr)
         return 2
-    video = video.resolve()
+    video = Path(os.path.abspath(video))             # pas resolve : voir dossier_sortie
     try:
         return analyser(args, video)
     except (ErreurOutil, OSError, ValueError, tomllib.TOMLDecodeError) as err:
@@ -686,7 +706,7 @@ def analyser(args: argparse.Namespace, video: Path) -> int:
     probe = parse_ffprobe(sonder(video))
     mesures: dict[str, Any] = {"probe": probe}
     if probe["video"]:
-        mesures.update(analyser_video(video, probe["duree"]))
+        mesures.update(analyser_video(video, probe["duree"], flux_video(probe["video"])))
     if probe["audio"] and not args.sans_audio:       # vidéo déclarée muette : son non mesuré ni jugé
         mesures.update(analyser_audio(video, probe["duree"]))
     with video.open("rb") as flux:
@@ -707,11 +727,11 @@ def analyser(args: argparse.Namespace, video: Path) -> int:
     constats = evaluer(mesures, {"plateforme": conf, "nom_plateforme": args.plateforme,
                                  "duree": args.duree, "sans_audio": args.sans_audio,
                                  "max_plan": args.max_plan})
-    sortie = Path(args.sortie).resolve() if args.sortie else dossier_sortie(video)
+    sortie = Path(os.path.abspath(args.sortie)) if args.sortie else dossier_sortie(video)
     planche = None
     if probe["video"]:
         temps = milieux_de_plans(mesures.get("plans") or [probe["duree"]])
-        planche = extraire_planche(video, temps, sortie)
+        planche = extraire_planche(video, temps, sortie, flux_video(probe["video"]))
         constats += constats_planche(planche, len(temps))
     sortie.mkdir(parents=True, exist_ok=True)
     rapport = {"video": str(video), "plateforme": args.plateforme, "resume": resume(constats),

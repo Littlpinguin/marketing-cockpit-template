@@ -96,6 +96,18 @@ Source : [yihui-dev/awesome-opus5-5-videos](https://github.com/yihui-dev/awesome
 - `08-video/inspiration.md` règle l'usage : extraire le mécanisme d'une référence et le transposer dans la marque, citer le créateur et le lien de sa publication dans la proposition de concept, montrer un lien et jamais une capture. Recopier un prompt dans un livrable, réutiliser les visuels ou le code d'un créateur, ou présenter une référence comme une création de l'agence est interdit.
 - Le catalogue n'est pas figé : un autre commit peut ajouter, retirer ou modifier des entrées. Le registre note le commit vu à l'écriture, pas une version vendorisée.
 
+### Rafraîchir le catalogue
+
+Le cache se renouvelle seul : passé 7 jours, la recherche suivante relit `data/videos.json` sur la branche `main`. Pour relire tout de suite (un ajout annoncé dans le dépôt source, des résultats qui semblent datés), ajouter `--rafraichir` à n'importe quelle commande d'`inspiration.py`. Tant que le format de la source ne change pas, rien d'autre n'est à faire.
+
+Pour remettre le registre à jour (relecture trimestrielle, ou changement constaté dans la source) :
+
+1. Relever le commit courant de la branche `main` du dépôt source, vérifier que la licence est toujours MIT et que la mention « chaque vidéo et chaque prompt appartient à son créateur » figure toujours dans le dépôt. Si l'une ou l'autre a changé, ne plus s'en servir avant d'en avoir décidé.
+2. Relire et compter : `python3 08-video/scripts/inspiration.py categories --rafraichir --format json` rend le total, les catégories et les techs.
+3. Contrôler le format. Seul `slug` est obligatoire : une entrée sans slug est écartée, mais un autre champ renommé dans la source (`title`, `prompt`, `tech_tags`, `category`, `added`, `author`, `post_url`…) se vide en silence, et la recherche perd en qualité sans aucune erreur. Les signes dans la sortie de l'étape 2 : plus aucune tech, des catégories absentes, un total très inférieur au précédent. Dans ce cas, adapter `normaliser()` dans `inspiration.py` et ses tests (`scripts/tests/test_video_inspiration.py`).
+4. Une catégorie nouvelle dans la source ne se filtre pas tant qu'elle manque à `CATEGORIES` dans `inspiration.py` (les choix de `--categorie`) : l'y ajouter, avec sa ligne dans la table de la section « De la catégorie à la filière » de `08-video/inspiration.md`.
+5. Reporter le commit, la date et le nombre d'entrées dans le paragraphe « Source » ci-dessus (853 entrées au commit actuel) et dans la docstring d'`inspiration.py`, puis le commit dans `test_registre_complet` (`scripts/tests/test_video_module.py`), qui le vérifie. Lancer `rtk proxy python3 -m pytest scripts/tests/test_video_inspiration.py scripts/tests/test_video_module.py -q`.
+
 ## Manim : skills vendorisées
 
 Deux skills du dépôt public [adithya-s-k/manim_skill](https://github.com/adithya-s-k/manim_skill) servent la filière « démonstration conceptuelle ou chiffrée » du module : l'une planifie la scène, l'autre écrit le code Manim. Date de vendorisation : **2026-10-12**.

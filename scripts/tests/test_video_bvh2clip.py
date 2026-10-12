@@ -372,3 +372,19 @@ def test_cli_noms_reserves_refuses(tmp_path, nom):
     res = _lancer(str(_bvh_valide(tmp_path)), "--nom", nom, "--source", "x", "--sortie", str(sortie))
     assert res.returncode == 2 and "ERREUR" in res.stderr and "réservé" in res.stderr
     assert "Traceback" not in res.stderr and not sortie.exists()
+
+
+def test_mixamo_tete_a_l_extremite_du_crane():
+    """Mixamo : Head porte un JOINT HeadTop_End (extrémité du crâne) et il n'y a pas de « Head_End »."""
+    tete_cmu = f"JOINT Head {{ OFFSET 0 4 0 {ROT} End Site {{ OFFSET 0 4 0 }} }}"
+    tete_mixamo = (f"JOINT mixamorig:Head {{ OFFSET 0 4 0 {ROT} "
+                   f"JOINT mixamorig:HeadTop_End {{ OFFSET 0 4 0 {ROT} End Site {{ OFFSET 0 0 0 }} }} }}")
+    assert tete_cmu in HIERARCHIE
+    images = "\n".join(" ".join(["0"] * (NB_CANAUX + 3)) for _ in range(2))
+    bvh = b2c.lire_bvh(f"{HIERARCHIE.replace(tete_cmu, tete_mixamo)}MOTION\nFrames: 2\nFrame Time: {1 / 30}\n{images}\n")
+    noms = [a.nom for a in bvh.articulations]
+    assert "Head_End" not in noms
+    assert noms[b2c.correspondance(noms)["tete"]] == "HeadTop_End"
+    mixamo = b2c.convertir(bvh, nom="test", source="test", fps=30, plan="frontal")
+    cmu = b2c.convertir(b2c.lire_bvh(squelette(repos(2))), nom="test", source="test", fps=30, plan="frontal")
+    assert mixamo["images"] == cmu["images"]

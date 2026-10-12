@@ -580,3 +580,84 @@ def test_linkedin_admet_le_4_5_et_formats_md_concorde():
         for fmt in conf["formats"]:
             largeur, hauteur = fmt.split("x")
             assert f"{largeur} × {hauteur}" in formats, f"{cle} : {fmt} absent de formats.md"
+
+
+# ------------------------------------------------------------------ suivis de la revue 2.3.0
+
+def test_rendu_markdown_sans_flux_video_ne_cite_pas_un_constat_absent():
+    m = _mesures()
+    m["probe"]["video"] = None
+    constats = qa.evaluer(m, {})
+    assert "planche-indisponible" not in _ids(constats)
+    texte = qa.rendu_markdown(Path("muet.mp4"), constats, m, None)
+    assert "planche-indisponible" not in texte
+    assert "Planche : sans objet, aucun flux vidéo (constat `flux-video`)." in texte
+
+
+def test_rendu_markdown_planche_indisponible_cite_le_constat():
+    m = _mesures()
+    constats = qa.evaluer(m, {}) + qa.constats_planche(None, 15)
+    texte = qa.rendu_markdown(Path("demo.mp4"), constats, m, None)
+    assert "Planche : indisponible (constat `planche-indisponible`)." in texte
+
+
+def test_dossier_sortie_ne_suit_pas_les_liens_symboliques(tmp_path):
+    ailleurs = tmp_path / "drive" / "rendus"
+    ailleurs.mkdir(parents=True)
+    (ailleurs / "rendu-final.mp4").write_bytes(b"x")
+    exports = tmp_path / "projet" / "exports"
+    exports.mkdir(parents=True)
+    lien = exports / "demo.mp4"
+    lien.symlink_to(ailleurs / "rendu-final.mp4")
+    assert qa.dossier_sortie(lien) == tmp_path / "projet" / "qa" / "demo"
+
+
+@requiert_ffmpeg
+def test_qa_d_un_lien_symbolique_reste_dans_le_projet(tmp_path, video_av):
+    exports = tmp_path / "projet" / "exports"
+    exports.mkdir(parents=True)
+    (exports / "demo.mp4").symlink_to(video_av)
+    res = _lancer(str(exports / "demo.mp4"), "--format", "json")
+    rapport = _json_strict(res.stdout)
+    assert rapport["video"] == str(exports / "demo.mp4")
+    assert (tmp_path / "projet" / "qa" / "demo" / "rapport.json").exists()
+    assert not (video_av.parent / "qa").exists()
+
+
+def test_parse_ffprobe_garde_l_index_du_flux_video():
+    donnees = {"streams": [
+        {"index": 0, "codec_type": "video", "codec_name": "mjpeg", "width": 3000, "height": 3000,
+         "disposition": {"attached_pic": 1}},
+        {"index": 1, "codec_type": "video", "codec_name": "h264", "pix_fmt": "yuv420p",
+         "width": 1080, "height": 1920},
+        {"index": 2, "codec_type": "audio", "codec_name": "aac"},
+    ], "format": {"duration": "3"}}
+    assert qa.parse_ffprobe(donnees)["video"]["index"] == 1
+    assert qa.flux_video(qa.parse_ffprobe(donnees)["video"]) == "0:1"
+    assert qa.flux_video({"codec": "h264"}) == "0:v:0"       # sortie de ffprobe sans index
+
+
+def test_mesures_et_planche_visent_le_flux_video_retenu(tmp_path, monkeypatch):
+    commandes = []
+
+    def faux(commande):
+        commandes.append(commande)
+        if commande[-1].endswith(".jpg") and "%" not in commande[-1]:
+            Path(commande[-1]).write_bytes(b"jpg")
+        return subprocess.CompletedProcess(commande, 0, "", "")
+
+    monkeypatch.setattr(qa, "executer", faux)
+    qa.analyser_video(Path("demo.mp4"), 3.0, "0:1")
+    assert qa.extraire_planche(Path("demo.mp4"), [1.5], tmp_path, "0:1") == tmp_path / "planche.jpg"
+    for commande in commandes[:3]:                             # deux passes de mesure, une image de plan
+        assert commande[commande.index("-map") + 1] == "0:1", commande
+    assert all("0:v:0" not in commande for commande in commandes)
+
+
+def test_messages_plateforme_utilisent_le_nom_lisible():
+    m = _mesures(probe={**_mesures()["probe"], "duree": 200.0})
+    m["probe"]["video"] = {**m["probe"]["video"], "largeur": 1920, "hauteur": 1080, "debit": 2_000_000}
+    constats = qa.evaluer(m, {"plateforme": PLATEFORMES_CONF["reels"], "nom_plateforme": "reels"})
+    for id_ in ("duree-max", "format", "debit"):
+        message = next(c.message for c in constats if c.id == id_)
+        assert "Instagram Reels" in message and "reels" not in message.replace("Instagram Reels", ""), message
