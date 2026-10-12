@@ -4,11 +4,11 @@ Chargée par `video-documentary` pour tout film monté à partir d'archives libr
 
 ## Ton
 
-Un essai filmé : un montage d'archives au service d'une thèse, que le spectateur peut formuler en une phrase à la fin. Le sens naît du rapprochement des plans ; la narration, quand il y en a une, oriente sans tout dire.
+Un essai filmé : un montage d'archives au service d'une thèse, que le spectateur peut formuler en une phrase à la fin. C'est l'ordre des plans qui argumente ; la narration, quand il y en a une, oriente sans tout dire.
 
 Ce qui le distingue d'un explainer (`narration.md`) : dans l'explainer, l'image illustre ce que dit la voix ; ici, l'image réelle porte la preuve. Une archive montre que quelque chose a eu lieu, d'où l'exigence sur ce qu'elle montre vraiment, sur sa date et sur sa source.
 
-Avant tout, formuler la question du film en une ligne (« qu'est-ce qu'un geste transmet qu'une machine ne transmet pas ? »). Trop vague (« un film sur l'artisanat »), elle ne donne pas de film ; trop précise (une liste de plans), elle ne donne pas de thèse. Puis choisir un seul registre (grave, ironique, contemplatif, urgent) et le tenir jusqu'au bout : il règle la longueur des plans, la musique et l'étalonnage.
+Avant tout, formuler la question du film en une ligne (« qu'est-ce qu'un geste transmet qu'une machine ne transmet pas ? »), une question à laquelle des images peuvent répondre. Puis fixer le registre du film et le tenir jusqu'au bout : la longueur des plans, la musique et l'étalonnage en découlent.
 
 ## Du thème aux emplacements
 
@@ -20,7 +20,7 @@ Le brief thématique se découpe en **emplacements** : un emplacement est un pla
 - l'époque (années, texture : noir et blanc, couleur passée, numérique) ;
 - la lumière (atelier, plein jour, nuit).
 
-Chaque emplacement reçoit deux ou trois requêtes de recherche en anglais, langue dans laquelle les archives sont indexées : une requête littérale, une requête latérale (la même idée sous un autre angle ou à une autre échelle) et, au besoin, une requête de texture (l'ambiance ou l'époque seule).
+Chaque emplacement reçoit deux ou trois requêtes de recherche en anglais, langue dans laquelle les archives sont indexées. Elles ne se répètent pas : chacune doit pouvoir ramener des plans que les autres manquent.
 
 Le découpage s'écrit dans `08-video/corpus/themes/<nom>.toml`, sur le modèle du thème livré `08-video/corpus/themes/exemple-savoir-faire.toml` :
 
@@ -33,11 +33,12 @@ duree_max = 120                         # secondes ; un clip plus long est écar
 
 [[emplacements]]
 id = "geste"
-description = "close-up of a hand tool shaping a piece, wood shavings or sparks"
+# outil qui façonne une pièce, copeaux ou étincelles, plan serré
+description = "tight shot of a tool shaping a piece, wood shavings or sparks"
 requetes = ["wood shavings plane tool", "metal grinding sparks"]
 ```
 
-La `description` sert à la recherche CLIP (`corpus.py search <nom> --emplacement <id>`). Le modèle par défaut (`ViT-B-32`, poids `laion2b_s34b_b79k`) a été entraîné sur des légendes en anglais, et sa fiche en limite l'usage à l'anglais ([fiche du modèle](https://huggingface.co/laion/CLIP-ViT-B-32-laion2B-s34B-b79K)). Pour un corpus réel, écrire la description en anglais, avec sa traduction française en commentaire si besoin. Le thème d'exemple garde des descriptions en français pour la lecture.
+La `description` sert à la recherche CLIP (`corpus.py search <nom> --emplacement <id>`). Le modèle par défaut (`ViT-B-32`, poids `laion2b_s34b_b79k`) a été entraîné sur des légendes en anglais, et sa fiche en limite l'usage à l'anglais ([fiche du modèle](https://huggingface.co/laion/CLIP-ViT-B-32-laion2B-s34B-b79K)). La description s'écrit donc en anglais, avec sa traduction française en commentaire, comme dans le thème d'exemple.
 
 Le découpage est validé par un humain avant `corpus.py build`.
 
@@ -47,13 +48,13 @@ Le découpage est validé par un humain avant `corpus.py build`.
 - **Date et source à l'écran** quand l'archive porte un fait : elle prouve, donc elle se référence. Rôle `label` de `frame.md`, discret, en zone sûre.
 - **Visages.** Aucun visage reconnaissable d'un particulier sans droit établi (`01-brand/droits.md`). En cas de doute, choisir un autre plan.
 - **Le geste plutôt que le mot.** Préférer le plan qui montre un geste à celui qui illustre un mot : pour « transmission », deux mains sur un même outil plutôt qu'un livre ouvert.
-- **Voisinage.** Deux plans voisins ne répètent ni le même sujet ni la même échelle ; le sens naît de leur rapprochement.
-- **Le meilleur passage, pas le clip entier.** Couper dans le clip le moment qui sert l'emplacement, et sortir du plan avant la fin naturelle de l'action plutôt qu'après.
-- **Traçabilité.** Chaque choix est noté dans `selections.json` (clip et instant), et un humain valide la sélection sur la planche des images clés avant le montage. Un clip écarté malgré un bon score se note dans `decisions.md` avec sa raison (époque, contresens, qualité), pour ne pas revenir à la recherche suivante.
+- **Voisinage.** Deux plans qui se suivent changent de sujet ou d'échelle.
+- **Les secondes utiles.** Ne garder du clip que les secondes qui servent l'emplacement.
+- **Traçabilité.** Chaque choix est noté dans `selections.json` (clip et instant), et un humain valide la sélection sur la planche des images clés avant le montage. Les clips bien classés mais refusés gardent une trace dans `decisions.md`, pour ne pas revenir à la recherche suivante.
 
 ## Étalonnage d'archives
 
-Des sources d'époques et de qualités différentes, mises bout à bout, se voient comme plusieurs films. Choisir au cadrage un parti unique pour tout le film, jamais un traitement clip par clip :
+Des sources d'époques et de qualités différentes, mises bout à bout, se voient comme plusieurs films. Choisir au cadrage un parti qui s'applique au film entier :
 
 - **noir et blanc assumé** : toutes les sources désaturées, contrastes rapprochés ;
 - **grain commun** : un même grain posé sur tout le film, qui atténue les écarts de netteté ;

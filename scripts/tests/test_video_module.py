@@ -133,3 +133,44 @@ def test_references_motion(fichier, termes):
     contenu = (SKILLS / "motion-design" / "references" / fichier).read_text(encoding="utf-8")
     manquants = [t for t in termes if t not in contenu]
     assert not manquants, f"{fichier} : termes absents {manquants}"
+
+
+# ------------------------------------------------------------------ correctifs de revue (tâches 9 et 10)
+
+def _textes_video_nouveaux():
+    chemins = [*sorted((REPO / "08-video").glob("*.md")),
+               *(SKILLS / nom / "SKILL.md" for nom in NOUVELLES),
+               *sorted((SKILLS / "motion-design" / "references").glob("*.md"))]
+    return {chemin: chemin.read_text(encoding="utf-8") for chemin in chemins}
+
+
+def test_commandes_audio_hyperframes_reelles():
+    narration = texte("08-video/narration.md")
+    assert "--provider" not in narration, "npx hyperframes tts n'a pas d'option --provider"
+    assert "npx hyperframes tts" in narration and "ff_siwis" in narration
+    for chemin, contenu in _textes_video_nouveaux().items():
+        assert "hyperframes bgm" not in contenu, f"{chemin} : la commande bgm n'existe pas"
+
+
+def test_passation_porte_voix_musique_et_sous_titres():
+    contenu = (SKILLS / "video-production" / "SKILL.md").read_text(encoding="utf-8")
+    for terme in ("voice: ff_siwis", "music: none", "caption-skin.html", "auth status"):
+        assert terme in contenu, terme
+
+
+@pytest.mark.parametrize("nom", NOUVELLES)
+def test_checklist_avant_livraison(nom):
+    assert "## Checklist avant livraison" in (SKILLS / nom / "SKILL.md").read_text(encoding="utf-8")
+
+
+def test_motion_design_references_a_charger():
+    assert "## Références à charger" in (SKILLS / "motion-design" / "SKILL.md").read_text(encoding="utf-8")
+
+
+def test_theme_d_exemple_decrit_en_anglais():
+    import tomllib
+    theme = tomllib.loads(texte("08-video/corpus/themes/exemple-savoir-faire.toml"))
+    assert all(e["description"].isascii() for e in theme["emplacements"]), "descriptions CLIP en anglais"
+    geste = next(e for e in theme["emplacements"] if e["id"] == "geste")
+    assert f'description = "{geste["description"]}"' in texte("08-video/documentaire.md"), \
+        "l'extrait de documentaire.md doit reprendre le thème livré"

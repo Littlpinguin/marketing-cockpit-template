@@ -125,9 +125,9 @@ Toute composition animée passe par `motion-design`, qui porte la marque jusqu'�
 1. **Cadrage.** Objectif business, calendrier et `00-intel/` consultés, filière choisie, dossier du projet créé, `brief.md` écrit, `REPRISE.md` initialisé.
 2. **Concepts.** Deux ou trois concepts réellement différents, chacun avec son chemin outillé honnête (ce que les outils disponibles produisent vraiment, pas ce qu'ils promettent), son coût estimé et son risque. En recommander un.
    → **Validation 1 : choix du concept.**
-3. **Script** dans `script.md`, selon `08-video/narration.md` quand il y a une voix. Pour un format court, l'accroche en trois variantes (`08-video/formats.md` § « Format court : repères de production »). Profil de goût et moteur consignés dans `decisions.md` (`08-video/motion.md`).
+3. **Script** dans `script.md`, selon `08-video/narration.md` quand il y a une voix. Pour un format court, l'accroche en trois variantes (`08-video/formats.md` § « Format court : repères de production »). Profil de goût et moteur consignés dans `decisions.md` (`08-video/motion.md`). Le débit de la voix se mesure sans dépense, avec la voix locale de Kokoro ou une lecture chronométrée (`08-video/narration.md` § « Calibrer la longueur »).
    → **Validation 2 : script validé.**
-4. **Storyboard.** Filières HyperFrames : le storyboard d'HyperFrames (`hyperframes/STORYBOARD.md` et ses croquis), produit après la passation avec `storyboard: yes`. Autres filières, et `hyperframes:motion-graphics` qui n'en produit pas : `storyboard.md`, un tableau des plans avec des vignettes au vrai cadrage et la source de chaque matière. Dans les deux cas, la revue de singularité de `08-video/motion.md` est faite.
+4. **Storyboard.** Filières HyperFrames : le plan d'HyperFrames (`hyperframes/STORYBOARD.md`), produit après la passation avec `storyboard: yes` ; ses croquis de mise en page suivent l'accord (voir « Voix et storyboard » plus bas). Autres filières, et `hyperframes:motion-graphics` qui n'en produit pas : `storyboard.md`, un tableau des plans avec des vignettes au vrai cadrage et la source de chaque matière. Dans les deux cas, la revue de singularité de `08-video/motion.md` est faite.
    → **Validation 3 : storyboard validé. Aucun crédit dépensé avant.**
 5. **Matière.** Réutiliser d'abord (`01-brand/assets/`, rushes existants), puis le stock (Magnific `stock_search` et `stock_download`, corpus documentaire), puis générer (`video-generation`, `image-generation`, voix, musique). Un échantillon avant toute série, sous le contrat de coût.
 6. **Construction.** HyperFrames ou ffmpeg selon la filière, dans `hyperframes/` ou dans le plan de montage de `video-editing`.
@@ -182,6 +182,7 @@ length: 45s
 audience: "Persona du brief et ce qu'elle sait déjà du sujet"
 angle: concept
 narration: yes
+voice: ff_siwis
 ---
 
 ## Intent
@@ -210,8 +211,9 @@ Ce qu'est la vidéo, pour qui, pourquoi maintenant ; l'objectif business du brie
 **5. Charger la skill de workflow `hyperframes:<workflow>`.** Elle lit `BRIEF.md` et déroule son storyboard puis la construction. Points de vigilance :
 
 - **Charte.** L'étape de design system des workflows (choix d'un preset dans `frame-presets`, script `build-frame`, recette) se saute : `frame.md` existe et fait foi. Si un `frame.md` a été réécrit, relancer `brand-frame.py`, puis `brand-frame.py --check`.
-- **Storyboard.** Le storyboard d'HyperFrames est notre validation 3 : rien de payant avant l'accord. `hyperframes:motion-graphics` n'a pas de storyboard : la validation 3 se tient sur `storyboard.md` avant de lui passer la main.
-- **Médias.** Les workflows affichent l'état de connexion HeyGen (`npx hyperframes auth status`). Fournisseurs externes (HeyGen, ElevenLabs, Lyria) seulement avec clé présente et coût ou quota annoncé ; défaut local (voix Kokoro) ou Magnific sous contrat de coût.
+- **Sous-titres.** Sauter l'étape de design system saute aussi la copie de la peau de sous-titres : le script de sous-titres des workflows retombe alors sur sa pastille par défaut (police Roboto, fond noir), hors marque. Exception admise, consignée dans `decisions.md` : copier le seul `caption-skin.html` d'un preset (dossier `frame-presets/` de la skill `hyperframes:hyperframes-creative`) vers `hyperframes/.hyperframes/caption-skin.html` ; le script y injecte les couleurs et les polices de `frame.md` (fichiers de police déposés dans `assets/fonts/`). Sinon, marquer l'étape de sous-titres du workflow comme sautée et sous-titrer avec la skill `captions`, ou `hyperframes:embedded-captions` sur des images filmées.
+- **Connexion et médias.** Au départ, le workflow affiche `npx hyperframes auth status` et attend le choix de l'humain : se connecter à HeyGen, ou continuer hors ligne. Connecté, l'étape audio prend la voix chez HeyGen et la musique dans sa bibliothèque ; hors ligne, la voix vient de Kokoro, en local, et la musique est générée (Lyria si une clé Gemini ou Google est présente, sinon MusicGen en local). HeyGen et Lyria sont des fournisseurs externes : coût ou quota annoncé avant l'étape audio. Licence de la musique : voir le contrat de coût.
+- **Voix et storyboard.** Le point de contrôle du plan (`STORYBOARD.md`) tient lieu de validation 3, et l'étape audio démarre dès qu'il est accepté. Avant de l'accepter : la voix validée est écrite dans le frontmatter de `BRIEF.md` (`voice: ff_siwis` hors ligne, ou l'identifiant de la voix HeyGen retenue si l'humain s'est connecté, car les identifiants changent d'un fournisseur à l'autre), et le coût de la voix et de la musique est annoncé. Vérifier que l'étape audio reçoit bien cette voix (`--voice <id>`) : sans elle, le workflow prend sa voix anglaise par défaut. Une voix payante encore jamais entendue se règle ainsi : accord sur le plan, puis échantillon payant annoncé et validé, et seulement ensuite l'étape audio. `hyperframes:motion-graphics` n'a pas de storyboard : la validation 3 se tient sur `storyboard.md` avant de lui passer la main.
 - **Rendu.** Jamais automatique. Après `npx hyperframes check` propre et l'aperçu (`npx hyperframes preview`), demander l'accord, puis rendre depuis le dossier `hyperframes/` :
 
 ```bash
@@ -236,7 +238,7 @@ Règles :
 - **Premier usage d'un outil payant dans un projet** : validation explicite de l'humain, même sous pré-autorisation.
 - **Pas de substitution silencieuse.** Jamais changer de fournisseur ou de modèle sans le dire et le consigner dans `decisions.md`. Un modèle indisponible est un blocage, pas l'occasion d'en prendre un autre.
 - **`couts.md` à jour** à chaque appel : estimation, dépense réelle, solde du budget.
-- **Licences de la matière gratuite aussi.** Musique générée en local par MusicGen (`npx hyperframes bgm --provider musicgen`) : gratuite, mais les poids du modèle sont publiés sous licence CC BY-NC 4.0 ([fiche du modèle](https://huggingface.co/facebook/musicgen-small)). Pour une vidéo de marque, trancher son usage dans `01-brand/droits.md` avant de s'en servir.
+- **Musique : la licence d'abord, même gratuite.** L'étape audio des workflows HyperFrames choisit seule sa musique : bibliothèque HeyGen si l'humain est connecté, sinon génération par Lyria (clé Gemini ou Google), puis par MusicGen en local. Les poids de MusicGen sont publiés sous licence CC BY-NC 4.0 ([fiche du modèle](https://huggingface.co/facebook/musicgen-small)). Tant que `01-brand/droits.md` n'a pas tranché son usage pour la marque : fournir une piste sous licence établie dans la section `## Assets` de `BRIEF.md`, en précisant qu'elle remplace la musique du workflow ; ou poser `music: none` dans le bloc YAML de tête de `hyperframes/STORYBOARD.md` (la narration reste, seule la musique du workflow est coupée) et ajouter la musique à part, depuis une bibliothèque sous licence ou par Magnific `audio_music_generate` sous ce contrat.
 
 Signaler un blocage en cinq points, puis attendre :
 
@@ -263,7 +265,7 @@ python3 08-video/scripts/qa-video.py 08-video/projets/<slug>/exports/<slug>-<pla
   --plateforme <reels|tiktok|shorts|linkedin> --duree <secondes> --script 08-video/projets/<slug>/script.md
 ```
 
-- Sans voix : `--sans-audio`. Destination hors des quatre plateformes de `08-video/scripts/plateformes.toml` (site, YouTube) : lancer sans `--plateforme`.
+- Sans piste son : `--sans-audio`. Sans voix (musique seule) : sans `--script` ; une colonne Voix vide dans `script.md` désactive de toute façon la vérification de couverture. Destination hors des quatre plateformes de `08-video/scripts/plateformes.toml` (site, YouTube) : lancer sans `--plateforme`.
 - La QA écrit dans `08-video/projets/<slug>/qa/<nom>/` une image au milieu de chaque plan, une planche contact et `rapport.md`. Code 0 : aucun constat bloquant ; 1 : constats bloquants ; 2 : erreur d'usage ou d'outil.
 - Puis dispatcher l'agent `video-reviewer` (lecture seule) avec le rendu, `brief.md`, `script.md` et la plateforme : message et appel à l'action, marque, zones de sécurité, mouvement et variété, sous-titres, divulgation, crédits.
 - **Deux tours de correction au plus** sur les constats de la QA et de la revue. Au-delà, remonter à l'humain avec l'état des constats.
@@ -278,6 +280,17 @@ python3 08-video/scripts/qa-video.py 08-video/projets/<slug>/exports/<slug>-<pla
 5. **Inventaire** : `python3 scripts/build-inventory.py --add 08-video/projets/<slug>/script.md`.
 6. **Capitalisation** dans `decisions.md` : prompts, voix et réglages validés, et les échecs avec leur raison, pour qu'ils ne soient pas retentés.
 7. **`REPRISE.md`** passé à l'état « livré ».
+
+## Checklist avant livraison
+
+- [ ] Trois validations obtenues (concept, script, storyboard), chacune notée dans `decisions.md` avec sa date
+- [ ] Aucun crédit dépensé avant la validation 3 ; chaque appel payant annoncé et inscrit dans `couts.md`
+- [ ] Voix validée et consignée ; musique sous licence établie (`01-brand/droits.md`)
+- [ ] Contrôle avant rendu coché ; rendu fait après l'accord de l'humain sur l'aperçu
+- [ ] `qa-video.py` sans constat bloquant, ou constats restants acceptés par l'humain ; revue `video-reviewer` traitée
+- [ ] Revue humaine du rendu final faite
+- [ ] `brand-check`, divulgation IA, crédits et droits faits
+- [ ] Calendrier, inventaire, capitalisation et `REPRISE.md` à jour
 
 ## Reprendre une session
 

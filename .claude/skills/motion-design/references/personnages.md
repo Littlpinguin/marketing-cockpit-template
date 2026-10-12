@@ -10,7 +10,7 @@ Chargée par `motion-design` quand une vidéo met en scène un personnage. Doctr
 
 Il n'aide pas quand il est ajouté pour « humaniser » un sujet qui n'en a pas besoin, ni quand il occupe l'écran pendant que le texte fait tout le travail.
 
-Un ou deux personnages suffisent. Chaque personnage de plus multiplie les poses, les actions et les risques d'incohérence.
+Commencer avec un seul personnage ; un second seulement si l'histoire repose sur un échange entre deux.
 
 ## Fiche personnage
 
@@ -19,8 +19,8 @@ Un ou deux personnages suffisent. Chaque personnage de plus multiplie les poses,
 - **Silhouette** : reconnaissable en ombre chinoise, sans détail intérieur.
 - **Proportions** : rapport tête et corps, longueur des membres, carrure. Elles ne changent plus ensuite.
 - **Palette** : uniquement les couleurs de la marque, par les variables de `brand.css`, et la façon dont elles se répartissent (peau ou corps, vêtement, accessoire, contour).
-- **Expressions** : la liste minimale dont le script a besoin (par exemple neutre, perplexe, satisfait), pas une gamme complète.
-- **Vues** : une ou deux (face, trois quarts, profil). Chaque vue de plus double le travail de dessin et de rig.
+- **Expressions** : celles que le script appelle, plan par plan (par exemple neutre, perplexe, satisfait).
+- **Vues** : commencer par une seule (face, trois quarts ou profil) ; en ajouter une quand un plan l'exige.
 - **Accessoires** : ce qu'il porte ou tient, attachés à une partie du corps.
 - **Ce qu'il ne fait jamais** : gestes, attitudes, situations exclues (ce qui trahirait le ton de la marque).
 
@@ -28,16 +28,15 @@ Un ou deux personnages suffisent. Chaque personnage de plus multiplie les poses,
 
 Le rig décrit comment le personnage bouge :
 
-- **Parties** : corps, tête, yeux, sourcils, bouche, bras (haut et avant), mains, jambes, accessoires. Une partie par élément qui bouge seul.
+- **Parties** : le personnage découpé en éléments qui bougent indépendamment, de la tête aux accessoires.
 - **Pivots** : pour chaque partie mobile, le point autour duquel elle tourne (épaule, coude, cou, hanche).
 - **Ordre des calques** : ce qui passe devant quoi (le bras du fond derrière le corps, celui de devant par-dessus).
-- **Limites** : l'amplitude permise de chaque articulation, pour qu'aucune pose ne casse un membre.
+- **Butées** : l'angle maximal de chaque articulation, noté dans la fiche.
 
 ## Bibliothèque de poses
 
 - Des poses nommées (`debout`, `pointe-droite`, `hausse-epaules`…), chacune décrite par l'état des parties qui changent.
-- Seulement les poses que le storyboard utilise. Une pose sans plan qui l'emploie ne se fabrique pas.
-- Un cycle (marche, attente) seulement s'il revient au moins deux fois ou porte le récit.
+- La liste des poses se tire du storyboard, plan par plan, et s'arrête là.
 
 ## Timeline d'actions
 
@@ -51,7 +50,7 @@ Les actions se calent sur les temps forts du script, pas l'inverse :
 
 - **Lottie**, par l'adaptateur Lottie d'HyperFrames (skill `hyperframes:hyperframes-animation`, `adapters/lottie.md`). Le personnage est animé dans After Effects et exporté en JSON Lottie, ou fourni par un animateur. Fichier local dans `assets/`, lecture jamais automatique (`autoplay: false`), boucle déclarée explicitement (`loop`), chaque animation enregistrée sur `window.__hfLottie`. HyperFrames lit toutes les animations Lottie sur le temps de la composition, sans décalage de départ propre à chacune : une action qui commence à 4 s commence à 4 s dans le fichier, donc toute la performance d'un personnage tient dans un seul fichier. Le décor et les textes autour se posent sur la timeline GSAP. Exemple fonctionnel dans le registre : `npx hyperframes add lottie-character-walk`.
 - **Marionnette SVG articulée**. Un groupe `<g>` par partie du rig, imbriqués comme le squelette (l'avant-bras dans le bras), le pivot réglé avec `transformOrigin` (ou `svgOrigin`, en coordonnées du SVG) de GSAP. Une pose est un jeu d'angles ; passer d'une pose à l'autre, c'est animer ces angles sur la timeline en pause. Couleurs par les variables de `brand.css`, aucune `transform` CSS de départ sur ce que GSAP anime.
-- **Silhouette à l'encre**, avec `ink-puppet` (`08-video/lib/ink-theater/ink-puppet.js`) : un bonhomme en traits d'encre, animé par des clips de capture de mouvement réels. On choisit des clips nommés (marche, course, salut…), on ne règle pas le mouvement à la main. Voir `references/encre.md`.
+- **Silhouette à l'encre**, avec `ink-puppet` (`08-video/lib/ink-theater/ink-puppet.js`) : un bonhomme en traits d'encre, animé par des clips de capture de mouvement réels. Le mouvement vient des clips de `InkClips`, ou d'un clip ajouté avec `bvh2clip.py` ; la composition règle la position, l'échelle et l'enchaînement. Voir `references/encre.md`.
 
 ## Limites
 

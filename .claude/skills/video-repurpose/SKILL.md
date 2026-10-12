@@ -18,7 +18,7 @@ Une vidéo longue contient des moments qui tiennent seuls. Cette skill les trouv
 ## Avant de couper : droits et source
 
 - **Droits.** Accord des personnes filmées pour une réutilisation en clips, invités compris : vérifier que l'accord donné pour l'événement couvre des extraits diffusés sur les réseaux, et le noter dans `decisions.md`. Sans accord établi, s'arrêter et le dire.
-- **Nature de la source.** Vidéo ou audio seul ; une personne, un entretien ou une table ronde ; qualité du son. Une source audio seule donne des clips sans visage à recadrer : visuel de marque animé par `motion-design` et sous-titres. Un son médiocre se nettoie avant la transcription.
+- **Ce que la source permet.** Y a-t-il une image exploitable, ou seulement du son ? Combien de personnes parlent ? Le son est-il propre ? Sans image, les clips reposent sur un visuel de marque animé par `motion-design` et sur les sous-titres. Un son médiocre se nettoie avant la transcription.
 - **Rangement.** La source dans `rushes/`, la notation dans `candidats.md`, les extraits de texte des clips dans `clips/`, les rendus dans `exports/`.
 
 ## Étape 1 : transcription horodatée au mot
@@ -36,8 +36,8 @@ whisper-cli -m <modèle> -f rushes/source.wav -l fr -oj -ml 1 -sow -of rushes/tr
 ## Étape 2 : repérer les candidats
 
 - **Unités de sens de 20 à 90 s** : une idée complète, avec son entrée et sa chute. Fourchette de travail, à resserrer selon la plateforme visée (`08-video/formats.md`).
-- Moments à chercher : une idée dite simplement, une affirmation qui surprend, un conseil applicable, une histoire courte, un désaccord, une formule qui reste.
-- Couvrir toute la source, pas seulement la première demi-heure ; varier les intervenants et les sujets.
+- Repérer les passages où l'intervenant change de ton, donne un exemple précis ou répond franchement à une question : ce sont de bons candidats.
+- Lire la transcription en entier avant de choisir.
 - Noter chaque candidat dans `candidats.md` : numéro, début et fin, intervenant, première et dernière phrase, sujet.
 
 ## Étape 3 : noter
@@ -58,7 +58,7 @@ Tableau de notation type, dans `candidats.md` (valeurs d'exemple) :
 | 2 | 00:31:10 | 00:32:20 | 70 s | LinkedIn | 2 | 1 | 4 | 4 | 3 | 14 | écarté : commence par « donc », renvoie à la démo |
 | 3 | 00:44:30 | 00:45:02 | 32 s | Reels | 5 | 4 | 3 | 5 | 5 | 22 | retenu |
 
-Le total classe, il ne décide pas seul : un clip noté 1 en autonomie est écarté quel que soit son total. Classer par qualité, pas par ordre d'apparition, et écarter franchement les candidats faibles plutôt que de remplir un quota.
+Le total classe, il ne décide pas seul : un clip noté 1 en autonomie est écarté quel que soit son total. Le nombre de clips livrés dépend de ce que la source contient de bon, pas d'un objectif fixé d'avance ; l'ordre de publication se décide à l'étape 9.
 
 ### Test « se comprend sans contexte »
 
@@ -66,8 +66,8 @@ Lire la transcription du clip seule, comme quelqu'un qui n'a pas vu la vidéo :
 
 - renvoie-t-elle à un passage antérieur (« comme on l'a vu », « sur ce slide », « pour répondre à ta question ») ?
 - commence-t-elle par un connecteur (« donc », « et », « du coup », « comme je disais ») ?
-- contient-elle un pronom dont on ne sait pas ce qu'il désigne (« il », « ça », « ce truc ») ?
-- s'arrête-t-elle avant la chute ?
+- « il », « ça », « ce truc » : sait-on de qui ou de quoi l'on parle ?
+- la dernière phrase conclut-elle, ou le clip coupe-t-il avant la réponse ?
 
 Une réponse oui : élargir le clip (reprendre la phrase d'avant), couper ailleurs, ajouter un carton de contexte d'une ligne, ou écarter. Un carton situe, il ne fait pas dire.
 
@@ -118,6 +118,16 @@ python3 08-video/scripts/qa-video.py 08-video/projets/<slug>/exports/<slug>-clip
 - Une entrée par clip dans `02-strategy/calendar/calendar.md` : plateforme, date visée, statut, vidéo source.
 - Espacer les publications selon la cadence du canal, et intercaler d'autres contenus : une série de clips ne se publie pas d'un bloc.
 - Anti-répétition : vérifier dans le calendrier et `_templates/inventory.md` qu'un sujet n'a pas déjà été publié récemment, et ne pas publier deux clips sur la même idée la même semaine.
+
+## Checklist avant livraison
+
+- [ ] Accord des personnes filmées couvrant les extraits, noté dans `decisions.md`
+- [ ] Liste des clips notée dans `candidats.md`, test « se comprend sans contexte » passé, liste validée par un humain avant tout montage
+- [ ] Coupes au mot, sans changement de sens ; texte de chaque clip dans `clips/clip-<nn>.txt`
+- [ ] Recadrage 9:16 ou 1:1 vérifié plan par plan : visage et zone utile dans le cadre
+- [ ] Sous-titres incrustés (`captions`), lower-third au nom et à la fonction validés par la personne
+- [ ] `qa-video.py` par clip avec `--script clips/clip-<nn>.txt`, revue `video-reviewer` traitée, revue humaine faite
+- [ ] Une entrée de calendrier par clip, publications espacées, aucun doublon de sujet avec l'inventaire
 
 ## Ce que cette skill ne fait pas
 

@@ -32,7 +32,7 @@ Constituer et indexer le corpus ne coûte aucun crédit. Une voix ou une musique
 
 ## Étape 1 : brief thématique et thèse
 
-Dans `brief.md` : la question du film en une ligne, la thèse que le spectateur doit pouvoir formuler à la fin, le registre (grave, ironique, contemplatif, urgent), la durée, la destination et sa toile, avec ou sans voix, la musique envisagée et sa licence. → **Validation 1.**
+Dans `brief.md` : la question du film en une ligne, la thèse que le spectateur doit pouvoir formuler à la fin, le registre du film, la durée, la destination et sa toile, avec ou sans voix, la musique envisagée et sa licence. → **Validation 1.**
 
 ## Étape 2 : découper en emplacements
 
@@ -83,7 +83,7 @@ Si le film a une voix : script minuté selon `08-video/narration.md`, écrit sur
 - Chaque archive devient un plan `<video>` muet, avec `data-start`, `data-duration` et `data-media-start` (le point d'entrée dans le clip) ; le son passe par des `<audio>` séparés.
 - **Étalonnage commun** : le parti retenu dans `08-video/documentaire.md` (noir et blanc assumé, grain commun ou table de correspondance commune), appliqué à tous les plans, jamais clip par clip. Les traitements d'image d'HyperFrames sont décrits par la skill `hyperframes:media-use`.
 - **Date et source à l'écran** quand l'archive porte un fait : rôle `label` de `frame.md`, discret, en zone sûre.
-- **Montage par temps forts** : les plans tenus là où l'image le mérite, les coupes franches de `08-video/montage.md`, un silence sur le moment le plus fort.
+- **Montage par temps forts** : les plans qui portent la thèse restent plus longtemps à l'écran ; coupes franches de `08-video/montage.md` ; un silence sur le moment le plus fort.
 - Rendu seulement après l'accord de l'humain sur l'aperçu.
 
 ## Étape 8 : crédits
@@ -101,13 +101,24 @@ python3 08-video/scripts/qa-video.py 08-video/projets/<slug>/exports/<slug>-<pla
   --plateforme <reels|tiktok|shorts|linkedin> --duree <secondes> --script 08-video/projets/<slug>/script.md
 ```
 
-- Sans voix : pas de `--script`. Destination site ou YouTube : sans `--plateforme`.
+- Sans piste son : `--sans-audio`. Sans voix (musique seule) : sans `--script` ; une colonne Voix vide dans `script.md` désactive de toute façon la vérification de couverture. Destination site ou YouTube : sans `--plateforme`.
 - Un film contemplatif tient des plans longs à dessein : relever `--max-plan` (ou `0` pour couper ce contrôle) et noter la raison dans `decisions.md`.
 - Puis l'agent `video-reviewer`, deux tours de correction au plus, et la revue humaine du rendu final (`video-production` § « QA et revue »).
 
 ## Coûts
 
 Les sources du corpus sont gratuites. Ce qui se dépense : le temps de téléchargement et d'indexation (le premier `index` télécharge en plus les poids du modèle), la place disque du corpus, et, s'il y en a, la voix et la musique payantes, sous le contrat de coût de `video-production`.
+
+## Checklist avant livraison
+
+- [ ] Question du film, thèse et registre validés (validation 1)
+- [ ] Découpage en emplacements validé avant `corpus.py build` ; descriptions et requêtes en anglais
+- [ ] `selections.json` réduit aux clips choisis et validé sur la planche des images clés, avec `storyboard.md` (validation 3)
+- [ ] Aucun contresens ni anachronisme ; date et source à l'écran quand l'archive porte un fait ; aucun visage de particulier sans droit
+- [ ] Un seul parti d'étalonnage pour tout le film ; aucun agrandissement par IA ni colorisation non déclarés
+- [ ] Licences du défaut, ou élargissement consigné dans `decisions.md` ; musique sous licence établie
+- [ ] `credits.md` produit par `corpus.py credits --selection`, repris au générique ou en légende, copié dans le projet
+- [ ] `qa-video.py` et `video-reviewer` passés ; revue humaine du rendu final faite
 
 ## Ce que cette skill ne fait pas
 

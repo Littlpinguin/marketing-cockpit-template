@@ -101,8 +101,8 @@ Ces repères valent pour Reels, TikTok, Shorts et la vidéo LinkedIn. Les chiffr
 
 Aucun nombre de mots par durée n'est fixé ici : le débit dépend de la voix, de la langue et du ton. Il se mesure.
 
-1. Produire l'échantillon de la voix retenue sur un passage représentatif du script (`narration.md` § « Direction de voix »).
-2. Mesurer son débit : mots de l'échantillon divisés par sa durée en secondes, pauses comprises.
+1. Avant la validation du script, et sans rien dépenser : faire lire un passage représentatif par la voix française locale de Kokoro (`ff_siwis`), ou le lire à voix haute, chronomètre en main (`narration.md` § « Calibrer la longueur »). Une voix payante ne s'essaie qu'après la validation du storyboard.
+2. Mesurer le débit : mots du passage divisés par sa durée en secondes, pauses comprises.
 3. Budget de mots : débit multiplié par la durée visée, moins une marge pour les respirations, le silence du temps fort et la tenue de l'appel à l'action final.
 4. Couper le texte pour tenir ce budget avant toute génération complète. Jamais accélérer la voix pour faire entrer un texte trop long.
 
@@ -113,11 +113,11 @@ Détail et exemple de calcul : `narration.md` § « Calibrer la longueur ».
 - Une idée par carton. Deux niveaux de texte simultanés au plus (un titre et une ligne d'appui, ou un carton et les sous-titres).
 - Durée d'affichage : au moins le temps de lire le carton deux fois à voix basse. Vérification : lecture chronométrée sur le rendu, par quelqu'un qui découvre le texte.
 - Tailles de départ des rôles typographiques : celles du `frame.md` que `08-video/scripts/brand-frame.py` écrit pour chaque projet (doctrine : `motion.md` § « Repères typographiques »). Les vérifier sur un téléphone réel, tenu à bout de bras, avant de valider le storyboard.
-- Vitesse de lecture des sous-titres : elle se compte en caractères par seconde, espaces et ponctuation compris. Repère publié en français : entre 12 et 15 caractères par seconde, deux lignes au plus ([charte du CSA de la Fédération Wallonie-Bruxelles relative à la qualité des mesures d'accessibilité, 2019, article 6](https://www.csa.be/wp-content/uploads/documents-csa/20191015-Charte-accessibilité.pdf)). Contrôle : diviser le nombre de caractères de chaque segment du `.srt` par sa durée. Un segment de 30 caractères demande donc au moins 2 secondes.
+- Vitesse de lecture des sous-titres : elle se compte en caractères par seconde ; convention de ce module, les espaces et la ponctuation comptent. Repère publié en français : entre 12 et 15 caractères par seconde, deux lignes au plus ([charte du CSA de la Fédération Wallonie-Bruxelles relative à la qualité des mesures d'accessibilité, 2019, article 6](https://www.csa.be/wp-content/uploads/documents-csa/20191015-Charte-accessibilité.pdf)). Les segments de la section « Sous-titres » ci-dessus (une ou deux lignes de 42 caractères au plus, 1 à 3 s) s'y plient en restant courts : à 15 caractères par seconde, 3 s portent 45 caractères, donc une ligne pleine ; un segment de deux lignes demande plus de temps, ou se coupe en deux. Contrôle : diviser le nombre de caractères de chaque segment du `.srt` par sa durée.
 
 ### Zones de sécurité selon la toile
 
 - **9:16 (1080 × 1920)** : marges de la section « Zones de sécurité (9:16) » ci-dessus, soit 200 px en haut, 420 px en bas, 60 px à gauche et 160 px à droite.
-- **1:1 (1080 × 1080) et 16:9 (1920 × 1080)** : marge de titre de 5 % de chaque dimension, soit 54 px sur un côté de 1080 px et 96 px sur un côté de 1920 px. En 1:1, 54 px partout ; en 16:9, 54 px en haut et en bas, 96 px à gauche et à droite.
+- **1:1 (1080 × 1080) et 16:9 (1920 × 1080)** : convention de ce module, une marge de titre de 5 % de chaque dimension, soit 54 px sur un côté de 1080 px et 96 px sur un côté de 1920 px. En 1:1, 54 px partout ; en 16:9, 54 px en haut et en bas, 96 px à gauche et à droite. Elle se vérifie à l'œil sur le rendu.
 - `brand-frame.py` reprend ces valeurs dans le `frame.md` de chaque projet (clés `safe-top`, `safe-bottom`, `safe-left`, `safe-right`) : les compositions les lisent là, sans les recopier.
 - `qa-video.py` ne mesure pas les zones de sécurité. L'agent `video-reviewer` les vérifie à l'œil sur les images de plans (`plan-NN.jpg`) et la planche contact que produit la QA.

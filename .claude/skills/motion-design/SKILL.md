@@ -7,7 +7,7 @@ description: Passerelle entre la marque de {{COMPANY_NAME}} et HyperFrames pour 
 
 Cette skill porte la marque jusqu'à HyperFrames pour tout ce qui bouge : titres, chiffres, data visualisation, habillages, lower-thirds, logos animés, transitions de marque, scènes 3D, personnages, animation à l'encre, plan Manim inséré. Elle est appelée par `video-production`, qui a choisi la filière, tient les validations et le budget. Ici, on décide comment la marque se voit et comment la composition se construit sans casser le rendu.
 
-## Charger
+## Références à charger
 
 - `01-brand/style-guide.md` : palette, polices, style d'illustration, tropes bannis.
 - `01-brand/design-anti-generique.md` : marqueurs du look générique et méthode pour s'en écarter.
@@ -51,7 +51,7 @@ python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --ch
 | `--font-display`, `--font-mono` | Police de la marque ; police mono des mentions (`label`) |
 | `--radius-card`, `--radius-cta`, `--radius-badge` | Rayons des cartes, boutons et pastilles |
 
-**Police.** HyperFrames rend sans réglage les polices qu'il embarque ; une autre police nommée déclenche l'avertissement de lint `font_family_without_font_face` et peut dépendre du réseau au rendu. Quand la police de marque n'est pas embarquée, déposer ses fichiers dans le projet (`assets/fonts/`) et les déclarer par `@font-face`, après avoir vérifié dans `01-brand/droits.md` que sa licence autorise l'embarquement et le rendu vidéo.
+**Police.** HyperFrames rend sans réglage les polices qu'il embarque ; une autre police nommée déclenche l'avertissement de lint `font_family_without_font_face` et peut dépendre du réseau au rendu. Quand la police de marque n'est pas embarquée, déposer ses fichiers dans le projet (`assets/fonts/`, avec un nom de fichier qui commence par le nom de la famille, ce que cherche aussi le script de sous-titres des workflows) et les déclarer par `@font-face`, après avoir vérifié dans `01-brand/droits.md` que sa licence autorise l'embarquement et le rendu vidéo. Sous-titres aux couleurs de la marque dans un workflow HyperFrames : `video-production` § « Passer la main à HyperFrames ».
 
 Ne jamais éditer `frame.md` ni `brand.css` à la main : changer les tokens, puis relancer `brand-frame.py`.
 
@@ -66,7 +66,7 @@ Méthode dans `08-video/motion.md` :
 
 - **`hyperframes:motion-graphics`** : une pièce courte, sans voix, où le mouvement est le message (titre animé, chiffre, logo, lower-third, carte, graphique). Sa fiche de route la situe en général sous 10 s. Elle travaille en autonomie, sans storyboard : la validation du storyboard se fait avant, sur `storyboard.md` (`video-production`).
 - **`hyperframes:general-video`** : composition libre en plusieurs scènes, narrée ou non, et tout ce qui dépasse une pièce courte (encre, 3D, personnages, montage d'archives, plan Manim inséré).
-- **Blocs prêts à l'emploi** : avant d'écrire un effet à la main, chercher dans le registre avec la skill `hyperframes:hyperframes-registry` (`npx hyperframes catalog --query "<effet décrit en anglais>"`, le catalogue est indexé en anglais ; puis `npx hyperframes add <nom>`). Un bloc est une pièce de la composition, pas la composition. Le filtrer par la marque : ses couleurs et polices remplacées par les variables de `brand.css`, et refusé s'il relève des interdits de `08-video/motion.md` (glitch, flash, zoom de transition, particules décoratives).
+- **Blocs prêts à l'emploi** : avant d'écrire un effet à la main, chercher dans le registre avec la skill `hyperframes:hyperframes-registry` (`npx hyperframes catalog --query "<effet décrit en anglais>"`, le catalogue est indexé en anglais ; puis `npx hyperframes add <nom>`). Un bloc s'insère dans la composition, il ne la remplace pas. Le filtrer par la marque : ses couleurs et polices remplacées par les variables de `brand.css`, et refusé s'il relève des interdits de `08-video/motion.md` (glitch, flash, zoom de transition, particules décoratives).
 
 Le passage de la main à HyperFrames (création du projet, `BRIEF.md`, rendu) est décrit dans `video-production` § « Passer la main à HyperFrames ».
 
@@ -95,7 +95,7 @@ Charger seulement celle dont la vidéo a besoin :
 - `references/encre.md` : le style dessiné à la main du moteur `08-video/lib/ink-theater/`. Installation, squelette de composition, couleurs de marque, clips de mouvement.
 - **Manim** : pour une démonstration conceptuelle ou mathématique, `manim-composer` planifie la scène, puis `manim-ce` écrit le code. Le rendu MP4 entre comme un plan `<video>` de la composition HyperFrames, qui garde l'habillage de marque.
 
-## Check-list avant livraison
+## Checklist avant livraison
 
 - [ ] `frame.md` et `brand.css` générés par `brand-frame.py` ; `--check` sort 0
 - [ ] Aucune couleur, police ni rayon en dur : uniquement les variables de `brand.css`

@@ -7,19 +7,17 @@ Chargée par `motion-design` et `video-production` pour tout ce qui est animé :
 - **Le mouvement sert le message.** Chaque animation montre quelque chose : une relation (ceci entraîne cela), une hiérarchie (ceci d'abord), une transformation (avant, après), une quantité (ce chiffre grandit). Un mouvement qui ne montre rien se supprime.
 - **La marque est dans les atomes.** Couleurs, polices, graisses et rayons viennent de `frame.md` et `brand.css`, générés depuis `01-brand/tokens.json` par `08-video/scripts/brand-frame.py`. Aucune valeur écrite à la main dans une composition.
 - **La composition est libre.** Mise en page, rythme et métaphore visuelle se décident pour chaque vidéo. Deux vidéos de la marque se reconnaissent à leurs atomes, pas à un gabarit commun.
-- **Un objet signature, rare.** Si la vidéo a un élément visuel qui lui est propre (une forme, un geste, un motif), il revient sur un ou deux temps forts, pas sur chaque scène. Répété partout, il devient un gabarit.
+- **Un objet signature, rare.** Si la vidéo a un élément visuel qui lui appartient (une forme, un geste, un motif), le garder pour les moments qui comptent. Présent dans chaque scène, il ne signale plus rien et devient un gabarit.
 
 ## Profil de goût
 
-Avant toute production, une phrase de lecture : ce que la vidéo doit faire comprendre ou ressentir, à qui, sur quelle plateforme. « Moderne et épuré » n'est pas une lecture ; « un dirigeant de PME comprend, sans le son, quelle tâche l'outil lui retire » en est une.
+Avant toute production, une phrase de lecture qui nomme un spectateur précis, la situation dans laquelle il regarde et ce qu'il doit retenir. Exemple : « un dirigeant de PME, qui fait défiler LinkedIn sans le son, retient quelle tâche l'outil lui retire ».
 
 Puis trois curseurs, notés de 1 à 5 et consignés dans `decisions.md` avec une ligne de justification :
 
-- **Densité**, de 1 (de l'air : une idée par plan, du vide autour) à 5 (du plein : données, couches et appuis superposés).
-- **Énergie du mouvement**, de 1 (posé : tenues longues, entrées douces) à 5 (nerveux : changements rapprochés, accents marqués).
-- **Audace**, de 1 (sobre : la marque parle par la justesse) à 5 (signature : un parti pris qui se remarque et se discute).
-
-Les notes se lisent ensemble. Énergie haute et densité basse donnent des temps courts et nets, pas des schémas chargés. Densité haute et énergie basse donnent des cadres stables et des tenues assez longues pour lire.
+- **Densité** : ce que le spectateur a à lire dans un même plan. À 1, il lit une seule chose ; à 5, il parcourt un ensemble (un graphique et ses légendes, plusieurs chiffres).
+- **Énergie du mouvement** : la vitesse à laquelle l'image change. À 1, elle laisse le temps de regarder ; à 5, elle relance l'attention sans arrêt.
+- **Audace** : l'écart avec les conventions visuelles du secteur. À 1, la vidéo s'y tient et soigne l'exécution ; à 5, elle tente un parti pris qu'on retient, et qu'on peut discuter.
 
 Articulation avec la skill `design-taste`, qui pose les mêmes curseurs côté web (`VISUAL_DENSITY`, `MOTION_INTENSITY`, `DESIGN_VARIANCE`, notés de 1 à 10) : une note vidéo vaut à peu près la moitié de la note web. Quand une campagne a une landing et une vidéo, partir des curseurs de la landing et les ramener à l'échelle vidéo plutôt que d'en inventer d'autres.
 
@@ -38,7 +36,7 @@ Si les réponses sont non, oui et aucun : retravailler avant de rendre, en reven
 ## Promesse de mouvement et variété
 
 - Une vidéo promise « en mouvement » (motion design, animation, explainer animé) ne retombe jamais en diaporama d'images fixes zoomées lentement. Si les outils disponibles ne permettent pas le mouvement promis, le dire avant de produire et proposer une autre filière ou un autre format. Jamais de substitution silencieuse.
-- Jamais trois scènes du même type d'affilée (trois cartons de texte, trois chiffres, trois illustrations) : chaque scène a son sujet visuel principal, différent de celui de la précédente.
+- Jamais trois scènes du même type d'affilée (trois cartons de texte, trois chiffres, trois illustrations). Deux scènes qui se suivent changent au moins de forme : un texte puis une image, un plan large puis un détail, un chiffre puis un geste.
 - Le constat `fige` de `08-video/scripts/qa-video.py` (image figée 2 s ou plus) se lit comme un signal : tenue voulue sur un temps fort, ou plan mort à animer. Même lecture pour le constat `plan-long`.
 
 ## Choisir le moteur
@@ -94,11 +92,11 @@ Pour une démonstration conceptuelle ou mathématique : la skill `manim-composer
 ## Interdits
 
 - Effets génériques : glitch, flash blanc, zoom de transition, particules décoratives, sauf si la marque les revendique dans `01-brand/style-guide.md`.
-- Presets visuels d'HyperFrames (`frame-presets`) dans un projet client : le `frame.md` généré par `brand-frame.py` fait foi.
+- Presets visuels d'HyperFrames (`frame-presets`) dans un projet client : le `frame.md` généré par `brand-frame.py` fait foi. Seule exception admise : la peau de sous-titres d'un preset, que le script de sous-titres des workflows repeint avec les couleurs et les polices de `frame.md` (`video-production` § « Passer la main à HyperFrames »).
 - Toute couleur hors palette, tout dégradé autre que celui de la marque, toute police hors tokens.
 - Les tropes bannis de `01-brand/style-guide.md` : {{BRAND_BANNED_VISUALS}}.
 - Le logo animé en ouverture : le logo vient au plan de fin, ou discret en zone sûre (`frame.md`).
-- Le texte en double : un sous-titre qui répète mot pour mot un carton affiché au même moment. Chaque texte a un seul rôle.
+- Un carton et un sous-titre qui affichent la même phrase au même moment : en garder un.
 
 ---
 
