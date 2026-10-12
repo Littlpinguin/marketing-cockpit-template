@@ -130,3 +130,33 @@ path = "01-brand/style-guide.md"
 mode = "block"
 selector = ":root"
 auto = ["color", "gradient", "font", "radius"]
+
+# Tokens du module vidéo : le fichier de marque des projets HyperFrames.
+# 08-video/scripts/brand-frame.py le recopie dans chaque projet, à côté de
+# frame.md. Mêmes noms que les decks pour les variables communes. Valeurs
+# littérales : frame.md et la QA lisent des hex. Textes sur fond sombre
+# poussés à 4,5:1 (les sous-titres et cartons se posent souvent sur la
+# couleur sombre de la marque).
+[[targets]]
+path = "08-video/lib/brand.css"
+mode = "block"
+indent = "  "
+
+[targets.vars]
+"--brand-primary" = "color.primary"
+"--brand-primary-deep" = { token = "color.primary", mix = "#000000", amount = 0.12 }
+"--brand-primary-soft" = { token = "color.primary", alpha = 0.12 }
+"--brand-accent" = "color.accent"
+"--brand-accent-soft" = { token = "color.accent", alpha = 0.18 }
+"--brand-dark" = "color.dark"
+"--brand-light" = "color.light"
+"--brand-white" = "color.white"
+"--brand-gradient" = "gradient.signature"
+"--brand-gradient-vertical" = { token = "gradient.signature", angle = "180deg" }
+"--brand-text-on-dark" = { token = "color.light", mix = "#FFFFFF", min_contrast = 4.5, against = "color.dark" }
+"--brand-accent-on-dark" = { token = "color.accent", mix = "#FFFFFF", min_contrast = 4.5, against = "color.dark" }
+"--font-display" = "font.display"
+"--font-mono" = "font.mono"
+"--radius-card" = "radius.card"
+"--radius-cta" = "radius.cta"
+"--radius-badge" = "radius.badge"

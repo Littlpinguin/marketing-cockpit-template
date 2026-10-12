@@ -200,7 +200,8 @@ def test_deck_d_une_marque_fictive_passe_la_qa(tmp_path):
     (root / "01-brand/style-guide.md").write_text(
         (REPO / "_templates/brand/style-guide.md").read_text(encoding="utf-8"), encoding="utf-8")
     # Toutes les cibles « block » de build-tokens.toml doivent exister dans la racine jetable.
-    for rel in (new_deck.STARTER, new_deck.TOKENS, "05-web-content/templates/assets/tokens.css"):
+    for rel in (new_deck.STARTER, new_deck.TOKENS, "05-web-content/templates/assets/tokens.css",
+                "08-video/lib/brand.css"):
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_text((REPO / rel).read_text(encoding="utf-8"), encoding="utf-8")
 

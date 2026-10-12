@@ -1,0 +1,41 @@
+/* ============================================================
+   VIDEO BRAND TOKENS · the brand file of the 08-video module
+   ------------------------------------------------------------
+   HyperFrames compositions read their brand from this file,
+   copied next to frame.md in every project by
+   08-video/scripts/brand-frame.py. No colour, font or radius is
+   ever written by hand in a composition.
+
+   The lines between the brand-tokens markers are GENERATED from
+   01-brand/tokens.json by scripts/build-tokens.py (target in
+   scripts/build-tokens.toml). Never edit them by hand: change
+   tokens.json, re-run the script; `--check` flags any drift.
+   Same variable names as the slides engine, so a fragment moves
+   from a deck to a video without renaming.
+
+   Before the wizard, the block carries the NEUTRAL EXAMPLE
+   PALETTE of docs/placeholders.json.
+   ============================================================ */
+
+:root {
+  /* brand-tokens:start */
+  /* Généré depuis 01-brand/tokens.json (python3 scripts/build-tokens.py). Ne pas éditer. */
+  --brand-primary: #1E40AF;
+  --brand-primary-deep: #1A389A;
+  --brand-primary-soft: rgba(30, 64, 175, 0.12);
+  --brand-accent: #F59E0B;
+  --brand-accent-soft: rgba(245, 158, 11, 0.18);
+  --brand-dark: #0F172A;
+  --brand-light: #F8FAFC;
+  --brand-white: #FFFFFF;
+  --brand-gradient: linear-gradient(90deg, #1E40AF 0%, #F59E0B 100%);
+  --brand-gradient-vertical: linear-gradient(180deg, #1E40AF 0%, #F59E0B 100%);
+  --brand-text-on-dark: #F8FAFC;
+  --brand-accent-on-dark: #F59E0B;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Menlo', monospace;
+  --radius-card: 16px;
+  --radius-cta: 999px;
+  --radius-badge: 999px;
+  /* brand-tokens:end */
+}
