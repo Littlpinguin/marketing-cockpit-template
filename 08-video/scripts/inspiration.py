@@ -21,8 +21,13 @@ casse) dans le titre, le prompt et les techs, puis par date d'ajout décroissant
 mots courts (moins de 4 lettres) se comparent entiers, les autres par leur début
 (« particle » trouve « particles »). La requête s'écrit en anglais : les prompts le sont.
 
+Un cache daté du futur compte comme périmé. En sortie texte, les champs tiers
+(titre, auteur, liens, techs) sont mis sur une ligne et bornés : ils ne peuvent ni
+forger de lignes ni noyer le terminal ; la sortie JSON les rend tels quels.
+
 Codes de sortie : 0 résultat(s) ; 1 aucun résultat (ou slug inconnu) ; 2 erreur
-d'usage, requête vide, ou ni réseau ni cache utilisable (source illisible comprise).
+d'usage (adresse ou port de source invalide compris), requête vide, ou ni réseau ni
+cache utilisable (source illisible comprise).
 """
 from __future__ import annotations
 
@@ -46,14 +51,17 @@ VALIDITE_JOURS = 7
 TAILLE_MAX = 32 * 1024 * 1024          # octets lus au plus, source comme cache
 DELAI = 30                             # secondes
 EXTRAIT_MAX = 240                      # caractères
+CHAMP_MAX = 160                        # caractères d'un titre, d'un auteur ou de la liste des techs affichés
+LIEN_MAX = 300                         # caractères d'un lien affiché
 TOP_DEFAUT = 8
 CATEGORIES = ("motion", "explainer", "3d", "interactive")
 SCHEMAS = ("http", "https")
 USER_AGENT = "marketing-cockpit-template-inspiration/1.0 (+https://github.com/Littlpinguin/marketing-cockpit-template)"
 RAPPEL = "Chaque vidéo et chaque prompt appartient à son créateur : s'en inspirer, ne rien recopier."
 # Données tierces affichées dans un terminal : on retire les caractères de contrôle (séquences d'échappement
-# comprises) et les marques de réécriture du sens de lecture. Retours à la ligne et tabulations restent.
-CARACTERES_DE_CONTROLE = re.compile("[\x00-\x08\x0b-\x1f\x7f-\x9f\u202a-\u202e\u2066-\u2069]")
+# comprises), les marques de réécriture du sens de lecture et les demi-paires UTF-16 isolées (« \ud83d »
+# seul, valide en JSON mais ni encodable ni affichable). Retours à la ligne et tabulations restent.
+CARACTERES_DE_CONTROLE = re.compile("[\x00-\x08\x0b-\x1f\x7f-\x9f\u202a-\u202e\u2066-\u2069\ud800-\udfff]")
 MOTS_VIDES = frozenset(
     "a an the of and or to in on at with for from by is are it this that into as i "
     "le la les l d de du des un une et ou en au aux avec pour sur par dans".split())
@@ -100,13 +108,18 @@ def extrait(prompt: str, limite: int = EXTRAIT_MAX) -> str:
     return texte if len(texte) <= limite else texte[:limite - 1] + "…"
 
 
+def champ(texte: str | None, limite: int = CHAMP_MAX) -> str:
+    """Un champ tiers pour l'affichage texte : sur une seule ligne, borné."""
+    return extrait(texte or "", limite)
+
+
 def etiquette(video: dict) -> str:
     """Le titre, ou à défaut le début du prompt."""
-    titre = compacter(video["title"] or "")
+    titre = champ(video["title"])
     if titre:
         return titre
     debut = extrait(video["prompt"], 72)
-    return debut or video["slug"]
+    return debut or champ(video["slug"])
 
 
 # ------------------------------------------------------------------ données
@@ -182,6 +195,10 @@ def classer_source(source: str) -> tuple[str, str]:
     except ValueError:
         raise ErreurFatale("adresse de source invalide") from None
     if schema in SCHEMAS:
+        try:
+            urllib.parse.urlsplit(source).port           # « :abc » ou « :99999 » lèvent ValueError
+        except ValueError:
+            raise ErreurFatale("adresse de source invalide : port non numérique ou hors de 0 à 65535") from None
         return "url", source
     if schema:
         raise ErreurFatale(f"adresse refusée : {schema}:// (http et https seulement)")
@@ -280,19 +297,26 @@ def lire_cache(chemin: Path) -> dict | None:
 
 
 def cache_frais(cache: dict) -> bool:
-    return cache["recupere"] is not None and \
-        datetime.now(timezone.utc) - cache["recupere"] <= timedelta(days=VALIDITE_JOURS)
+    """Récupéré il y a 7 jours au plus. Une date dans le futur (horloge déréglée, cache retouché) est périmée."""
+    if cache["recupere"] is None:
+        return False
+    age = datetime.now(timezone.utc) - cache["recupere"]
+    return timedelta(0) <= age <= timedelta(days=VALIDITE_JOURS)
 
 
 def ecrire_cache(chemin: Path, cle: str, videos: list[dict]) -> None:
-    """Écriture atomique : un cache n'est jamais lu à moitié écrit."""
+    """Écriture atomique : un cache n'est jamais lu à moitié écrit, et un échec ne laisse pas de fichier .tmp.
+
+    JSON en ASCII (ensure_ascii) : un caractère que l'UTF-8 ne sait pas encoder, comme une demi-paire
+    UTF-16 isolée venue de la source, s'écrit échappé au lieu de faire échouer l'écriture.
+    """
     enveloppe = {"source": cle, "recupere": datetime.now(timezone.utc).isoformat(timespec="seconds"), "videos": videos}
     temporaire = chemin.with_name(f"{chemin.name}.{os.getpid()}.tmp")
     try:
         chemin.parent.mkdir(parents=True, exist_ok=True)
-        temporaire.write_text(json.dumps(enveloppe, ensure_ascii=False) + "\n", encoding="utf-8")
+        temporaire.write_text(json.dumps(enveloppe, ensure_ascii=True) + "\n", encoding="utf-8")
         temporaire.replace(chemin)
-    except OSError:
+    except BaseException:
         try:
             temporaire.unlink(missing_ok=True)
         except OSError:
@@ -326,7 +350,7 @@ def charger(args) -> list[dict]:
         raise ErreurFatale(f"source inutilisable ({nom} : {err}) et {suite}") from None
     try:
         ecrire_cache(args.cache, cle, videos)
-    except OSError as err:
+    except (OSError, ValueError) as err:           # UnicodeError dérive de ValueError
         avertir(f"cache non écrit ({type(err).__name__}), la prochaine recherche relira la source")
     return videos
 
@@ -364,23 +388,28 @@ def classer(videos: list[dict], requete_mots: list[str], categorie: str | None, 
 # ------------------------------------------------------------------ sorties
 
 def ligne_auteur(video: dict) -> str:
-    nom = video["author"] or "inconnu"
-    return f"{nom} ({video['author_url']})" if video["author_url"] else nom
+    nom = champ(video["author"]) or "inconnu"
+    lien = champ(video["author_url"], LIEN_MAX)
+    return f"{nom} ({lien})" if lien else nom
+
+
+def ligne_techs(video: dict) -> str:
+    return champ(", ".join(video["tech_tags"])) or "(aucune)"
 
 
 def bloc_resultat(rang: int, score: int, total_mots: int, video: dict) -> str:
     marque = " (prompt partiel)" if video["prompt_partial"] else ""
     lignes = [
-        f"{rang}. {etiquette(video)}  [{video['category'] or 'sans catégorie'}]",
+        f"{rang}. {etiquette(video)}  [{champ(video['category']) or 'sans catégorie'}]",
         f"   mots trouvés : {score} sur {total_mots}",
-        f"   techs : {', '.join(video['tech_tags']) or '(aucune)'}",
+        f"   techs : {ligne_techs(video)}",
         f"   auteur : {ligne_auteur(video)}",
         f"   prompt : {extrait(video['prompt']) or '(vide)'}{marque}",
-        f"   publication : {video['post_url'] or '(aucune)'}",
+        f"   publication : {champ(video['post_url'], LIEN_MAX) or '(aucune)'}",
     ]
     if video["skillry_url"]:
-        lignes.append(f"   skillry : {video['skillry_url']}")
-    lignes.append(f"   slug : {video['slug']}")
+        lignes.append(f"   skillry : {champ(video['skillry_url'], LIEN_MAX)}")
+    lignes.append(f"   slug : {champ(video['slug'])}")
     return "\n".join(lignes)
 
 
@@ -424,18 +453,18 @@ def cmd_montrer(args) -> int:
         afficher_json(video)
         return 0
     lignes = [
-        f"slug : {video['slug']}",
-        f"titre : {video['title'] or '(sans titre)'}",
-        f"catégorie : {video['category'] or '(aucune)'}",
-        f"techs : {', '.join(video['tech_tags']) or '(aucune)'}",
+        f"slug : {champ(video['slug'])}",
+        f"titre : {champ(video['title']) or '(sans titre)'}",
+        f"catégorie : {champ(video['category']) or '(aucune)'}",
+        f"techs : {ligne_techs(video)}",
         f"auteur : {ligne_auteur(video)}",
-        f"ajoutée le : {video['added'] or '(date inconnue)'}",
-        f"publication : {video['post_url'] or '(aucune)'}",
+        f"ajoutée le : {champ(video['added']) or '(date inconnue)'}",
+        f"publication : {champ(video['post_url'], LIEN_MAX) or '(aucune)'}",
     ]
     if video["skillry_url"]:
-        lignes.append(f"skillry : {video['skillry_url']}")
+        lignes.append(f"skillry : {champ(video['skillry_url'], LIEN_MAX)}")
     if video["poster_url"]:
-        lignes.append(f"affiche : {video['poster_url']}")
+        lignes.append(f"affiche : {champ(video['poster_url'], LIEN_MAX)}")
     lignes += ["prompt :", video["prompt"] or "(vide)"]
     if video["prompt_partial"]:
         lignes.append("(prompt partiel)")
@@ -459,9 +488,9 @@ def cmd_categories(args) -> int:
         afficher_json({"total": len(videos), "categories": categories, "techs": techs})
         return 0
     lignes = [f"{len(videos)} vidéo(s) de référence", "catégories :"]
-    lignes += [f"  {nom} : {nombre}" for nom, nombre in categories.items()]
+    lignes += [f"  {champ(nom)} : {nombre}" for nom, nombre in categories.items()]
     lignes.append("techs :")
-    lignes += [f"  {nom} : {nombre}" for nom, nombre in techs.items()]
+    lignes += [f"  {champ(nom)} : {nombre}" for nom, nombre in techs.items()]
     print("\n".join(lignes))
     return 0
 

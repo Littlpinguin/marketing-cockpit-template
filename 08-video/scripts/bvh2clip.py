@@ -69,6 +69,8 @@ CORRESPONDANCES = {
 }
 LICENCE_CMU = "CMU Graphics Lab Motion Capture Database, free for all uses (http://mocap.cs.cmu.edu)"
 NOM_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+# catalogue.json et clips.js vivent dans le même dossier que les clips : ces noms écraseraient l'un ou l'autre.
+NOMS_RESERVES = frozenset({"catalogue", "clips"})
 IDENTITE = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
 CANAUX = frozenset(f"{axe}{nature}" for axe in "XYZ" for nature in ("position", "rotation"))
 
@@ -376,7 +378,8 @@ def ecrire_bundle(dossier: Path) -> Path:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Convertit un BVH en clip 2D pour ink-theater.")
     p.add_argument("bvh", help="fichier BVH")
-    p.add_argument("--nom", required=True, help="nom du clip (minuscules et tirets : marche, coup-de-pied)")
+    p.add_argument("--nom", required=True,
+                   help="nom du clip (minuscules et tirets : marche, coup-de-pied ; « catalogue » et « clips » réservés)")
     p.add_argument("--source", required=True, help='origine citée dans les notices, ex. "CMU 02_01"')
     p.add_argument("--plan", choices=("auto", "frontal", "sagittal"), default="auto")
     p.add_argument("--sur-place", action="store_true", help="annule le déplacement horizontal de la hanche")
@@ -389,6 +392,10 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     if not NOM_RE.fullmatch(args.nom):
         print(f"ERREUR : nom « {args.nom} » invalide (minuscules, chiffres et tirets)", file=sys.stderr)
+        return 2
+    if args.nom in NOMS_RESERVES:
+        print(f"ERREUR : nom « {args.nom} » réservé (fichiers catalogue.json et clips.js du dossier) : "
+              "en choisir un autre", file=sys.stderr)
         return 2
     if not (math.isfinite(args.fps) and args.fps > 0):
         print("ERREUR : --fps doit être un nombre positif et fini", file=sys.stderr)

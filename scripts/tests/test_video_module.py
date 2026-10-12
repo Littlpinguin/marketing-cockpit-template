@@ -621,3 +621,74 @@ def test_modules_ne_relance_pas_doctor_apres_installation():
     assert activation.count("npx --yes hyperframes doctor") == 1
     controle = _ligne(activation, "3. **Contrôler après l'installation**")
     assert "claude plugin list" in controle and "lanceur du plugin" in controle
+
+
+# ------------------------------------------------------------------ revue finale de la branche
+
+def test_doctor_montre_a_l_utilisateur_avant_de_tourner():
+    modules = texte(".claude/commands/modules.md")
+    activation = modules.split("#### Activation du module `video`")[1].split("### Étape 4")[0]
+    accord = activation.split("2. **Montrer à l'utilisateur")[1].split("3. **Contrôler après l'installation**")[0]
+    assert "npx --yes hyperframes doctor" in accord and "attendre son accord" in accord
+    assert "npx --yes hyperframes doctor" not in activation.split("2. **Montrer à l'utilisateur")[0]
+
+
+def test_validations_par_filiere_et_routage_du_reel():
+    production = texte(".claude/skills/video-production/SKILL.md")
+    table = production.split("### Validations et passage de main par filière")[1].split("## Passer la main")[0]
+    for filiere in ("reel-talking-head", "video-repurpose", "video-documentary", "motion-graphics", "manim-composer",
+                    "music-to-video"):
+        assert filiere in table, filiere
+    assert "`storyboard: no`" in table and "`storyboard: yes`" in table
+    routage = _ligne(production, "| Rushes face caméra → reel |")
+    assert routage.index("hyperframes:general-video") < routage.index("hyperframes:talking-head-recut")
+    assert "voie ordinaire" in routage and "déjà coupée et étalonnée" in routage
+    assert "(validation 3), mettre `voice:`" not in production and "après la validation 3, mettre `voice:`" in production
+    assert "Pick the brand" in production and "STORYBOARD.md" in _ligne(production, "- **`hyperframes:music-to-video`.**")
+    for rel in (".claude/skills/reel-talking-head/SKILL.md", ".claude/skills/video-repurpose/SKILL.md"):
+        validations = texte(rel).split("## Où se placent les validations")[1].split("\n## ")[0]
+        for objet in ("**Concept** (validation 1)", "**Script** (validation 2)", "**Storyboard** (validation 3)",
+                      "`storyboard: no`"):
+            assert objet in validations, (rel, objet)
+    assert "`storyboard: no`" in texte(".claude/skills/video-documentary/SKILL.md")
+
+
+def test_talking_head_recut_en_francais_et_a_la_marque():
+    editing = texte(".claude/skills/video-editing/SKILL.md")
+    for terme in ("« Transcribe »", "--model small.en", "--model small --language fr", "transcript.json",
+                  "« Decide Render Strategy »", "brand.css", "decisions.md"):
+        assert terme in editing, terme
+    assert "video-editing`, voie A" in texte(".claude/skills/reel-talking-head/SKILL.md")
+
+
+def test_plans_longs_alignes_sur_montage_et_qa():
+    editing = texte(".claude/skills/video-editing/SKILL.md")
+    assert "plus de 5 s" not in editing and "jamais plus de 4 s" in editing and "plan-long" in editing
+    assert "Jamais plus de 4 s sans rupture" in texte("08-video/montage.md")
+
+
+def test_transcriptions_au_mot_coherentes():
+    reel = texte(".claude/skills/reel-talking-head/SKILL.md")
+    assert "-ar 16000 rushes/audio.wav" in reel and "-ml 1 -sow" in reel
+    repurpose = texte(".claude/skills/video-repurpose/SKILL.md")
+    etape4 = repurpose.split("## Étape 4")[1].split("## Étape 5")[0]
+    assert "rushes/transcription.json" in etape4 and "rushes/transcript.json" in etape4
+    assert "-d rushes" in repurpose
+
+
+def test_mineurs_de_la_revue_finale():
+    motion = texte(".claude/skills/motion-design/SKILL.md")
+    assert "../exports/<slug>-<plateforme>.mp4" in motion and "<fichier>.mp4" not in motion
+    documentaire = texte(".claude/skills/video-documentary/SKILL.md")
+    assert "champ `nom`" in documentaire and 'nom = "savoir-faire"' in documentaire
+    for skill in ("manim-composer", "manim-ce"):
+        note = texte(f".claude/skills/{skill}/SKILL.md")
+        assert "-r 1080,1920" in note and "1920 × 1080" in note, skill
+    unreleased = texte("CHANGELOG.md").split("## [Unreleased]")[1].split("\n## [")[0]
+    migration = unreleased.split("**Migration (configured forks).**")[1]
+    assert "AAAA-MM-JJ-<sujet>" in migration and "`statut`" in migration
+    assert "install and version-tracking path" in texte("README.md")
+    inspiration = texte("08-video/inspiration.md")
+    assert "hyperframes:product-launch-video" in _ligne(inspiration, "| `motion` |")
+    for terme in ("`--source`", "`--cache`", "4 lettres"):
+        assert terme in inspiration, terme

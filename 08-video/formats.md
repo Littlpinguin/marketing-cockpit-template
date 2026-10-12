@@ -9,7 +9,7 @@ Référence unique pour tout export du module vidéo. Les skills `video-editing`
 | **Instagram Reels** | 9:16 | 1080 × 1920 | 15–30 s | 3 min | Incrustés obligatoires |
 | **TikTok** | 9:16 | 1080 × 1920 | 15–34 s | 10 min | Incrustés obligatoires |
 | **YouTube Shorts** | 9:16 | 1080 × 1920 | 20–40 s | 3 min | Incrustés recommandés (+ .srt) |
-| **LinkedIn** | 9:16 vertical ou 1:1 / 16:9 | 1080 × 1920 / 1080 × 1080 / 1920 × 1080 | 30–90 s | 15 min | Incrustés obligatoires (lecture muette majoritaire) |
+| **LinkedIn** | 9:16 ou 4:5 vertical, ou 1:1 / 16:9 | 1080 × 1920 / 1080 × 1350 / 1080 × 1080 / 1920 × 1080 | 30–90 s | 15 min | Incrustés obligatoires (lecture muette majoritaire) |
 
 Formats d'encodage communs : **MP4 (H.264 + AAC)**, 30 fps (60 fps accepté partout), bitrate vidéo ≥ 8 Mbps en 1080p vertical.
 
@@ -64,6 +64,7 @@ Valeurs pratiques en 1080 × 1920 :
 ### LinkedIn
 
 - Le vertical 9:16 fonctionne désormais dans le feed, mais le 1:1 reste le plus sûr pour l'affichage desktop ; 16:9 pour les extraits de webinaire/interview posés.
+- Le 4:5 (1080 × 1350) est l'autre vertical du fil (`docs/etat-de-lart/social-linkedin.md`, règle R9) : moins haut que le 9:16, il se déclare comme toile à part, avec ses propres zones de sécurité (section « Zones de sécurité selon la toile »).
 - Optimum : 30–90 s ; ton plus posé que TikTok, mais les mêmes règles de rétention s'appliquent (hook 3 s, cuts serrés).
 - Lecture muette quasi systématique dans le feed : sous-titres incrustés non négociables.
 - Upload natif obligatoire (jamais un lien YouTube : portée divisée).
@@ -82,7 +83,7 @@ Détail du workflow dans la skill `captions`. L'essentiel :
 Ordre de production recommandé : **monter en 9:16** (le plus contraint), puis décliner :
 
 1. 9:16 master → Reels, TikTok, Shorts (mêmes fichiers, hooks/CTA éventuellement adaptés au ton de la plateforme).
-2. 9:16 → 1:1 LinkedIn : recadrer ou poser le 9:16 sur fond de marque (`{{BRAND_COLOR_DARK}}`) avec le logo.
+2. 9:16 → 1:1 ou 4:5 LinkedIn : recadrer ou poser le 9:16 sur fond de marque (`{{BRAND_COLOR_DARK}}`) avec le logo.
 3. Ne jamais étirer ; toujours recadrer ou letterboxer aux couleurs de la marque.
 
 ## Format court : repères de production
@@ -118,7 +119,7 @@ Détail et exemple de calcul : `narration.md` § « Calibrer la longueur ».
 ### Zones de sécurité selon la toile
 
 - **9:16 (1080 × 1920)** : marges de la section « Zones de sécurité (9:16) » ci-dessus, soit 200 px en haut, 420 px en bas, 60 px à gauche et 160 px à droite.
-- **1:1 (1080 × 1080) et 16:9 (1920 × 1080)** : convention de ce module, une marge de titre de 5 % de chaque dimension, soit 54 px sur un côté de 1080 px et 96 px sur un côté de 1920 px. En 1:1, 54 px partout ; en 16:9, 54 px en haut et en bas, 96 px à gauche et à droite. Elle se vérifie à l'œil sur le rendu.
+- **1:1 (1080 × 1080), 4:5 (1080 × 1350) et 16:9 (1920 × 1080)** : convention de ce module, une marge de titre de 5 % de chaque dimension, arrondie au pixel : 54 px sur un côté de 1080 px, 68 px sur un côté de 1350 px, 96 px sur un côté de 1920 px. En 1:1, 54 px partout ; en 4:5, 68 px en haut et en bas, 54 px à gauche et à droite ; en 16:9, 54 px en haut et en bas, 96 px à gauche et à droite. Elle se vérifie à l'œil sur le rendu.
 - `brand-frame.py` reprend ces valeurs dans le `frame.md` de chaque projet (clés `safe-top`, `safe-bottom`, `safe-left`, `safe-right`) : les compositions les lisent là, sans les recopier.
 - `qa-video.py` ne mesure pas les zones de sécurité. L'agent `video-reviewer` les vérifie à l'œil sur les images de plans (`plan-NN.jpg`) et la planche contact que produit la QA.
 

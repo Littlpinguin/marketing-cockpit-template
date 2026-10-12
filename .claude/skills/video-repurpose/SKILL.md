@@ -15,6 +15,16 @@ Une vidéo longue contient des moments qui tiennent seuls. Cette skill les trouv
 - `02-strategy/calendar/calendar.md` et `_templates/inventory.md` : ce qui est prévu, ce qui a déjà été publié.
 - `01-brand/voice.md`, `01-brand/droits.md`, `01-brand/divulgation-ia.md`.
 
+## Où se placent les validations
+
+Les trois validations de `video-production` prennent ici cette forme :
+
+- **Concept** (validation 1) : le traitement de la série, une fois les droits et la source vérifiés (section suivante). Il fixe les plateformes et les toiles visées, l'habillage (lower-third, carton de contexte, plan de fin) et la voie des sous-titres, ffmpeg ou designés.
+- **Script** (validation 2) : la liste des clips notée et passée au test « se comprend sans contexte » (étape 3). Elle devient `script.md`.
+- **Storyboard** (validation 3) : `storyboard.md`, une vignette au vrai cadrage par clip et par toile, avec l'habillage prévu, après le recadrage (étape 5) et avant l'habillage et le montage (étapes 6 et 7). Aucun crédit avant (voix, musique ou cartons générés payants).
+
+Le montage passe ensuite à `video-editing`, storyboard déjà validé : en voie A, `hyperframes:general-video` reçoit `flow: automation` et `storyboard: no` dans `BRIEF.md` (table « Validations et passage de main par filière » de `video-production`).
+
 ## Avant de couper : droits et source
 
 - **Droits.** Accord des personnes filmées pour une réutilisation en clips, invités compris : vérifier que l'accord donné pour l'événement couvre des extraits diffusés sur les réseaux, et le noter dans `decisions.md`. Sans accord établi, s'arrêter et le dire.
@@ -28,8 +38,8 @@ ffmpeg -i rushes/source.mp4 -vn -ac 1 -ar 16000 rushes/source.wav
 whisper-cli -m <modèle> -f rushes/source.wav -l fr -oj -ml 1 -sow -of rushes/transcription
 ```
 
-- `-ml 1 -sow` : un mot par segment, avec son début et sa fin en millisecondes, dans `rushes/transcription.json`. `<modèle>` est le chemin déclaré dans `.env` (`WHISPER_MODEL`).
-- Autre voie : `npx hyperframes transcribe rushes/source.mp4 --model small --language fr`, la transcription au mot d'HyperFrames (par le lanceur du plugin quand HyperFrames est installé en plugin). Jamais sans `--model` ni `--language` : le modèle par défaut, `small.en`, traduit l'audio français en anglais.
+- `-ml 1 -sow` : un mot par segment dans `rushes/transcription.json`, au format de whisper-cli (liste `transcription`, début et fin de chaque mot en millisecondes dans `offsets.from` et `offsets.to`). `<modèle>` est le chemin déclaré dans `.env` (`WHISPER_MODEL`).
+- Autre voie : `npx hyperframes transcribe rushes/source.wav --model small --language fr -d rushes`, la transcription au mot d'HyperFrames (par le lanceur du plugin quand HyperFrames est installé en plugin). Elle écrit `rushes/transcript.json`, un autre format : un tableau plat de mots `{ "text", "start", "end" }`, en secondes. Jamais sans `--model` ni `--language` : le modèle par défaut, `small.en`, traduit l'audio français en anglais.
 - whisper n'identifie pas les intervenants : sur un entretien ou une table ronde, vérifier à l'écoute qui dit quoi avant d'attribuer une phrase.
 - Les vrais silences, que la transcription aligne bord à bord : `ffmpeg -i rushes/source.wav -af silencedetect=noise=-30dB:d=0.3 -f null -`.
 
@@ -75,7 +85,7 @@ Une réponse oui : élargir le clip (reprendre la phrase d'avant), couper ailleu
 
 ## Étape 4 : couper au mot
 
-- Entrée et sortie de chaque clip sur les horodatages des mots (`rushes/transcription.json`), ajustées sur les vrais silences.
+- Entrée et sortie de chaque clip sur les horodatages des mots, ajustées sur les vrais silences. Lire ceux de la transcription faite à l'étape 1 : `rushes/transcription.json` (whisper-cli, millisecondes dans `offsets`, à diviser par 1000) ou `rushes/transcript.json` (HyperFrames, secondes dans `start` et `end`). ffmpeg prend les instants en secondes, décimales comprises (`-ss 724.36`).
 - Respirations resserrées sans être supprimées ; hésitations et redites retirées seulement quand le sens ne change pas (`08-video/montage.md`).
 - Jamais de coupe qui change le sens : le clip dit ce que la personne a dit, dans l'ordre où elle l'a dit.
 - Écrire le texte du clip coupé dans `clips/clip-<nn>.txt` : il sert à la QA.
@@ -92,6 +102,8 @@ ffmpeg -i clip-03.mp4 -vf "crop=ih*9/16:ih,scale=1080:1920" -c:v libx264 -pix_fm
 - Intervenant qui se déplace, ou plusieurs intervenants : recadrage suivi, plan par plan. Découper le clip à chaque changement de plan ou de personne qui parle, choisir le cadre de chaque morceau ; l'assemblage se fait au montage.
 - 1:1 : `crop=ih:ih,scale=1080:1080`.
 - Netteté : depuis une source 1080p, un recadrage 9:16 garde une bande d'environ 608 px de large (1080 × 9/16), agrandie à 1080 px, donc plus douce. Préférer une source 4K quand elle existe.
+
+Écrire `storyboard.md` : pour chaque clip retenu et chaque toile, une vignette au vrai cadrage (image tirée du clip recadré), le cadre choisi plan par plan, l'habillage prévu (lower-third, carton de contexte, plan de fin). → **Validation 3**, avant l'habillage et le montage.
 
 ## Étape 6 : sous-titres et habillage
 
@@ -124,6 +136,7 @@ python3 08-video/scripts/qa-video.py 08-video/projets/<slug>/exports/<slug>-clip
 - [ ] Accord des personnes filmées couvrant les extraits, noté dans `decisions.md`
 - [ ] Liste des clips notée dans `candidats.md`, test « se comprend sans contexte » passé, liste validée par un humain avant tout montage
 - [ ] Coupes au mot, sans changement de sens ; texte de chaque clip dans `clips/clip-<nn>.txt`
+- [ ] Traitement de la série validé (validation 1) ; `storyboard.md` validé avant l'habillage et le montage (validation 3)
 - [ ] Recadrage 9:16 ou 1:1 vérifié plan par plan : visage et zone utile dans le cadre
 - [ ] Sous-titres incrustés (`captions`), lower-third au nom et à la fonction validés par la personne
 - [ ] `qa-video.py` par clip avec `--script clips/clip-<nn>.txt`, revue `video-reviewer` traitée, revue humaine faite

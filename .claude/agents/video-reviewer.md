@@ -68,7 +68,9 @@ ffmpeg -ss <t> -i <rendu> -frames:v 1 08-video/projets/<slug>/qa/<nom du rendu>/
 ```
 
 Si la planche manque (constat `planche-indisponible`), dis-le : les critères visuels de
-l'étape 4 ne sont alors pas jugés, c'est un P2.
+l'étape 4 ne sont alors pas jugés, c'est un P2. Au-delà de 60 plans (constat
+`planche-partielle`), la planche s'arrête au 60e : extraire des images de la suite comme
+ci-dessus avant de juger la fin du rendu.
 
 ### 3. Vérifier que la marque du projet est à jour
 

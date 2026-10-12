@@ -42,9 +42,11 @@ GABARIT_TOKENS = "_templates/brand/tokens.json"
 PLACEHOLDERS = "docs/placeholders.json"
 
 # Zones de sécurité par toile, en px : haut, bas, gauche, droite.
-# 9:16 : valeurs de 08-video/formats.md. 1:1 et 16:9 : marge de titre de 5 %.
+# 9:16 : valeurs de 08-video/formats.md. 1:1, 4:5 et 16:9 : marge de titre de 5 %
+# de chaque dimension, arrondie au pixel (54 px pour 1080, 68 pour 1350, 96 pour 1920).
 MARGES = {
     "1080x1920": (200, 420, 60, 160),
+    "1080x1350": (68, 68, 54, 54),
     "1080x1080": (54, 54, 54, 54),
     "1920x1080": (54, 54, 96, 96),
 }
@@ -232,7 +234,7 @@ def construire_frame(tokens: dict[str, Any], *, entreprise: str, aspect: str,
                      racine: Path = RACINE) -> str:
     BT.validate_tokens(tokens)
     largeur, hauteur = (int(x) for x in aspect.split("x"))
-    # Vaut 1.0 pour les trois toiles prises en charge (petit côté de 1080 px) ;
+    # Vaut 1.0 pour les quatre toiles prises en charge (petit côté de 1080 px) ;
     # gardé pour une future toile d'une autre taille.
     echelle = min(largeur, hauteur) / 1080
     haut, bas, gauche, droite = MARGES[aspect]

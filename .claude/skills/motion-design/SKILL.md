@@ -23,7 +23,7 @@ Si `01-brand/style-guide.md` manque ou porte encore des `{{...}}`, s'arrêter et
 La charte d'un projet HyperFrames se génère, elle ne s'écrit pas :
 
 ```bash
-python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --aspect <1080x1920|1080x1080|1920x1080>
+python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --aspect <1080x1920|1080x1350|1080x1080|1920x1080>
 python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --check
 ```
 
@@ -84,7 +84,7 @@ HyperFrames rend une composition image par image : chaque image doit pouvoir se 
 - **Transformations.** Pas de `transform` CSS de départ sur une propriété que GSAP anime : poser l'état de départ dans `gsap.fromTo`.
 - **Médias.** Tous les médias copiés dans le dossier du projet (`assets/`), jamais chargés depuis une URL au rendu. Une `<video>` est muette (`muted`, `playsinline`) ; le son passe par un `<audio>` séparé, qui a un `id`.
 - **Contrôles.** `npx hyperframes lint` après la première passe et après chaque changement de structure, puis `npx hyperframes check` avant tout rendu (`validate` en est l'ancien nom, gardé pour compatibilité). Une erreur de lint coupe les contrôles de mise en page et de contraste de `check` : la corriger d'abord.
-- **Rendu.** Seulement après l'accord de l'humain sur l'aperçu, depuis le dossier du projet : `npx hyperframes render --quality delivery --output ../exports/<fichier>.mp4`.
+- **Rendu.** Seulement après l'accord de l'humain sur l'aperçu, depuis le dossier du projet : `npx hyperframes render --quality delivery --output ../exports/<slug>-<plateforme>.mp4`, le livrable que contrôlent la QA et la revue. Si les sous-titres s'incrustent ensuite par ffmpeg, rendre vers `../rushes/tmp/<slug>-<plateforme>-sans-sous-titres.mp4` (skill `video-editing`, étape 5).
 - **Moteur.** Jamais de changement de moteur en silence (`08-video/motion.md` § « Choisir le moteur »).
 
 ## Références

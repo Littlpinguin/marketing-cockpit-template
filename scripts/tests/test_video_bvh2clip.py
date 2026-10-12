@@ -364,3 +364,11 @@ def test_cli_json_illisible_ou_catalogue_corrompu(tmp_path):
     (sortie / "autre.json").write_text("{cassé", encoding="utf-8")
     res = _lancer(str(bvh), "--nom", "a", "--source", "x", "--sortie", str(sortie))
     assert res.returncode == 1 and "autre.json" in res.stderr and "Traceback" not in res.stderr
+
+
+@pytest.mark.parametrize("nom", ["catalogue", "clips"])
+def test_cli_noms_reserves_refuses(tmp_path, nom):
+    sortie = tmp_path / "s"
+    res = _lancer(str(_bvh_valide(tmp_path)), "--nom", nom, "--source", "x", "--sortie", str(sortie))
+    assert res.returncode == 2 and "ERREUR" in res.stderr and "réservé" in res.stderr
+    assert "Traceback" not in res.stderr and not sortie.exists()

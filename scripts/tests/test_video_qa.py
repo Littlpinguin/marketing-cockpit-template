@@ -500,3 +500,83 @@ def test_chemins_resolus_depuis_un_chemin_relatif(tmp_path, video_av):
     assert Path(rapport["video"]).is_absolute()
     assert Path(rapport["planche"]).is_absolute()
     assert (tmp_path / "projet" / "qa" / "demo" / "rapport.json").exists()
+
+
+# ------------------------------------------------------------------ revue finale : piste muette, stderr, rapport, plafond
+
+def test_sans_audio_avec_piste_presente_ne_juge_pas_le_son():
+    """Vidéo déclarée muette qui porte une piste silencieuse : ni loudness ni silence, une info."""
+    m = _mesures(loudness={"integre": -70.0, "crete": float("-inf")}, silences=[(0.0, 30.0)])
+    constats = qa.evaluer(m, {"sans_audio": True})
+    assert not _ids(constats) & {"loudness", "silence"}
+    constat = next(c for c in constats if c.id == "piste-muette")
+    assert constat.niveau == "info" and "déclarée muette" in constat.message
+    jugee = qa.evaluer(m, {})
+    assert "loudness" in _ids(jugee, "erreur") and "piste-muette" not in _ids(jugee)
+
+
+def test_sans_audio_sans_transcript_ne_juge_pas_la_narration():
+    m = _mesures(attendu="bonjour à tous", transcription=None)
+    ids = _ids(qa.evaluer(m, {"sans_audio": True}))
+    assert not ids & {"transcription-vide", "transcription-indisponible", "transcription-couverture"}
+    fournie = _mesures(attendu="bonjour à tous", transcription="bonjour")
+    assert "transcription-couverture" in _ids(qa.evaluer(fournie, {"sans_audio": True}), "erreur")
+
+
+def test_exiger_cite_les_dernieres_lignes_de_stderr():
+    stderr = ("ffmpeg version 7.1 Copyright (c) the FFmpeg developers\n  built with clang\n"
+              "  configuration: --enable-gpl\nInput #0, mov\nError initializing filter 'ebur128'\n"
+              "Invalid argument\n")
+    res = subprocess.CompletedProcess(["ffmpeg"], 1, "", stderr)
+    with pytest.raises(qa.ErreurOutil) as erreur:
+        qa.exiger(res, "ebur128")
+    message = str(erreur.value)
+    assert "Invalid argument" in message and "Error initializing filter" in message
+    assert "ffmpeg version" not in message and "built with" not in message
+
+
+def test_rapport_md_ne_promet_pas_une_planche_absente():
+    sans = qa.rendu_markdown(Path("v.mp4"), [], _mesures(), None)
+    assert "planche.jpg" not in sans and "indisponible" in sans
+    avec = qa.rendu_markdown(Path("v.mp4"), [], _mesures(), Path("/qa/v/planche.jpg"))
+    assert "`planche.jpg`" in avec
+
+
+def test_plafond_de_la_planche_signale():
+    assert qa.constats_planche(Path("planche.jpg"), 12) == []
+    assert qa.constats_planche(Path("planche.jpg"), qa.MAX_IMAGES) == []
+    plafond = qa.constats_planche(Path("planche.jpg"), qa.MAX_IMAGES + 5)
+    assert [(c.niveau, c.id) for c in plafond] == [("info", "planche-partielle")]
+    assert str(qa.MAX_IMAGES) in plafond[0].message and str(qa.MAX_IMAGES + 5) in plafond[0].message
+    assert [c.id for c in qa.constats_planche(None, qa.MAX_IMAGES + 5)] == ["planche-indisponible"]
+
+
+@requiert_ffmpeg
+def test_sans_audio_sur_piste_silencieuse_bout_en_bout(tmp_path):
+    video = tmp_path / "muette-aac.mp4"
+    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                    "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo",
+                    "-f", "lavfi", "-i", "testsrc2=s=1080x1920:r=30", "-t", "3",
+                    "-c:a", "aac", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+                    str(video)], check=True)
+    res = _lancer(str(video), "--sans-audio", "--format", "json", "--sortie", str(tmp_path / "qa"))
+    rapport = _json_strict(res.stdout)
+    ids = {c["id"] for c in rapport["constats"]}
+    assert not ids & {"loudness", "silence", "flux-audio"}, rapport["constats"]
+    assert "piste-muette" in ids
+    assert res.returncode == 0, rapport["constats"]
+
+
+def test_linkedin_admet_le_4_5_et_formats_md_concorde():
+    linkedin = PLATEFORMES_CONF["linkedin"]
+    assert "1080x1350" in linkedin["formats"]
+    m = _mesures()
+    m["probe"]["video"].update({"largeur": 1080, "hauteur": 1350})
+    assert "format" not in _ids(qa.evaluer(m, {"plateforme": linkedin, "nom_plateforme": "linkedin"}))
+    assert "format" in _ids(qa.evaluer(m, {"plateforme": PLATEFORMES_CONF["reels"],
+                                           "nom_plateforme": "reels"}), "erreur")
+    formats = FORMATS.read_text(encoding="utf-8")
+    for cle, conf in PLATEFORMES_CONF.items():
+        for fmt in conf["formats"]:
+            largeur, hauteur = fmt.split("x")
+            assert f"{largeur} × {hauteur}" in formats, f"{cle} : {fmt} absent de formats.md"

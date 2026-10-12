@@ -20,22 +20,28 @@ LIBELLES = {
 }
 
 
+# Tirets Unicode (U+2010 à U+2015, signe moins U+2212) : « CC BY‑NC » s'écrit souvent avec un tiret
+# insécable ou demi-cadratin. Repliés sur « - » avant toute analyse, sinon la restriction passerait inaperçue.
+_TIRETS = str.maketrans({c: "-" for c in "\u2010\u2011\u2012\u2013\u2014\u2015\u2212"})
+# « no derivs », « NoDerivatives », « non-derivative », « NonDerivs »…
+_SANS_DERIVE = r"non?[\s-]?deriv"
+
 # Mentions Creative Commons : abréviations collées à « CC BY », adresses de licence, noms en toutes lettres.
 _CC_MENTION = re.compile(r"\bcc[\s-]*by((?:[\s-]+(?:nc|sa|nd))*)(?![a-z])")      # « cc by sand » n'est pas « sa nd »
 _CC_ADRESSE = re.compile(r"licenses/by((?:-nc)?(?:-sa|-nd)?)/")
 _CC_EN_TOUTES_LETTRES = re.compile(
     r"\bcc[\s-]*attribution|creative\s*commons[\s,:-]*attribution"
-    r"|attribution[\s-]*(?:non[\s-]?commercial|no[\s-]?deriv|share[\s-]?alike)")
+    rf"|attribution[\s-]*(?:non[\s-]?commercial|{_SANS_DERIVE}|share[\s-]?alike)")
 # Restrictions écrites en toutes lettres : elles comptent même quand la mention s'arrête à « CC BY ».
 _RESTRICTIONS = {
     "nc": re.compile(r"non[\s-]?commercial"),
-    "nd": re.compile(r"no[\s-]?deriv"),
+    "nd": re.compile(_SANS_DERIVE),
     "sa": re.compile(r"share[\s-]?alike"),
 }
 # Un texte libre qui parle d'autre chose que du domaine public ne vaut pas domaine public.
 _AUTRES_TERMES = re.compile(
     r"all rights reserved|tous droits|copyright|©|\bgfdl\b|\bgpl\b|\blgpl\b|\bmit\b|\bbsd\b|apache"
-    r"|attribution|creative\s*commons|\bcc\b|\bfal\b|free art|licen[cs]e|non[\s-]?commercial|no[\s-]?deriv"
+    rf"|attribution|creative\s*commons|\bcc\b|\bfal\b|free art|licen[cs]e|non[\s-]?commercial|{_SANS_DERIVE}"
     r"|share[\s-]?alike")
 
 
@@ -66,7 +72,7 @@ def normaliser(brute: str | list | None) -> str:
         return valeurs.pop() if len(valeurs) == 1 else "inconnue"
     if not brute or not isinstance(brute, str):
         return "inconnue"
-    texte = brute.strip().lower()
+    texte = brute.translate(_TIRETS).strip().lower()
     if texte in ("pexels", "pixabay"):
         return texte
     if "publicdomain/zero" in texte or re.search(r"\bcc0\b", texte) or "cc-zero" in texte:

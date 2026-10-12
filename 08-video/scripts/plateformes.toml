@@ -39,7 +39,7 @@ crete_dbtp = -1.5
 
 [linkedin]
 nom = "LinkedIn"
-formats = ["1080x1920", "1080x1080", "1920x1080"]
+formats = ["1080x1920", "1080x1350", "1080x1080", "1920x1080"]
 duree_max = 900
 debit_min_kbps = 8000
 lufs = -14.0

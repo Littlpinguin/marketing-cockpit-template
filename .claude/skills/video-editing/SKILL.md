@@ -27,7 +27,7 @@ Pas de brief validé, pas de montage. Une demande de montage qui arrive sans pro
 Le script s'écrit dans `08-video/projets/<slug>/script.md`, au format de `video-production` (une ligne par plan, une seule colonne « Voix », celle que `qa-video.py --script` compare à la transcription du rendu). Les règles du format court, actionnables et non décoratives :
 
 - **Accroche en 3 secondes au plus** : la première image pose une tension (question, chiffre surprenant, résultat avant/après, contradiction). Si l'accroche ne tient pas en une phrase lisible à l'arrêt sur image, elle est ratée. Proposer **3 variantes d'accroche**, validation humaine obligatoire.
-- **Une coupe toutes les 2 à 4 s** : jamais plus de 5 s sur le même plan sans changement (zoom, plan, texte). Le rythme se voit dans le tableau minuté.
+- **Une coupe toutes les 2 à 4 s** : jamais plus de 4 s sur le même plan sans changement (zoom, plan, texte), règle de `08-video/montage.md`. Les tenues de 4 à 5 s sont des temps forts voulus, réservés aux moments émotionnels : `qa-video.py` les signale en avertissement (`plan-long`, plafond `--max-plan` de 4 s par défaut), à accepter en connaissance de cause. Le rythme se voit dans le tableau minuté.
 - **Texte à l'écran en permanence** : la majorité regarde sans le son. Chaque segment a son texte (repris par la skill `captions`).
 - **Une idée, une vidéo** : si le script contient « et aussi », couper ; c'est la vidéo suivante.
 - **Appel à l'action en fin, une seule action** : commenter, suivre ou cliquer, pas les trois.
@@ -51,12 +51,17 @@ Deux workflows du plugin HyperFrames (installé par `/modules`) :
 - **`hyperframes:talking-head-recut`** : rushes face caméra, interview ou podcast filmé, habillés de cartes designées calées sur la parole (titres, lower-thirds, chiffres, citations, incrustations). Le workflow ne coupe pas : la séquence passe telle quelle sous l'habillage. Les coupes (silences, redites, aparté final) se font donc avant, par la voie B ou par le script `transcript-cut.mjs` de la skill `hyperframes:media-use`, qui coupe d'après la transcription.
 - **`hyperframes:general-video`** : montage libre de rushes. Couper, réordonner, recadrer, remixer, reconstituer une séquence à partir de plusieurs sources (rushes, captures d'écran, clips générés). Chaque plan est un `<video>` placé par `data-start`, `data-duration` et `data-media-start` (skill `hyperframes:hyperframes-core`) ; un zoom ou un recadrage animé passe par les keyframes d'un conteneur intérieur (skill `hyperframes:hyperframes-keyframes`) ; le mixage par la skill `hyperframes:hyperframes-audio`.
 
+Avec `hyperframes:talking-head-recut`, deux réglages du workflow se corrigent, comme le fait la skill `captions` pour `hyperframes:embedded-captions` :
+
+- **Transcription en français.** Son étape 4 (« Transcribe ») lance `npx hyperframes transcribe … --model small.en`, un modèle anglais qui traduit l'audio français en anglais. Passer outre : `npx hyperframes transcribe <audio> -d <dossier de travail> --json --model small --language fr`, ou déposer dans le dossier de travail un `transcript.json` au format du workflow (tableau plat de mots `{ "text", "start", "end" }`, en secondes) tiré de la transcription whisper de la skill `captions`. Relire la transcription comme le demande son étape 5.
+- **Style des cartes.** Son étape 7 (« Decide Render Strategy ») fait choisir un groupe de style de cartes (`warm-paper`, `clinical`, `experimental`) ; chaque style apporte ses polices et ses couleurs, et la palette `themeId` pose `--accent-N`, `--bg` et `--text`. Choisir le style le plus proche de la marque (`01-brand/style-guide.md`, profil de goût de `decisions.md`), puis remplacer ses polices et ses couleurs par les variables de `brand.css` (`--accent-N`, `--bg` et `--text` comprises, prises dans les `--brand-*`) : les polices livrées par le workflow (Caveat, Inter, Virgil…) cèdent la place à celles de la marque. Consigner l'exception dans `decisions.md`.
+
 Préparation, dans cet ordre :
 
 1. **Le projet HyperFrames est préparé par `video-production`** (création dans `08-video/projets/<slug>/hyperframes/`, `BRIEF.md` avec `workflow: talking-head-recut` ou `workflow: general-video`) **et `motion-design`** (`frame.md` et `brand.css` générés par `brand-frame.py`). Ne pas les écrire ici.
 2. **Rushes copiés dans le dossier du projet HyperFrames** (`hyperframes/assets/`), jamais chargés depuis une URL ni depuis un chemin hors du projet. Les originaux restent dans `rushes/`.
 3. **Chaque `<video>` est muet** (`muted`, `playsinline`) ; le son passe par un `<audio>` séparé, qui a un `id` (règles de rendu de `motion-design`).
-4. **Validation 3.** L'entretien de `hyperframes:talking-head-recut` ne pose pas les questions de mode de travail : comme pour `hyperframes:motion-graphics`, la validation du storyboard se tient sur `storyboard.md`, avant la passation. Avec `hyperframes:general-video` en mode collaboratif (`flow: automation`, `storyboard: yes`), son `STORYBOARD.md` en tient lieu.
+4. **Validation 3.** L'entretien de `hyperframes:talking-head-recut` ne pose pas les questions de mode de travail : comme pour `hyperframes:motion-graphics`, la validation du storyboard se tient sur `storyboard.md`, avant la passation. Quand `storyboard.md` est déjà validé à l'appel (`reel-talking-head`, `video-repurpose`, `video-documentary`), `hyperframes:general-video` reçoit `flow: automation` et `storyboard: no` dans `BRIEF.md`, pour ne pas rouvrir un second point de contrôle du storyboard. Appelé directement en mode collaboratif (`flow: automation`, `storyboard: yes`), son `STORYBOARD.md` en tient lieu. Table « Validations et passage de main par filière » de `video-production`.
 5. **Contrôles** : `npx hyperframes lint`, puis `npx hyperframes check`, puis l'aperçu (`npx hyperframes preview`). Rendu seulement après l'accord de l'humain, depuis le dossier `hyperframes/` :
 
 ```bash
@@ -175,7 +180,7 @@ Le constat `transcription-couverture` signale un passage du script absent du ren
 ## Checklist avant livraison
 
 - [ ] Accroche lisible à l'arrêt sur image, validée par un humain
-- [ ] Aucun plan de plus de 5 s sans changement
+- [ ] Aucun plan de plus de 4 s sans changement, hors tenues de 4 à 5 s voulues (avertissements `plan-long` acceptés)
 - [ ] Sous-titres présents (skill `captions`), hors zones de sécurité
 - [ ] Habillage 100 % variables de `brand.css` (ou valeurs de `01-brand/tokens.json` en voie B), zéro trope banni
 - [ ] Un export conforme par plateforme (`08-video/formats.md`), dans `exports/`

@@ -1603,6 +1603,17 @@ def test_credits_sans_attribution_ne_citent_pas_la_mention_brute(tmp_path):
     ("Public domain or GFDL", "inconnue"),
     ("PD-self, GFDL", "inconnue"),
     ("Public domain for non-commercial use only", "inconnue"),
+    # tirets Unicode (insécable, demi-cadratin, cadratin, signe moins) : repliés sur « - »
+    ("CC BY\u2011NC 4.0", "cc-by-nc"),
+    ("CC BY\u2013NC\u2013SA 3.0", "cc-by-nc-sa"),
+    ("CC BY\u2014ND 4.0", "cc-by-nd"),
+    ("CC BY\u2212SA 4.0", "cc-by-sa"),
+    ("CC\u2010BY\u2010NC\u2010ND", "cc-by-nc-nd"),
+    # « non-derivative » et ses variantes
+    ("Creative Commons Attribution-NonDerivative 4.0", "cc-by-nd"),
+    ("Creative Commons Attribution Non-Derivatives 4.0", "cc-by-nd"),
+    ("CC BY 4.0, non derivs", "cc-by-nd"),
+    ("Public domain, non-derivative use only", "inconnue"),
 ])
 def test_normaliser_licence_ambigue(brute, attendue):
     assert licences.normaliser(brute) == attendue

@@ -283,3 +283,16 @@ def test_setup_completed_invalide_avertit_et_garde_marque(tmp_path, contenu):
     assert "Marque · Frame" in (projet / "frame.md").read_text(encoding="utf-8")
     assert ".setup-completed" in res.stderr and "Traceback" not in res.stderr
     assert len(res.stderr.strip().splitlines()) == 1
+
+
+def test_toile_4_5_marge_de_titre_de_5_pour_cent(tmp_path):
+    assert bf.MARGES["1080x1350"] == (68, 68, 54, 54)
+    root = _racine(tmp_path)
+    projet = tmp_path / "projet"
+    res = _lancer(str(projet), "--racine", str(root), "--aspect", "1080x1350")
+    assert res.returncode == 0, res.stderr
+    frame = (projet / "frame.md").read_text(encoding="utf-8")
+    assert "1080×1350" in frame
+    for cle, valeur in (("safe-top", 68), ("safe-bottom", 68), ("safe-left", 54), ("safe-right", 54)):
+        assert f'{cle}: "{valeur}px"' in frame, cle
+    assert _lancer(str(projet), "--racine", str(root), "--check").returncode == 0

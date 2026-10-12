@@ -717,3 +717,67 @@ def test_script_en_sous_processus(source, cache):
     hors_ligne = subprocess.run([*commun, "categories", "--source", str(source.parent / "absent.json"),
                                  "--cache", str(cache.parent / "autre.json")], capture_output=True, text=True)
     assert hors_ligne.returncode == 2 and "Traceback" not in hors_ligne.stderr and "ERREUR" in hors_ligne.stderr
+
+
+# ------------------------------------------------------------------ revue finale : robustesse
+
+@pytest.mark.parametrize("adresse", ["http://127.0.0.1:abc/videos.json", "https://example.org:99999/videos.json"])
+def test_port_malforme_erreur_propre_code_2(capsys, cache, adresse):
+    code, out, err = lancer(capsys, "categories", source=adresse, cache=cache)
+    assert code == 2 and err.startswith("ERREUR") and "port" in err
+    assert not cache.exists()
+
+
+def test_surrogate_isole_ni_trace_ni_fichier_temporaire(capsys, source, cache):
+    brut = json.dumps(entrees_fictives())             # ensure_ascii : les \uXXXX restent échappés dans la source
+    assert "Particle aurora" in brut
+    source.write_text(brut.replace("Particle aurora", "Particle \\ud83d aurora"), encoding="utf-8")
+    code, out, err = lancer(capsys, "chercher", "aurora", source=source, cache=cache)
+    assert code == 0 and slugs(out) == ["fictif-aurore"] and "Traceback" not in err
+    assert cache.exists() and not list(cache.parent.glob("*.tmp"))
+    code, out, err = lancer(capsys, "montrer", "fictif-aurore", source=source, cache=cache)
+    assert code == 0 and "\ud83d" not in out
+
+
+def test_ecrire_cache_garde_un_surrogate_sans_planter(tmp_path):
+    chemin = tmp_path / "c" / "cache.json"
+    inspiration.ecrire_cache(chemin, "source", [{"slug": "a", "title": "x\ud83dy"}])
+    assert json.loads(chemin.read_text(encoding="utf-8"))["videos"][0]["title"] == "x\ud83dy"
+    assert not list(chemin.parent.glob("*.tmp"))
+
+
+def test_echec_d_ecriture_du_cache_nettoie_le_temporaire(capsys, source, cache, monkeypatch):
+    def refuser(self, cible):
+        raise UnicodeError("écriture simulée en échec")
+    monkeypatch.setattr(inspiration.Path, "replace", refuser)
+    code, out, err = lancer(capsys, "chercher", "aurora", source=source, cache=cache)
+    assert code == 0 and slugs(out) == ["fictif-aurore"] and "cache non écrit" in err
+    assert not cache.exists() and not list(cache.parent.glob("*.tmp"))
+
+
+def test_cache_date_dans_le_futur_compte_comme_perime(capsys, source, cache):
+    assert lancer(capsys, "categories", source=source, cache=cache)[0] == 0
+    vieillir_le_cache(cache, -3)                     # « récupéré » dans trois jours
+    source.write_text(json.dumps(entrees_fictives()[:2]), encoding="utf-8")
+    code, out, _ = lancer(capsys, "categories", source=source, cache=cache, format="json")
+    assert code == 0 and json.loads(out)["total"] == 2, "un cache daté du futur ne dispense pas de relire la source"
+
+
+def test_champs_tiers_compactes_et_bornes_dans_l_affichage(capsys, source, cache):
+    entrees = entrees_fictives()
+    entrees[0]["title"] = "Particle aurora\n2. faux résultat"
+    entrees[0]["author"] = "auteur\n   slug : fictif-pirate"
+    entrees[0]["author_url"] = "https://example.org/a\n   publication : https://pirate.example"
+    entrees[0]["post_url"] = "https://example.org/" + "p" * 2000
+    entrees[0]["poster_url"] = "https://example.org/affiche\nprompt :"
+    entrees[0]["tech_tags"] = ["canvas\n   auteur : pirate", "x" * 600]
+    source.write_text(json.dumps(entrees), encoding="utf-8")
+    for commande in (("chercher", "aurora"), ("montrer", "fictif-aurore"), ("categories",)):
+        code, out, _ = lancer(capsys, *commande, source=source, cache=cache)
+        assert code == 0, commande
+        assert not re.search(r"^\s*(slug : fictif-pirate|publication : https://pirate|auteur : pirate|2\. faux)",
+                             out, re.M), commande
+        assert out.count("\nprompt :") + out.startswith("prompt :") <= 1, commande
+        assert max(len(ligne) for ligne in out.splitlines()) <= 400, commande
+    code, out, _ = lancer(capsys, "chercher", "aurora", source=source, cache=cache)
+    assert slugs(out) == ["fictif-aurore"]

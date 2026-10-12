@@ -33,7 +33,7 @@ python3 08-video/scripts/inspiration.py montrer <slug>
 python3 08-video/scripts/inspiration.py categories
 ```
 
-Le classement compte les mots de la requête trouvés dans le titre, le prompt et les techs, puis départage par date d'ajout. Trois à six mots concrets valent mieux qu'une phrase ; un mot trop propre à la marque ne trouve rien ; un résultat décevant se reprend avec un autre vocabulaire. Les options : `--categorie`, `--tech`, `--avec-remake` (entrées qui ont un remake, champ `has_remake`), `--top`, `--format json`, `--rafraichir`.
+Le classement compte les mots de la requête trouvés dans le titre, le prompt et les techs, puis départage par date d'ajout. Un mot de 4 lettres ou plus compte dès qu'un mot de l'entrée commence par lui (`particle` trouve `particles`, `anim` trouve `animation`) ; un mot plus court doit se trouver entier. Les mots vides (`the`, `of`, `le`, `de`…) sont ignorés tant qu'il reste un autre mot. Trois à six mots concrets valent mieux qu'une phrase ; un mot trop propre à la marque ne trouve rien ; un résultat décevant se reprend avec un autre vocabulaire. Les options : `--categorie`, `--tech`, `--avec-remake` (entrées qui ont un remake, champ `has_remake`), `--top`, `--format json`, `--rafraichir` (relire la source même si le cache a moins de 7 jours), `--source` (une autre adresse http ou https, ou un fichier local au même format que `videos.json`) et `--cache` (un autre fichier de cache que `.cache/inspiration/opus-5-5-videos.json`). Un cache ne sert que pour la source qui l'a rempli ; sans réseau, un cache périmé de la même source sert avec un avertissement.
 
 Le classement mesure des mots, pas la qualité. Beaucoup d'entrées n'ont pas de titre (l'étiquette est alors le début du prompt), et un prompt dit ce que le créateur a demandé, pas ce que la vidéo montre. `montrer <slug>` donne l'entrée entière, avec le lien de la publication et celui de l'affiche. Regarder la publication d'origine quand elle s'ouvre ; sinon se fonder sur l'affiche et le prompt, et le noter.
 
@@ -101,7 +101,7 @@ La catégorie d'une référence indique quels outils savent produire son mécani
 
 | Catégorie | Filière du template |
 |---|---|
-| `motion` | `hyperframes:motion-graphics` pour une pièce courte sans voix ; `hyperframes:general-video` dès qu'il y a plusieurs scènes ou une voix |
+| `motion` | `hyperframes:motion-graphics` pour une pièce courte sans voix ; `hyperframes:product-launch-video` quand la pièce présente un produit, un site ou une app ; `hyperframes:general-video` dès qu'il y a plusieurs scènes ou une voix |
 | `explainer` | `hyperframes:faceless-explainer` pour un explainer narré sans tournage ; `hyperframes:general-video` si le montage est libre |
 | `3d` | `hyperframes:general-video` avec `.claude/skills/motion-design/references/3d.md` (maquette validée avant toute production) |
 | `interactive` | Pas un livrable vidéo. La référence enseigne une interaction : en tirer des idées pour une démo produit filmée en capture d'écran (`08-video/montage.md` § « Démo produit et capture d'écran ») ou pour une section de landing page (skill `landing-page`) |

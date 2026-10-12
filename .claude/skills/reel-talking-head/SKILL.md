@@ -19,17 +19,30 @@ Le script dit quoi générer, pour quelle durée, à quel timecode. Générer av
 
 **2. Contrôler la fidélité du texte de chaque rush généré, avant de le monter.** Un modèle peut faire dire autre chose à la personne filmée, avec une synchro parfaite (skill `video-generation`, section « Fidélité du texte »). C'est le contrôle qui protège le client.
 
+## Où se placent les validations
+
+Les trois validations de `video-production` prennent ici cette forme :
+
+- **Concept** (validation 1) : après l'analyse gratuite de la source (Temps 1), l'angle du reel, présenté comme les concepts de `video-production` : ce qu'on garde du propos, l'accroche visée, la durée réaliste, le traitement (face seule, angles générés, b-rolls) et son coût estimé.
+- **Script** (validation 2) : le script de montage minuté dans `script.md` (Temps 2).
+- **Storyboard** (validation 3) : `storyboard.md` aux vignettes au vrai recadrage (Temps 3). Aucun crédit avant.
+
+Le montage passe ensuite à `video-editing` (Temps 6), storyboard déjà validé : `hyperframes:general-video` reçoit `flow: automation` et `storyboard: no` dans `BRIEF.md`, pour ne pas rouvrir un second point de contrôle du storyboard ; `hyperframes:talking-head-recut` n'a pas ces champs (table « Validations et passage de main par filière » de `video-production`).
+
 ## Déroulé
 
-### Temps 1 : analyse de la source (gratuit)
+### Temps 1 : analyse de la source (gratuit), puis **VALIDATION** du concept
 
 ```bash
 ffprobe -v error -show_streams rushes/source.mp4   # rotation en métadonnées (WhatsApp : 1024×576 annoncé = 576×1024 réel)
-whisper-cli -m <modèle> -f rushes/audio.wav -l fr -oj -ml 1   # -ml 1 : timings PAR MOT (karaoké et coupes au mot)
+ffmpeg -i rushes/source.mp4 -vn -ac 1 -ar 16000 rushes/audio.wav   # whisper-cli lit un WAV 16 kHz mono
+whisper-cli -m <modèle> -f rushes/audio.wav -l fr -oj -ml 1 -sow -of rushes/transcription   # -ml 1 -sow : un mot par segment, timings PAR MOT (karaoké et coupes au mot)
 ffmpeg -i rushes/source.mp4 -af silencedetect=noise=-30dB:d=0.3 -f null -   # les VRAIS silences (whisper aligne bord à bord)
 ```
 
-`<modèle>` est le chemin déclaré dans `.env` (`WHISPER_MODEL`). Extraire aussi des images aux moments clés : références pour les générations.
+`<modèle>` est le chemin déclaré dans `.env` (`WHISPER_MODEL`). La transcription au mot s'écrit dans `rushes/transcription.json`. Extraire aussi des images aux moments clés : références pour les générations.
+
+Présenter l'angle du reel et **attendre la validation explicite** (validation 1 de `video-production`).
 
 ### Temps 2 : script de montage, puis **VALIDATION**
 
@@ -61,7 +74,7 @@ Livrer le storyboard et **attendre la validation explicite** (validation 3 de `v
 Plans selon le script, échelles et punch-ins, étalonnage, sous-titres karaoké (skill `captions`), cartons, plan sonore (`08-video/montage.md`). Deux voies de rendu :
 
 - **`hyperframes:general-video`**, la voie ordinaire d'un reel : coupes, échelles, punch-ins, angles générés et b-rolls se composent dans HyperFrames.
-- **`hyperframes:talking-head-recut`**, seulement pour poser un habillage designé (cartons, lower-thirds) : ce workflow passe la séquence telle quelle. Coupes, changements d'échelle, punch-ins et étalonnage y entrent donc déjà faits, par le plan ffmpeg de `video-editing` (voie B) ou par les outils de `hyperframes:media-use`.
+- **`hyperframes:talking-head-recut`**, seulement pour poser un habillage designé (cartons, lower-thirds) : ce workflow passe la séquence telle quelle. Coupes, changements d'échelle, punch-ins et étalonnage y entrent donc déjà faits, par le plan ffmpeg de `video-editing` (voie B) ou par les outils de `hyperframes:media-use`. Sa transcription par défaut est anglaise et ses styles de cartes ont leurs propres polices et couleurs : les corriger comme le dit `video-editing`, voie A (transcription en français, charte de `brand.css`, exception dans `decisions.md`).
 
 Ou tout le montage par le plan ffmpeg. Dans tous les cas, export H.264 normalisé (skill `video-editing`, étape 5).
 

@@ -232,7 +232,7 @@ python3 08-video/scripts/bvh2clip.py 02_01.bvh --nom marche --source "CMU 02_01"
 
 | Option | Rôle |
 |---|---|
-| `--nom` | Nom du clip : minuscules, chiffres et tirets (`coup-de-pied`) |
+| `--nom` | Nom du clip : minuscules, chiffres et tirets (`coup-de-pied`) ; `catalogue` et `clips` sont réservés |
 | `--source` | Origine citée dans les notices (`"CMU 02_01"`) |
 | `--plan auto\|frontal\|sagittal` | Plan de projection. `sagittal` : de profil, vers la droite de l'image ; `frontal` : face caméra. `auto` : sagittal si la hanche se déplace de plus d'une demi-hauteur, frontal sinon |
 | `--sur-place` | Annule le déplacement horizontal de la hanche (marche, course) |

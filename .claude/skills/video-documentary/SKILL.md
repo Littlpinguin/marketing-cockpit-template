@@ -36,7 +36,7 @@ Dans `brief.md` : la question du film en une ligne, la thèse que le spectateur 
 
 ## Étape 2 : découper en emplacements
 
-Écrire `08-video/corpus/themes/<nom>.toml` sur le modèle de `08-video/corpus/themes/exemple-savoir-faire.toml` : sources, nombre de résultats par requête, durée maximale d'un clip, et pour chaque emplacement un `id`, une `description` en langage visuel (sujet, action, cadre, époque, lumière ; en anglais pour la recherche CLIP) et deux ou trois `requetes` en anglais. Laisser les licences par défaut. → **Validation humaine du découpage**, avant toute recherche.
+Écrire `08-video/corpus/themes/<nom>.toml` sur le modèle de `08-video/corpus/themes/exemple-savoir-faire.toml` : le champ `nom`, sources, nombre de résultats par requête, durée maximale d'un clip, et pour chaque emplacement un `id`, une `description` en langage visuel (sujet, action, cadre, époque, lumière ; en anglais pour la recherche CLIP) et deux ou trois `requetes` en anglais. Laisser les licences par défaut. Le dossier du corpus (`08-video/corpus/<nom>/`), et donc le `<nom>` de toutes les commandes qui suivent, vient du champ `nom` du thème, pas du nom du fichier (qui ne sert que si le champ manque) : en copiant le thème d'exemple, remplacer `nom = "savoir-faire"` par le nom du nouveau corpus, sinon ses clips rejoignent ceux de l'exemple. → **Validation humaine du découpage**, avant toute recherche.
 
 ## Étape 3 : constituer le corpus
 
@@ -78,7 +78,7 @@ Si le film a une voix : script minuté selon `08-video/narration.md`, écrit sur
 
 ## Étape 7 : monter dans `hyperframes:general-video`
 
-- Passation selon `video-production` § « Passer la main à HyperFrames », avec `workflow: general-video` dans `BRIEF.md`.
+- Passation selon `video-production` § « Passer la main à HyperFrames », avec `workflow: general-video`, `flow: automation` et `storyboard: no` dans `BRIEF.md` : la sélection et le storyboard sont déjà validés (validation 3), le workflow publie son plan pour information sans rouvrir de point de contrôle du storyboard. Le rendu reste soumis à l'accord.
 - Copier les seuls clips retenus dans `hyperframes/assets/` : tous les médias restent dans le dossier du projet.
 - Chaque archive devient un plan `<video>` muet, avec `data-start`, `data-duration` et `data-media-start` (le point d'entrée dans le clip) ; le son passe par des `<audio>` séparés.
 - **Étalonnage commun** : le parti retenu dans `08-video/documentaire.md` (noir et blanc assumé, grain commun ou table de correspondance commune), appliqué à tous les plans, jamais clip par clip. Les traitements d'image d'HyperFrames sont décrits par la skill `hyperframes:media-use`.

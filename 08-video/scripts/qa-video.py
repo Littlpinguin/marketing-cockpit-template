@@ -12,6 +12,8 @@ Usage :
 Ce qu'il contrôle
 -----------------
   flux-video, flux-audio      flux absent (audio non exigé avec --sans-audio)      erreur
+  piste-muette                piste audio sur une vidéo déclarée muette             info
+                              (--sans-audio) : son non jugé (loudness, silence)
   duree                       écart à --duree supérieur à 5 %                       erreur
   duree-max                   plus long que la limite de la plateforme              erreur
   format                      résolution hors des formats de la plateforme          erreur
@@ -29,9 +31,11 @@ Ce qu'il contrôle
   transcription-vide          aucun mot transcrit alors qu'un script est fourni     erreur
   transcription-couverture    moins de 80 % des mots du script retrouvés            erreur
   planche-indisponible        images ou planche contact non extraites               info
+  planche-partielle           plus de 60 plans : planche limitée aux 60 premiers    info
 
-La transcription n'est pas jugée sur une vidéo sans flux audio et sans --transcript :
-flux-audio signale déjà la piste manquante (sauf avec --sans-audio).
+La transcription n'est pas jugée sur une vidéo sans flux audio, ni sur une vidéo
+déclarée muette (--sans-audio), sauf si --transcript est fourni : sans piste,
+flux-audio signale déjà le manque (sauf avec --sans-audio).
 
 Une mesure qui ne tourne pas ne valide jamais : si une passe ffmpeg échoue ou ne
 rend rien d'exploitable, le script s'arrête en erreur d'outil (code 2) au lieu de
@@ -319,9 +323,15 @@ def evaluer(mesures: dict[str, Any], options: dict[str, Any]) -> list[Constat]:
 
     if video is None:
         constats.append(Constat("erreur", "flux-video", "aucun flux vidéo"))
-    if audio is None and not options.get("sans_audio"):
+    sans_audio = bool(options.get("sans_audio"))
+    if audio is None and not sans_audio:
         constats.append(Constat("erreur", "flux-audio",
                                 "aucun flux audio (--sans-audio pour une vidéo muette assumée)"))
+    if audio is not None and sans_audio:
+        constats.append(Constat("info", "piste-muette",
+                                "piste audio présente mais vidéo déclarée muette (--sans-audio) : "
+                                "loudness et silences non jugés"))
+    son_juge = audio is not None and not sans_audio
 
     attendue = options.get("duree")
     if attendue:
@@ -356,7 +366,7 @@ def evaluer(mesures: dict[str, Any], options: dict[str, Any]) -> list[Constat]:
                                 "atome moov en fin de fichier : réencoder avec -movflags +faststart"))
 
     loudness = mesures.get("loudness")
-    if audio and loudness:
+    if son_juge and loudness:
         cible = (conf or {}).get("lufs", LUFS_DEFAUT)
         plafond = (conf or {}).get("crete_dbtp", CRETE_DEFAUT)
         integre, crete = loudness.get("integre"), loudness.get("crete")
@@ -377,7 +387,7 @@ def evaluer(mesures: dict[str, Any], options: dict[str, Any]) -> list[Constat]:
             constats.append(Constat("avertissement", "fige",
                                     f"image figée {fin - debut:.1f} s : risque de diaporama si le mouvement était promis",
                                     t=round(debut, 2)))
-    if audio:
+    if son_juge:
         for debut, fin in mesures.get("silences", []):
             if fin - debut >= SILENCE_MIN and debut < duree - 1.0:
                 constats.append(Constat("avertissement", "silence", f"silence de {fin - debut:.1f} s",
@@ -400,7 +410,7 @@ def evaluer(mesures: dict[str, Any], options: dict[str, Any]) -> list[Constat]:
 
     attendu = mesures.get("attendu")
     transcrit = mesures.get("transcription")
-    if attendu and not (audio is None and transcrit is None):
+    if attendu and not (not son_juge and transcrit is None):
         if transcrit is None:
             echec = mesures.get("transcription_echec")
             if echec:
@@ -434,8 +444,9 @@ def executer(commande: list[str]) -> subprocess.CompletedProcess:
 def exiger(res: subprocess.CompletedProcess, passe: str) -> None:
     """Une passe de mesure en échec n'est jamais ignorée : erreur d'outil, code de sortie 2."""
     if res.returncode != 0:
-        debut = " ".join(res.stderr.strip().splitlines()[:3])[:300]
-        raise ErreurOutil(f"ffmpeg a échoué à la passe {passe} (code {res.returncode}) : {debut or 'aucun message'}")
+        # Les dernières lignes : les premières sont la bannière de version et de configuration.
+        fin = " ".join(ligne.strip() for ligne in res.stderr.strip().splitlines()[-3:])[-300:]
+        raise ErreurOutil(f"ffmpeg a échoué à la passe {passe} (code {res.returncode}) : {fin or 'aucun message'}")
 
 
 def sonder(video: Path) -> dict[str, Any]:
@@ -513,6 +524,19 @@ def extraire_planche(video: Path, temps: list[float], dossier: Path) -> Path | N
     return planche if res.returncode == 0 and planche.exists() else None
 
 
+def constats_planche(planche: Path | None, nb_plans: int) -> list[Constat]:
+    """Ce que le rapport doit dire de la planche : absente, ou limitée aux MAX_IMAGES premiers plans."""
+    if planche is None:
+        return [Constat("info", "planche-indisponible",
+                        "images ou planche contact non extraites : regarder la vidéo "
+                        "directement ou relancer après avoir vérifié ffmpeg")]
+    if nb_plans > MAX_IMAGES:
+        return [Constat("info", "planche-partielle",
+                        f"{nb_plans} plans : images et planche limitées aux {MAX_IMAGES} premiers, "
+                        "regarder la suite dans la vidéo")]
+    return []
+
+
 def modele_whisper() -> str | None:
     """Chemin du modèle whisper : variable WHISPER_MODEL, sinon ligne du .env."""
     valeur = os.environ.get("WHISPER_MODEL")
@@ -575,7 +599,8 @@ def rendu_texte(video: Path, constats: list[Constat], planche: Path | None) -> s
     return "\n".join(lignes)
 
 
-def rendu_markdown(video: Path, constats: list[Constat], mesures: dict[str, Any]) -> str:
+def rendu_markdown(video: Path, constats: list[Constat], mesures: dict[str, Any],
+                   planche: Path | None) -> str:
     r = resume(constats)
     probe = mesures["probe"]
     v = probe["video"] or {}
@@ -586,7 +611,10 @@ def rendu_markdown(video: Path, constats: list[Constat], mesures: dict[str, Any]
               "| Niveau | Constat | Instant | Détail |", "|---|---|---|---|"]
     for c in constats:
         lignes.append(f"| {c.niveau} | `{c.id}` | {'' if c.t is None else f'{c.t:.2f} s'} | {c.message} |")
-    lignes += ["", "Planche : `planche.jpg` (une image au milieu de chaque plan)."]
+    if planche:
+        lignes += ["", "Planche : `planche.jpg` (une image au milieu de chaque plan)."]
+    else:
+        lignes += ["", "Planche : indisponible (constat `planche-indisponible`)."]
     return "\n".join(lignes) + "\n"
 
 
@@ -622,7 +650,8 @@ def construire_parseur() -> argparse.ArgumentParser:
     p.add_argument("--script", help="narration attendue : .txt, ou script.md (colonne voix du tableau minuté)")
     p.add_argument("--transcript", help="transcription déjà faite (.txt, ou .json de whisper)")
     p.add_argument("--langue", default="fr", help="langue de la transcription whisper (défaut : fr)")
-    p.add_argument("--sans-audio", action="store_true", help="vidéo muette assumée : pas d'erreur flux-audio")
+    p.add_argument("--sans-audio", action="store_true", help="vidéo muette assumée : pas d'erreur flux-audio, son "
+                   "d'une éventuelle piste ni mesuré ni jugé")
     p.add_argument("--max-plan", type=float, default=MAX_PLAN_DEFAUT,
                    help=f"plafond d'un plan sans changement, en s (défaut {MAX_PLAN_DEFAUT:g}, 0 pour désactiver)")
     p.add_argument("--sortie", help="dossier des images et rapports (défaut : qa/<nom>/ à côté de exports/)")
@@ -658,7 +687,7 @@ def analyser(args: argparse.Namespace, video: Path) -> int:
     mesures: dict[str, Any] = {"probe": probe}
     if probe["video"]:
         mesures.update(analyser_video(video, probe["duree"]))
-    if probe["audio"]:
+    if probe["audio"] and not args.sans_audio:       # vidéo déclarée muette : son non mesuré ni jugé
         mesures.update(analyser_audio(video, probe["duree"]))
     with video.open("rb") as flux:
         mesures["moov_avant_mdat"] = moov_avant_mdat(flux)
@@ -667,13 +696,13 @@ def analyser(args: argparse.Namespace, video: Path) -> int:
         mesures["attendu"] = texte_attendu(chemin.read_text(encoding="utf-8"), chemin.suffix)
         if args.transcript:
             mesures["transcription"] = lire_transcription(Path(args.transcript))
-        elif probe["audio"]:
+        elif probe["audio"] and not args.sans_audio:
             try:
                 mesures["transcription"] = transcrire(video, args.langue)
             except EchecTranscription as err:
                 mesures["transcription"] = None
                 mesures["transcription_echec"] = str(err)
-        # sans flux audio ni --transcript : rien à transcrire, flux-audio le signale déjà
+        # sans flux audio (ou vidéo déclarée muette) ni --transcript : rien à transcrire
 
     constats = evaluer(mesures, {"plateforme": conf, "nom_plateforme": args.plateforme,
                                  "duree": args.duree, "sans_audio": args.sans_audio,
@@ -683,10 +712,7 @@ def analyser(args: argparse.Namespace, video: Path) -> int:
     if probe["video"]:
         temps = milieux_de_plans(mesures.get("plans") or [probe["duree"]])
         planche = extraire_planche(video, temps, sortie)
-        if planche is None:
-            constats.append(Constat("info", "planche-indisponible",
-                                    "images ou planche contact non extraites : regarder la vidéo "
-                                    "directement ou relancer après avoir vérifié ffmpeg"))
+        constats += constats_planche(planche, len(temps))
     sortie.mkdir(parents=True, exist_ok=True)
     rapport = {"video": str(video), "plateforme": args.plateforme, "resume": resume(constats),
                "mesures": {"duree": probe["duree"], "video": probe["video"], "audio": probe["audio"],
@@ -695,7 +721,7 @@ def analyser(args: argparse.Namespace, video: Path) -> int:
                "planche": str(planche) if planche else None}
     texte_json = serialiser_json(rapport)
     (sortie / "rapport.json").write_text(texte_json, encoding="utf-8")
-    (sortie / "rapport.md").write_text(rendu_markdown(video, constats, mesures), encoding="utf-8")
+    (sortie / "rapport.md").write_text(rendu_markdown(video, constats, mesures, planche), encoding="utf-8")
     if args.format == "json":
         print(texte_json, end="")
     else:

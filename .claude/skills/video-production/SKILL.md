@@ -44,7 +44,7 @@ Un dossier par vidéo, créé au cadrage et nommé `AAAA-MM-JJ-<sujet>` : la dat
 # Brief : <titre de travail>
 
 - **Objectif business** : <notoriété | leads | conversion | rétention | preuve sociale> ; indicateur suivi : <...>
-- **Canal et plateforme** : <Reels | TikTok | Shorts | LinkedIn | site | YouTube> ; toile <1080x1920 | 1080x1080 | 1920x1080>
+- **Canal et plateforme** : <Reels | TikTok | Shorts | LinkedIn | site | YouTube> ; toile <1080x1920 | 1080x1350 | 1080x1080 | 1920x1080>
 - **Durée visée** : <secondes>
 - **Persona** : <persona de 01-brand/personas.md> ; ce qu'elle sait déjà du sujet : <...>
 - **Message unique** : <une phrase>
@@ -120,7 +120,7 @@ statut: brouillon
 | Vidéo produit ou lancement depuis une URL, un site, une app | `hyperframes:product-launch-video` |
 | Annonce de fonctionnalité depuis un PR (clients SaaS) | `hyperframes:pr-to-video` |
 | Clip rythmé sur une musique | `hyperframes:music-to-video` |
-| Rushes face caméra → reel | `reel-talking-head` → `video-editing` (`hyperframes:talking-head-recut` ou ffmpeg) |
+| Rushes face caméra → reel | `reel-talking-head` → `video-editing` : `hyperframes:general-video`, la voie ordinaire ; `hyperframes:talking-head-recut` seulement pour poser un habillage designé sur une séquence déjà coupée et étalonnée ; ou tout par ffmpeg |
 | Vidéo longue → clips | `video-repurpose` |
 | Clips IA ou stock + narration, montage libre | `video-generation` (matière) → `hyperframes:general-video` |
 | Montage documentaire sur archives | `video-documentary` |
@@ -153,15 +153,29 @@ Règles des validations :
 - Une pré-autorisation globale (« fais tout », « je te fais confiance jusqu'au rendu ») se consigne dans `decisions.md` avec sa portée exacte : quelles validations elle couvre. Elle ne couvre jamais le premier usage d'un outil payant, un dépassement du budget, ni la revue humaine du rendu final.
 - **Aucun crédit dépensé avant le storyboard validé.** Pas d'image, pas de clip, pas de voix ni de musique payante « pour voir ».
 
+### Validations et passage de main par filière
+
+Les trois validations gardent leur objet partout (concept, script ou liste, storyboard) ; leur support et le moment où la main passe changent selon la filière. Une filière qui a validé son `storyboard.md` avant la passation écrit `storyboard: no` dans `BRIEF.md` : le workflow publie alors son plan pour information et continue, sans second point de contrôle du storyboard. Le rendu reste soumis à l'accord de l'humain dans tous les cas.
+
+| Filière | Validation 1 : concept | Validation 2 : script | Validation 3 : storyboard | Passation, champs de `BRIEF.md` |
+|---|---|---|---|---|
+| Workflows HyperFrames appelés directement (`faceless-explainer`, `product-launch-video`, `pr-to-video`, `music-to-video`, `general-video`) | Étape 2 ci-dessus | `script.md` (étape 3) | Plan du workflow, `hyperframes/STORYBOARD.md`, à son point de contrôle | Après la validation 2 ; `flow: automation`, `storyboard: yes` |
+| `reel-talking-head` | Angle et traitement du reel, après l'analyse gratuite de la source (Temps 1) | Script de montage dans `script.md` (Temps 2) | `storyboard.md` aux vignettes au vrai recadrage (Temps 3) | Après la validation 3, par `video-editing` : `general-video` avec `flow: automation`, `storyboard: no` ; `talking-head-recut` sans ces deux champs ; ou ffmpeg |
+| `video-repurpose` | Traitement de la série : plateformes, toiles, habillage, sous-titres | Liste des clips notée et validée, devenue `script.md` (étape 3) | `storyboard.md` : vignette au vrai cadrage de chaque clip, habillage prévu (après l'étape 5) | Après la validation 3, par `video-editing` : ffmpeg, ou `general-video` avec `flow: automation`, `storyboard: no` |
+| `video-documentary` | Question, thèse, registre (étape 1) | Découpage en emplacements (étape 2), puis narration sur les images retenues (étape 6) | `selections.json` et `storyboard.md` (étape 5) | Après la validation 3 (étape 7) : `general-video` avec `flow: automation`, `storyboard: no` |
+| `motion-design` → `hyperframes:motion-graphics` | Étape 2 ci-dessus | `script.md` : cartons, chiffres, temps | `storyboard.md`, avant la passation | Après la validation 3 ; ni `flow` ni `storyboard`, le workflow est autonome par conception |
+| Manim (`manim-composer` → `manim-ce`) | Étape 2 ci-dessus | `script.md` | `scenes.md` de `manim-composer`, avec dans `storyboard.md` les plans qui entourent la démonstration | Après la validation 3 : rendu Manim, puis composition par `motion-design` (`general-video` avec `flow: automation`, `storyboard: no`, ou `motion-graphics`) |
+
 ## Passer la main à HyperFrames
 
-Après la validation du script, pour toute filière HyperFrames. Dans une installation en plugin, la skill `hyperframes:hyperframes` fait passer chaque commande `npx hyperframes` par le lanceur du plugin, qui fixe la version du CLI : suivre sa règle pour toutes les commandes de cette section.
+Pour toute filière HyperFrames : après la validation du script quand le workflow tient lui-même le storyboard, après la validation 3 sinon (table « Validations et passage de main par filière »). Dans une installation en plugin, la skill `hyperframes:hyperframes` fait passer chaque commande `npx hyperframes` par le lanceur du plugin, qui fixe la version du CLI : suivre sa règle pour toutes les commandes de cette section.
 
 **1. Choisir la toile** selon la destination :
 
 | Destination | Toile (`--aspect`, `aspect:`) | Préréglage d'`init` |
 |---|---|---|
 | Reels, TikTok, Shorts, LinkedIn vertical | `1080x1920` | `portrait` |
+| LinkedIn 4:5, l'autre vertical du fil | `1080x1350` | aucun préréglage 4:5 : `portrait`, puis `data-height="1350"` sur la racine de chaque composition (skill `hyperframes:hyperframes-core`) |
 | LinkedIn carré (le plus sûr sur ordinateur), fil carré | `1080x1080` | `square` |
 | Site, YouTube | `1920x1080` | `landscape` |
 
@@ -217,14 +231,15 @@ Ce qu'est la vidéo, pour qui, pourquoi maintenant ; l'objectif business du brie
 - Rendu seulement après accord explicite, vers ../exports/<slug>-<plateforme>.mp4.
 ```
 
-`workflow` prend le nom de la filière sans préfixe (`faceless-explainer`, `product-launch-video`, `pr-to-video`, `music-to-video`, `motion-graphics`, `general-video`). `flow: automation` avec `storyboard: yes` met HyperFrames en mode collaboratif : il s'arrête et attend à ses points de contrôle, ce qui recouvre nos validations. `motion-graphics` travaille en autonomie, sans ces deux champs : sa pièce est courte, et son storyboard se valide avant la passation.
+`workflow` prend le nom de la filière sans préfixe (`faceless-explainer`, `product-launch-video`, `pr-to-video`, `music-to-video`, `motion-graphics`, `general-video`, `talking-head-recut`). `flow: automation` avec `storyboard: yes` met HyperFrames en mode collaboratif : il s'arrête et attend à ses points de contrôle, ce qui recouvre nos validations. Une filière qui a validé `storyboard.md` avant la passation écrit `storyboard: no` (table « Validations et passage de main par filière »). `motion-graphics` et `talking-head-recut` travaillent sans ces deux champs : leur storyboard se valide avant la passation.
 
 **5. Charger la skill de workflow `hyperframes:<workflow>`.** Elle lit `BRIEF.md` et déroule son storyboard puis la construction. Points de vigilance :
 
 - **Charte.** L'étape de design system des workflows (choix d'un preset dans `frame-presets`, script `build-frame`, recette) se saute : `frame.md` existe et fait foi. Si un `frame.md` a été réécrit, relancer `brand-frame.py`, puis `brand-frame.py --check`.
+- **`hyperframes:music-to-video`.** Son étape 3 (« Pick the brand ») copie un preset tel quel dans `frame.md`, et sa porte de contrôle exige que `frame.md` soit une copie conforme d'un preset. Garder le `frame.md` de la marque, remplir le champ `style` du frontmatter de `STORYBOARD.md` (police et palette) depuis `frame.md`, et consigner l'exception dans `decisions.md` : cette condition de la porte est levée par décision, les autres (`validate-plan.mjs` sans erreur, accord sur le plan) restent.
 - **Sous-titres.** Sauter l'étape de design system saute aussi la copie de la peau de sous-titres : le script de sous-titres des workflows retombe alors sur sa pastille par défaut (police Roboto, fond noir), hors marque. Exception admise, consignée dans `decisions.md` : copier le seul `caption-skin.html` d'un preset (dossier `frame-presets/` de la skill `hyperframes:hyperframes-creative`) vers `hyperframes/.hyperframes/caption-skin.html` ; le script y injecte les couleurs et les polices de `frame.md` (fichiers de police déposés dans `assets/fonts/`). Sinon, marquer l'étape de sous-titres du workflow comme sautée et sous-titrer avec la skill `captions`, ou `hyperframes:embedded-captions` sur des images filmées.
 - **Connexion et médias.** Au départ, le workflow affiche `npx hyperframes auth status` et attend le choix de l'humain : se connecter à HeyGen, ou continuer hors ligne. Connecté, l'étape audio prend la voix chez HeyGen et la musique dans sa bibliothèque. Hors ligne, la voix vient de Kokoro, en local, mais les trois workflows scriptés (`faceless-explainer`, `product-launch-video`, `pr-to-video`) n'ont aucune musique : leur étape audio ne fait que récupérer chez HeyGen. La génération locale de musique (Lyria si une clé Gemini ou Google est présente, sinon MusicGen en local) ne concerne que `hyperframes:general-video` et l'usage direct du moteur. Une vidéo hors ligne qui doit avoir de la musique la reçoit donc à part (voir le contrat de coût). HeyGen et Lyria sont des fournisseurs externes : coût ou quota annoncé avant l'étape audio. Licence de la musique : voir le contrat de coût.
-- **Voix et storyboard.** Le point de contrôle du plan (`STORYBOARD.md`) tient lieu de validation 3, et l'étape audio démarre dès qu'il est accepté. Avant de l'accepter : la voix validée est écrite dans le frontmatter de `BRIEF.md` (`voice: ff_siwis` hors ligne, ou l'identifiant de la voix HeyGen retenue si l'humain s'est connecté, car les identifiants changent d'un fournisseur à l'autre), et le coût de la voix et de la musique est annoncé. Vérifier que l'étape audio reçoit bien cette voix (`--voice <id>`) : sans elle, le workflow prend sa voix anglaise par défaut. Une voix payante encore jamais entendue se règle ainsi : accord sur le plan, puis échantillon payant annoncé et validé, et seulement ensuite l'étape audio. Une fois l'échantillon validé (validation 3), mettre `voice:` à jour dans `BRIEF.md` avec l'identifiant de la voix retenue, avant de lancer l'étape audio. `hyperframes:motion-graphics` n'a pas de storyboard : la validation 3 se tient sur `storyboard.md` avant de lui passer la main.
+- **Voix et storyboard.** Le point de contrôle du plan (`STORYBOARD.md`) tient lieu de validation 3, et l'étape audio démarre dès qu'il est accepté. Avant de l'accepter : la voix validée est écrite dans le frontmatter de `BRIEF.md` (`voice: ff_siwis` hors ligne, ou l'identifiant de la voix HeyGen retenue si l'humain s'est connecté, car les identifiants changent d'un fournisseur à l'autre), et le coût de la voix et de la musique est annoncé. Vérifier que l'étape audio reçoit bien cette voix (`--voice <id>`) : sans elle, le workflow prend sa voix anglaise par défaut. Une voix payante encore jamais entendue se règle ainsi : accord sur le plan, puis échantillon payant annoncé et validé, et seulement ensuite l'étape audio. Une fois l'échantillon validé, après la validation 3, mettre `voice:` à jour dans `BRIEF.md` avec l'identifiant de la voix retenue, avant de lancer l'étape audio. `hyperframes:motion-graphics` n'a pas de storyboard : la validation 3 se tient sur `storyboard.md` avant de lui passer la main.
 - **Rendu.** Jamais automatique. Après `npx hyperframes check` propre et l'aperçu (`npx hyperframes preview`), demander l'accord, puis rendre depuis le dossier `hyperframes/` :
 
 ```bash
