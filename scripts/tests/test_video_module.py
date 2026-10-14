@@ -244,6 +244,28 @@ def test_inspiration_cablee_dans_les_skills():
     assert (REPO / "08-video/scripts/inspiration.py").is_file()
 
 
+def test_inspiration_registre_hyperframes():
+    contenu = texte("08-video/inspiration.md")
+    section = contenu.split("## Deuxième source : le registre HyperFrames")[1].split("## De la catégorie à la filière")[0]
+    for titre in ("### Quand le consulter", "### Chercher", "### Retenir et repeindre", "### Licences et installation",
+                  "### Consigner"):
+        assert titre in section, titre
+    for terme in ("catalog --query", "--json", "en anglais", "n'envoie rien", "hyperframes add", "--example",
+                  "frame.md", "brand.css", "Interfaces de tiers", "01-brand/droits.md", "01-brand/divulgation-ia.md",
+                  "CREDITS.md", "GSAP", "credits.md", "feedback --search-miss", "l'accord de l'humain", "hf:<nom>",
+                  "Licence vérifiée"):
+        assert terme in section, terme
+    assert "Deuxième source" in contenu.split("## Rôle")[0], "annoncée dans l'introduction"
+    assert "Registre HyperFrames consulté" in contenu.split("## Check-list")[1]
+    production = texte(".claude/skills/video-production/SKILL.md")
+    concepts = production.split("2. **Concepts.**")[1].split("→ **Validation 1")[0]
+    assert "catalog --query" in concepts and "« Deuxième source »" in concepts, "registre dans l'étape Concepts"
+    motion = texte(".claude/skills/motion-design/SKILL.md")
+    assert "« Deuxième source »" in motion.split("## Charte du projet")[0], "renvoi dans « Références à charger »"
+    blocs = _ligne(motion, "- **Blocs prêts à l'emploi**")
+    assert "--json" in blocs and "« Deuxième source »" in blocs
+
+
 def test_pas_de_musique_hors_ligne_pour_les_workflows_scriptes():
     production = texte(".claude/skills/video-production/SKILL.md")
     connexion = _ligne(production, "- **Connexion et médias.**")
