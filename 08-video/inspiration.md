@@ -121,7 +121,7 @@ npx hyperframes catalog --type block --tag lower-third --json
 
 - La requête s'écrit **en anglais** et décrit le geste ; le texte à l'écran n'y figure pas. Le catalogue est indexé en anglais, et une requête en français ne trouve rien.
 - La recherche est locale et n'envoie rien.
-- **`--json` est nécessaire en session agent** : hors terminal interactif, le mode texte s'arrête sans rien afficher (constaté avec la version 0.8.155).
+- **`--json` en session agent** : la sortie se lit sans ambiguïté et porte `tier`, `total` et le lien d'aperçu de chaque résultat. Le mode texte s'affiche aussi depuis la 0.8.156 ; en 0.8.155, il ne sortait rien hors terminal interactif.
 - Dans une installation en plugin, la commande passe par le lanceur du plugin (règle de la skill `hyperframes:hyperframes`).
 - Chaque résultat donne son nom, son type, sa description, ses tags, et pour un bloc sa toile, sa durée et souvent un aperçu (`preview.video`). On regarde l'aperçu avant de retenir un élément.
 
