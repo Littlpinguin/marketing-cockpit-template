@@ -1,6 +1,6 @@
 # Bibliothèque d'inspiration : vidéos de référence
 
-Chargée par `video-production` (étapes « Concepts » et « Storyboard ») et par `motion-design` quand un brief vidéo demande des idées de mise en scène. Elle complète `08-video/motion.md` (profil de goût, revue de singularité, interdits), qui prime en cas de doute.
+Chargée par `video-production` (étapes « Concepts » et « Storyboard ») et par `motion-design` quand un brief vidéo demande des idées de mise en scène. Deux sources : la bibliothèque de vidéos de référence (on en reprend un mécanisme) et le registre HyperFrames (on en installe des pièces, puis on les repeint, § « Deuxième source »). Elle complète `08-video/motion.md` (profil de goût, revue de singularité, interdits), qui prime en cas de doute.
 
 ## Rôle
 
@@ -95,6 +95,67 @@ La marque l'emporte sur la référence, à chaque étape :
 
 Une scène sans référence est permise : la ligne dit « création » dans la colonne Référence. Le tableau sert à prouver que chaque emprunt est un mécanisme et chaque habillage une décision de marque.
 
+## Deuxième source : le registre HyperFrames
+
+La bibliothèque montre ce que d'autres ont fait, et elle ne se reprend pas. Le registre HyperFrames fournit des pièces qui, elles, s'installent dans un projet. Il est livré avec le moteur, sous licence Apache-2.0, et compte environ 450 éléments :
+
+- **Blocs** : des sous-compositions qui ont leur toile, leur durée et leur timeline (lower-thirds, graphiques, cartes, interfaces simulées, transitions, titres 3D…). On les insère dans la composition hôte par `data-composition-src`.
+- **Composants** : des effets à coller dans une composition (révélation de texte, compteur, surlignage, grain, curseur, sous-titres animés…). Ils n'ont pas de toile propre.
+- **Exemples** : des projets complets (`kinetic-type`, `swiss-grid`, `nyt-graph`, `warm-grain`…).
+
+Le geste change donc par rapport à la bibliothèque : on reprend la pièce elle-même, et la transposition consiste à la repeindre.
+
+### Quand le consulter
+
+- **Concepts** : pour chaque temps fort d'un concept, chercher si un bloc ou un composant le produit déjà. Une promesse de mouvement adossée à un élément du registre est plus sûre et moins chère qu'un effet à écrire : le dire dans le « chemin outillé » du concept.
+- **Storyboard** : dans la planche « référence → transposition », un élément du registre s'écrit `hf:<nom>` dans la colonne Référence.
+- **Construction** : `motion-design` cherche dans le registre avant d'écrire un effet à la main.
+
+### Chercher
+
+```bash
+npx hyperframes catalog --query "headline reveals word by word" --json
+npx hyperframes catalog --query "lower third name and role for footage" --json
+npx hyperframes catalog --type block --tag lower-third --json
+```
+
+- La requête s'écrit **en anglais** et décrit le geste ; le texte à l'écran n'y figure pas. Le catalogue est indexé en anglais, et une requête en français ne trouve rien.
+- La recherche est locale et n'envoie rien.
+- **`--json` est nécessaire en session agent** : hors terminal interactif, le mode texte s'arrête sans rien afficher (constaté avec la version 0.8.155).
+- Dans une installation en plugin, la commande passe par le lanceur du plugin (règle de la skill `hyperframes:hyperframes`).
+- Chaque résultat donne son nom, son type, sa description, ses tags, et pour un bloc sa toile, sa durée et souvent un aperçu (`preview.video`). On regarde l'aperçu avant de retenir un élément.
+
+### Retenir et repeindre
+
+La marque l'emporte, comme pour une référence :
+
+1. **Atomes.** Couleurs, polices et rayons du bloc sont remplacés par les variables de `brand.css` ; aucune valeur du bloc ne survit. Une police chargée par le bloc (Google Fonts, fichier vendorisé) est remplacée par celles de la marque.
+2. **Textes.** Tous les textes d'exemple sont réécrits dans la voix de la marque (`01-brand/voice.md`, `01-brand/anti-ai-writing-style.md`), dans la langue de la marque.
+3. **Interdits.** Un élément qui repose sur un effet refusé par `08-video/motion.md` (glitch, flash blanc, zoom de transition, particules décoratives) est écarté, ou gardé pour son seul mouvement avec un autre effet.
+4. **Interfaces de tiers.** Plusieurs blocs imitent une plateforme (publication X ou Reddit, notification Slack ou macOS, carte Spotify, habillages YouTube, TikTok, Instagram, échanges ChatGPT ou Claude). Ils portent la marque d'un tiers. On ne les garde que restylés aux couleurs de la marque, le logo du tiers réduit au nécessaire et utilisé selon `01-brand/droits.md` (§ « Logos de tiers »), et jamais l'interface présentée comme une vraie capture ou comme un produit réel (`01-brand/divulgation-ia.md`, ligne « Mockup d'écran ou d'interface »).
+5. **Format.** Toile, durée et zones de sécurité viennent de `08-video/formats.md` : un bloc en 16:9 se recadre ou se recompose pour le 9:16 ; l'étirer déformerait ses proportions.
+6. **Singularité.** Un projet monté uniquement avec des blocs du registre ressemble à tous ceux qui utilisent le même registre. La revue de `08-video/motion.md` s'applique : au moins un dispositif propre à la marque par vidéo (l'objet signature de `08-video/motion.md`, un chiffre sourcé de `01-brand/messaging-framework.md`, un élément du catalogue `01-brand/assets/`).
+
+Un exemple complet (`hyperframes init <dossier> --example <nom>`) apporte sa propre charte : il ne sert jamais de base à un projet, dont `frame.md` fait foi. On le lit pour sa construction, et on en reprend des blocs ou des composants.
+
+### Licences et installation
+
+- **Licences.** Le dépôt est sous Apache-2.0, mais certains éléments embarquent ou chargent du code et des fichiers tiers : GSAP sous sa licence Standard, three.js, des polices OFL, des textures dont l'origine reste à confirmer. Le `CREDITS.md` du dépôt HyperFrames les liste. Avant un export, lire les fichiers de l'élément et ce `CREDITS.md`. Une texture d'origine non confirmée est remplacée, et tout crédit dû entre dans `credits.md` du projet, selon `01-brand/droits.md`.
+- **Installation.** `npx hyperframes add <nom>` écrit le bloc dans `compositions/` et le composant dans `compositions/components/` du projet HyperFrames. La commande demande le réseau à chaque fois : seul le catalogue est en cache.
+- **Signaler un manque.** `npx hyperframes feedback --search-miss` envoie la requête à HeyGen. On ne le lance qu'avec l'accord de l'humain, avec une description générique du geste en anglais, jamais un nom de client ni un texte de la marque.
+
+### Consigner
+
+Dans `references.md`, à côté des références de la bibliothèque :
+
+```markdown
+## Registre HyperFrames
+
+| Élément | Type | Ce qu'il apporte | Repeint (couleurs, polices, textes) | Licence vérifiée |
+|---|---|---|---|---|
+| hf:<nom> | bloc ou composant | <le geste, en une ligne> | <ce qui a été remplacé> | <Apache-2.0, ou licence tierce et crédit> |
+```
+
 ## De la catégorie à la filière
 
 La catégorie d'une référence indique quels outils savent produire son mécanisme. La filière reste décidée par la table « Choisir la filière » de `video-production`.
@@ -145,6 +206,7 @@ Dans la proposition de concept (validation 1), chaque concept cite une à trois 
 - [ ] Transposition par `frame.md` et `brand.css`, `01-brand/voice.md`, tropes bannis, profil de goût
 - [ ] Catégorie et techs rapprochées d'une filière et d'un adaptateur HyperFrames que les outils tiennent
 - [ ] Références citées dans chaque concept avec lien, créateur, ce qu'on garde et ce qu'on change
+- [ ] Registre HyperFrames consulté pour chaque temps fort (`catalog --query … --json`, en anglais) ; éléments retenus consignés, repeints aux variables de `brand.css`, textes réécrits, licence vérifiée, interfaces de tiers restylées
 - [ ] Planche « référence → transposition » faite, une ligne par scène, avant la validation 3
 - [ ] Revue de singularité passée après transposition
 - [ ] Aucun prompt, aucune affiche ni donnée de la bibliothèque dans le dépôt

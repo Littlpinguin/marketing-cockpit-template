@@ -13,7 +13,7 @@ Cette skill porte la marque jusqu'à HyperFrames pour tout ce qui bouge : titres
 - `01-brand/design-anti-generique.md` : marqueurs du look générique et méthode pour s'en écarter.
 - `08-video/motion.md` : principes, profil de goût, revue de singularité, choix du moteur, repères typographiques, interdits.
 - La skill `design-taste` : mêmes curseurs côté web, pour une campagne qui a aussi une landing.
-- `08-video/inspiration.md` : chercher des vidéos de référence (`08-video/scripts/inspiration.py`), en extraire le mécanisme et le transposer dans la marque, sans reprendre ni look, ni prompt, ni code d'un créateur.
+- `08-video/inspiration.md` : chercher des vidéos de référence (`08-video/scripts/inspiration.py`), en extraire le mécanisme et le transposer dans la marque, sans reprendre ni look, ni prompt, ni code d'un créateur ; et chercher dans le registre HyperFrames les pièces à installer puis repeindre (§ « Deuxième source »).
 - Selon le besoin, une des références de cette skill (section « Références »).
 
 Si `01-brand/style-guide.md` manque ou porte encore des `{{...}}`, s'arrêter et proposer `/start-cockpit`.
@@ -67,7 +67,7 @@ Méthode dans `08-video/motion.md` :
 
 - **`hyperframes:motion-graphics`** : une pièce courte, sans voix, où le mouvement est le message (titre animé, chiffre, logo, lower-third, carte, graphique). Sa fiche de route la situe en général sous 10 s. Elle travaille en autonomie, sans storyboard : la validation du storyboard se fait avant, sur `storyboard.md` (`video-production`).
 - **`hyperframes:general-video`** : composition libre en plusieurs scènes, narrée ou non, et tout ce qui dépasse une pièce courte (encre, 3D, personnages, montage d'archives, plan Manim inséré).
-- **Blocs prêts à l'emploi** : avant d'écrire un effet à la main, chercher dans le registre avec la skill `hyperframes:hyperframes-registry` (`npx hyperframes catalog --query "<effet décrit en anglais>"`, le catalogue est indexé en anglais ; puis `npx hyperframes add <nom>`). Un bloc s'insère dans la composition, il ne la remplace pas. Le filtrer par la marque : ses couleurs et polices remplacées par les variables de `brand.css`, et refusé s'il relève des interdits de `08-video/motion.md` (glitch, flash, zoom de transition, particules décoratives).
+- **Blocs prêts à l'emploi** : avant d'écrire un effet à la main, chercher dans le registre avec la skill `hyperframes:hyperframes-registry` (`npx hyperframes catalog --query "<effet décrit en anglais>" --json`, le catalogue est indexé en anglais et le mode texte ne s'affiche pas hors terminal interactif ; puis `npx hyperframes add <nom>`). Règles de repeinte, interfaces de tiers et licences : `08-video/inspiration.md` § « Deuxième source ». Un bloc s'insère dans la composition, il ne la remplace pas. Le filtrer par la marque : ses couleurs et polices remplacées par les variables de `brand.css`, et refusé s'il relève des interdits de `08-video/motion.md` (glitch, flash, zoom de transition, particules décoratives).
 
 Le passage de la main à HyperFrames (création du projet, `BRIEF.md`, rendu) est décrit dans `video-production` § « Passer la main à HyperFrames ».
 
