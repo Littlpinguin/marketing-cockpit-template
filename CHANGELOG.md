@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+**Changed.** Video sound doctrine (`08-video/montage.md`, section « Son »): music and sound effects are composed in code on recorded material (CC0 instruments and interface sounds, production synths played from Python) rather than pure synthesis or ready-made tracks, with one sound idea drawn from the film's subject, layered sound effects tied to gestures, and a single cue sheet read by both the sound and the HyperFrames build (walks put a foot down on each heard step; when an animation needs another timing, the cue changes and the sound is rendered again). Master target: −14 LUFS for platforms, −16 LUFS for web players off platform. Licence note: GPL-3 audio tools stay out of MIT repositories; rendered audio is not covered. Checklist updated.
+
 ## [2.3.2] - 2026-10-14
 
 The HyperFrames registry joins the video inspiration doctrine.
