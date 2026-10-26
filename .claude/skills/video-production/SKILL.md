@@ -282,6 +282,7 @@ Signaler un blocage en cinq points, puis attendre :
 - [ ] **Musique assez longue** pour toute la vidéo, ou bouclage prévu sans coupure audible.
 - [ ] **Assets tous présents** dans le dossier du projet : `npx hyperframes check` sans requête en échec.
 - [ ] **Marque à jour** : `python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --check` sort 0.
+- [ ] **Sous-titres en forme** : `.srt` écrit dans `sous-titres/` et `python3 08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` sort 0 (le hook du module le lance aussi à chaque écriture).
 - [ ] **Revue de singularité** répondue dans `decisions.md`.
 
 ## QA et revue

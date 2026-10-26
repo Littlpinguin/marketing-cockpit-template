@@ -19,6 +19,16 @@
             "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/brand-check-reminder.py"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/controle-sous-titres.py\"",
+            "timeout": 60
+          }
+        ]
       }
     ]
   },
