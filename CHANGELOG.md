@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+**Added.** Subtitle shape control for the video module, so captions stop drifting from one film to the next. The rules live in `08-video/scripts/sous-titres.toml`, one section per canvas (9:16: one line of 25 characters at most and a 60 px minimum body in the composition; 4:5 and 1:1: two lines of 32; 16:9: two lines of 42; shared timing rules: 0.25 s minimum on screen, 4 s warning, 28 characters per second at most, 15 as the static-caption reference with `--statique`, 97 % of the `script.md` Voix column found in order). `08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` applies them to every `.srt` of `sous-titres/` (lines, characters, duration, reading speed, overlaps, segments straddling a cut of `montage/coupe.json`, fidelity to the script) and to the CSS of the HyperFrames compositions (subtitle selectors `st`, `sous-titre`, `caption`); exit 1 on any error. A new PostToolUse hook, `.claude/hooks/controle-sous-titres.py` (matcher `Write|Edit|MultiEdit|Bash`), runs it whenever a subtitle file or a composition is written and blocks with exit 2 on error; it does nothing when the module is absent. `08-video/formats.md` (Subtitles: size, karaoke dynamics, reading speed, automatic control), the `captions` and `video-production` checklists, the module gates, `08-video/README.md`, the root command table and `/health-check` follow. Changing a rule means changing the TOML and `formats.md` in the same commit: `scripts/tests/test_video_sous_titres.py` checks they agree.
+
 ## [2.3.2] - 2026-10-14
 
 The HyperFrames registry joins the video inspiration doctrine.

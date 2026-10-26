@@ -76,8 +76,8 @@ Un module actif dont un prérequis a disparu = 🟠 avec suggestion (`/modules` 
 
 ### 8. Câblage des hooks
 
-- `.claude/settings.json` : hook PostToolUse (brand-check) et hook SessionStart enregistrés.
-- `.claude/hooks/brand-check-reminder.py` et `.claude/hooks/session-start.py` existent.
+- `.claude/settings.json` : hooks PostToolUse (brand-check ; contrôle des sous-titres si le module `video` est actif) et hook SessionStart enregistrés.
+- `.claude/hooks/brand-check-reminder.py`, `.claude/hooks/session-start.py` et `.claude/hooks/controle-sous-titres.py` existent.
 - Test synthétique (le chemin doit être **absolu** — le hook matche `/03-social-media/` avec slash initial) :
   ```
   echo '{"tool_input":{"file_path":"'"$PWD"'/03-social-media/linkedin/drafts/test.md"}}' | python3 .claude/hooks/brand-check-reminder.py

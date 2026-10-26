@@ -94,7 +94,7 @@ Les filières ajoutent leurs fichiers : `candidats.md` et `clips/` pour `video-r
 - Rendu seulement après l'accord de l'humain sur l'aperçu ; jamais de changement de moteur, de fournisseur ou de modèle sans l'annoncer.
 - Charte à jour : `python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --check` sort 0 ; habillage aux seules variables de `brand.css` ; aucun trope banni ({{BRAND_BANNED_VISUALS}}) ; aucun preset `frame-presets` hors la peau de sous-titres.
 - QA : `qa-video.py` sans constat bloquant, ou constats restants acceptés par l'humain ; revue `video-reviewer` traitée ; revue humaine du rendu final, toujours.
-- Sous-titres présents sur toute vidéo sociale (majorité de lecture sans le son).
+- Sous-titres présents sur toute vidéo sociale (majorité de lecture sans le son), conformes à `08-video/scripts/sous-titres.toml` : `python3 08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` sort 0. Le hook du module (`.claude/settings.json`, `.claude/hooks/controle-sous-titres.py`) le lance à chaque écriture de sous-titres ou de composition et bloque sur erreur.
 - `brand-check` sur le script et l'habillage.
 - Divulgation IA selon `01-brand/divulgation-ia.md` pour tout clip généré, voix de synthèse ou musique générée ; crédits et licences (stock, archives, musique, police) et accord des personnes filmées vérifiés dans `01-brand/droits.md`.
 

@@ -144,7 +144,8 @@ Un groupe de 3 à 5 mots visible, le mot prononcé coloré :
 ## Checklist avant livraison
 
 - [ ] Transcription relue à 100 % (noms, chiffres, vocabulaire de marque, homophones)
-- [ ] Segments : 1 ligne de 25 caractères au plus en 9:16 (2 × 42 au plus ailleurs), 1 à 3 s, 15 caractères par seconde au plus, pas de segment à cheval sur une coupe
+- [ ] Segments : 1 ligne de 25 caractères au plus en 9:16 (2 × 32 en 4:5 et 1:1, 2 × 42 en 16:9), 1 à 3 s, 15 caractères par seconde au plus en statique (en karaoké, la vitesse suit la voix), pas de segment à cheval sur une coupe
+- [ ] `python3 08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` sort 0 (règles : `08-video/scripts/sous-titres.toml` ; le hook du module le lance à chaque écriture)
 - [ ] `.srt` livré dans `08-video/projets/<slug>/sous-titres/<nom>.srt` (UTF-8)
 - [ ] Incrustation : police `{{BRAND_FONT_PRIMARY}}`, couleurs de la marque, hors zones de sécurité ; identité `hyperframes:embedded-captions` choisie par l'humain et consignée, le cas échéant
 - [ ] Contrôle visuel sur au moins 3 images (début, milieu, fin), ou sur la planche de `qa-video.py`

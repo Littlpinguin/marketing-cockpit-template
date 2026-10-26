@@ -296,6 +296,7 @@ La marque est vérifiable par script ; ces contrôles priment sur toute appréci
 | Faut-il mentionner que c'est généré par IA, et comment ? | `01-brand/divulgation-ia.md` |
 | Cette formulation a-t-elle déjà été refusée ? | `01-brand/exemples-rejetes.md` |
 | Ce rendu vidéo tient-il son format, sa loudness, son rythme, sa narration ? | `python3 08-video/scripts/qa-video.py <rendu>` (module `video`) |
+| Les sous-titres d'un projet vidéo tiennent-ils leurs règles (lignes, corps, vitesse, fidélité) ? | `python3 08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` (module `video`, lancé aussi par un hook PostToolUse) |
 | La charte d'un projet HyperFrames est-elle à jour ? | `python3 08-video/scripts/brand-frame.py <projet> --check` (module `video`) |
 
 Réglages propres à la marque : `scripts/lint-brand.toml` (vocabulaire, tirets, règles actives), `scripts/build-tokens.toml` (fichiers CSS générés, dont le fichier de marque du moteur de slides et `08-video/lib/brand.css`), `scripts/build-inventory.toml` (dossiers inventoriés). Tests : `python3 -m pytest scripts/tests -q`.
