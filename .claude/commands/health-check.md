@@ -97,6 +97,10 @@ Un module actif dont un prérequis a disparu = 🟠 avec suggestion (`/modules` 
 - **Aucun token réel dans un fichier tracké** : `git grep -nE "(eyJ[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|api[_-]?key[\"'[:space:]]*[:=][\"'[:space:]]*[A-Za-z0-9_-]{20,})"` — toute correspondance sur une valeur qui n'est pas un placeholder = 🔴 (révoquer la clé immédiatement, cf. `SECURITY.md`).
 - Vérifier que `00-intel/` est bien couvert par `.gitignore` et qu'aucun fichier de contenu de `00-intel/` n'est tracké ; même vérification pour `.mcp.json` (check 4).
 
+### 11. Frontmatter des agents, skills et commandes
+
+- `python3 -m pytest scripts/tests/test_frontmatter.py -q` : chaque frontmatter de `.claude/` doit se lire en YAML strict. Un échec = 🟠, car un agent au YAML invalide est ignoré sans avertissement et une skill perd sa description, donc son déclenchement automatique. Corriger avec des guillemets doubles autour de la valeur, ou un bloc `>-`.
+
 ## Format du rapport
 
 ```
