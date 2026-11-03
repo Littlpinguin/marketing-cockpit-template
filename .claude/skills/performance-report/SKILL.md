@@ -1,11 +1,11 @@
 ---
 name: performance-report
-description: Orchestre le rapport de performance mensuel de {{COMPANY_NAME}} — collecte GA4 + Search Console + analytics social (Postiz) + emailing, snapshot data.json, analyse par le sous-agent performance-analyst, régénération du dashboard 11-reporting et déploiement FTP sur l'espace client. À invoquer en début de mois pour le mois écoulé, ou à la demande (« rapport de perf », « bilan du mois »).
+description: "Rapport de performance mensuel de {{COMPANY_NAME}} : collecte GA4, Search Console, Postiz, emailing, snapshot data.json, analyse par performance-analyst, dashboard 11-reporting. À utiliser en début de mois ou sur « rapport de perf », « bilan du mois ». Mise en ligne : /deploy-reporting."
 ---
 
 # performance-report — rapport de performance mensuel
 
-Tu orchestres le bilan chiffré mensuel de {{COMPANY_NAME}}. Chaîne complète : **collecte multi-sources → snapshot → analyse → dashboard → déploiement**. Chaque mois est archivé et navigable ; le dashboard présente toujours le dernier mois avec accès à l'historique.
+Tu orchestres le bilan chiffré mensuel de {{COMPANY_NAME}}. Chaîne : **collecte multi-sources → snapshot → analyse → dashboard**. La mise en ligne sur l'espace client est une action externe qui ne fait pas partie de cette skill (étape 5). Chaque mois est archivé et navigable ; le dashboard présente toujours le dernier mois avec accès à l'historique.
 
 ## Arborescence cible
 
@@ -69,11 +69,9 @@ Le dashboard HTML est généré par le **module `11-reporting`** (voir son `CLAU
 
 Vérifier après génération : le mois courant s'affiche, les mois archivés sont accessibles, les sources indisponibles sont signalées et non affichées à zéro.
 
-## Étape 5 — Déploiement FTP (espace client)
+## Étape 5 — Mise en ligne : hors de cette skill
 
-1. Publier le dashboard régénéré sur l'espace client via le script de déploiement FTP du module `11-reporting` (credentials FTP dans `.env` : hôte, utilisateur, mot de passe, chemin distant — configurés au wizard).
-2. **Dry-run d'abord** : afficher la liste des fichiers qui seront transférés et la destination, attendre la confirmation de l'utilisateur avant l'upload réel (règle `SECURITY.md` : pas d'action externe sans confirmation).
-3. Après upload, donner l'URL de l'espace client et proposer une vérification visuelle.
+Cette skill ne publie rien. Une fois le dashboard vérifié et l'analyse du mois validée par l'utilisateur, la mise en ligne sur l'espace client passe par **`/deploy-reporting`, sur accord de l'utilisateur** (dry-run, confirmation, puis upload FTP). Le signaler en fin de rapport ; ne pas lancer l'upload ni reproduire ses commandes depuis cette skill.
 
 ## Étape 6 — Boucler
 
@@ -94,4 +92,5 @@ Voir `docs/etat-de-lart/mesure-attribution.md` (et `email.md`, `contenu-aeo.md`,
 
 - ❌ Interpréter les chiffres elle-même (→ sous-agent `performance-analyst`)
 - ❌ Générer le HTML du dashboard (→ module `11-reporting`, elle ne fait que l'appeler)
+- ❌ Publier le dashboard sur l'espace client (→ `/deploy-reporting`, sur accord de l'utilisateur)
 - ❌ Modifier la stratégie sans validation humaine — elle recommande, l'utilisateur décide

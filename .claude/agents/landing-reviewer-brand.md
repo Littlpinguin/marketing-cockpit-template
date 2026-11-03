@@ -1,6 +1,6 @@
 ---
 name: landing-reviewer-brand
-description: Revue de conformité à la marque d'une landing page de {{COMPANY_NAME}}, en lecture seule (skill landing-page, phase 7). Charge la doctrine de 01-brand/ (voix, anti-style-IA, messaging, personas, style-guide, tokens.json, exemples rejetés, divulgation IA, droits), lance lint-brand.py, puis couvre la voix, le ton, le visuel (palette, logo, accent, textes dans les images), la preuve (sources, faits sur les personnes), l'audience et les destinations des CTA, la divulgation IA et les droits. Rend trois listes pour le contrôleur, à corriger d'office, mots de l'humain à garder, décisions à lui poser, avec la règle de 01-brand citée pour chaque constat.
+description: "Revue de conformité à la marque d'une landing page de {{COMPANY_NAME}} (skill landing-page, phase 7). Ne modifie pas la page et n'écrit que son rapport, pilotage/review-brand.md ; Bash ne sert qu'à lancer lint-brand.py. Charge la doctrine de 01-brand/ (voix, anti-style-IA, messaging, personas, style-guide, tokens.json, exemples rejetés, divulgation IA, droits), lance lint-brand.py, puis couvre la voix, le ton, le visuel (palette, logo, accent, textes dans les images), la preuve (sources, faits sur les personnes), l'audience et les destinations des CTA, la divulgation IA et les droits. Rend trois listes pour le contrôleur, à corriger d'office, mots de l'humain à garder, décisions à lui poser, avec la règle de 01-brand citée pour chaque constat."
 tools: Read, Grep, Glob, Bash, Write
 ---
 

@@ -2,11 +2,11 @@
 
 **Your marketing department, running inside Claude Code, on a brand your agents can read, apply and check.**
 
-60 production skills · 21 specialist agents · 120 slide layouts · 44 landing sections · 16 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
+61 production skills · 21 specialist agents · 120 slide layouts · 44 landing sections · 16 ready-to-open page templates · 8 optional modules. Built and battle-tested by [Jessy Martin](https://jessem.fr) on real client accounts, then open-sourced.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-d97757.svg)](https://docs.anthropic.com/en/docs/claude-code/overview)
-[![Skills](https://img.shields.io/badge/skills-60-blue.svg)](#whats-inside)
+[![Skills](https://img.shields.io/badge/skills-61-blue.svg)](#whats-inside)
 [![Agents](https://img.shields.io/badge/agents-21-blue.svg)](#whats-inside)
 
 Clone it once per company, run the wizard, and get a role-based cockpit that operates like a marketing director: strategy, social, email, landing pages, design, presentations, SEO, plus optional modules for video, n8n automation, client-facing reporting, outbound acquisition and print production. Every deliverable is a file in your repo. Every word passes a brand gate before it ships.
@@ -188,7 +188,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 
 ## What's inside
 
-**60 skills**, organized by function (all in `.claude/skills/`):
+**61 skills**, organized by function (all in `.claude/skills/`):
 
 | Category | Skills | Count |
 |---|---|---|
@@ -196,7 +196,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 | Design & presentations | `design-system`, `design-direction`, `design-review`, `design-taste`, `design-redesign`, `brandkit`, `image-generation` (generate, then compose real text and logo in HTML; provenance sidecars), `slides` (120-layout HTML decks + Playwright QA), `carousel` (LinkedIn PDF from a JSON spec) | 9 |
 | Web & CRO | `landing-page`, `lead-magnet` (with full capture circuit), `cro-page`, `cro-form`, `cro-popup`, `cro-pricing`, `accessibility-web` (WCAG 2.2 AA) | 7 |
 | SEO & content engine | `seo`, `seo-audit`, `seo-schema`, `seo-geo` (AI-search/AEO), `seo-cluster`, `blog-engine` (fact-checked articles, ≥90/100 quality gate) | 6 |
-| Strategy & intelligence | `content-strategy`, `veille-strategy` (market watch), `scraping`, `performance-report`, `strategy-challenger` (challenge any strategy) | 5 |
+| Strategy & intelligence | `content-strategy`, `veille-strategy` (market watch), `scraping`, `performance-report`, `deploy-reporting` (publishes the dashboard, run by hand only), `strategy-challenger` (challenge any strategy) | 6 |
 | Governance & plumbing | `cockpit-setup` (wizard), `brand-check` (the quality gate, step 0 = brand linter), `inventory` (script-built anti-repetition index), `sync-template`, `backport-to-template` | 5 |
 | Paid acquisition | `sea-google-ads`, `ads-audit` (Google/Meta/LinkedIn audit grids, ~157 checks) | 2 |
 | Video | `video-production` (single entry point: route, three approvals, cost contract, QA), `motion-design` (brand bridge to HyperFrames), `video-editing`, `captions`, `video-generation` (t2v/i2v rushes + text-fidelity check), `video-matting`, `reel-talking-head` (orchestrator, two validation gates), `video-repurpose` (long video → scored clips), `video-documentary` (archive montage, CLIP search), `manim-composer`, `manim-ce` | 11 |
@@ -224,7 +224,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 | `scripts/sync-intel.py` | Copies new Drive transcript exports into `00-intel/inbox/`, incremental, with a dry run |
 | `scripts/sync-slides-engine.py` | Re-vendors the slides engine from slides-agent; `--check` exits 1 when a vendored file drifted |
 | `scripts/relativize-paths.py` | Rewrites machine-absolute paths in HTML/CSS compositions into relative ones |
-| `scripts/lint-placeholders.py`, `scripts/dry-run-push.py` | Blocks setup lockdown while `{{…}}` placeholders remain; prints the payload of any push to an external tool before it is sent |
+| `scripts/lint-placeholders.py`, `scripts/dry-run-push.py` | Blocks setup lockdown while `{{…}}` placeholders remain; prints the payload of a Python connector's push before it is sent; writes made through an MCP server (sending, publishing, paid generation) go through Claude Code's approval prompt instead, via the `ask` rules in `.claude/settings.json` |
 
 **Working assets, not lorem ipsum:**
 
@@ -256,7 +256,7 @@ Honest answers, because you'll figure them out anyway:
 - **vs. a prompt pack or a "mega-prompt":** prompts don't ship 120 QA'd slide layouts, a 44-section landing library, 16 working page templates, a brand linter, a dry-run connector layer, or a wizard that regenerates role docs based on the tools you actually use.
 - **vs. an agency:** this is an operational framework, not outcomes-as-a-service. It needs your inputs, your validation, and someone who can tell good marketing from bad. It makes a competent operator much faster; it doesn't replace judgment.
 
-**What it is *not*:** not an autopilot (human validation is a designed-in step, sending and scheduling stay manual or go through dry-run gates), not a social scheduler (that's Postiz, optional), and not magic on an empty brand: see ["What good requires"](#what-good-requires).
+**What it is *not*:** not an autopilot (human validation is a designed-in step, sending, scheduling and paid generation stay manual or wait for your go: a dry run for the Python connectors, Claude Code's approval prompt for MCP tools), not a social scheduler (that's Postiz, optional), and not magic on an empty brand: see ["What good requires"](#what-good-requires).
 
 **One more honest note:** this was built in a French studio. Some internal skill files, script help texts and doctrine templates are written in French (Claude reads them natively, it makes no difference at runtime), which is why some brand-brain files keep French names: `exemples-rejetes.md` (rejected examples), `droits.md` (rights register), `divulgation-ia.md` (AI disclosure). Your cockpit's *output* language is whatever you configure at setup (monolingual or bilingual). Full English-first internals are on the roadmap.
 
@@ -270,7 +270,7 @@ The wizard connects to tools holding customer data (CRM, email marketing, analyt
 
 References: [Anthropic training policy](https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training) · [Anthropic Trust Center](https://trust.anthropic.com). The wizard repeats this notice (with explicit confirmation) whenever a sensitive connector is configured.
 
-**Security non-negotiables** (full rules in [`SECURITY.md`](SECURITY.md)): secrets in `.env` (scripts) or in the local, untracked `.mcp.json` (MCP servers), both gitignored, never in chat, commits, or any tracked file; `00-intel/` content is never versioned; dry-run before any production push; verify API endpoints; never share transcripts containing client data.
+**Security non-negotiables** (full rules in [`SECURITY.md`](SECURITY.md)): secrets in `.env` (scripts) or in the local, untracked `.mcp.json` (MCP servers), both gitignored, never in chat, commits, or any tracked file; `00-intel/` content is never versioned; a dry run or an explicit approval before any production push; verify API endpoints; never share transcripts containing client data.
 
 ## What "good" requires
 

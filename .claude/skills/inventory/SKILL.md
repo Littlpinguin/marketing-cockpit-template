@@ -1,6 +1,6 @@
 ---
 name: inventory
-description: Tient l'inventaire central des livrables de {{COMPANY_NAME}} dans _templates/inventory.md — tout post, carrousel, email, deck, page ou image produit y est indexé (date, canal, sujet, chemin, statut). Deux modes — reconstruction (scan complet des dossiers de production) et incrément (ajout après chaque livrable). À consulter avant toute création de contenu pour éviter les doublons.
+description: "Tient l'inventaire des livrables de {{COMPANY_NAME}} dans _templates/inventory.md (post, carrousel, email, deck, page, image). À consulter avant toute création de contenu pour éviter les doublons, et à mettre à jour après chaque livrable ou par reconstruction."
 ---
 
 # inventory — index central des livrables

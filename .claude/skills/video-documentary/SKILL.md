@@ -1,6 +1,6 @@
 ---
 name: video-documentary
-description: Montage documentaire sur archives libres pour {{COMPANY_NAME}}, un essai filmé au service d'une thèse, à partir d'images d'Internet Archive, Wikimedia Commons, NASA, Pexels ou Pixabay. Brief thématique et thèse, découpage en emplacements validé, corpus constitué et filtré par licence (corpus.py build), index et recherche CLIP (corpus.py index et search), sélection validée sur les images clés (selections.json), narration, montage dans hyperframes:general-video avec un étalonnage commun, crédits générés (corpus.py credits) et QA. Appelée par video-production ; ne comble pas un trou par un clip généré, n'élargit jamais une licence sans décision humaine, ne publie pas.
+description: "Montage documentaire sur archives libres pour {{COMPANY_NAME}} (Internet Archive, Wikimedia, NASA, Pexels) : thèse, corpus filtré par licence, recherche CLIP, narration, montage HyperFrames, crédits. Appelée par video-production pour un essai filmé."
 ---
 
 # video-documentary : un essai filmé sur archives libres

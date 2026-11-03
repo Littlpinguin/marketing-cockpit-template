@@ -1,13 +1,6 @@
 ---
 name: manim-ce
-description: |
-  Trigger when: (1) User mentions "manim" or "Manim Community" or "ManimCE", (2) Code contains `from manim import *`, (3) User runs `manim` CLI commands, (4) Working with Scene, MathTex, Create(), or ManimCE-specific classes.
-
-  Best practices for Manim Community Edition - the community-maintained Python animation engine. Covers Scene structure, animations, LaTeX/MathTex, 3D with ThreeDScene, camera control, styling, and CLI usage.
-
-  NOT for ManimGL/3b1b version (which uses `manimlib` imports and `manimgl` CLI).
-
-  Module vidéo du cockpit : l'entrée est la skill video-production.
+description: "Best practices for Manim Community Edition: Scene, animations, MathTex, ThreeDScene, camera, CLI. Use when the user mentions Manim or ManimCE, runs the manim CLI, or code has `from manim import *`. Not for ManimGL (manimlib). Entrée du module vidéo : video-production."
 ---
 
 > **Dans ce template.** Skill vendorisée (licence MIT) depuis [adithya-s-k/manim_skill](https://github.com/adithya-s-k/manim_skill), commit `cef0450`, pour le module `video`. Toute vidéo commence par la skill `video-production`, qui choisit cette filière pour une démonstration conceptuelle ou chiffrée. `manim-composer` planifie la scène (fichier `scenes.md` dans `08-video/projets/<slug>/`), `manim-ce` écrit le code ; le rendu MP4 entre ensuite comme plan vidéo dans une composition HyperFrames (skill `motion-design`). `manim -qh` rend en 1920 × 1080, paysage ; pour une toile verticale, carrée ou 4:5, fixer la résolution avec `-r` (largeur puis hauteur, `rules/cli.md`) : `manim -qh -r 1080,1920`, `-r 1080,1080` ou `-r 1080,1350`. Couleurs et polices : lire `01-brand/tokens.json` et les poser en constantes en tête de scène, jamais de valeur recopiée de mémoire. Manim CE s'installe à part (`pip install manim`) ; `/modules` le détecte.

@@ -1,6 +1,6 @@
 ---
 name: cro-pricing
-description: Stratégie de tarification et optimisation de la page tarifs de {{COMPANY_NAME}} — packaging des offres, métrique de valeur, structure de paliers Good-Better-Best, psychologie des prix, hausse de prix, page tarifs qui convertit. Utiliser quand l'utilisateur dit « pricing », « tarifs », « combien facturer », « paliers », « freemium », « augmenter les prix », « page tarifs » ou « annuel vs mensuel ».
+description: "Stratégie de prix et page tarifs de {{COMPANY_NAME}} : packaging, métrique de valeur, paliers Good-Better-Best, psychologie des prix, hausse de prix. À utiliser sur « pricing », « tarifs », « combien facturer », « paliers », « freemium », « annuel vs mensuel »."
 ---
 
 # cro-pricing — pricing et page tarifs

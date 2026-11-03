@@ -1,6 +1,6 @@
 ---
 name: seo-audit
-description: Audit SEO du site {{COMPANY_NAME}} ou analyse approfondie d'une page unique — crawlabilité, indexation, Core Web Vitals, on-page, contenu E-E-A-T, schema, préparation IA. Produit un score de santé et un plan d'action priorisé dans 09-seo/audits/. Utiliser quand l'utilisateur dit « audit SEO », « pourquoi je ne ranke pas », « analyse cette page », « check SEO », « mon trafic a chuté », ou fournit une URL à diagnostiquer.
+description: "Audit SEO du site {{COMPANY_NAME}} ou d'une page (crawl, indexation, Core Web Vitals, on-page, E-E-A-T, schema) : score de santé et plan d'action dans 09-seo/audits/. À utiliser sur « audit SEO », « pourquoi je ne ranke pas », « mon trafic a chuté » ou une URL à diagnostiquer."
 ---
 
 # seo-audit — audit de site & analyse de page

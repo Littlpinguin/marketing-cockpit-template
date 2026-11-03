@@ -1,6 +1,6 @@
 ---
 name: scraping
-description: Scraping de données publiques via l'API Apify pour {{COMPANY_NAME}} — benchmark concurrent, audit social média d'un compte, collecte de données pour la veille. Utilise le token $APIFY_TOKEN configuré au wizard. Workflow Apify Store → run d'Actor → dataset → export json/csv + synthèse. À invoquer quand il faut des données externes structurées (posts d'un compte, fiches, avis) que la recherche web ne fournit pas.
+description: "Scraping de données publiques via Apify pour {{COMPANY_NAME}} (benchmark concurrent, audit social, veille) : run d'Actor, dataset, export json/csv, synthèse. À utiliser quand il faut des données externes structurées (posts, fiches, avis) que la recherche web ne donne pas."
 ---
 
 # scraping — collecte de données via Apify

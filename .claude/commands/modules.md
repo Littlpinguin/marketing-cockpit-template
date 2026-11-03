@@ -1,6 +1,6 @@
 ---
 name: modules
-description: Active ou désactive les modules optionnels du cockpit (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print). Vérifie les prérequis de chaque module, enregistre l'état dans .setup-completed et pilote le chargement conditionnel.
+description: "Active ou désactive les modules optionnels du cockpit (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print), vérifie leurs prérequis et enregistre l'état dans .setup-completed. À lancer pour ajouter ou retirer un module."
 ---
 
 # /modules — activer / désactiver les modules optionnels

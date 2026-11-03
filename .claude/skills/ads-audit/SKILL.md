@@ -1,6 +1,6 @@
 ---
 name: ads-audit
-description: Audit opérationnel multi-plateformes du paid media de {{COMPANY_NAME}} — Google Ads, Meta Ads et LinkedIn Ads en grilles détaillées, TikTok/Microsoft/Apple/Amazon en annexes. Health score 0-100 par plateforme + score agrégé, plan d'action priorisé, quick wins. Sous-module 12-acquisition. Utiliser quand l'utilisateur demande un audit de compte publicitaire, un check de santé paid media, une analyse de dépenses pub, ou un audit PPC. Pour l'opérationnel Google Ads via MCP (lecture du compte, propositions), voir la skill sea-google-ads.
+description: "Audit multi-plateformes du paid media de {{COMPANY_NAME}} (Google, Meta, LinkedIn Ads, plus TikTok, Microsoft, Amazon) : health score 0-100, plan d'action priorisé. À utiliser pour un audit de compte pub, de dépenses ou PPC. Google Ads via MCP : sea-google-ads."
 ---
 
 # ads-audit — audit paid media multi-plateformes {{COMPANY_NAME}}

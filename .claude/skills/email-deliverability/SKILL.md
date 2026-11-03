@@ -1,6 +1,6 @@
 ---
 name: email-deliverability
-description: Base de connaissances email pour {{COMPANY_NAME}} — délivrabilité (SPF/DKIM/DMARC, triage, warm-up), conformité (RGPD, CAN-SPAM, CASL), design d'email dark-mode-safe, benchmarks et playbooks sectoriels. Référence consultative pour la skill email — à charger pour diagnostiquer un problème de délivrabilité, valider une checklist pré-envoi, choisir une plateforme, ou chercher un benchmark. Ne produit pas d'email elle-même.
+description: "Base de connaissances email de {{COMPANY_NAME}} : délivrabilité (SPF, DKIM, DMARC, warm-up), conformité RGPD et CAN-SPAM, design dark-mode, benchmarks. À charger pour diagnostiquer la délivrabilité, valider un pré-envoi ou choisir une plateforme. Ne rédige pas d'email."
 ---
 
 # email-deliverability — référence délivrabilité & conformité email

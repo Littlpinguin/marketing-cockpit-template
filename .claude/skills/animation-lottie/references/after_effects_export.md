@@ -2,6 +2,19 @@
 
 Complete guide for exporting Lottie animations from After Effects using the Bodymovin plugin.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Export Settings](#export-settings)
+- [Supported Features](#supported-features)
+- [Optimization Techniques](#optimization-techniques)
+- [Common Export Issues](#common-export-issues)
+- [Testing Workflow](#testing-workflow)
+- [Best Practices](#best-practices)
+- [Resources](#resources)
+- [Troubleshooting](#troubleshooting)
+
 ## Prerequisites
 
 1. **Adobe After Effects** (CC 2015 or later)

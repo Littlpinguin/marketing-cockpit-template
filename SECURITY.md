@@ -35,6 +35,7 @@ Claude Code s'exécute avec les permissions que vous lui accordez. Cadrez-les au
 - Les permissions **par projet** dans `.claude/settings.json` doivent énumérer des commandes précises, pas des globs. Un joker après un programme qui exécute, supprime ou envoie (`python3`, `find`, `curl`) autorise aussi ses options les plus dangereuses : les scripts autorisés sans demande sont donc nommés un par un.
 - **`.env`, `.env.local` et `.mcp.json` sont interdits en lecture à Claude** (règles `deny` `Read(...)` de `.claude/settings.json`). Claude vérifie leur présence et leur suivi par git, jamais leur contenu.
 - **Aucun `WebFetch` pré-approuvé.** Chaque nouveau domaine demande votre accord, que vous pouvez donner une fois pour ce domaine. C'est le verrou contre une page, un avis ou une transcription piégés qui demanderaient à Claude d'envoyer des données vers une adresse extérieure.
+- **Les interdictions `Bash(...)` de `.claude/settings.json` servent de filet** : elles arrêtent les formes que Claude écrit d'habitude (`rm -rf`, `git push --force` ou `-f`, `git -C <chemin> push --force`, `git reset --hard`, `launchctl unload` ou `bootout`), et un programme appelé autrement leur échappe (`/bin/rm`, `rm -Rf`, `bash -c '…'`). Seul le sandbox du point suivant tient quel que soit le texte de la commande.
 - **Sandbox recommandé dès que des contenus tiers entrent dans le dépôt** (transcriptions dans `00-intel/`, scraping, CRM branché) : lancez `/sandbox`. Une règle `deny` ne couvre pas un script qui ouvre lui-même un fichier ; le sandbox isole les commandes au niveau du système, même si une consigne cachée détourne Claude.
 - Refuser toute demande d'une skill d'exécuter une commande destructive sans confirmation explicite de l'utilisateur dans le même message.
 
@@ -56,6 +57,8 @@ Cela évite :
 - De programmer un événement à la mauvaise heure à cause d'un bug de fuseau horaire
 
 Le dry-run ne coûte rien. Sauter le dry-run coûte cher.
+
+Ce dry-run couvre les connecteurs Python (`_integrations/connectors/`). Un serveur MCP écrit sans passer par ce script : ses outils qui envoient, publient ou dépensent des crédits passent par la demande d'accord de Claude Code, au moyen des règles `ask` de `.claude/settings.json` (Lemlist en entier, les outils payants de Magnific : génération, variations et upscale d'images et de vidéos, voix, musique, 3D, téléchargement de banque d'images ; la création de workflow n8n, le générateur de composants 21st.dev). Ces règles visent les noms de serveur du template (`lemlist` ou `lm`, `magnific`, `n8n-mcp`, `magic`) : un serveur déclaré sous un autre nom, ou un outil absent de la liste, s'exécute sans demande, et c'est en le branchant qu'on l'ajoute aux règles `ask`.
 
 ## Hallucinations IA — vérifier avant de faire confiance
 
@@ -142,3 +145,5 @@ git status                                                         # les non-sta
 ```
 
 Si l'une des quatre semble anormale, corriger avant de pousser.
+
+Le workflow `.github/workflows/secrets.yml` repasse sur chaque pull request et chaque push sur `main` le motif de jetons du contrôle « Hygiène git » de `/health-check` ; une correspondance hors fichiers `*.example` fait échouer la vérification.

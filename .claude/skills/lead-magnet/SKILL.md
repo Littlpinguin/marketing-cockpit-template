@@ -1,6 +1,6 @@
 ---
 name: lead-magnet
-description: Créer un lead magnet pour {{COMPANY_NAME}} — guide PDF charté, outil interactif (calculateur, diagnostic), quiz, template/checklist — avec le circuit de capture complet obligatoire (page de capture → formulaire → n8n → outil emailing → séquence de nurturing). Utiliser dès que l'utilisateur demande un lead magnet, un aimant à leads, un guide téléchargeable, un livre blanc, un calculateur, un quiz, un diagnostic, une checklist ou un template à offrir contre un email.
+description: "Crée un lead magnet pour {{COMPANY_NAME}} (guide PDF, calculateur, quiz, diagnostic, checklist) avec son circuit de capture (page, formulaire, n8n, emailing, nurturing). À utiliser pour un aimant à leads, un livre blanc, un guide ou un outil offert contre un email."
 ---
 
 # lead-magnet — lead magnets {{COMPANY_NAME}}

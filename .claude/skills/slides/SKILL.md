@@ -1,6 +1,6 @@
 ---
 name: slides
-description: Présentations HTML standalone projetables pour {{COMPANY_NAME}} (pitchs, comités, kickoffs, readouts, webinars). Qualité éditoriale (barre Monocle / Bloomberg viz / MIT Tech Review print), 01-brand/ comme source unique de vérité, cadre 1920×1080 scalé responsive, navigation triple (drag bar + overview + quick-jump) + plein écran, QA Playwright obligatoire avant livraison, export PDF propre (rastérisation canvas des textes en gradient si la marque en utilise). À utiliser pour toute demande de présentation, deck, slides projetées ou partagées. Pas pour un carrousel LinkedIn PDF 1080×1350 (→ `carousel`) ni pour une image unique (→ `image-generation`).
+description: "Présentations HTML projetables pour {{COMPANY_NAME}} (pitch, comité, kickoff, webinar) : 1920×1080, navigation, plein écran, QA Playwright, export PDF. À utiliser pour toute présentation, deck ou slides. Carrousel LinkedIn : carousel ; image unique : image-generation."
 ---
 
 # slides — decks HTML éditoriaux pour {{COMPANY_NAME}}

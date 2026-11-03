@@ -1,6 +1,6 @@
 ---
 name: landing-reviewer-a11y
-description: Revue d'accessibilité WCAG 2.2 AA d'une landing page de {{COMPANY_NAME}}, en lecture seule (skill landing-page, phase 7). Part des mesures de qa-landing.py (contrastes calculés avec les opacités, titres, alternatives, noms accessibles, champs, cibles tactiles, mouvement réduit), puis passe 14 points sur le code, dont repères, clavier, focus, contenu révélé, scènes visuelles, listes et langue. Rend des constats avec fichier, ligne, critère WCAG, gravité et correction. Complète l'agent a11y-auditor (rendu réel et axe-core), qui reste le contrôle de livraison.
+description: "Revue d'accessibilité WCAG 2.2 AA d'une landing page de {{COMPANY_NAME}} (skill landing-page, phase 7). Ne modifie pas la page et n'écrit que son rapport, pilotage/review-a11y.md ; Bash ne sert qu'à lancer qa-landing.py quand pilotage/qa.json manque. Part des mesures de qa-landing.py (contrastes calculés avec les opacités, titres, alternatives, noms accessibles, champs, cibles tactiles, mouvement réduit), puis passe 14 points sur le code, dont repères, clavier, focus, contenu révélé, scènes visuelles, listes et langue. Rend des constats avec fichier, ligne, critère WCAG, gravité et correction. Complète l'agent a11y-auditor (rendu réel et axe-core), qui reste le contrôle de livraison."
 tools: Read, Grep, Glob, Bash, Write
 ---
 

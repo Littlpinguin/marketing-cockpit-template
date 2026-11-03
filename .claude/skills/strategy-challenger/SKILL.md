@@ -1,6 +1,6 @@
 ---
 name: strategy-challenger
-description: Avocat du diable de votre stratégie marketing {{COMPANY_NAME}}. Challenge un positionnement, une offre, un pricing, un funnel, un lancement ou un plan de contenu à partir de 13 grands cadres marketing, pour révéler les angles morts et les hypothèses fragiles avant l'exécution. À utiliser pour stress-tester une décision, jamais pour produire du contenu.
+description: "Avocat du diable de la stratégie marketing de {{COMPANY_NAME}} : challenge un positionnement, une offre, un pricing, un funnel ou un plan de contenu avec 13 cadres marketing. À utiliser pour stress-tester une décision avant l'exécution, jamais pour produire du contenu."
 ---
 
 # strategy-challenger — l'avocat du diable

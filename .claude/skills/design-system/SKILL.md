@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: Générer ou compléter un système de design web pour {{COMPANY_NAME}} — palette sémantique, pairing typographique, style UI, échelles d'espacement et tokens CSS — toujours sous contrainte des tokens de marque 01-brand. Utiliser quand un livrable web (landing page, page statique, dashboard de reporting, email HTML riche) a besoin d'un système de composants cohérent, quand il faut choisir un style visuel, une palette ou une typographie, ou quand une autre skill (landing-page, design-direction) demande les tokens. Vendorisée depuis ui-ux-pro-max (MIT, NextLevelBuilder) — voir docs/vendored-design.md.
+description: "Système de design web de {{COMPANY_NAME}} sous contrainte des tokens 01-brand : palette sémantique, pairing typographique, style UI, tokens CSS. À utiliser quand un livrable web a besoin de composants cohérents, d'une palette ou d'une typo, ou qu'une skill demande les tokens."
 ---
 
 # design-system — système de design web sous contrainte de marque

@@ -1,6 +1,6 @@
 ---
 name: seo-geo
-description: Optimiser la visibilité de {{COMPANY_NAME}} dans les moteurs de réponse IA — Google AI Overviews, ChatGPT, Perplexity, Claude, Bing Copilot. Analyse d'accès des crawlers IA, llms.txt, citabilité des passages, signaux de mention de marque. Utiliser quand l'utilisateur dit « GEO », « AEO », « AI Overviews », « être cité par ChatGPT/Perplexity », « visibilité IA », « llms.txt » ou « citations LLM ».
+description: "Visibilité de {{COMPANY_NAME}} dans les moteurs de réponse IA (AI Overviews, ChatGPT, Perplexity, Claude) : crawlers IA, llms.txt, citabilité, mentions de marque. À utiliser sur « GEO », « AEO », « AI Overviews », « être cité par ChatGPT », « visibilité IA », « llms.txt »."
 ---
 
 # seo-geo — Generative Engine Optimization

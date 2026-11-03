@@ -2,6 +2,24 @@
 
 Complete guide to Anime.js stagger utilities for creating sequential and coordinated animations.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Basic Stagger](#basic-stagger)
+- [Stagger Options](#stagger-options)
+- [Stagger From](#stagger-from)
+- [Grid Stagger](#grid-stagger)
+- [Stagger Direction](#stagger-direction)
+- [Stagger Easing](#stagger-easing)
+- [Stagger Start](#stagger-start)
+- [Common Patterns](#common-patterns)
+- [Stagger with Different Properties](#stagger-with-different-properties)
+- [Advanced Techniques](#advanced-techniques)
+- [Performance Tips](#performance-tips)
+- [Common Mistakes](#common-mistakes)
+- [Debugging Tips](#debugging-tips)
+- [Resources](#resources)
+
 ## Overview
 
 Stagger distributes animation delays across multiple elements, creating cascading or wave-like effects. Anime.js provides powerful stagger options including grid-based staggering, directional control, and custom easing.

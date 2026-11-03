@@ -1,6 +1,6 @@
 ---
 name: brand-discover
-description: Analyze a company's public signals (website, recent blog articles, recent social posts, optional dropped brand docs) and propose a draft brand doctrine — design system, voice, vocabulary, personas, messaging framework — for human validation section by section. Then runs the strategy interview (business & marketing objectives, channels & cadence, content pillars, real personas, customer journey). Writes the validated version to 01-brand/ and pre-fills 02-strategy/ (objectifs.md, parcours-client.md, kpi-framework.md, channel-strategy.md, content-pillars.md).
+description: "Analyzes a company's public signals (website, blog, social posts, brand docs), drafts a brand doctrine (design system, voice, personas, messaging) validated section by section, then runs the strategy interview. Writes 01-brand/, pre-fills 02-strategy/. Step 2 of /start-cockpit."
 ---
 
 # /brand-discover — propose a draft brand doctrine

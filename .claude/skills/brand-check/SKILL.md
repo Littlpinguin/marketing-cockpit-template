@@ -1,6 +1,6 @@
 ---
 name: brand-check
-description: Valide un draft marketing contre les standards de marque avant livraison. Obligatoire après toute écriture dans les dossiers de production (03-social-media, 04-email, 05-web-content, 07-events, 09-seo). Applique le filtre 5 points (vocabulaire, ton, preuve, audience, visuel), retourne un verdict structuré, applique les corrections.
+description: "Valide un draft marketing contre les standards de marque : filtre 5 points (vocabulaire, ton, preuve, audience, visuel), verdict, corrections. Obligatoire avant livraison de tout écrit dans 03-social-media, 04-email, 05-web-content, 07-events ou 09-seo."
 ---
 
 # brand-check — gardien qualité avant livraison

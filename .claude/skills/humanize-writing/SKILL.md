@@ -1,6 +1,6 @@
 ---
 name: humanize-writing
-description: Passe curative anti-détection-IA en 8 passes pour tout texte {{COMPANY_NAME}} qui « sonne IA » — structure formulaïque, inflation d'importance, vocabulaire LLM, tics grammaticaux, rythme métronome, hedging, transitions répétitives, absence de voix. Utiliser quand un texte existant doit être humanisé (« ça sonne ChatGPT », « trop robotique », « humanise ça »), ou comme passe finale invoquée par copy-editing. COMPLÈTE la section 2 de 01-brand/checklist-pre-composition.md (préventive, à charger avant d'écrire) sans la remplacer. Vendorisée depuis humanize-writing (MIT, jpeggdev) — voir docs/vendored-design2.md.
+description: "Passe curative en 8 passes pour un texte {{COMPANY_NAME}} qui « sonne IA » : structure formulaïque, vocabulaire LLM, rythme, hedging, absence de voix. À utiliser sur « ça sonne ChatGPT », « trop robotique », « humanise ça », ou en passe finale de copy-editing."
 ---
 
 # humanize-writing — effacer les traces d'écriture IA en 8 passes

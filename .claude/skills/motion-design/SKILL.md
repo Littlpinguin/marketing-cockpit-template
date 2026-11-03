@@ -1,6 +1,6 @@
 ---
 name: motion-design
-description: Passerelle entre la marque de {{COMPANY_NAME}} et HyperFrames pour tout ce qui est animé dans une vidéo, titres, chiffres, data visualisation, habillages, lower-thirds, logos animés, transitions de marque, 3D, personnages, animation à l'encre, insertion d'un rendu Manim. Génère la charte du projet (frame.md et brand.css par brand-frame.py), applique le profil de goût et la revue de singularité de 08-video/motion.md, choisit le workflow HyperFrames, filtre les blocs du registre par la marque et tient les règles de rendu. Références 3D, personnages et encre chargées à la demande. Appelée par video-production ; ne choisit pas la filière, ne tient pas les validations, n'écrit pas le script, ne monte pas de rushes.
+description: "Passerelle entre la marque de {{COMPANY_NAME}} et HyperFrames pour ce qui s'anime dans une vidéo : titres, chiffres, data viz, lower-thirds, logos, transitions, 3D, personnages, encre, Manim. Génère frame.md et brand.css. Appelée par video-production, qui choisit la filière."
 ---
 
 # motion-design : la marque dans chaque image animée

@@ -1,6 +1,6 @@
 ---
 name: seo-cluster
-description: Clustering sémantique par recouvrement de SERP pour l'architecture de contenu de {{COMPANY_NAME}} — expansion de mots-clés, regroupement par résultats Google réellement partagés, architecture hub-and-spoke (page pilier + satellites), matrice de maillage interne. Alimente les briefs 09-seo/. Utiliser quand l'utilisateur dit « cluster », « topic cluster », « page pilier », « hub and spoke », « regrouper des mots-clés » ou « architecture de contenu ».
+description: "Clustering sémantique par recouvrement de SERP pour {{COMPANY_NAME}} : expansion de mots-clés, architecture hub-and-spoke, maillage interne, briefs 09-seo/. À utiliser sur « cluster », « topic cluster », « page pilier », « hub and spoke », « regrouper des mots-clés »."
 ---
 
 # seo-cluster — clustering sémantique par SERP

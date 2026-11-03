@@ -1,6 +1,6 @@
 ---
 name: captions
-description: Sous-titrage vidéo pour {{COMPANY_NAME}}. Transcription (whisper local, transcription au mot d'HyperFrames ou API), relecture, découpage en segments lisibles, fichier .srt propre, sous-titres incrustés aux couleurs de la marque via ffmpeg (.srt ou .ass, karaoké mot à mot), et sous-titres designés par HyperFrames (hyperframes:embedded-captions sur un face caméra, peau de sous-titres dans un workflow). Règles de lisibilité et zones de sécurité de 08-video/formats.md. À utiliser dès qu'une vidéo doit être sous-titrée (Reels, TikTok, Shorts, LinkedIn, webinaire, interview). Le montage relève de video-editing, l'orchestration de video-production.
+description: "Sous-titrage vidéo pour {{COMPANY_NAME}} : transcription (whisper, HyperFrames), .srt, sous-titres incrustés à la marque (ffmpeg, .ass, karaoké) ou designés par HyperFrames. À utiliser dès qu'une vidéo doit être sous-titrée (Reels, TikTok, Shorts, LinkedIn, webinaire)."
 ---
 
 # captions : sous-titrage aux couleurs de la marque

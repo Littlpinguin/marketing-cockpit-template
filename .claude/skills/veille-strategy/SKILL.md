@@ -1,6 +1,6 @@
 ---
 name: veille-strategy
-description: Veille marketing experte pour {{COMPANY_NAME}} — concurrents, secteur/réglementation, tendances, e-réputation. À invoquer pour lancer la veille périodique (hebdo ou mensuelle selon la config), analyser un signal marché, ou alimenter le calendrier éditorial en idées sourcées. Produit une synthèse dans 02-strategy/veille/ et des propositions actionnables versées au calendrier.
+description: "Veille marketing de {{COMPANY_NAME}} (concurrents, secteur et réglementation, tendances, e-réputation), synthèse dans 02-strategy/veille/. À utiliser pour lancer la veille périodique, analyser un signal marché ou nourrir le calendrier éditorial en idées sourcées."
 ---
 
 # veille-strategy — veille marketing multi-niveaux {{COMPANY_NAME}}

@@ -1,6 +1,6 @@
 ---
 name: animation-animejs
-description: Versatile JavaScript animation engine for DOM, CSS, SVG, and JavaScript objects. Use when creating timeline-based animations, stagger effects, SVG morphing, keyframe sequences, or complex choreographed animations. Triggers on tasks involving Anime.js, timeline animations, staggered sequences, SVG path animations, morphing, or multi-step animation choreography. Alternative to GSAP for SVG-heavy animations and React-independent projects.
+description: "Anime.js animation engine for DOM, CSS, SVG and JS objects. Use when building timeline animations, stagger effects, SVG path animations or morphing, keyframe sequences or multi-step choreography. Alternative to GSAP for SVG-heavy, React-independent projects."
 ---
 
 # Anime.js
@@ -26,6 +26,14 @@ Anime.js (pronounced "Anime JS") is a versatile animation engine that works with
 - Built-in spring physics easing
 - Keyframe support with flexible timing
 - Small bundle size (~9KB gzipped)
+
+## Fichiers de référence
+
+- [references/common_patterns.md](references/common_patterns.md) : sept recettes (stagger séquentiel, stagger depuis le centre d'une grille, tracé de ligne SVG, morphing SVG, séquence en timeline, keyframes, animation liée au scroll). À ouvrir pour partir d'un motif existant.
+- [references/integration_patterns.md](references/integration_patterns.md) : intégration React et Vue, animation le long d'un tracé SVG. À ouvrir dans l'un de ces frameworks ou pour faire suivre un chemin à un élément.
+- [references/api_reference.md](references/api_reference.md) : référence de l'API (`anime()`, cibles, propriétés, paramètres, timeline, stagger, easings, helpers, callbacks, instance d'animation, exemples). À ouvrir pour un paramètre ou une méthode précise.
+- [references/stagger_guide.md](references/stagger_guide.md) : `anime.stagger` en détail (options, point de départ, grilles, direction, easing, motifs, erreurs courantes, débogage). À ouvrir pour une cascade sur plusieurs éléments ou une grille.
+- [references/timeline_guide.md](references/timeline_guide.md) : timelines en détail (ajout d'animations, décalages, motifs, contrôles de lecture, labels et timelines imbriquées, erreurs courantes, exemples réels, débogage). À ouvrir pour une séquence en plusieurs étapes.
 
 ## Core Concepts
 
@@ -135,176 +143,11 @@ timeline
 
 ## Common Patterns
 
-### 1. Stagger Animation (Sequential Reveal)
-
-```javascript
-anime({
-  targets: '.stagger-element',
-  translateY: [100, 0],
-  opacity: [0, 1],
-  delay: anime.stagger(100), // Increase delay by 100ms
-  easing: 'easeOutQuad',
-  duration: 600
-})
-```
-
-### 2. Stagger from Center
-
-```javascript
-anime({
-  targets: '.grid-item',
-  scale: [0, 1],
-  delay: anime.stagger(50, {
-    grid: [14, 5],
-    from: 'center', // Also: 'first', 'last', index, [x, y]
-    axis: 'x'       // Also: 'y', null
-  }),
-  easing: 'easeOutQuad'
-})
-```
-
-### 3. SVG Line Drawing
-
-```javascript
-anime({
-  targets: 'path',
-  strokeDashoffset: [anime.setDashoffset, 0],
-  easing: 'easeInOutQuad',
-  duration: 2000,
-  delay: (el, i) => i * 250
-})
-```
-
-### 4. SVG Morphing
-
-```javascript
-anime({
-  targets: '#morphing-path',
-  d: [
-    { value: 'M10 80 Q 77.5 10, 145 80' }, // Start shape
-    { value: 'M10 80 Q 77.5 150, 145 80' }  // End shape
-  ],
-  duration: 2000,
-  easing: 'easeInOutQuad',
-  loop: true,
-  direction: 'alternate'
-})
-```
-
-### 5. Timeline Sequence
-
-```javascript
-const tl = anime.timeline({
-  easing: 'easeOutExpo',
-  duration: 750
-})
-
-tl.add({
-  targets: '.title',
-  translateY: [-50, 0],
-  opacity: [0, 1]
-})
-.add({
-  targets: '.subtitle',
-  translateY: [-30, 0],
-  opacity: [0, 1]
-}, '-=500')
-.add({
-  targets: '.button',
-  scale: [0, 1],
-  opacity: [0, 1]
-}, '-=300')
-```
-
-### 6. Keyframe Animation
-
-```javascript
-anime({
-  targets: '.element',
-  keyframes: [
-    { translateX: 100 },
-    { translateY: 100 },
-    { translateX: 0 },
-    { translateY: 0 }
-  ],
-  duration: 4000,
-  easing: 'easeInOutQuad',
-  loop: true
-})
-```
-
-### 7. Scroll-Triggered Animation
-
-```javascript
-const animation = anime({
-  targets: '.scroll-element',
-  translateY: [100, 0],
-  opacity: [0, 1],
-  easing: 'easeOutQuad',
-  autoplay: false
-})
-
-window.addEventListener('scroll', () => {
-  const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight)
-  animation.seek(animation.duration * scrollPercent)
-})
-```
+Sept recettes (stagger, stagger depuis le centre, tracé SVG, morphing SVG, timeline, keyframes, scroll) : [references/common_patterns.md](references/common_patterns.md). À ouvrir pour partir d'un motif existant.
 
 ## Integration Patterns
 
-### With React
-
-```javascript
-import { useEffect, useRef } from 'react'
-import anime from 'animejs'
-
-function AnimatedComponent() {
-  const ref = useRef(null)
-
-  useEffect(() => {
-    const animation = anime({
-      targets: ref.current,
-      translateX: 250,
-      duration: 800,
-      easing: 'easeInOutQuad'
-    })
-
-    return () => animation.pause()
-  }, [])
-
-  return <div ref={ref}>Animated</div>
-}
-```
-
-### With Vue
-
-```javascript
-export default {
-  mounted() {
-    anime({
-      targets: this.$el,
-      translateX: 250,
-      duration: 800
-    })
-  }
-}
-```
-
-### Path Following Animation
-
-```javascript
-const path = anime.path('#motion-path')
-
-anime({
-  targets: '.element',
-  translateX: path('x'),
-  translateY: path('y'),
-  rotate: path('angle'),
-  easing: 'linear',
-  duration: 2000,
-  loop: true
-})
-```
+React, Vue et animation le long d'un tracé : [references/integration_patterns.md](references/integration_patterns.md). À ouvrir dans l'un de ces frameworks ou pour faire suivre un chemin à un élément.
 
 ## Advanced Techniques
 

@@ -1,6 +1,6 @@
 ---
 name: video-repurpose
-description: Transforme une vidéo longue de {{COMPANY_NAME}} (webinar, podcast filmé, interview, live, conférence) en clips sociaux. Transcription horodatée au mot, repérage des candidats, notation sur cinq critères, test « se comprend sans contexte », validation humaine de la liste avant tout montage, coupe au mot, recadrage 9:16 et 1:1, sous-titres et habillage, QA par clip avec qa-video.py, une entrée de calendrier par clip. Appelée par video-production ; le montage passe par video-editing, les sous-titres par captions. Ne publie pas, n'écrit pas les posts d'accompagnement, ne fait jamais dire à quelqu'un ce qu'il n'a pas dit.
+description: "Transforme une vidéo longue de {{COMPANY_NAME}} (webinar, podcast, interview, live, conférence) en clips sociaux : transcription au mot, notation des passages, validation humaine, recadrage 9:16, sous-titres, QA. Appelée par video-production."
 ---
 
 # video-repurpose : d'une vidéo longue à des clips sociaux

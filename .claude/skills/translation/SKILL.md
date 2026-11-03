@@ -1,6 +1,6 @@
 ---
 name: translation
-description: Pipeline de traduction multi-agents vérifiée pour les contenus {{COMPANY_NAME}} — campagnes, landing pages, emails, articles, documents commerciaux. Traduction avec préservation de structure, vérification terminologique web parallèle (glossaire de marque avec scores de confiance), revue indépendante anti-fabrication, révision, mise en forme. La voix de marque se préserve dans la langue cible. Utiliser pour « traduis », « version anglaise/française de », « localise cette campagne », traduction de documents officiels ou techniques, ou quand une traduction précédente a fabriqué/omis du contenu. Vendorisée depuis claude-translation-skill (MIT, senshinji) — voir docs/vendored-design2.md.
+description: "Traduction vérifiée multi-agents des contenus {{COMPANY_NAME}} (campagnes, landing pages, emails, documents) : glossaire de marque, revue anti-fabrication, voix préservée. À utiliser pour « traduis », « version anglaise de », « localise cette campagne », ou reprendre une traduction fautive."
 ---
 
 # translation — traduction professionnelle multi-agents

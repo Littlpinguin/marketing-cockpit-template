@@ -1,6 +1,7 @@
 ---
 name: backport-to-template
-description: Remonte une amélioration de mécanique développée dans un repo client vers le template public marketing-cockpit-template. Dé-brandification systématique (valeurs de marque → placeholders) puis checklist de sanitisation BLOQUANTE (noms clients, chiffres réels, URLs privées, emails, IDs, tokens) avant préparation de la branche et de la PR. À utiliser quand une skill, un script ou un workflow mis au point chez un client mérite d'entrer dans le template.
+description: "Remonte une mécanique éprouvée chez un client (skill, script, workflow) vers le template public marketing-cockpit-template : dé-brandification, checklist de sanitisation bloquante, branche et PR. À lancer quand une amélioration client mérite d'entrer dans le template."
+disable-model-invocation: true
 ---
 
 # backport-to-template — remonter une amélioration client vers le template public
@@ -72,7 +73,7 @@ grep -rnE "eyJ[a-zA-Z0-9_-]{10,}|sk-[a-zA-Z0-9]|apify_api_|ghp_|gho_|xox[bap]-|A
    ```bash
    git checkout -b backport/<slug-court> origin/main
    ```
-2. Appliquer les fichiers dé-brandifiés et sanitisés. Mettre à jour si nécessaire : `CLAUDE.md` racine (tableau des skills), `docs/placeholders.json`, `CHANGELOG.md`.
+2. Appliquer les fichiers dé-brandifiés et sanitisés. Mettre à jour si nécessaire : `docs/catalogue.md` (catalogue des skills, agents et commandes), le tableau des skills du `README.md`, la table de routage du `CLAUDE.md` racine, `docs/placeholders.json`, `CHANGELOG.md`.
 3. Relancer les scans de l'étape 3 sur `git diff origin/main...HEAD` (dernier filet avant publication).
 4. Committer avec un message descriptif, puis préparer la PR vers `main` du template via `gh pr create`, en incluant dans le corps :
    - origine (« généralisé depuis un déploiement client », **sans nommer le client**),

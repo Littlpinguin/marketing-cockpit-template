@@ -1,6 +1,6 @@
 ---
 name: tools-setup
-description: Configure les outils réellement utilisés par l'entreprise (calendrier éditorial, emailing, CRM, événements, base de connaissances, analytics, publication sociale, FTP espace client, génération d'images). Câble les connecteurs, met à jour .env.example, régénère les CLAUDE.md de rôle et le tableau d'état du README. Applique le gate de confidentialité avant tout connecteur touchant des données clients.
+description: "Configure les outils de l'entreprise (calendrier, emailing, CRM, événements, analytics, publication sociale, FTP espace client, images) : connecteurs, .env.example, CLAUDE.md de rôle, état du README, gate de confidentialité. À lancer pour brancher ou changer un outil."
 ---
 
 # /tools-setup — choisir et câbler les outils par catégorie
