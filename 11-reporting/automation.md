@@ -51,10 +51,13 @@ cd /chemin/vers/repo-client && claude -p \
    compare aux mois précédents, rédige l'analyse du mois et 3 recommandations, \
    et remplis les champs analyse_md et recommandations du snapshot." \
   --allowedTools "Read,Edit,Write,Glob,Grep" \
+  --disallowedTools "WebFetch,WebSearch,Bash" \
   --permission-mode acceptEdits
 ```
 
 La skill lit le snapshot + l'historique, applique la voix de `01-brand/voice.md`, et écrit `analyse_md` + `recommandations` directement dans le `data.json`.
+
+Le run tourne sans personne devant l'écran : `--disallowedTools` lui retire le web et le shell. Un texte piégé dans les données collectées (requêtes Search Console, posts) ne peut donc ni appeler une adresse extérieure ni lancer une commande.
 
 ### 5. Gate de validation humaine — obligatoire
 
