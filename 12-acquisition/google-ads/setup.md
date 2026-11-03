@@ -25,12 +25,28 @@ cp /chemin/vers/credentials.json ~/.mcp-google-ads/credentials.json
 
 ## 3. Où vivent les credentials — jamais dans un fichier tracké
 
-- Le **developer token et les customer IDs** vont dans le `.mcp.json` **local et non versionné** (étape 4) — c'est le serveur MCP qui les consomme, et le `.mcp.json` est gitignoré (cf. `SECURITY.md`).
+- Le **developer token et les customer IDs** vont dans la configuration du serveur MCP en **portée locale** (étape 4), que Claude Code range dans `~/.claude.json`, hors du dépôt — c'est le serveur MCP qui les consomme. À défaut, dans le `.mcp.json` **local et non versionné** (gitignoré, cf. `SECURITY.md`).
 - Les **fichiers OAuth** restent hors repo (`~/.mcp-google-ads/credentials.json` et `token.json` — chemins par défaut du serveur).
 
 ## 4. Déclarer le serveur MCP
 
-Dans le `.mcp.json` local à la racine du repo (`cp .mcp.json.example .mcp.json` s'il n'existe pas encore), avec vos **valeurs réelles** :
+En **portée locale** (recommandé) : lancez ce bloc vous-même, dans votre propre terminal (pas dans Claude Code), depuis la racine du repo. Remplacez avant le chemin du binaire, `VOTRE_CUSTOMER_ID` et l'ID du compte MCC (sans MCC, retirez la ligne `GOOGLE_ADS_LOGIN_CUSTOMER_ID`). Le developer token est lu sans écho par `read -rs` : il n'entre ni dans le chat ni dans l'historique du shell.
+
+```bash
+printf 'Developer token Google Ads (saisie masquée) : '; read -rs GOOGLE_ADS_DEVELOPER_TOKEN; echo
+claude mcp add --scope local --transport stdio google-ads \
+  -e "GOOGLE_ADS_DEVELOPER_TOKEN=$GOOGLE_ADS_DEVELOPER_TOKEN" \
+  -e GOOGLE_ADS_CUSTOMER_ID=VOTRE_CUSTOMER_ID \
+  -e GOOGLE_ADS_LOGIN_CUSTOMER_ID=ID_DU_COMPTE_MCC_SI_APPLICABLE \
+  -e GOOGLE_ADS_READ_ONLY=true \
+  -e GOOGLE_ADS_REQUIRE_DRY_RUN=true \
+  -- /chemin/absolu/vers/target/release/mcp-google-ads
+unset GOOGLE_ADS_DEVELOPER_TOKEN
+```
+
+Changer une valeur (passage en écriture compris) : `claude mcp remove --scope local google-ads`, puis relancer le bloc.
+
+Voie de repli, un fichier dans le projet : le `.mcp.json` local à la racine du repo (`cp .mcp.json.example .mcp.json` s'il n'existe pas encore), avec vos **valeurs réelles** :
 
 ```json
 {
@@ -64,5 +80,5 @@ Garde-fous supplémentaires du serveur, si vous ouvrez un jour l'écriture : `GO
 
 1. **Lecture seule par défaut** : `GOOGLE_ADS_READ_ONLY=true` tant qu'aucun plan validé n'est en cours d'application.
 2. **Aucune mutation sans validation humaine explicite** — règle dure du `README.md`, qui s'ajoute aux garde-fous du serveur.
-3. **Aucun secret dans un fichier tracké** : token et customer IDs réels vivent dans le `.mcp.json` local (gitignoré), les fichiers OAuth dans `~/.mcp-google-ads/`.
+3. **Aucun secret dans un fichier tracké** : token et customer IDs réels vivent dans la configuration en portée locale (`~/.claude.json`) ou, en repli, dans le `.mcp.json` local (gitignoré), les fichiers OAuth dans `~/.mcp-google-ads/`.
 4. Ce repo **ne vendorise pas** le serveur : c'est une connexion MCP. Épingler une version taguée (ex. v0.6.0) lors du `git clone` et relire le changelog avant toute montée de version.

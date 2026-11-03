@@ -343,18 +343,12 @@ anime({
 
 ## Resources
 
-### Scripts
-- `animation_generator.py` - Generate Anime.js animation boilerplate (8 types)
-- `timeline_builder.py` - Build complex timeline sequences
+Les scripts et assets de la skill d'origine ne sont pas copiés dans ce template : voir `docs/vendored-animation.md`, section « Périmètre retenu ».
 
 ### References
 - `api_reference.md` - Complete Anime.js API documentation
 - `stagger_guide.md` - Stagger utilities and patterns
 - `timeline_guide.md` - Timeline sequencing deep dive
-
-### Assets
-- `starter_animejs/` - Vanilla JS + Vite template with examples
-- `examples/` - Real-world patterns (SVG morphing, stagger grids, timelines)
 
 ## Related Skills
 

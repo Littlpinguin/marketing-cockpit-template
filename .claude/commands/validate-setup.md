@@ -52,7 +52,7 @@ git ls-files .mcp.json        # must print NOTHING (.mcp.json never tracked)
 git diff --cached | grep -iE "api_key|secret|token|password"   # must print nothing suspicious
 ```
 
-If `.mcp.json` is tracked or not ignored: stop, run `git rm --cached .mcp.json`, fix `.gitignore`, and tell the user to revoke any token already pushed. Also remind: MCP server tokens live in the local `.mcp.json` (real values — `${VAR}` references are NOT expanded from the project `.env`), script tokens live in `.env`.
+If `.mcp.json` is tracked or not ignored: stop, run `git rm --cached .mcp.json`, fix `.gitignore`, and tell the user to revoke any token already pushed. These two checks hold whether or not `.mcp.json` exists. Also remind: MCP server tokens go in Claude Code's local scope (`claude mcp add --scope local`, run by the user in their own terminal, stored in `~/.claude.json` outside the repo) or, as a fallback, in the gitignored `.mcp.json` (real values — `${VAR}` references are NOT expanded from the project `.env`); script tokens live in `.env`.
 
 ### Step 2 — Generate sample artifacts
 
@@ -161,7 +161,7 @@ Output:
 >
 > Security reminders:
 >
-> - API keys live in `.env` (scripts) or in the local, untracked `.mcp.json` (MCP servers) — both gitignored, never in a tracked file
+> - API keys live in `.env` (scripts, gitignored) or in Claude Code's local MCP scope (`claude mcp add --scope local`, run in your own terminal, stored outside the repo; fallback: the gitignored `.mcp.json`), never in a tracked file
 > - Use `dry-run-push.py` before every production push
 > - Full rules: `SECURITY.md`
 >

@@ -2,7 +2,7 @@
   "mcpServers": {
     "n8n-mcp": {
       "command": "npx",
-      "args": ["n8n-mcp"],
+      "args": ["n8n-mcp@2.94.3"],
       "env": {
         "MCP_MODE": "stdio",
         "LOG_LEVEL": "error",

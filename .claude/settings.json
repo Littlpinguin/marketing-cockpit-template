@@ -44,17 +44,7 @@
       "Bash(python3 scripts/build-tokens.py *)",
       "Bash(python3 scripts/lint-placeholders.py *)",
       "Bash(python3 scripts/dry-run-push.py *)",
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(ls:*)",
-      "Bash(grep:*)",
       "Bash(rg:*)",
-      "Bash(cat .env.example)",
-      "Bash(cat docs/*)",
-      "Bash(cat CLAUDE.md)",
-      "Bash(cat SECURITY.md)",
-      "Bash(cat README.md)",
       "Bash(launchctl list:*)"
     ],
     "ask": [
