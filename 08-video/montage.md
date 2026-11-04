@@ -27,9 +27,15 @@ Règles de coupe, de rythme et de son pour tout montage narratif (talking-head, 
 
 ## Son — la moitié du montage
 
-- **Voix d'abord** : débruiter avant tout traitement (jamais normaliser avant de débruiter), passe-haut ~85 Hz, normalisation en dernier. Cible master : **−14 LUFS intégré** (contrôle : `ffmpeg -af ebur128`), crête vraie ≤ −1,5 dBTP.
-- **Musique** : entrée fondue après l'accroche, ducking net sous la voix (~10-12 dB d'écart voix/musique), et **au moins un silence total** posé sur le moment le plus fort — le moment le plus puissant d'un plan sonore est un silence, pas un effet.
-- **SFX : 5 maximum par film, ≥ 6 dB sous la voix, sons de banque** (la synthèse n'a pas la texture ; le son de banque se télécharge dans le dossier du projet, jamais lu depuis une URL au rendu). Impacts posés sur les mots durs, ticks discrets sur les cartons (2 frames avant l'apparition).
+- **Voix d'abord** : débruiter avant tout traitement (jamais normaliser avant de débruiter), passe-haut ~85 Hz, normalisation en dernier. Cible master (contrôle : `ffmpeg -af ebur128`) : **−14 LUFS intégré** pour un export de plateforme (cible de `scripts/plateformes.toml`), **−16 LUFS** pour une vidéo lue sur le web hors plateforme (un site, un lecteur intégré), où −14 sonne trop fort. Crête vraie ≤ −1,5 dBTP dans tous les cas.
+- **Musique composée en code, calée au mot près** : partition, choix des sons, effets et mixage s'écrivent en code dans `projets/<slug>/musique/`, calés sur la ligne de temps de la voix : une retombée sur le mot choisi, un arrêt sur un temps fort. Une piste toute faite ou une musique générée par IA n'entre qu'à la demande de l'humain (`video-production` § « Contrat de coût »).
+- **De la matière enregistrée sous la partition** : une musique de purs oscillateurs sonne pauvre et se ressemble d'un film à l'autre. Mélanger des instruments enregistrés sous licence CC0 (par exemple VCSL : claviers, percussions, carillons), des synthés de production joués en code (Surge XT par ses liaisons Python, surgepy) et des sons d'interface réels (uisfx, Kenney). Les prises enregistrées apportent l'attaque, la variation et la salle. Les outils s'installent une fois, hors du dépôt : un environnement Python dédié (pedalboard, DawDreamer, mido, pyloudnorm, librosa), Surge XT compilé avec ses liaisons Python, les banques téléchargées une seule fois et ignorées par Git.
+- **Une idée sonore propre au film**, tirée de son objet : par exemple, chacun des outils d'un « mur d'outils » a sa vraie notification, désaccordée quand les outils tombent en vrac, accordée sur la gamme quand ils se rangent. Le son raconte la même chose que l'image.
+- **Musique sous la voix** : entrée fondue après l'accroche, environ 12 dB sous la voix pendant la parole et 6 à 8 dB dans les respirations ; le registre de la voix se creuse légèrement dans la musique pendant la parole. **Au moins un silence total** posé sur le moment le plus fort : le moment le plus puissant d'un plan sonore est un silence, pas un effet.
+- **Bruitages attachés aux gestes, en couches, ≥ 6 dB sous la voix** : une prise enregistrée (accordée à la tonalité quand elle sonne), un corps synthétisé dessous, des prises qui alternent pour qu'aucune répétition ne s'entende. Un bruitage par geste prévu au storyboard ; 5 au plus si le storyboard n'en prévoit pas (impacts sur les mots durs, ticks discrets sur les cartons, 2 frames avant l'apparition). Un son se télécharge dans le dossier du projet, jamais lu depuis une URL au rendu.
+- **Une seule feuille de repères pour le son et l'image** : un script date chaque geste (pas, chocs, clics, envols) et écrit un fichier que lisent à la fois les bruitages et la construction HyperFrames. L'image se cale sur ces temps : une marche pose un pied sur chaque pas entendu et avance du pas dessiné de son personnage, pour que les pieds ne glissent pas. Si une animation impose un autre temps, on corrige le repère et on refait le son, jamais l'inverse.
+- **Esquisse, puis son validé avant la construction** : l'humain écoute une esquisse sous la voix montée ; la construction commence sur un son validé.
+- **Licences** : pedalboard, DawDreamer et Surge XT sont sous GPL-3. Le son rendu n'est pas couvert, mais un script qui les importe ne se publie pas dans un dépôt sous licence MIT : ces scripts restent dans le dépôt privé du projet. Les banques citées sont sous CC0. Chaque film a son `credits.md`.
 - **J-cut sonore** : whoosh ou riser posé quelques frames **avant** la coupe image, jamais dessus.
 - Après toute réparation/repose d'un clip SFX, **reposer son gain** — un effet recréé revient à plein volume et traverse tous les contrôles.
 
@@ -72,9 +78,10 @@ Pour toute vidéo qui montre un logiciel, une application ou un site en fonction
 - [ ] Aucun écart > 4 s sans rupture ; raccords d'échelle ≥ 20 %
 - [ ] Zéro effet de transition hors ouverture/fermeture
 - [ ] Punch-in continu sur tous les plans fixes
-- [ ] ≤ 5 SFX, ≥ 6 dB sous la voix, gains vérifiés après toute retouche
+- [ ] Musique et bruitages composés en code sur de la matière enregistrée (piste toute faite ou génération seulement à la demande de l'humain) ; esquisse, puis son validé avant la construction
+- [ ] Bruitages calés sur les gestes et la feuille de repères, ≥ 6 dB sous la voix (5 au plus si le storyboard n'en prévoit pas), gains vérifiés après toute retouche
 - [ ] Un silence total posé sur le beat principal
-- [ ] Master à −14 LUFS, crête ≤ −1,5 dBTP
+- [ ] Master à −14 LUFS pour une plateforme, −16 LUFS pour le web hors plateforme, crête ≤ −1,5 dBTP
 - [ ] Transcription du master comparée au texte attendu (fidélité mot à mot)
 - [ ] Démo produit : aucune donnée réelle de client à l'écran
 
