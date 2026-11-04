@@ -8,7 +8,7 @@ Three principles drive every design decision.
 
 1. **Brand as truth.** `01-brand/` is the single source. Every role defers to it. Contradictions are flagged before publication, not after.
 2. **File-based memory.** Anti-repetition and number verification rely on scanning the calendar, per-channel archives and inventory files. Zero external dependency, fully auditable.
-3. **Hook-enforced.** The harness enforces the workflow, not Claude's willpower. A PostToolUse hook fires the brand check whenever content is written in a production folder. Deterministic, not hopeful.
+3. **Hook-checked.** A PostToolUse hook runs the brand linter whenever content is written in a production folder and hands its findings to Claude with a reminder to run the brand check. The linter is deterministic; the brand check itself is a step Claude runs, and the human review confirms it.
 
 ## Component map
 
@@ -177,4 +177,4 @@ User reviews. On approval: post archived to examples/, calendar updated.
 
 **Wizard as separate lifecycle.** Setup is finite and ritualistic; operation is continuous. Separating `.claude/commands/` (setup + health) from `.claude/skills/` (operation) keeps each clear.
 
-**Hook-enforced gate.** Brand-check as a reminder (not a hard block) because Claude's judgment handles edge cases better than a mechanical gate — but the reminder is deterministic so nothing is "forgotten."
+**Hook-checked gate.** Brand-check as a reminder (not a hard block) because Claude's judgment handles edge cases better than a mechanical gate — but the reminder is deterministic so nothing is "forgotten."

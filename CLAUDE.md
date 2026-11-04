@@ -351,7 +351,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 1. Marketing lead supplies topics for the month.
 2. `email` skill reads `04-email/newsletter/editions/` and `_templates/inventory.md` to avoid repeats.
 3. Draft lands in `04-email/newsletter/drafts/`.
-4. Brand-check fires automatically via PostToolUse hook.
+4. Run `brand-check` before handing the draft over (the PostToolUse hook runs the linter and reminds you; it does not run the check).
 5. Human validates.
 6. `scripts/dry-run-push.py --target <email-tool>` emits the payload for review.
 7. On confirmation, the connector pushes to the email tool as a draft.
@@ -361,7 +361,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 1. Read the editorial calendar (if configured) to pick topic and pillar.
 2. `social-content` skill scans `examples/` and `_templates/inventory.md` for anti-repetition.
 3. Draft in the appropriate channel folder.
-4. Brand-check fires automatically.
+4. Run `brand-check` before handing the draft over.
 5. Archive to `examples/` on publish.
 
 ### Full event
@@ -377,7 +377,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 2. `slides` skill drafts a slide map (eyebrow + headline per slide, 18–24 slides) for human approval.
 3. On sign-off, `python3 06-graphic-design/scripts/new-deck.py <slug>` creates `06-graphic-design/presentations/decks/<slug>.html` from the vendored starter with the brand `:root` of `tokens.css`; slides are composed from the layout library (`_examples/deck-catalogue/LAYOUTS.md`, 120 layouts) and `templates/components.md`.
 4. `python3 06-graphic-design/presentations/scripts/qa.py 06-graphic-design/presentations/decks/<slug>.html` until "All slides clean", then once with `--with-pdf`.
-5. Brand-check fires automatically.
+5. Run `brand-check` before delivery.
 6. Optional: `./06-graphic-design/presentations/scripts/export-pdf.sh 06-graphic-design/presentations/decks/<slug>.html` for a PDF leave-behind, or push to a static host (see `06-graphic-design/presentations/docs/hosting.md`).
 
 The slides engine (starter, components, catalogue, QA, PDF export) is vendored from [slides-agent](https://github.com/Littlpinguin/slides-agent): never edit its files by hand, change slides-agent and run `python3 scripts/sync-slides-engine.py` (see `docs/vendored-slides.md`).

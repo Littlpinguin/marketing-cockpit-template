@@ -41,7 +41,7 @@ flowchart LR
 
 **How it keeps learning.** Every draft blocked on form or voice adds an entry to `exemples-rejetes.md` (step 5 of `brand-check`), every validated asset enters the catalogue through `promote-asset.py`, every delivery adds a line to the inventory, and a word you keep correcting goes into `voice.md` and the linter config, so the script catches it next time. The next production reads all of it.
 
-**Why it matters.** An agent applies the rules it can read, and a script can verify the ones that can be measured. Layers 1 and 2 are mostly enforced mechanically (the PostToolUse hook runs the linter on every write in a production folder), so your review goes where judgment is needed: which example deserves to be copied, which refusal teaches something, what you have the right to publish. The brain is plain Markdown and JSON in your own copy of the repo, loaded per task: the task router in [`01-brand/CLAUDE.md`](01-brand/CLAUDE.md) tells the agent which files a post, a visual, a deck or a web page needs, in which order, and nothing more.
+**Why it matters.** An agent applies the rules it can read, and a script can verify the ones that can be measured. Layers 1 and 2 are mostly checked mechanically (the PostToolUse hook runs the linter on every write in a production folder and hands its findings to Claude), so your review goes where judgment is needed: which example deserves to be copied, which refusal teaches something, what you have the right to publish. The brain is plain Markdown and JSON in your own copy of the repo, loaded per task: the task router in [`01-brand/CLAUDE.md`](01-brand/CLAUDE.md) tells the agent which files a post, a visual, a deck or a web page needs, in which order, and nothing more.
 
 Want to build yours step by step, without a technical background? The Brand Brain workshop walks through it: [English](https://jessem.fr/en/ai-marketing-cockpit/workshops/brand-brain/) · [français](https://jessem.fr/cockpit-marketing/ateliers/cerveau-de-marque/).
 
@@ -124,7 +124,7 @@ Generic AI marketing output has a smell. Same adjectives, same em-dash rhythm, s
 This template is the actual working tool of an externalized marketing practice. It encodes what running AI marketing for real clients forces you to solve:
 
 - **A brand brain as single source of truth**: the four layers above (tokens, voice and blacklist, examples, rights), loaded by every skill *before writing a single word*.
-- **Deterministic quality gates**: a PostToolUse hook runs the brand linter and calls the mandatory brand check whenever content lands in a production folder, and measured QA scripts check decks, carousels and visuals before export. The harness enforces the workflow, not the model's goodwill.
+- **Measured quality checks**: a PostToolUse hook runs the brand linter whenever content lands in a production folder and hands its findings to Claude with a reminder to run the brand check, and measured QA scripts check decks, carousels and visuals before export. The linter and the QA scripts are deterministic; the brand check itself is a step Claude runs, and your review confirms it.
 - **File-based memory**: an editorial calendar with statuses (`idea → draft → to-validate → validated → published`), per-channel archives and a script-maintained inventory give anti-repetition and auditability with zero external database.
 
 ## How it works
@@ -252,7 +252,7 @@ It fetches your website, analyzes your recent content, drafts the four layers of
 
 Honest answers, because you'll figure them out anyway:
 
-- **vs. a chat session (ChatGPT, Claude.ai, …):** a chat has no filesystem. This repo *is* the memory: brand brain, editorial calendar with statuses, per-channel archives, inventory. The brand gate is a hook and a linter, not a system prompt you hope survives the context window. Deliverables are versioned files (HTML decks, landing pages, dashboards), not text to copy-paste.
+- **vs. a chat session (ChatGPT, Claude.ai, …):** a chat has no filesystem. This repo *is* the memory: brand brain, editorial calendar with statuses, per-channel archives, inventory. The brand check rests on a hook and a linter that run on every write, not only on a system prompt you hope survives the context window. Deliverables are versioned files (HTML decks, landing pages, dashboards), not text to copy-paste.
 - **vs. a prompt pack or a "mega-prompt":** prompts don't ship 120 QA'd slide layouts, a 44-section landing library, 16 working page templates, a brand linter, a dry-run connector layer, or a wizard that regenerates role docs based on the tools you actually use.
 - **vs. an agency:** this is an operational framework, not outcomes-as-a-service. It needs your inputs, your validation, and someone who can tell good marketing from bad. It makes a competent operator much faster; it doesn't replace judgment.
 
