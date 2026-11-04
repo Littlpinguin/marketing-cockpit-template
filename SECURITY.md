@@ -6,12 +6,24 @@ Ce template s'exécute dans Claude Code et interagit avec des services externes 
 
 **Ne jamais coller une clé API, un token, un secret OAuth ou des identifiants dans un message de chat.** Claude voit vos messages ; tout ce qui est collé devient partie de la transcription.
 
-- Deux emplacements, selon le consommateur : **`.env` pour les scripts et connecteurs Python** (qui le chargent via dotenv ou `source`), **`.mcp.json` local pour les serveurs MCP**. Les deux sont gitignorés par défaut.
+- Deux emplacements, selon le consommateur : **`.env` pour les scripts et connecteurs Python** (qui le chargent via dotenv ou `source`, gitignoré), **la portée locale de Claude Code pour les serveurs MCP** (`claude mcp add --scope local`, rangée dans `~/.claude.json`, hors du dépôt ; voie de repli : le `.mcp.json` local, gitignoré).
 - `.env.example` et `.mcp.json.example` documentent la structure avec des valeurs vides ou placeholder — jamais de vraies valeurs.
 
-### `.mcp.json` : local, non versionné
+### Serveurs MCP : portée locale d'abord
 
-**`.mcp.json` est local et non versionné.** Il porte les vraies valeurs de connexion des serveurs MCP ; le template ne versionne que `.mcp.json.example` (structure + placeholders). Au premier setup : `cp .mcp.json.example .mcp.json`, puis remplacez les placeholders par vos valeurs réelles. Vérification : `git check-ignore .mcp.json` doit répondre `.mcp.json`.
+**`claude mcp add --scope local` range la configuration du serveur, jetons compris, dans `~/.claude.json`**, sous le chemin de ce projet : hors du dépôt, donc hors de portée d'un commit, d'une copie ou d'une archive du dossier, et absente de vos autres projets. C'est la portée que la documentation de Claude Code réserve aux serveurs dont les identifiants ne doivent pas entrer dans le contrôle de version. Le fichier reste en clair sur votre disque (chiffrement type FileVault recommandé, actif par défaut sur Mac).
+
+**Vous lancez la commande, dans votre propre terminal.** Jamais Claude, et jamais par le préfixe `!` de Claude Code, dont la sortie entre dans la conversation. Lancez-la depuis la racine du repo, où vous ouvrez Claude Code : la portée locale est rattachée à ce dossier. Claude affiche la commande avec des valeurs fictives (`VOTRE_…`) et ne les remplace pas ; vous remplacez les valeurs non secrètes (URL, identifiants de compte), et le jeton est lu sans écho par `read -rs`, pour qu'il ne s'affiche pas et que l'historique du shell ne garde que `$JETON`. La forme marche dans zsh comme dans bash (`printf` plutôt que `read -p`, que zsh lit autrement) :
+
+```bash
+printf 'Jeton (saisie masquée) : '; read -rs JETON; echo
+claude mcp add --scope local --transport stdio NOM_DU_SERVEUR -e "NOM_DE_LA_VARIABLE=$JETON" -- COMMANDE_DU_SERVEUR
+unset JETON
+```
+
+Serveur HTTP : `claude mcp add --scope local --transport http NOM_DU_SERVEUR URL_DU_SERVEUR --header "NOM_DE_L_EN_TETE: $JETON"`. Commandes exactes par outil : `10-automatisations/mcp-setup.md` (n8n), `12-acquisition/google-ads/setup.md`, `12-acquisition/setup-lemlist.md` (clé API). Le jeton passe par `-e` ou `--header`, jamais dans l'URL ni dans les arguments du serveur, que `claude mcp list` affiche. `claude mcp add` enregistre sans vérifier le jeton : la connexion se contrôle ensuite par `/mcp`.
+
+**Voie de repli — `.mcp.json` local, non versionné.** Pour qui préfère un fichier dans le projet : `cp .mcp.json.example .mcp.json`, puis remplacez les placeholders par vos valeurs réelles. Le template ne versionne que `.mcp.json.example` (structure + placeholders). Vérification : `git check-ignore .mcp.json` doit répondre `.mcp.json`. Un même nom déclaré dans les deux : Claude Code prend l'entrée de la portée locale, en entier, sans fusionner les champs ; après un passage à la portée locale, retirez l'entrée de `.mcp.json`.
 
 **Piège connu — les `${VAR}` de `.mcp.json` ne lisent pas le `.env`.** Claude Code ne développe les références `${VAR}` de `.mcp.json` que depuis l'environnement du processus, jamais depuis le `.env` du projet. Le pattern « `${N8N_API_KEY}` dans `.mcp.json` + valeur dans `.env` » produit une connexion cassée (401) — ou pousse à mettre le token en dur dans un fichier versionné. Ne l'utilisez pas, ne le documentez pas.
 
@@ -20,9 +32,10 @@ Ce template s'exécute dans Claude Code et interagit avec des services externes 
 De la meilleure à la déconseillée :
 
 1. **OAuth, partout où le serveur le propose.** Lemlist et Magnific le proposent : aucun token statique à stocker, Claude Code gère l'authentification (navigateur au premier appel).
-2. **`.mcp.json` local non versionné** — le pattern par défaut du template. Le risque dominant pour cette audience est le commit accidentel d'un token ; le gitignore le neutralise. Chiffrement disque type FileVault recommandé (actif par défaut sur Mac).
-3. **Avancé — équipes équipées de 1Password** : stockez le secret dans le vault et lancez le serveur via `op run --env-file` en wrapper de la commande MCP (ex. `"command": "op", "args": ["run", "--env-file", "mcp.env.tpl", "--", "npx", "n8n-mcp"]`). Le secret reste chiffré au repos et n'est résolu qu'au lancement.
-4. **Déconseillé — variables dans le profil shell** (`~/.zshrc`, launchd) : les références `${VAR}` de `.mcp.json` fonctionnent alors, mais le secret est en clair sur disque et visible de tous les processus.
+2. **Portée locale de Claude Code** (`claude mcp add --scope local`, lancé par vous dans votre terminal) — le pattern par défaut du template. Le risque dominant pour cette audience est le commit accidentel d'un token : la configuration vit dans `~/.claude.json`, hors du dépôt. Chiffrement disque type FileVault recommandé (actif par défaut sur Mac).
+3. **Repli — `.mcp.json` local non versionné.** Le gitignore neutralise le commit accidentel, mais le fichier vit dans le dossier du projet (copies, archives, partage du dossier) : réservé à qui préfère un fichier.
+4. **Avancé — équipes équipées de 1Password** : stockez le secret dans le vault et lancez le serveur via `op run --env-file` en wrapper de la commande MCP (ex. `"command": "op", "args": ["run", "--env-file", "mcp.env.tpl", "--", "npx", "n8n-mcp@2.94.3"]`). Le secret reste chiffré au repos et n'est résolu qu'au lancement.
+5. **Déconseillé — variables dans le profil shell** (`~/.zshrc`, launchd) : les références `${VAR}` de `.mcp.json` fonctionnent alors, mais le secret est en clair sur disque et visible de tous les processus.
 - Avant chaque commit et push : `git diff --cached | grep -iE "key|token|secret|password|api"` — scanner toute inclusion accidentelle. Si quelque chose semble suspect, interrompre et investiguer.
 - Si une clé a été commitée (même sur une branche privée), la révoquer et la remplacer immédiatement. L'historique Git n'oublie pas.
 - Ne jamais réafficher un secret à l'utilisateur pour « confirmer » — vérification de présence uniquement (`définie` / `non définie`).
@@ -32,7 +45,11 @@ De la meilleure à la déconseillée :
 Claude Code s'exécute avec les permissions que vous lui accordez. Cadrez-les au plus étroit.
 
 - **Ne jamais autoriser** de larges `Bash(rm:*)`, `Bash(git push --force:*)`, `Bash(launchctl:*)` au niveau des réglages utilisateur.
-- Les permissions **par projet** dans `.claude/settings.json` doivent énumérer des commandes précises, pas des globs.
+- Les permissions **par projet** dans `.claude/settings.json` doivent énumérer des commandes précises, pas des globs. Un joker après un programme qui exécute, supprime ou envoie (`python3`, `find`, `curl`) autorise aussi ses options les plus dangereuses : les scripts autorisés sans demande sont donc nommés un par un.
+- **`.env`, `.env.local` et `.mcp.json` sont interdits en lecture à Claude** (règles `deny` `Read(...)` de `.claude/settings.json`). Claude vérifie leur présence et leur suivi par git, jamais leur contenu. `~/.claude.json`, qui porte les jetons des serveurs en portée locale, lui est aussi interdit en lecture (`Read(~/.claude.json)`), comme `claude mcp get <nom>` (`Bash(claude mcp get *)`), qui affiche les variables et en-têtes d'un serveur tels qu'enregistrés : l'état des serveurs se vérifie par `claude mcp list` (nom, commande ou URL, état).
+- **Aucun `WebFetch` pré-approuvé.** Chaque nouveau domaine demande votre accord, que vous pouvez donner une fois pour ce domaine. C'est le verrou contre une page, un avis ou une transcription piégés qui demanderaient à Claude d'envoyer des données vers une adresse extérieure.
+- **Les interdictions `Bash(...)` de `.claude/settings.json` servent de filet** : elles arrêtent les formes que Claude écrit d'habitude (`rm -rf`, `git push --force` ou `-f`, `git -C <chemin> push --force`, `git reset --hard`, `launchctl unload` ou `bootout`), et un programme appelé autrement leur échappe (`/bin/rm`, `rm -Rf`, `bash -c '…'`). Seul le sandbox du point suivant tient quel que soit le texte de la commande.
+- **Sandbox recommandé dès que des contenus tiers entrent dans le dépôt** (transcriptions dans `00-intel/`, scraping, CRM branché) : lancez `/sandbox`. Une règle `deny` ne couvre pas un script qui ouvre lui-même un fichier ; le sandbox isole les commandes au niveau du système, même si une consigne cachée détourne Claude.
 - Refuser toute demande d'une skill d'exécuter une commande destructive sans confirmation explicite de l'utilisateur dans le même message.
 
 Voir `.claude/settings.json` pour le périmètre actuel.
@@ -53,6 +70,8 @@ Cela évite :
 - De programmer un événement à la mauvaise heure à cause d'un bug de fuseau horaire
 
 Le dry-run ne coûte rien. Sauter le dry-run coûte cher.
+
+Ce dry-run couvre les connecteurs Python (`_integrations/connectors/`). Un serveur MCP écrit sans passer par ce script : ses outils qui envoient, publient ou dépensent des crédits passent par la demande d'accord de Claude Code, au moyen des règles `ask` de `.claude/settings.json` (Lemlist en entier, les outils payants de Magnific : génération, variations et upscale d'images et de vidéos, voix, musique, 3D, téléchargement de banque d'images ; la création de workflow n8n, le générateur de composants 21st.dev). Ces règles visent les noms de serveur du template (`lemlist` ou `lm`, `magnific`, `n8n-mcp`, `magic`) : un serveur déclaré sous un autre nom, ou un outil absent de la liste, s'exécute sans demande, et c'est en le branchant qu'on l'ajoute aux règles `ask`.
 
 ## Hallucinations IA — vérifier avant de faire confiance
 
@@ -139,3 +158,5 @@ git status                                                         # les non-sta
 ```
 
 Si l'une des quatre semble anormale, corriger avant de pousser.
+
+Le workflow `.github/workflows/secrets.yml` repasse sur chaque pull request et chaque push sur `main` le motif de jetons du contrôle « Hygiène git » de `/health-check` ; une correspondance hors fichiers `*.example` fait échouer la vérification.

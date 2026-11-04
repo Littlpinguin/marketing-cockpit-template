@@ -35,7 +35,7 @@ Lire `README.md` pour le concept complet avant toute intervention.
 2. **Croiser** avec le calendrier : ce qui était prévu, publié, décalé.
 3. **Analyser** — invoquer la skill `performance-report` : comparaison N vs N-1, 5 chiffres clés, 3 enseignements, 3 recommandations pour le mois suivant, rédigés dans le champ `analyse_md` du snapshot.
 4. **Valider** — validation humaine de l'analyse obligatoire avant publication. Aucun chiffre sans source — chaque nombre pointe vers son outil d'origine.
-5. **Publier** — copier le snapshot validé dans `dashboard/data/AAAA-MM.json`, ajouter le mois à `dashboard/data/index.json`, déployer par FTP (`deploy/README.md`).
+5. **Publier** — copier le snapshot validé dans `dashboard/data/AAAA-MM.json`, ajouter le mois à `dashboard/data/index.json`, déployer par FTP avec `/deploy-reporting` (liste des fichiers, confirmation, upload ; mécanisme dans `deploy/README.md`).
 
 ## Gates de validation
 
@@ -55,4 +55,5 @@ Lire `README.md` pour le concept complet avant toute intervention.
 ## Skills associées
 
 - `performance-report` — collecte, comparaison, rédaction de l'analyse mensuelle (skill dédiée)
+- `deploy-reporting` — mise en ligne du dashboard par FTP, lancée à la main (`/deploy-reporting`)
 - `brand-check` — sur l'analyse rédigée, en cas de doute

@@ -34,11 +34,11 @@ Toute demande commence par la question : **quel objectif business sert-elle ?** 
 | Vidéo (Reel, Short, explainer, vidéo produit, motion design, montage de rushes, clips, sous-titres) | module `video` : skill `video-production`, point d'entrée unique (filières HyperFrames, montage de rushes, clips, documentaire, encre, 3D, Manim) | `08-video/projets/<slug>/` (doctrine : `08-video/montage.md`, `narration.md`, `motion.md`, `documentaire.md`) |
 | Imprimé (carnet, brochure, programme, carton, carte de visite, affiche, kakémono) | module `print` — skill `print` + agents `print-preflight` et `print-editorial` | `14-print/productions/` (doctrines : `14-print/doctrine/`) |
 | Article SEO / blog | skill `seo` | `09-seo/` |
-| Audit SEO (technique, contenu, GEO) | plugin claude-seo (agents `seo-technical`, `seo-content`, `seo-geo`…) via la skill `seo` | synthèse dans `09-seo/` |
+| Audit SEO (technique, contenu, GEO) | skills `seo-audit`, `seo-schema`, `seo-geo` et agents `seo-technical`, `seo-content`, `seo-google`, internes au template, via la skill `seo` | synthèse dans `09-seo/` |
 | Campagne Google Ads (audit, optimisation, création) | skill `sea-google-ads` + agent `sea-analyst` (module `acquisition`) | `12-acquisition/google-ads/` |
 | Campagne outreach (cold email B2B) | module `acquisition` — MCP Lemlist, `12-acquisition/setup-lemlist.md` | `12-acquisition/campagnes/` |
 | Veille marché / concurrence | skill `veille-strategy` + agent `veille-analyst` (module `veille`) | `02-strategy/veille/`, `_sources/research/` |
-| Rapport de performances | skill `performance-report` + agent `performance-analyst` (module `reporting`) | `02-strategy/performance/` + dashboard `11-reporting/` |
+| Rapport de performances | skill `performance-report` + agent `performance-analyst` (module `reporting`) ; mise en ligne : `/deploy-reporting` | `02-strategy/performance/` + dashboard `11-reporting/` |
 | Automatisation (workflow récurrent) | module `automatisations` (n8n) | `10-automatisations/` |
 | Brief de campagne multicanal | skill `content-strategy` (+ `event-marketing` si événement) | `02-strategy/plans/` + calendrier |
 | Challenger / stress-tester une stratégie, un positionnement, une offre | skill `strategy-challenger` | `02-strategy/` (critique) |
@@ -62,7 +62,7 @@ Quand la demande n'indique ni canal ni format (« il faut communiquer sur X »),
 
 See `SECURITY.md` for the full rules. The short list:
 
-1. **Never paste API keys, tokens, or secrets in a chat message or commit.** Secrets live in `.env` (scripts/connectors) or in the local, untracked `.mcp.json` (MCP servers) — the versioned counterparts (`.env.example`, `.mcp.json.example`) carry placeholders only. `${VAR}` references in `.mcp.json` are NOT expanded from the project `.env` (see `SECURITY.md`). Before every push, grep the diff for secrets.
+1. **Never paste API keys, tokens, or secrets in a chat message or commit.** Secrets live in `.env` (scripts/connectors) or in Claude Code's local MCP scope (`claude mcp add --scope local`, run by the user in their own terminal, stored in `~/.claude.json` outside the repo; fallback: the local, untracked `.mcp.json`) — the versioned counterparts (`.env.example`, `.mcp.json.example`) carry placeholders only. `${VAR}` references in `.mcp.json` are NOT expanded from the project `.env` (see `SECURITY.md`). Never read `~/.claude.json` nor run `claude mcp get`, which print tokens in clear: check servers with `claude mcp list`. Before every push, grep the diff for secrets.
 2. **Never use destructive Bash commands without explicit user confirmation** — `rm -rf`, `git push --force`, `git reset --hard`, `launchctl` on system-wide agents, anything that sends email or hits an external API.
 3. **Dry-run before production push.** Any connector that writes to Notion / Airtable / Mailchimp / MailerLite / HubSpot / etc. must first emit the payload to stdout via `scripts/dry-run-push.py` and wait for confirmation.
 4. **Verify, do not trust.** Claude can hallucinate API endpoints, field names, package names. Check docs before invoking a new API.
@@ -75,51 +75,7 @@ See `SECURITY.md` for the full rules. The short list:
 
 This repo is organized by **role**. Each numbered folder represents one marketing function and contains a `CLAUDE.md` that defines the role's scope, inputs, workflow, and validation gates.
 
-**Core** (always active):
-
-| Folder | Role | When to use |
-|---|---|---|
-| `00-intel/` | — (confidential memory) | Meeting transcripts, internal/client/prospect/partner intel — fed by n8n or by the Google Drive transcripts feed (`_integrations/drive-transcripts/`), never versioned |
-| `01-brand/` | — (reference) | Single source of truth: identity, design system, voice, personas |
-| `02-strategy/` | Head of strategy | Objectives cascade, campaign briefs, calendar, KPIs — **central calendar in `02-strategy/calendar/calendar.md`** |
-| `03-social-media/` | Social media manager | LinkedIn, Discord, WhatsApp, other activated channels |
-| `04-email/` | Email marketing manager | Newsletters, promos, sales outreach, lead nurturing |
-| `05-web-content/` | Web content lead | Landing pages, static HTML artifacts |
-| `06-graphic-design/` | Art director | Visuals, carousels, infographics, AI imagery, **HTML presentations**, mail signatures |
-| `07-events/` | Event marketing lead | Webinars, live sessions, gatherings, announcement plans |
-| `09-seo/` | Blog & SEO manager | Long-form articles, keyword research, on-page optimization |
-| `_sources/` | — (raw material) | Reports, market research — canonical source for published numbers |
-| `_integrations/` | — (infrastructure) | Connector code, MCP config, cron |
-| `_examples/` | — (starter corpus) | Fictional but realistic content to calibrate tone on day one |
-
-**Optional modules** (inactive by default — enable via `/modules`, state in `.setup-completed.modules`; do not load their `CLAUDE.md` or propose their workflows while inactive):
-
-| Folder | Module | Prerequisites |
-|---|---|---|
-| `08-video/` | `video` | ffmpeg, Node 22; HyperFrames plugin (`hyperframes@hyperframes`) installed by `/modules` (optional: whisper, Manim, documentary corpus dependencies) |
-| `10-automatisations/` | `automatisations` | n8n instance |
-| `11-reporting/` | `reporting` | ≥ 1 data source (GA4/GSC, Postiz, email tool) |
-| `12-acquisition/` | `acquisition` | n8n instance (+ Apify for scraping) |
-| `14-print/` | `print` | Chrome or Chromium, Ghostscript ≥ 10, Python (PyMuPDF, Pillow, numpy), paper ICC profile in `14-print/icc/` |
-| — | `veille`, `publication-sociale`, `espace-client` | See `/modules` (feeds `00-intel/`, Postiz, FTP client space) |
-
-### `00-intel/` subfolders (confidential — gitignored, see `00-intel/CLAUDE.md`)
-
-| Subfolder | Content | Who feeds it |
-|---|---|---|
-| `inbox/` | Unprocessed drops (meeting transcripts, notes) | n8n workflow (module `automatisations`), Drive transcripts feed (`scripts/sync-intel.py`, Monday routine `intel-hebdo`) or manual drop |
-| `interne/` | Team meetings, internal decisions | Classified from `inbox/` |
-| `clients/<name>/` | Everything about an existing client | Classified from `inbox/` |
-| `prospects/<name>/` | Sales meetings, expressed needs | Classified from `inbox/` |
-| `partenaires/<name>/` | Partners working with the company without buying from it | Classified from `inbox/` |
-| `radar/` | Weekly comms radars, intel routine log | Monday routines `intel-hebdo` and `radar-com` |
-
-### `_sources/` subfolders
-
-| Subfolder | Content | Who feeds it |
-|---|---|---|
-| `reports/` | Raw data, benchmarks, quantitative studies — the canonical source for any number you publish | Manual after each study |
-| `research/` | Market watch: external articles, notes, competitor analysis | Manual drop, or automated feed (module `veille`) |
+Dans `docs/catalogue.md` : la carte des dossiers (cœur, modules optionnels et leurs prérequis, sous-dossiers de `00-intel/`, confidentiel et jamais versionné, et de `_sources/`), les agents de `.claude/agents/` et les commandes de `.claude/commands/`.
 
 ---
 
@@ -139,103 +95,12 @@ This repo is organized by **role**. Each numbered folder represents one marketin
 
 ## Integrations — runtime state
 
-Runtime configuration lives in `.setup-completed` (JSON). The wizard writes it at the end of `/start-cockpit`. Example shape:
-
-```json
-{
-  "version": "2.0.0",
-  "company": "...",
-  "language": "fr",
-  "bilingual": false,
-  "tools": {
-    "editorial_calendar": { "name": "calendar-file", "enabled": true },
-    "email_marketing":    { "name": "mailerlite", "enabled": true },
-    "knowledge_base":     { "name": "outline", "enabled": false },
-    "events_platform":    { "name": "none", "enabled": false },
-    "crm":                { "name": "none", "enabled": false },
-    "web_analytics":      { "name": "ga4-gsc", "enabled": true },
-    "social_publishing":  { "name": "postiz", "enabled": false },
-    "client_space_ftp":   { "name": "ftp", "enabled": false }
-  },
-  "modules": {
-    "video":               { "enabled": false },
-    "automatisations":     { "enabled": true },
-    "reporting":           { "enabled": false },
-    "acquisition":         { "enabled": false },
-    "veille":              { "enabled": true },
-    "publication-sociale": { "enabled": false },
-    "espace-client":       { "enabled": false },
-    "print":               { "enabled": false }
-  },
-  "features": {
-    "image_generation": { "enabled": true, "model": "gemini-nano-banana-2.1" }
-  }
-}
-```
-
+Runtime configuration lives in `.setup-completed` (JSON). The wizard writes it at the end of `/start-cockpit`. Example shape: `docs/catalogue.md`.
 See `docs/setup-completed.schema.json` for the full schema.
 
 ## Skills (in `.claude/skills/`)
 
-### Wizard & infrastructure
-
-| Skill | Role | Notes |
-|---|---|---|
-| `cockpit-setup` | Shared wizard logic | Loaded by every `/start-cockpit`, `/brand-discover`, `/tools-setup`, `/modules`, `/validate-setup`, `/health-check` |
-| `sync-template` / `backport-to-template` | Template ↔ fork Git flow | Update from upstream / contribute back sanitized |
-| `n8n-builder` | End-to-end n8n workflow creation | 5-phase method: libraries → plan → build (MCP) → QA → REX |
-| `n8n-audit` | Review an existing n8n workflow | Against module conventions (architecture, errors, naming, vault) |
-| `inventory` | Deliverables index | Maintains `_templates/inventory.md` (anti-repetition) via `scripts/build-inventory.py` |
-
-### Quality gates & review
-
-| Skill | Role | Notes |
-|---|---|---|
-| `brand-check` | Quality gate before delivery | Mandatory for content in production folders; step 0 = `scripts/lint-brand.py`, feeds `01-brand/exemples-rejetes.md` |
-| `strategy-challenger` | Devil's advocate on a strategy | Stress-tests a positioning, offer, funnel or campaign before commit; used by `02-strategy`, produces a critique not a plan |
-| `copy-editing` | 7-pass review | Data / vocab / tone / clarity / structure / brand / format |
-| `humanize-writing` | 8-pass anti-AI-detection rewrite | Curative pass for text that "sounds AI"; invoked by `copy-editing` as final pass |
-| `accessibility-web` | WCAG 2.2 AA reference | Load before building/reviewing any HTML deliverable; automated review delegated to agent `a11y-auditor` |
-
-### Editorial production
-
-| Skill | Role | Notes |
-|---|---|---|
-| `social-content` | LinkedIn, Discord, WhatsApp | Respects per-channel cadence and tone |
-| `email` | Newsletter, promo, sales, nurture | Integrates with configured email tool |
-| `email-deliverability` | Email knowledge base | SPF/DKIM/DMARC, compliance, dark-mode design, benchmarks — consultative, produces nothing itself |
-| `copywriting` | Long-form web content | Landing pages, product pages |
-| `blog-engine` | End-to-end article production | Research → draft → SEO validation → quality score ≥ 90/100; fact-checking with source fetch |
-| `seo` | Blog, keyword research, on-page, AEO | Publishes per configured CMS; delegates analysis to `seo-audit` / `seo-schema` / `seo-geo` / `seo-cluster` |
-| `content-strategy` | Planning and cross-channel coordination | Pillar balance, cadence |
-| `event-marketing` | Event comm plans | D-60 to D+7 announcement waves |
-| `translation` | Verified multi-agent translation pipeline | Structure preservation, brand glossary, anti-fabrication review |
-| `veille-strategy` | Multi-level market watch | Feeds the editorial calendar with sourced ideas |
-
-### Web & conversion (CRO)
-
-| Skill | Role | Notes |
-|---|---|---|
-| `landing-page` | Conversion landing pages, end-to-end playbook | 8 phases: doctrine and real material → one-salvo framing → 2-3 directions → spec with final copy → shared charter before parallel work → parallel build by disjoint files → show, listen, apply → measured QA + 4 parallel reviews + one arbitrated fix wave → delivery. Data template (gallery) or bespoke page. Six `landing-*` agents, `/new-landing`, QA `05-web-content/scripts/qa-landing.py` |
-| `lead-magnet` | Lead magnets (guide, calculator, quiz…) | Always shipped with the full capture circuit (page → form → automation → nurturing) |
-| `cro-page` | Page conversion audit | 7-dimension analysis, prioritized recommendations; orchestrated by `landing-page` |
-| `cro-form` | Form optimization | Field pruning, labels, errors, completion rate; orchestrated by `landing-page` / `lead-magnet` |
-| `cro-popup` | Popups, modals, banners | Triggers, frequency, RGPD compliance — only on explicit request |
-| `cro-pricing` | Pricing strategy & pricing page | Packaging, Good-Better-Best tiers, price psychology |
-
-### Design & visuals
-
-| Skill | Role | Notes |
-|---|---|---|
-| `image-generation` | Brand-compliant visuals via Gemini | Prompt auto-prefixed with brand style; check `01-brand/assets/` first |
-| `slides` | Editorial-grade HTML presentations | 1920×1080 frame, 120-layout library, Playwright QA, clean PDF export; engine vendored from slides-agent |
-| `carousel` | LinkedIn carousels (PDF 1080×1350) | Strict type/spacing scales, export pipeline |
-| `brandkit` | Brand boards & identity decks | Express the existing brand, or draft an identity proposal for a prospect |
-| `design-direction` | Distinctive art direction | Deliberate aesthetic choices for new pages — upstream of `design-system` |
-| `design-system` | Web design system generation | Semantic palette, type pairing, CSS tokens — always constrained by `01-brand` tokens |
-| `design-review` | UI review before delivery | Brand conformance, WCAG, responsive, perceived performance |
-| `design-taste` | Anti-slop execution protocol | Parametric variance/motion/density cursors, GSAP skeletons, pre-flight check |
-| `design-redesign` | Audit & modernize an existing site/page | Detects generic-AI patterns, targeted fixes by impact order |
+Catalogue des skills par fonction (assistant et infrastructure, contrôles qualité, production éditoriale, web et CRO, design, imprimé, analyse SEO, acquisition et reporting) : `docs/catalogue.md`. Celles du module vidéo restent ci-dessous.
 
 ### Video (module `video`)
 
@@ -255,29 +120,9 @@ See `docs/setup-completed.schema.json` for the full schema.
 
 The `hyperframes:*` skills come from the official HyperFrames plugin `hyperframes@hyperframes` (Apache-2.0), installed by `/modules` when the `video` module is enabled; `video-production` always runs before them. Provenance (HyperFrames, OpenMontage method, Manim, ink-theater data, inspiration library): `docs/vendored-video.md`.
 
-### Print (module `print`)
-
-| Skill | Role | Notes |
+| Agent | Role | Dispatched by |
 |---|---|---|
-| `print` | Anything that goes to a printer (booklet, brochure, programme, card, poster, roll-up) | Flatplan → sourced facts → HTML/CSS on a grid → opaque plate for overlays → PDF/X-4 CMYK chain (`14-print/lib/`) → `verify.py` / `qa.py` → agents `print-preflight` + `print-editorial` → paper proof; ordering stays human |
-
-### SEO analysis (support of skill `seo`)
-
-| Skill | Role | Notes |
-|---|---|---|
-| `seo-audit` | Site or single-page SEO audit | Health score + prioritized action plan in `09-seo/audits/` |
-| `seo-schema` | Schema.org structured data | Detect, validate, generate JSON-LD; knows active/deprecated Google types |
-| `seo-geo` | AI answer-engine visibility (GEO/AEO) | AI crawler access, passage citability, brand mentions |
-| `seo-cluster` | SERP-overlap topic clustering | Hub-and-spoke architecture, internal link matrix |
-
-### Acquisition, data & reporting (modules)
-
-| Skill | Role | Notes |
-|---|---|---|
-| `sea-google-ads` | Google Ads advisory (module `acquisition`) | Read-only MCP account audit, prioritized optimization plan; delegates numbers to agent `sea-analyst` |
-| `ads-audit` | Multi-platform paid media audit | Google/Meta/LinkedIn Ads grids, health score 0-100, quick wins |
-| `scraping` | Apify-based scraping | Benchmarks, social audits, watch data |
-| `performance-report` | Monthly performance snapshot (module `reporting`) | Feeds the `11-reporting` dashboard; analysis by agent `performance-analyst` |
+| `video-reviewer` | Read-only review of a video render: `qa-video.py` measures, `brand-frame.py --check` on the HyperFrames project, contact sheet, brand, safe zones, motion promise, captions, AI disclosure, rights; P1/P2/P3 findings with timestamps (module `video`) | Skills `video-production`, `video-repurpose`, `video-documentary`, before delivery |
 
 **Rule**: always prefer this project's skills over generic skills from external plugins. They are tailored to this repo.
 
@@ -296,53 +141,10 @@ La marque est vérifiable par script ; ces contrôles priment sur toute appréci
 | Faut-il mentionner que c'est généré par IA, et comment ? | `01-brand/divulgation-ia.md` |
 | Cette formulation a-t-elle déjà été refusée ? | `01-brand/exemples-rejetes.md` |
 | Ce rendu vidéo tient-il son format, sa loudness, son rythme, sa narration ? | `python3 08-video/scripts/qa-video.py <rendu>` (module `video`) |
+| Les sous-titres d'un projet vidéo tiennent-ils leurs règles (lignes, corps, vitesse, fidélité) ? | `python3 08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` (module `video`, lancé aussi par un hook PostToolUse) |
 | La charte d'un projet HyperFrames est-elle à jour ? | `python3 08-video/scripts/brand-frame.py <projet> --check` (module `video`) |
 
 Réglages propres à la marque : `scripts/lint-brand.toml` (vocabulaire, tirets, règles actives), `scripts/build-tokens.toml` (fichiers CSS générés, dont le fichier de marque du moteur de slides et `08-video/lib/brand.css`), `scripts/build-inventory.toml` (dossiers inventoriés). Tests : `python3 -m pytest scripts/tests -q`.
-
-## Agents (in `.claude/agents/`)
-
-Sub-agents dispatched (mostly) by skills — they run in parallel and return structured reports.
-
-| Agent | Role | Dispatched by |
-|---|---|---|
-| `brand-guardian` | Adversarial brand-conformance review of a major deliverable (deck, landing, campaign) | On demand — complements `brand-check` without replacing it |
-| `qa-visuel` | Playwright QA of visual HTML deliverables (overflow, font minima, contrast, folios) | Skills `slides` / `carousel`, before PDF export |
-| `a11y-auditor` | WCAG 2.2 AA audit (axe-core + manual keyboard/focus/modal checks) | Before delivery of any web deliverable — complements `qa-visuel` |
-| `performance-analyst` | Analyzes the monthly `data.json` snapshot: trends, anomalies, 3-5 recommendations | Skill `performance-report` |
-| `sea-analyst` | Reads Google Ads account data via MCP (read-only), returns quantified findings | Skill `sea-google-ads` |
-| `seo-technical` | Technical SEO: crawlability, indexation, canonicals, CWV, JS rendering | Skill `seo-audit` |
-| `seo-content` | Content quality: E-E-A-T, depth, thin content, AI citability | Skills `seo-audit` / `seo` |
-| `seo-google` | Google data: CrUX, Search Console, GA4 (only if GA4/GSC coupling is active) | Skills `seo-audit` / `seo` |
-| `n8n-debugger` | Diagnoses failed n8n executions (read-only) against known error patterns | `n8n-builder`, module `automatisations` |
-| `veille-analyst` | Deep web research on ONE watch level, sourced and dated signals | Skill `veille-strategy` (one per level, in parallel) |
-| `print-preflight` | Prepress audit of the final PDF: boxes, colour space, ink coverage, effective image resolution, rules, minimum sizes, residual transparency, QR codes | Skill `print`, before any order and after each rebuild |
-| `print-editorial` | Spread-by-spread layout review of a print piece: grid, hierarchy, measure, rhythm, white space, widows | Skill `print`, alongside `print-preflight` |
-| `landing-researcher` | Benchmark of converting pages + visual research from public galleries, consolidated in the landing's `pilotage/research-notes.md`; codes nothing | Skill `landing-page`, phase 0, in the background |
-| `landing-section-builder` | Builds or fixes one landing section (or a fix batch) in the files it is given only; several run in parallel on disjoint fragments, never commits | Skill `landing-page`, phases 4-7 |
-| `landing-reviewer-design` | Read-only web-design coherence review: headings, rhythm, materials, type, motion, responsive, buttons | Skill `landing-page`, phase 7 (in parallel) |
-| `landing-reviewer-brand` | Read-only brand review against `01-brand/` (voice, anti-AI, tokens, proof, audience, AI disclosure, rights), runs `lint-brand.py` | Skill `landing-page`, phase 7 (in parallel) |
-| `landing-reviewer-cro` | Read-only conversion review: narrative vs objections, CTA inventory, conversion block, honest urgency, proof, measurement | Skill `landing-page`, phase 7 (in parallel) |
-| `landing-reviewer-a11y` | Read-only WCAG 2.2 AA review in 14 points, grounded on the `qa-landing.py` measures; `a11y-auditor` stays the delivery gate | Skill `landing-page`, phase 7 (in parallel) |
-| `video-reviewer` | Read-only review of a video render: `qa-video.py` measures, `brand-frame.py --check` on the HyperFrames project, contact sheet, brand, safe zones, motion promise, captions, AI disclosure, rights; P1/P2/P3 findings with timestamps (module `video`) | Skills `video-production`, `video-repurpose`, `video-documentary`, before delivery |
-| `video-art-director` | End-to-end AI visual production from a brief: model choice, prompts, image → upscale → image-to-video → voice chain, iterations (module `video`) | On demand, for a deliverable that chains several models |
-| `video-model-scout` | Refreshes the knowledge of the generation catalogue (new models, versions, costs, parameters) | Skill `video-generation`, to update its dated model notes |
-
----
-
-## Slash commands (in `.claude/commands/`)
-
-| Command | Purpose |
-|---|---|
-| `/start-cockpit` | Entry point of the wizard. Run once after cloning. Orchestrates the full setup. |
-| `/brand-discover` | Analyze website + social + blog to propose a draft brand doctrine for human validation. |
-| `/tools-setup` | Pick and configure tools per category. Regenerates role `CLAUDE.md` files based on choices. |
-| `/modules` | Enable/disable optional modules (video, automatisations, reporting, acquisition, veille, publication-sociale, espace-client, print). |
-| `/validate-setup` | Placeholder lint + sample generation + voice check. Writes `.setup-completed` on success. |
-| `/health-check` | Ongoing: verify env vars, MCP servers, hook wiring, cron state. Run monthly. |
-| `/new-landing` | Produce a conversion landing page with the `landing-page` playbook, from framing to a QA'd static HTML page. |
-
----
 
 ## Primary workflows
 
@@ -350,7 +152,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 1. Marketing lead supplies topics for the month.
 2. `email` skill reads `04-email/newsletter/editions/` and `_templates/inventory.md` to avoid repeats.
 3. Draft lands in `04-email/newsletter/drafts/`.
-4. Brand-check fires automatically via PostToolUse hook.
+4. Run `brand-check` before handing the draft over (the PostToolUse hook runs the linter and reminds you; it does not run the check).
 5. Human validates.
 6. `scripts/dry-run-push.py --target <email-tool>` emits the payload for review.
 7. On confirmation, the connector pushes to the email tool as a draft.
@@ -360,7 +162,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 1. Read the editorial calendar (if configured) to pick topic and pillar.
 2. `social-content` skill scans `examples/` and `_templates/inventory.md` for anti-repetition.
 3. Draft in the appropriate channel folder.
-4. Brand-check fires automatically.
+4. Run `brand-check` before handing the draft over.
 5. Archive to `examples/` on publish.
 
 ### Full event
@@ -376,7 +178,7 @@ Sub-agents dispatched (mostly) by skills — they run in parallel and return str
 2. `slides` skill drafts a slide map (eyebrow + headline per slide, 18–24 slides) for human approval.
 3. On sign-off, `python3 06-graphic-design/scripts/new-deck.py <slug>` creates `06-graphic-design/presentations/decks/<slug>.html` from the vendored starter with the brand `:root` of `tokens.css`; slides are composed from the layout library (`_examples/deck-catalogue/LAYOUTS.md`, 120 layouts) and `templates/components.md`.
 4. `python3 06-graphic-design/presentations/scripts/qa.py 06-graphic-design/presentations/decks/<slug>.html` until "All slides clean", then once with `--with-pdf`.
-5. Brand-check fires automatically.
+5. Run `brand-check` before delivery.
 6. Optional: `./06-graphic-design/presentations/scripts/export-pdf.sh 06-graphic-design/presentations/decks/<slug>.html` for a PDF leave-behind, or push to a static host (see `06-graphic-design/presentations/docs/hosting.md`).
 
 The slides engine (starter, components, catalogue, QA, PDF export) is vendored from [slides-agent](https://github.com/Littlpinguin/slides-agent): never edit its files by hand, change slides-agent and run `python3 scripts/sync-slides-engine.py` (see `docs/vendored-slides.md`).

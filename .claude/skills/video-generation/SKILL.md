@@ -1,6 +1,6 @@
 ---
 name: video-generation
-description: Génération de rushes vidéo IA pour {{COMPANY_NAME}}, texte vers vidéo ou image vers vidéo, via un MCP multi-modèles (Seedance, Kling, Hailuo, Veo...). Spécification d'un plan en cinq aspects (sujet, mouvement, scène, espace, caméra), prompts en anglais, notes datées par famille de modèles, arbre stock ou génération, grille de choix du fournisseur, discipline de dépense sous le contrat de coût de video-production, et contrôle de fidélité du texte sur tout rush qui fait parler quelqu'un (corrélation d'enveloppe audio). À utiliser pour un plan cinématique, un b-roll animé, une animation de produit, ou régénérer un plan d'un montage. Le montage relève de video-editing, l'orchestration de video-production (et de reel-talking-head pour un reel client).
+description: "Rushes vidéo IA pour {{COMPANY_NAME}}, texte ou image vers vidéo, via un MCP multi-modèles (Seedance, Kling, Hailuo, Veo) : spec de plan, prompts, choix du modèle, dépense, contrôle de fidélité du texte. À utiliser pour un plan cinématique, un b-roll, une animation produit ou régénérer un plan."
 ---
 
 # video-generation : rushes vidéo IA pour {{COMPANY_NAME}}

@@ -1,6 +1,6 @@
 ---
 name: cro-form
-description: Optimiser un formulaire de {{COMPANY_NAME}} — capture de lead, contact, demande de démo, inscription événement, devis. Maximise le taux de complétion en ne gardant que les champs qui servent vraiment, avec labels, messages d'erreur et bouton optimisés. Utiliser quand l'utilisateur dit « personne ne remplit le formulaire », « trop de champs », « optimiser le formulaire », « abandon de formulaire » ou « taux de complétion ». Orchestrée par les skills landing-page et lead-magnet.
+description: "Optimise un formulaire de {{COMPANY_NAME}} (lead, contact, démo, inscription, devis) pour le taux de complétion : champs, labels, erreurs, bouton. À utiliser sur « personne ne remplit le formulaire », « trop de champs », « abandon de formulaire »."
 ---
 
 # cro-form — optimisation de formulaires

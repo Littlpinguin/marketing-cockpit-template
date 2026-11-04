@@ -1,0 +1,29 @@
+# Checks that every agent, skill and command frontmatter in .claude/ parses as strict YAML.
+# A malformed frontmatter fails silently in Claude Code (agent skipped, skill without its description),
+# so this test is the only place it shows. Read-only: no secret, no write permission.
+name: frontmatter
+
+on:
+  pull_request:
+    paths:
+      - ".claude/**"
+      - "scripts/tests/test_frontmatter.py"
+  push:
+    branches: [main]
+    paths:
+      - ".claude/**"
+      - "scripts/tests/test_frontmatter.py"
+
+permissions:
+  contents: read
+
+jobs:
+  frontmatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml pytest
+      - run: python -m pytest scripts/tests/test_frontmatter.py -q

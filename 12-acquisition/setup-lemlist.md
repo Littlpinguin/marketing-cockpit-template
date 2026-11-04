@@ -10,7 +10,16 @@ Documentation Lemlist : https://developer.lemlist.com/mcp/setup
 
 Deux modes d'authentification :
 - **OAuth (recommandé)** : ajoutez le serveur MCP Lemlist dans une session interactive — le navigateur s'ouvre pour autoriser l'accès au workspace. Aucun token statique à stocker : Claude Code gère l'authentification. C'est la pratique n° 1 de la hiérarchie des secrets MCP (`SECURITY.md`).
-- **Clé API** : générez la clé dans Lemlist (Settings → Integrations → API) et mettez-la **directement dans le `.mcp.json` local** (gitignoré, jamais commité — `cp .mcp.json.example .mcp.json` s'il n'existe pas). Ne passez pas par `${LEMLIST_API_KEY}` + `.env` : Claude Code ne développe pas les `${VAR}` de `.mcp.json` depuis le `.env` du projet.
+- **Clé API** : générez la clé dans Lemlist (Settings → Team → Integrations → *Generate*), puis déclarez le serveur en **portée locale**, vous-même, dans votre propre terminal (pas dans Claude Code), depuis la racine du repo. La clé est lue sans écho par `read -rs` : elle n'entre ni dans le chat ni dans l'historique du shell, et la configuration va dans `~/.claude.json`, hors du dépôt.
+
+  ```bash
+  printf 'Clé API Lemlist (saisie masquée) : '; read -rs LEMLIST_API_KEY; echo
+  claude mcp add --scope local --transport http lemlist https://app.lemlist.com/mcp \
+    --header "X-API-Key: $LEMLIST_API_KEY"
+  unset LEMLIST_API_KEY
+  ```
+
+  Voie de repli : l'entrée `"lemlist": { "type": "http", "url": "https://app.lemlist.com/mcp", "headers": { "X-API-Key": "VOTRE_CLE_API_LEMLIST" } }` dans le `.mcp.json` local (gitignoré, jamais commité — `cp .mcp.json.example .mcp.json` s'il n'existe pas), clé en dur. Ne passez pas par `${LEMLIST_API_KEY}` + `.env` : Claude Code ne développe pas les `${VAR}` de `.mcp.json` depuis le `.env` du projet.
 
 Vérifiez ensuite avec `/mcp` que les outils Lemlist apparaissent, puis lancez `/health-check`.
 

@@ -1,6 +1,6 @@
 ---
 name: design-review
-description: Réviser et corriger l'UI des livrables web de {{COMPANY_NAME}} (landing pages, pages statiques, emails HTML riches, dashboards de reporting) — conformité marque, accessibilité WCAG, responsive, performance perçue, formulaires, animations. Utiliser avant toute livraison de code UI, quand l'utilisateur dit « review cette page », « le design fait pas pro », « corrige l'UI », ou en QA finale des skills landing-page / design-system / design-direction. Vendorisée depuis ui-ux-pro-max (MIT, NextLevelBuilder) — voir docs/vendored-design.md.
+description: "Revue et correction de l'UI des livrables web de {{COMPANY_NAME}} (landing, pages, emails HTML, dashboards) : marque, WCAG, responsive, performance, formulaires. À utiliser avant toute livraison de code UI, sur « review cette page », « corrige l'UI », ou en QA finale."
 ---
 
 # design-review — revue et correction UI des livrables web

@@ -2,6 +2,17 @@
 
 Complete API documentation for lottie-web, lottie-react, dotlottie-web, and dotlottie-react libraries.
 
+## Table of Contents
+
+- [dotlottie-web API](#dotlottie-web-api)
+- [DotLottieWorker API](#dotlottieworker-api)
+- [dotlottie-react API](#dotlottie-react-api)
+- [lottie-web API (Original Library)](#lottie-web-api-original-library)
+- [lottie-react API](#lottie-react-api)
+- [useLottie Hook](#uselottie-hook)
+- [useLottieInteractivity Hook](#uselottieinteractivity-hook)
+- [Best Practices](#best-practices)
+
 ## dotlottie-web API
 
 ### DotLottie Constructor

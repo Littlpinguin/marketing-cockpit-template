@@ -1,6 +1,6 @@
 ---
 name: video-matting
-description: Détourage vidéo local pour {{COMPANY_NAME}} — isole une personne d'une vidéo et produit un calque alpha exploitable au montage (remplacement de décor, incrustation sur fond généré). S'appuie sur RobustVideoMatting en local (ONNX, gratuit, privé). À utiliser pour remplacer un décor, incruster un sujet sur un fond de marque, ou isoler un premier plan. L'incrustation et la lumière relèvent de `video-editing`.
+description: "Détourage vidéo local pour {{COMPANY_NAME}} avec RobustVideoMatting (ONNX, gratuit, privé) : isole une personne en calque alpha. À utiliser pour remplacer un décor, incruster un sujet sur un fond de marque ou isoler un premier plan. L'incrustation relève de video-editing."
 ---
 
 # video-matting — détourer une vidéo en local

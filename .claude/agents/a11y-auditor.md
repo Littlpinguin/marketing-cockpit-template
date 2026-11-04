@@ -1,6 +1,6 @@
 ---
 name: a11y-auditor
-description: Auditeur accessibilité WCAG 2.2 AA des livrables web HTML (landing pages 05-web-content/, dashboard 11-reporting/) — scan automatisé axe-core via Playwright + vérifications manuelles ciblées (clavier, focus, modales, formulaires, live regions). Rend une liste de constats par sévérité avec critère WCAG et correction proposée. À dispatcher avant toute livraison d'un livrable web, en complément de qa-visuel (qui couvre les decks et carrousels). Enjeu légal : European Accessibility Act.
+description: "Auditeur accessibilité WCAG 2.2 AA des livrables web HTML (landing pages 05-web-content/, dashboard 11-reporting/) — scan automatisé axe-core via Playwright + vérifications manuelles ciblées (clavier, focus, modales, formulaires, live regions). Rend une liste de constats par sévérité avec critère WCAG et correction proposée. À dispatcher avant toute livraison d'un livrable web, en complément de qa-visuel (qui couvre les decks et carrousels). Enjeu légal : European Accessibility Act."
 tools: Bash, Read, Glob, Grep
 ---
 

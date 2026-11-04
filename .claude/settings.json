@@ -19,36 +19,72 @@
             "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/brand-check-reminder.py"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/controle-sous-titres.py\"",
+            "timeout": 60
+          }
+        ]
       }
     ]
   },
+  "skillOverrides": {
+    "cockpit-setup": "name-only",
+    "manim-ce": "name-only",
+    "manim-composer": "name-only"
+  },
   "permissions": {
     "allow": [
-      "Bash(python3 scripts/*)",
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git branch:*)",
-      "Bash(ls:*)",
-      "Bash(find . -type f *)",
-      "Bash(grep:*)",
+      "Bash(python3 scripts/lint-brand.py *)",
+      "Bash(python3 scripts/build-inventory.py *)",
+      "Bash(python3 scripts/build-tokens.py *)",
+      "Bash(python3 scripts/lint-placeholders.py *)",
+      "Bash(python3 scripts/dry-run-push.py *)",
       "Bash(rg:*)",
-      "Bash(cat .env.example)",
-      "Bash(cat docs/*)",
-      "Bash(cat CLAUDE.md)",
-      "Bash(cat SECURITY.md)",
-      "Bash(cat README.md)",
-      "Bash(curl -s -H * -o * -w *:*)",
-      "Bash(launchctl list:*)",
-      "WebFetch"
+      "Bash(launchctl list:*)"
+    ],
+    "ask": [
+      "mcp__lemlist__*",
+      "mcp__lm__*",
+      "mcp__magnific__audio_tts",
+      "mcp__magnific__audio_music_generate",
+      "mcp__magnific__images_generate",
+      "mcp__magnific__images_upscale",
+      "mcp__magnific__images_variations",
+      "mcp__magnific__video_generate",
+      "mcp__magnific__video_upscale",
+      "mcp__magnific__video_extend",
+      "mcp__magnific__models3d_*",
+      "mcp__magnific__scene3d_*",
+      "mcp__magnific__stock_download",
+      "mcp__n8n-mcp__n8n_create_workflow",
+      "mcp__magic__21st_magic_component_builder"
     ],
     "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.mcp.json)",
+      "Read(~/.claude.json)",
       "Bash(rm -rf:*)",
+      "Bash(rm -fr *)",
+      "Bash(rm -r -f *)",
       "Bash(git push --force:*)",
+      "Bash(git push -f *)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f *)",
+      "Bash(git push * -f)",
+      "Bash(git * push --force*)",
+      "Bash(git * push * --force*)",
+      "Bash(git * push -f*)",
       "Bash(git reset --hard:*)",
+      "Bash(git * reset --hard*)",
       "Bash(launchctl unload:*)",
+      "Bash(launchctl bootout *)",
+      "Bash(claude mcp get *)",
       "Bash(cat .env)",
       "Bash(cat .env.local)",
       "Bash(cat .setup-completed)"

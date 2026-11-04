@@ -1,0 +1,40 @@
+# Règles des sous-titres incrustés, lues par 08-video/scripts/controle-sous-titres.py (et donc par le
+# hook du module, .claude/hooks/controle-sous-titres.py, qui le lance à chaque écriture de sous-titres).
+#
+# Référence lisible : 08-video/formats.md § « Sous-titres » et skill captions. Les deux concordent :
+# changer une règle, c'est changer ce fichier ET la doctrine, dans le même commit.
+#
+# Sources (relevées le 2026-10-26) : en vertical, une ligne courte, gros, centré dans la zone sûre, le
+# mot dit mis en évidence ; 60 à 75 px en 1080 × 1920 (Blitzcut, OpusClip, Subclip 2026) ;
+# 12 à 15 caractères par seconde pour un sous-titre statique (charte CSA FWB 2019, article 6).
+
+[commun]
+duree_min = 0.25          # s : en dessous, le groupe clignote (erreur)
+duree_max = 4.0           # s : au-delà, le groupe traîne à l'écran (avertissement)
+cps_alerte = 15.0         # caractères par seconde : repère des sous-titres statiques (avertissement avec --statique) ;
+                          # en karaoké calé sur la parole, la vitesse suit le débit de la voix et seul cps_max compte
+cps_max = 28.0            # au-delà, illisible même en karaoké calé sur la parole (erreur)
+fidelite_min = 0.97       # part des mots de la colonne Voix de script.md retrouvés, dans l'ordre (erreur)
+
+# Une section par toile, « largeurxhauteur » comme dans frame.md (brand-frame.py --aspect).
+# Une marque peut durcir ces valeurs (corps plus gros, lignes plus courtes) ; les assouplir sous
+# les repères cités plus haut demande une raison écrite dans la doctrine.
+[toile."1080x1920"]
+car_max = 25              # caractères par segment, espaces compris
+lignes_max = 1
+taille_min_px = 60        # corps du texte des sous-titres dans la composition
+
+[toile."1080x1350"]
+car_max = 32
+lignes_max = 2
+taille_min_px = 54
+
+[toile."1080x1080"]
+car_max = 32
+lignes_max = 2
+taille_min_px = 48
+
+[toile."1920x1080"]
+car_max = 42
+lignes_max = 2
+taille_min_px = 48

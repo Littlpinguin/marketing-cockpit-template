@@ -79,6 +79,7 @@ Agent du module : `video-reviewer`, revue d'un rendu en lecture seule avant livr
 | Script | Ce qu'il fait | Exemple |
 |---|---|---|
 | `qa-video.py` | QA mesurable d'un rendu : durée, format, codec, débit, loudness, noirs, images figées, silences, rythme, fidélité de la narration ; images de plans, planche contact, rapport | `python3 08-video/scripts/qa-video.py <rendu.mp4> --plateforme reels --duree 45 --script <script.md>` |
+| `controle-sous-titres.py` | Forme des sous-titres d'un projet selon `sous-titres.toml` (lignes, caractères, durée, vitesse, chevauchements, coupes, fidélité au script, taille dans la composition) ; sort 1 sur erreur, et le hook du module le lance à chaque écriture | `python3 08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` |
 | `brand-frame.py` | Écrit `frame.md` et `brand.css` d'un projet HyperFrames depuis `01-brand/tokens.json` ; `--check` sort 1 sur une dérive | `python3 08-video/scripts/brand-frame.py 08-video/projets/<slug>/hyperframes --aspect 1080x1920` |
 | `bvh2clip.py` | Convertit un fichier de capture de mouvement BVH en clip 2D pour ink-theater | `python3 08-video/scripts/bvh2clip.py <fichier.bvh> --nom marche --source "CMU 02_01"` |
 | `corpus.py` | Corpus documentaire : `build`, `list`, `index`, `search`, `credits` | `python3 08-video/scripts/corpus.py build 08-video/corpus/themes/<thème>.toml` |
@@ -103,7 +104,8 @@ Agent du module : `video-reviewer`, revue d'un rendu en lecture seule avant livr
 │   ├── brand.css            charte générée par scripts/build-tokens.py
 │   └── ink-theater/         moteur d'encre, clips, police, notices
 ├── scripts/                 qa-video.py, plateformes.toml, brand-frame.py, bvh2clip.py,
-│                            corpus.py, corpus_documentaire/, inspiration.py
+│                            corpus.py, corpus_documentaire/, inspiration.py,
+│                            controle-sous-titres.py, sous-titres.toml
 ├── corpus/
 │   ├── themes/              fichiers de thème (versionnés)
 │   └── <thème>/             clips, fiches, images clés, index (non versionnés)

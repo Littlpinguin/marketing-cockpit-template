@@ -10,6 +10,8 @@
 .mcp.json
 .setup-completed
 .claude/settings.local.json
+# Personal Claude Code memory for this project (never shared)
+CLAUDE.local.md
 .claude/projects/
 .DS_Store
 Thumbs.db

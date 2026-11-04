@@ -1,6 +1,6 @@
 ---
 name: copy-editing
-description: Relecture et validation de tout contenu {{COMPANY_NAME}} avant publication. 7 passes de relecture systématiques adaptées à la doctrine de voix.
+description: "Relecture et validation de tout contenu {{COMPANY_NAME}} avant publication, en 7 passes systématiques adaptées à la doctrine de voix. À utiliser pour relire, corriger ou valider un texte avant sa diffusion."
 ---
 
 # copy-editing — relecture en 7 passes {{COMPANY_NAME}}

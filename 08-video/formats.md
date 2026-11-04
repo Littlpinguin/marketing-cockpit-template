@@ -73,8 +73,12 @@ Valeurs pratiques en 1080 × 1920 :
 
 Détail du workflow dans la skill `captions`. L'essentiel :
 
-- **Segments courts** : 1–2 lignes, ≤ 42 caractères par ligne, 1–3 s d'affichage par segment.
+- **Segments courts** : en 9:16, **une ligne de 25 caractères au plus**, coupée aux frontières de sens ; ailleurs 2 lignes de 32 caractères au plus en 4:5 et 1:1, de 42 en 16:9 ; 1 à 3 s d'affichage par segment.
+- **Taille** : en 9:16, **60 px au moins** dans la composition (corps de 70 à 80 px en graisse forte conseillé ; 60 à 75 px relevés en 2026 chez Blitzcut, OpusClip, Subclip) ; 54 px en 4:5, 48 px en 1:1 et 16:9.
+- **Dynamique** : karaoké calé sur la parole, mot dit en `{{BRAND_COLOR_ACCENT}}`, entrée courte du groupe ; seuls les mots forts marquent un rebond (animer peu, pour que l'emphase garde son sens).
+- **Vitesse** : 15 caractères par seconde au plus pour un sous-titre statique (charte CSA FWB 2019, article 6) ; en karaoké, la vitesse suit le débit de la voix, 28 au plus.
 - **Position** : centrés, au-dessus de la zone basse de sécurité (jamais dans les 420 px du bas en 9:16).
+- **Contrôle automatique** : ces règles vivent dans `08-video/scripts/sous-titres.toml`, appliquées par `python3 08-video/scripts/controle-sous-titres.py 08-video/projets/<slug>` (forme, coupes de `montage/coupe.json`, fidélité à la colonne Voix de `script.md`, taille du texte dans la composition). Le hook du module (`.claude/settings.json`, `.claude/hooks/controle-sous-titres.py`) le lance à chaque écriture d'un `.srt` de `sous-titres/` ou d'une composition, et bloque sur erreur. Changer une règle, c'est changer le `.toml` et ce paragraphe dans le même commit ; un test (`scripts/tests/test_video_sous_titres.py`) vérifie qu'ils concordent.
 - **Style** : police `{{BRAND_FONT_PRIMARY}}`, couleurs de la marque (`{{BRAND_COLOR_LIGHT}}` sur fond/liseré `{{BRAND_COLOR_DARK}}`), contraste suffisant sur tout arrière-plan.
 - **Livraison** : burned-in pour toutes les plateformes ; `.srt` en plus pour YouTube.
 

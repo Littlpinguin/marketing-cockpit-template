@@ -1,6 +1,6 @@
 ---
 name: tools-setup
-description: Configure les outils réellement utilisés par l'entreprise (calendrier éditorial, emailing, CRM, événements, base de connaissances, analytics, publication sociale, FTP espace client, génération d'images). Câble les connecteurs, met à jour .env.example, régénère les CLAUDE.md de rôle et le tableau d'état du README. Applique le gate de confidentialité avant tout connecteur touchant des données clients.
+description: "Configure les outils de l'entreprise (calendrier, emailing, CRM, événements, analytics, publication sociale, FTP espace client, images) : connecteurs, .env.example, CLAUDE.md de rôle, état du README, gate de confidentialité. À lancer pour brancher ou changer un outil."
 ---
 
 # /tools-setup — choisir et câbler les outils par catégorie
@@ -49,11 +49,11 @@ Lire aussi `.setup-completed` s'il existe (scénario de re-run) : préserver les
 
 Rappel sécurité à afficher :
 
-> Pour chaque outil, je vous demanderai les noms des variables d'environnement et confirmation qu'elles sont renseignées dans `.env`. Je ne lirai jamais la valeur des clés. Si un outil n'a pas encore de connecteur intégré, je vous le dirai et je génèrerai un stub TODO — il faudra l'implémenter avant la première synchro ou le premier push.
+> Pour chaque outil, je vous demanderai les noms des variables d'environnement et confirmation qu'elles sont renseignées dans `.env`. Je ne lirai jamais la valeur des clés. Pour un serveur MCP, je vous afficherai la commande à lancer dans votre propre terminal, avec des valeurs fictives : c'est vous qui la lancez, jamais moi. Si un outil n'a pas encore de connecteur intégré, je vous le dirai et je génèrerai un stub TODO — il faudra l'implémenter avant la première synchro ou le premier push.
 
 **Règle de destination des tokens (à appliquer partout dans ce wizard)** — un token va SOIT :
 - dans **`.env`** (local, gitignoré) quand le consommateur est un **script ou connecteur Python** qui le charge via dotenv — ex. MailerLite, Brevo, GA4/GSC, Apify, Postiz, FTP ;
-- dans le **`.mcp.json` local non versionné** (gitignoré ; `cp .mcp.json.example .mcp.json` s'il n'existe pas) quand le consommateur est un **serveur MCP** — ex. n8n-mcp, Google Ads, Lemlist en mode clé API. OAuth d'abord quand le serveur le propose (Lemlist, Magnific) : aucun token à stocker.
+- dans la **portée locale de Claude Code** quand le consommateur est un **serveur MCP** — ex. n8n-mcp, Google Ads, Lemlist en mode clé API. OAuth d'abord quand le serveur le propose (Lemlist, Magnific) : aucun token à stocker. Sinon, afficher la commande `claude mcp add --scope local …` du guide de l'outil (`10-automatisations/mcp-setup.md`, `12-acquisition/google-ads/setup.md`, `12-acquisition/setup-lemlist.md`) telle quelle, valeurs fictives comprises : l'utilisateur la lance dans son propre terminal, depuis la racine du repo, et le jeton est lu par `read -rs`. Claude ne la lance pas, ne remplace pas les valeurs fictives, ne demande pas le jeton, puis vérifie la connexion par `claude mcp list`. Voie de repli si l'utilisateur préfère un fichier : le `.mcp.json` local non versionné (gitignoré ; `cp .mcp.json.example .mcp.json` s'il n'existe pas), qu'il remplit lui-même.
 
 Jamais dans un fichier tracké. Et ne jamais écrire de références `${VAR}` dans `.mcp.json` en supposant qu'elles seront lues depuis le `.env` du projet : Claude Code ne développe les `${VAR}` de `.mcp.json` que depuis l'environnement du processus (résultat : 401). Détails et hiérarchie complète : `SECURITY.md`.
 
@@ -186,8 +186,9 @@ L'écriture réelle du fichier se fait dans `/validate-setup`.
 ## Modes d'échec à éviter
 
 - **Ne jamais écrire dans `.env`.** Seulement `.env.example`. L'utilisateur remplit `.env` lui-même.
-- **Ne jamais écrire un token dans un fichier tracké.** Les tokens des serveurs MCP vont dans le `.mcp.json` local (gitignoré), ceux des scripts dans `.env`. Ne jamais committer ni détracker à l'envers : `git ls-files .mcp.json` doit rester vide.
-- **Ne jamais utiliser `${VAR}` dans `.mcp.json`** en croyant lire le `.env` du projet — Claude Code ne fait pas cette interpolation (connexion 401). Valeurs réelles dans le fichier local, ou OAuth quand disponible.
+- **Ne jamais écrire un token dans un fichier tracké.** Les tokens des serveurs MCP vont dans la portée locale (`claude mcp add --scope local`), à défaut dans le `.mcp.json` local (gitignoré), ceux des scripts dans `.env`. Ne jamais committer ni détracker à l'envers : `git ls-files .mcp.json` doit rester vide.
+- **Ne jamais lancer soi-même un `claude mcp add` qui porte un jeton**, ni demander ce jeton dans le chat : la commande est affichée, l'utilisateur la lance. Ne jamais lire `~/.claude.json` (qui contient les jetons) ni lancer `claude mcp get` (qui les affiche).
+- **Ne jamais utiliser `${VAR}` dans `.mcp.json`** en croyant lire le `.env` du projet — Claude Code ne fait pas cette interpolation (connexion 401). Portée locale, valeurs réelles dans le fichier local en repli, ou OAuth quand disponible.
 - **Ne jamais sauter le gate de confidentialité** pour un connecteur touchant des données clients, même en re-run.
 - **Ne pas écraser un `CLAUDE.md` de rôle sans sauvegarde** dans `.setup-archive/`.
 - **Ne pas laisser l'utilisateur choisir un outil « ready » sans confirmer qu'il a les credentials** : sinon avertir que l'outil est configuré mais inutilisable tant que `.env` n'est pas rempli.

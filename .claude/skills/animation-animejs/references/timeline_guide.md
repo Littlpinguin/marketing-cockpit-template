@@ -2,6 +2,22 @@
 
 Complete guide to creating complex animation sequences with Anime.js timelines.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Creating a Timeline](#creating-a-timeline)
+- [Adding Animations](#adding-animations)
+- [Timeline Offsets](#timeline-offsets)
+- [Common Patterns](#common-patterns)
+- [Timeline Controls](#timeline-controls)
+- [Advanced Techniques](#advanced-techniques)
+- [Timeline vs Individual Animations](#timeline-vs-individual-animations)
+- [Performance Optimization](#performance-optimization)
+- [Common Mistakes](#common-mistakes)
+- [Real-World Examples](#real-world-examples)
+- [Debugging Timelines](#debugging-timelines)
+- [Resources](#resources)
+
 ## Overview
 
 Timelines allow you to chain multiple animations with precise control over timing and sequencing. They provide a declarative way to choreograph complex multi-step animations.

@@ -1,6 +1,6 @@
 ---
 name: email
-description: Rédaction et gestion des emails de {{COMPANY_NAME}} — newsletters, emails promotionnels, sales outreach, lead nurturing. S'intègre à l'outil d'email marketing configuré ({{EMAIL_MARKETING_TOOL}}).
+description: "Rédaction et gestion des emails de {{COMPANY_NAME}} (newsletters, promotionnels, sales outreach, lead nurturing) dans l'outil configuré ({{EMAIL_MARKETING_TOOL}}). À utiliser pour écrire un email ou une séquence."
 ---
 
 # email — email marketing {{COMPANY_NAME}}

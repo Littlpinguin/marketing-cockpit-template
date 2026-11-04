@@ -1,6 +1,6 @@
 ---
 name: blog-engine
-description: Moteur de production d'articles de blog pour {{COMPANY_NAME}} — workflow bout-en-bout (recherche → plan → rédaction → validation SEO → scoring qualité ≥ 90/100 → livraison), fact-checking avec fetch des sources citées, double optimisation Google (E-E-A-T) + citations IA (GEO/AEO), multilingue avec hreflang. Utiliser pour écrire, réécrire ou noter un article de blog. La stratégie et l'audit SEO restent dans la skill seo ; blog-engine = la production d'un article au standard publiable.
+description: "Production d'un article de blog publiable pour {{COMPANY_NAME}} : recherche, plan, rédaction, fact-checking, scoring qualité, E-E-A-T et GEO/AEO, multilingue. À utiliser pour écrire, réécrire ou noter un article. Stratégie et audit SEO : skill seo."
 ---
 
 # blog-engine — production d'articles {{COMPANY_NAME}}
@@ -13,9 +13,9 @@ Tu produis des articles de blog au standard publiable, doublement optimisés : c
 
 | Besoin | Qui s'en charge |
 |---|---|
-| Stratégie de contenu, clusters, briefs, audits SEO du site, priorisation GSC | Skill `seo` (+ plugin claude-seo pour l'analyse) |
+| Stratégie de contenu, clusters, briefs, audits SEO du site, priorisation GSC | Skill `seo`, qui délègue l'analyse à `seo-audit`, `seo-cluster` et aux agents SEO du template |
 | **Production d'un article** : recherche, rédaction, scoring, fact-check | **Cette skill** |
-| Schema markup avancé, GEO/citabilité en audit | Plugin claude-seo (`seo-schema`, `seo-geo`) |
+| Schema markup avancé, GEO/citabilité en audit | Skills `seo-schema` et `seo-geo` du template |
 | Repurposing social de l'article | Skill `social-content` |
 
 Workflow type : la skill `seo` fournit le brief (mot-clé, intention, angle, gaps concurrentiels) → `blog-engine` produit l'article dans `09-seo/` → le brand-check valide avant push.

@@ -1,6 +1,6 @@
 ---
 name: cro-popup
-description: Créer ou optimiser un popup, une modale, un slide-in ou une bannière de conversion pour {{COMPANY_NAME}} — capture email, lead magnet, exit intent, annonce. Convertir sans agacer ni abîmer la marque : déclencheurs, ciblage, fréquence, copy, accessibilité, conformité RGPD/Google. Utiliser quand l'utilisateur dit « popup », « exit intent », « modale », « bannière d'annonce », « capturer des emails avec un popup » ou « sticky bar ». Orchestrée par la skill landing-page (uniquement sur demande explicite).
+description: "Crée ou optimise un popup, une modale, un slide-in ou une bannière de conversion pour {{COMPANY_NAME}} : déclencheurs, ciblage, copy, RGPD. À utiliser sur « popup », « exit intent », « modale », « sticky bar », « bannière d'annonce », « capturer des emails »."
 ---
 
 # cro-popup — popups et modales de conversion

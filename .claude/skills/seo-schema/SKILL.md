@@ -1,6 +1,6 @@
 ---
 name: seo-schema
-description: Détecter, valider et générer des données structurées Schema.org (JSON-LD) pour {{COMPANY_NAME}} — Organization, Article, FAQ (si éligible), Event, Person, etc. Connaît les types actifs, restreints et dépréciés par Google. Utiliser quand l'utilisateur dit « schema », « données structurées », « rich results », « JSON-LD », « balisage » ou après publication d'un article/d'une page.
+description: "Détecte, valide et génère les données structurées Schema.org (JSON-LD) de {{COMPANY_NAME}} selon les types actifs chez Google. À utiliser sur « schema », « données structurées », « rich results », « JSON-LD », « balisage », ou après publication d'une page."
 ---
 
 # seo-schema — données structurées

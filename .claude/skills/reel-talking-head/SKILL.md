@@ -1,6 +1,6 @@
 ---
 name: reel-talking-head
-description: Chef d'orchestre de la filière face caméra pour {{COMPANY_NAME}}. Transforme une vidéo brute face caméra (client, dirigeant, expert ; visio, smartphone, WhatsApp) en reel vertical monté. Analyse, script de montage, storyboard, assets IA, montage, QA (qa-video.py, agent video-reviewer), avec deux points d'arrêt de validation obligatoires avant toute dépense. Appelée par video-production, dont elle suit le dossier de projet. S'appuie sur video-generation, video-matting, video-editing et captions.
+description: "Filière face caméra de {{COMPANY_NAME}} : transforme une vidéo brute (client, dirigeant, visio, smartphone) en reel vertical monté, avec script, storyboard, montage, QA et deux validations avant dépense. Appelée par video-production ; s'appuie sur video-editing et captions."
 ---
 
 # reel-talking-head : d'une vidéo brute à un reel monté

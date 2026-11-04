@@ -105,34 +105,26 @@ N8N_API_URL="https://n8n.{{VOTRE_DOMAINE}}/api/v1"
 N8N_API_KEY="{{VOTRE_CLE_API_N8N}}"
 ```
 
-Le serveur MCP, lui, ne lit **pas** le `.env` : ses valeurs vont dans le `.mcp.json` local (étape 6).
+Le serveur MCP, lui, ne lit **pas** le `.env` : ses valeurs se déclarent à part, en portée locale de Claude Code (étape 6).
 
 ## 6. Configurer le MCP n8n côté Claude Code
 
 Le serveur [n8n-mcp](https://github.com/czlonkowski/n8n-mcp) donne à Claude Code un accès outillé à votre instance : documentation des nodes, validation de configuration, CRUD des workflows, lecture des exécutions.
 
-Créez (ou complétez) le `.mcp.json` **local** à la racine du repo — `cp .mcp.json.example .mcp.json` au premier setup. Bloc de référence et explications détaillées dans `mcp-setup.md` :
+Déclarez le serveur en **portée locale** : lancez ce bloc vous-même, dans votre propre terminal (pas dans Claude Code), depuis la racine du repo, après avoir remplacé `VOTRE_INSTANCE_N8N`. La clé est lue sans écho et n'entre ni dans le chat ni dans l'historique du shell ; la configuration va dans `~/.claude.json`, hors du dépôt. Explications détaillées et version épinglée dans `mcp-setup.md` :
 
-```json
-{
-  "mcpServers": {
-    "n8n-mcp": {
-      "command": "npx",
-      "args": ["n8n-mcp"],
-      "env": {
-        "MCP_MODE": "stdio",
-        "LOG_LEVEL": "error",
-        "DISABLE_CONSOLE_OUTPUT": "true",
-        "N8N_API_URL": "https://VOTRE_INSTANCE_N8N/api/v1",
-        "N8N_API_KEY": "VOTRE_CLE_API_N8N",
-        "WEBHOOK_SECURITY_MODE": "moderate"
-      }
-    }
-  }
-}
+```bash
+printf 'Clé API n8n (saisie masquée) : '; read -rs N8N_API_KEY; echo
+claude mcp add --scope local --transport stdio n8n-mcp \
+  -e MCP_MODE=stdio -e LOG_LEVEL=error -e DISABLE_CONSOLE_OUTPUT=true \
+  -e WEBHOOK_SECURITY_MODE=moderate \
+  -e N8N_API_URL=https://VOTRE_INSTANCE_N8N/api/v1 \
+  -e "N8N_API_KEY=$N8N_API_KEY" \
+  -- npx n8n-mcp@2.94.3
+unset N8N_API_KEY
 ```
 
-- Mettez vos **valeurs réelles** (URL, clé API) : le `.mcp.json` est **gitignoré et jamais commité** — seul `.mcp.json.example` (placeholders) est versionné. N'utilisez pas de références `${VAR}` : Claude Code ne les développe pas depuis le `.env` du projet (connexion cassée, 401) — détails et alternatives dans `mcp-setup.md` et `SECURITY.md`.
+- Voie de repli, un fichier dans le projet : `cp .mcp.json.example .mcp.json`, puis vos **valeurs réelles** (URL, clé API) dans ce `.mcp.json` **gitignoré et jamais commité** — seul `.mcp.json.example` (placeholders) est versionné. N'utilisez pas de références `${VAR}` : Claude Code ne les développe pas depuis le `.env` du projet (connexion cassée, 401) — détails et alternatives dans `mcp-setup.md` et `SECURITY.md`.
 - Redémarrez Claude Code, puis vérifiez avec `/mcp` que `n8n-mcp` est connecté.
 - Usage recommandé : demander à Claude de **valider** un workflow (`validate_node` puis `validate_workflow`) avant toute activation — voir `conventions.md`.
 
@@ -152,6 +144,6 @@ Créez (ou complétez) le `.mcp.json` **local** à la racine du repo — `cp .mc
 - [ ] Compte propriétaire + 2FA activés
 - [ ] Error workflow importé, activé, testé (provoquez une erreur volontaire)
 - [ ] `N8N_API_URL` / `N8N_API_KEY` dans `.env` (pour les scripts), `.env` bien dans `.gitignore`
-- [ ] `.mcp.json` local renseigné avec les valeurs réelles et bien ignoré par git (`git check-ignore .mcp.json`)
+- [ ] `n8n-mcp` déclaré en portée locale (`claude mcp list` le montre) ; en repli, `.mcp.json` local renseigné et bien ignoré par git (`git check-ignore .mcp.json`)
 - [ ] `n8n-mcp` visible dans `/mcp` de Claude Code
 - [ ] Backup quotidien planifié et testé

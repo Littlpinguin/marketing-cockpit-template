@@ -1,6 +1,6 @@
 ---
 name: start-cockpit
-description: Entry point of the Marketing Cockpit wizard. Run once after cloning the template. Walks the user from a fresh repo to a fully configured, company-specific cockpit in 30-60 minutes.
+description: "Entry point of the Marketing Cockpit wizard. Run once after cloning the template. Walks the user from a fresh repo to a fully configured, company-specific cockpit in 30-60 minutes."
 ---
 
 # /start-cockpit — wizard entry point

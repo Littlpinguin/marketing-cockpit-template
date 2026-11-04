@@ -1,6 +1,6 @@
 ---
 name: event-marketing
-description: Plans de communication et production de contenu pour les événements {{COMPANY_NAME}} — webinaires, livestreams, rencontres, conférences. Couvre {{EVENTS_PLATFORM_TOOL}}, les événements LinkedIn et la coordination cross-canal.
+description: "Plans de communication et contenus des événements {{COMPANY_NAME}} (webinaires, livestreams, rencontres, conférences) sur {{EVENTS_PLATFORM_TOOL}}, les événements LinkedIn et en cross-canal. À utiliser pour préparer ou promouvoir un événement."
 ---
 
 # event-marketing — communication événementielle {{COMPANY_NAME}}

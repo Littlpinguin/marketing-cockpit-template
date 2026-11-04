@@ -1,6 +1,6 @@
 ---
 name: video-editing
-description: Montage de rushes pour {{COMPANY_NAME}} (face caméra, interview, capture d'écran, clips générés), du script minuté à l'export par plateforme. Deux voies, un projet HyperFrames (hyperframes:talking-head-recut pour habiller un face caméra, hyperframes:general-video pour un montage libre) ou un plan de montage ffmpeg (découpe, coupe des silences, recadrage 9:16 suivi, concaténation, export normalisé à -14 LUFS). Habillage aux variables de brand.css, doctrine de 08-video/montage.md et 08-video/formats.md, QA par qa-video.py. Appelée par video-production, reel-talking-head et video-repurpose. Ne fait ni le sous-titrage (skill captions) ni la génération de rushes (skill video-generation).
+description: "Montage de rushes pour {{COMPANY_NAME}} (face caméra, interview, capture d'écran, clips générés) jusqu'à l'export par plateforme, via HyperFrames ou ffmpeg (silences, 9:16, -14 LUFS), QA qa-video.py. Appelée par video-production, reel-talking-head et video-repurpose."
 ---
 
 # video-editing : monter des rushes pour {{COMPANY_NAME}}
