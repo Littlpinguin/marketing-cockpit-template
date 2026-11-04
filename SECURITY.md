@@ -32,7 +32,10 @@ De la meilleure à la déconseillée :
 Claude Code s'exécute avec les permissions que vous lui accordez. Cadrez-les au plus étroit.
 
 - **Ne jamais autoriser** de larges `Bash(rm:*)`, `Bash(git push --force:*)`, `Bash(launchctl:*)` au niveau des réglages utilisateur.
-- Les permissions **par projet** dans `.claude/settings.json` doivent énumérer des commandes précises, pas des globs.
+- Les permissions **par projet** dans `.claude/settings.json` doivent énumérer des commandes précises, pas des globs. Un joker après un programme qui exécute, supprime ou envoie (`python3`, `find`, `curl`) autorise aussi ses options les plus dangereuses : les scripts autorisés sans demande sont donc nommés un par un.
+- **`.env`, `.env.local` et `.mcp.json` sont interdits en lecture à Claude** (règles `deny` `Read(...)` de `.claude/settings.json`). Claude vérifie leur présence et leur suivi par git, jamais leur contenu.
+- **Aucun `WebFetch` pré-approuvé.** Chaque nouveau domaine demande votre accord, que vous pouvez donner une fois pour ce domaine. C'est le verrou contre une page, un avis ou une transcription piégés qui demanderaient à Claude d'envoyer des données vers une adresse extérieure.
+- **Sandbox recommandé dès que des contenus tiers entrent dans le dépôt** (transcriptions dans `00-intel/`, scraping, CRM branché) : lancez `/sandbox`. Une règle `deny` ne couvre pas un script qui ouvre lui-même un fichier ; le sandbox isole les commandes au niveau du système, même si une consigne cachée détourne Claude.
 - Refuser toute demande d'une skill d'exécuter une commande destructive sans confirmation explicite de l'utilisateur dans le même message.
 
 Voir `.claude/settings.json` pour le périmètre actuel.
