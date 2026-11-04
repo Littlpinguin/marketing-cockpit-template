@@ -1,6 +1,6 @@
 ---
 name: n8n-builder
-description: Construction d'un workflow n8n de bout en bout pour {{COMPANY_NAME}} selon la méthode 5 phases du module 10-automatisations — conseil appuyé sur les bibliothèques de templates, design + plan écrit, validation humaine, construction via MCP n8n avec validation multi-niveaux, checklist qualité, test, REX. À invoquer pour toute demande de nouveau workflow ou d'évolution significative d'un workflow existant (« automatise X », « crée un workflow qui... »). Prérequis : module automatisations actif + MCP n8n-mcp connecté.
+description: "Construit un workflow n8n de bout en bout pour {{COMPANY_NAME}} selon la méthode 5 phases de 10-automatisations, de la conception au test via MCP n8n, avec validation humaine du plan. À utiliser sur « automatise X », « crée un workflow qui... ». Prérequis : MCP n8n-mcp."
 ---
 
 # n8n-builder — construire un workflow n8n dans les règles

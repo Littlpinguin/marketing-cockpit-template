@@ -1,6 +1,6 @@
 ---
 name: design-direction
-description: Direction artistique distinctive pour les livrables web de {{COMPANY_NAME}} — choix esthétiques délibérés (typographie, palette, layout, signature visuelle) qui ne ressemblent pas à un template ni à du « design généré par IA ». Utiliser au moment de concevoir l'apparence d'une nouvelle page (landing, page événement, page campagne), quand un livrable « fait template » ou « fait IA », ou en amont de design-system pour poser une intention. Vendorisée depuis frontend-design d'Anthropic (Apache-2.0) — voir docs/vendored-design.md.
+description: "Direction artistique distinctive des livrables web de {{COMPANY_NAME}} (typographie, palette, layout, signature visuelle), loin du « design IA ». À utiliser pour concevoir l'apparence d'une nouvelle page ou quand un livrable « fait template », en amont de design-system."
 ---
 
 # design-direction — une identité visuelle qu'on ne peut confondre avec aucune autre

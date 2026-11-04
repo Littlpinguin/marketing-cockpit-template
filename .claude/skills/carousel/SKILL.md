@@ -1,6 +1,6 @@
 ---
 name: carousel
-description: Génère un carrousel LinkedIn pour {{COMPANY_NAME}} — PDF document multipage 1080×1350 portrait, qualité graphiste expert, brand-strict. Codifie l'échelle typographique, l'échelle d'espacement, le pipeline d'export Playwright avec rastérisation des gradients, et tous les anti-patterns appris en production. À utiliser dès que l'utilisateur demande « carrousel LinkedIn », « slides LinkedIn », « post carrousel » ou similaire. Ne pas confondre les formats — carrousel LinkedIn multipage (cette skill) ≠ présentation projetée 1920×1080 (→ `slides`) ≠ visuel image unique (→ `image-generation`).
+description: "Carrousel LinkedIn de {{COMPANY_NAME}} en PDF multipage 1080×1350, brand-strict, export Playwright. À utiliser pour « carrousel LinkedIn », « slides LinkedIn », « post carrousel ». Une présentation projetée relève de slides, un visuel unique d'image-generation."
 ---
 
 # carousel — carrousels LinkedIn brand-strict {{COMPANY_NAME}}

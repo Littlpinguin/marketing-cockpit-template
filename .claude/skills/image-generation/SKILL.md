@@ -1,6 +1,6 @@
 ---
 name: image-generation
-description: Génération de visuels brand-compliant pour {{COMPANY_NAME}} — via Gemini direct (nano-banana, défaut) ou le MCP Magnific si connecté (Nano Banana 2.1, Seedream, upscaling). Étape obligatoire avant toute génération - consulter 01-brand/assets/index.md et proposer la réutilisation d'assets existants. Chaque prompt est automatiquement préfixé par les contraintes du style-guide (palette, typo, style d'illustration, interdits visuels). Règle d'or - générer la matière, composer le visuel final en HTML.
+description: "Visuels brand-compliant de {{COMPANY_NAME}} via Gemini (nano-banana) ou le MCP Magnific (Seedream, upscaling), prompts préfixés par le style-guide, assets existants d'abord. À utiliser pour générer une image, une illustration ou la matière d'un visuel HTML."
 ---
 
 # image-generation — visuels brand-compliant {{COMPANY_NAME}}

@@ -1,13 +1,6 @@
 ---
 name: manim-composer
-description: |
-  Trigger when: (1) User wants to create an educational/explainer video, (2) User has a vague concept they want visualized, (3) User mentions "3b1b style" or "explain like 3Blue1Brown", (4) User wants to plan a Manim video or animation sequence, (5) User asks to "compose" or "plan" a math/science visualization.
-
-  Transforms vague video ideas into detailed scene-by-scene plans (scenes.md). Conducts research, asks clarifying questions about audience/scope/focus, and outputs comprehensive scene specifications ready for implementation with ManimCE or ManimGL.
-
-  Use this BEFORE writing any Manim code. This skill plans the video; use manimce-best-practices or manimgl-best-practices for implementation.
-
-  Module vidéo du cockpit : l'entrée est la skill video-production.
+description: "Plans a Manim explainer video scene by scene (scenes.md) after research and questions on audience and scope. Use before any Manim code, for an educational video, a 3b1b-style explanation or a math visualization plan. Entrée du module vidéo : video-production."
 ---
 
 > **Dans ce template.** Skill vendorisée (licence MIT) depuis [adithya-s-k/manim_skill](https://github.com/adithya-s-k/manim_skill), commit `cef0450`, pour le module `video`. Toute vidéo commence par la skill `video-production`, qui choisit cette filière pour une démonstration conceptuelle ou chiffrée. `manim-composer` planifie la scène (fichier `scenes.md` dans `08-video/projets/<slug>/`), `manim-ce` écrit le code ; le rendu MP4 entre ensuite comme plan vidéo dans une composition HyperFrames (skill `motion-design`). `manim -qh` rend en 1920 × 1080, paysage ; pour une toile verticale, carrée ou 4:5, fixer la résolution avec `-r` (largeur puis hauteur, `manim-ce`, `rules/cli.md`) : `manim -qh -r 1080,1920`, `-r 1080,1080` ou `-r 1080,1350`, et composer la scène pour ce cadre. Couleurs et polices : lire `01-brand/tokens.json` et les poser en constantes en tête de scène, jamais de valeur recopiée de mémoire. Manim CE s'installe à part (`pip install manim`) ; `/modules` le détecte. Dans la description ci-dessus, `manimce-best-practices` (nom d'origine) se lit `manim-ce` ici, et `manimgl-best-practices` n'est pas vendorisée.

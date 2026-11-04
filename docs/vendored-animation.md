@@ -30,6 +30,8 @@ Adaptations effectuées :
 
 - `name:` du frontmatter renommé (`animation-gsap`, `animation-animejs`, `animation-lottie`, `animation-scroll-reveal`) pour suivre la convention de nommage par famille du template.
 - Footer d'attribution ajouté en fin de chaque `SKILL.md`.
+- `description:` réécrite en 300 caractères au plus et mise entre guillemets (audit d'architecture, 2026-11-04), pour tenir dans le budget de la liste des skills.
+- Corps des `SKILL.md` ramené sous 500 lignes (même audit) : les sections Common Patterns, Integration Patterns et, pour GSAP, Advanced Techniques sont déplacées telles quelles dans `references/common_patterns.md` (GSAP : `references/scrolltrigger_recipes.md`) et `references/integration_patterns.md`. Leur titre reste dans le `SKILL.md`, suivi d'un renvoi ; une section « Fichiers de référence » suit l'aperçu ; une table des matières est ajoutée en tête des références amont qui n'en avaient pas.
 
 ## Cas d'usage dans le template
 
@@ -42,5 +44,5 @@ Ces skills servent aux livrables web (`05-web-content/`) : landing pages, lead m
 ## Procédure de re-synchronisation
 
 1. `claude plugin marketplace add freshtechbro/claudedesignskills` puis `claude plugin install <plugin>@claude-design-skillstack`.
-2. Comparer `~/.claude/plugins/cache/claude-design-skillstack/<plugin>/<version>/skills/<skill>/` avec la copie locale (`diff -ru`, en ignorant frontmatter `name:` et footer).
+2. Comparer `~/.claude/plugins/cache/claude-design-skillstack/<plugin>/<version>/skills/<skill>/` avec la copie locale (`diff -ru`, en ignorant `name:` et `description:` du frontmatter, le footer, la section « Fichiers de référence », les renvois et les tables des matières ajoutées). Une section déplacée se compare au fichier de `references/` qui la contient.
 3. Reporter les changements utiles, conserver renommage + footer, mettre à jour la version dans ce registre.

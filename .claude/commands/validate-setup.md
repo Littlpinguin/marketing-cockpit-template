@@ -1,6 +1,6 @@
 ---
 name: validate-setup
-description: Final gate of the wizard. Runs the placeholder linter, generates a sample post + newsletter paragraph + article headline, passes them through brand-check, and asks the user "does this sound like you?" On approval, writes .setup-completed and archives _bootstrap/.
+description: "Final gate of the wizard: runs the placeholder linter, generates a sample post, newsletter paragraph and headline, passes them through brand-check and asks \"does this sound like you?\". On approval, writes .setup-completed and archives _bootstrap/."
 ---
 
 # /validate-setup — lockdown the setup

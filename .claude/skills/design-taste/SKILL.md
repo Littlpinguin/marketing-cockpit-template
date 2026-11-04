@@ -1,6 +1,6 @@
 ---
 name: design-taste
-description: Protocole d'exécution anti-slop pour tout livrable web de {{COMPANY_NAME}} — landing pages, pages statiques, portfolios, sections marketing. Trois curseurs paramétriques (DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY), inférence du langage design depuis le brief, squelettes GSAP canoniques, bans typographiques et pre-flight check strict. Utiliser en complément de design-system (tokens) et landing-page (structure) chaque fois qu'un rendu web risque de ressembler à du template IA générique. Vendorisée depuis taste-skill v2 (MIT, Leonxlnx) — voir docs/vendored-design2.md.
+description: "Protocole anti-slop des livrables web de {{COMPANY_NAME}} : curseurs DESIGN_VARIANCE, MOTION_INTENSITY et VISUAL_DENSITY, squelettes GSAP, bans typographiques, pre-flight check. À utiliser avec design-system et landing-page dès qu'un rendu risque de faire template IA."
 ---
 
 # design-taste — protocole d'exécution anti-slop

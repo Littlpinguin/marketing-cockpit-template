@@ -1,6 +1,6 @@
 ---
 name: video-reviewer
-description: Revue d'un rendu vidéo de {{COMPANY_NAME}}, en lecture seule, avant livraison. Lance qa-video.py (mesures, planche contact), regarde la planche et les images de plans, puis confronte le rendu au brief, à la marque, aux zones de sécurité, à la promesse de mouvement, aux sous-titres, à la divulgation IA et aux droits. Rend des constats P1, P2 et P3 avec l'instant concerné et la correction proposée. Ne modifie rien. Dispatché par video-production, video-repurpose et video-documentary.
+description: "Revue d'un rendu vidéo de {{COMPANY_NAME}} avant livraison, en lecture seule par consigne : n'écrit que dans le dossier qa/ du rendu, par qa-video.py et les images extraites avec ffmpeg, et Bash n'empêche pas techniquement une autre écriture. Lance qa-video.py (mesures, planche contact) et brand-frame.py --check, regarde la planche et les images de plans, puis confronte le rendu au brief, à la marque, aux zones de sécurité, à la promesse de mouvement, aux sous-titres, à la divulgation IA et aux droits. Rend des constats P1, P2 et P3 avec l'instant concerné et la correction proposée. Ne touche ni à la composition, ni à frame.md, ni aux exports. Dispatché par video-production, video-repurpose et video-documentary."
 tools: Bash, Read, Glob, Grep
 ---
 

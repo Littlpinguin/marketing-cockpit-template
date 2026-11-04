@@ -43,7 +43,7 @@ Pourquoi ce choix plutôt qu'un outil SaaS de reporting :
 
 1. **Collecte** — début de mois, les données du mois écoulé sont agrégées (GA4, Search Console, Postiz, {{EMAIL_MARKETING_TOOL}}) dans un snapshot `02-strategy/performance/YYYY-MM/data.json`. Manuellement, ou automatiquement via n8n (voir `automation.md`).
 2. **Analyse** — la skill `performance-report` lit le snapshot, le compare aux mois précédents, et rédige l'« Analyse du mois » + recommandations (champ `analyse_md` du JSON). Validation humaine obligatoire avant publication.
-3. **Publication** — le snapshot validé est copié dans `dashboard/data/YYYY-MM.json`, le mois est ajouté à `dashboard/data/index.json`, et l'ensemble est poussé par FTP dans l'espace client (voir `deploy/README.md`).
+3. **Publication** — le snapshot validé est copié dans `dashboard/data/YYYY-MM.json`, le mois est ajouté à `dashboard/data/index.json`, et l'ensemble est poussé par FTP dans l'espace client avec `/deploy-reporting`, après confirmation (voir `deploy/README.md`).
 4. **Notification** — le client reçoit un email court : « Votre reporting {{MOIS}} est en ligne » avec le lien et rien d'autre (le contenu vit dans le dashboard, pas dans l'email).
 
 ## L'« espace client »
@@ -81,6 +81,7 @@ Le code d'accès est une **protection légère** : il éloigne les curieux et le
 ## Skills et modules liés
 
 - `performance-report` (`.claude/skills/performance-report/`) — collecte, comparaison, rédaction de l'analyse mensuelle.
+- `deploy-reporting` (`.claude/skills/deploy-reporting/`) — mise en ligne du dashboard par FTP, lancée à la main.
 - `10-automatisations/` — les workflows n8n, dont le cron mensuel de reporting (voir `automation.md`).
 - `06-graphic-design/presentations/` — les decks partagés dans le même espace client.
 - `02-strategy/` — les snapshots source (`performance/YYYY-MM/`) et la lecture stratégique des KPIs.

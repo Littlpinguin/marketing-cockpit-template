@@ -1,6 +1,6 @@
 ---
 name: seo
-description: Production SEO pour {{COMPANY_NAME}} — briefs de contenu, articles longs, clusters thématiques, optimisation on-page et AEO (citations LLM), dans 09-seo/. L'analyse (audits techniques, SERP, mots-clés, GEO) est déléguée aux skills internes seo-audit / seo-schema / seo-geo / seo-cluster et aux agents seo-technical / seo-content / seo-google. Couplage Google Search Console / GA4 configuré via /tools-setup.
+description: "Production SEO de {{COMPANY_NAME}} dans 09-seo/ : briefs, articles longs, clusters, on-page et AEO, l'analyse étant déléguée à seo-audit, seo-schema, seo-geo, seo-cluster. À utiliser pour produire ou optimiser du contenu SEO, avec Search Console et GA4."
 ---
 
 # seo — production blog & SEO {{COMPANY_NAME}}

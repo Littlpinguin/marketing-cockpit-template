@@ -1,6 +1,6 @@
 ---
 name: landing-page
-description: Playbook de production d'une landing page de conversion pour {{COMPANY_NAME}}, du cadrage à la livraison d'un HTML statique dans 05-web-content/landing-pages/. Méthode en huit phases (doctrine et matière réelle, cadrage en une salve, directions, spec, charte commune posée avant le travail parallèle, construction en parallèle par fichiers disjoints, montrer et appliquer les retours, quatre revues parallèles puis une vague de corrections arbitrée, livraison), six agents dédiés (landing-researcher, landing-section-builder, landing-reviewer-design / -brand / -cro / -a11y) et une QA mesurable (05-web-content/scripts/qa-landing.py). Orchestre cro-page, copywriting, design-direction, design-system, design-review, accessibility-web et brand-check. Utiliser dès que l'utilisateur demande une landing page, une page de vente, une page de capture, une page d'inscription à un événement, une page d'offre ou de campagne, ou la refonte d'une page de conversion. Commande d'entrée : /new-landing.
+description: "Playbook d'une landing page de conversion pour {{COMPANY_NAME}}, du cadrage au HTML statique : huit phases, agents dédiés, QA qa-landing.py. À utiliser pour une landing page, une page de vente, de capture, d'inscription, d'offre ou de campagne, ou sa refonte. Entrée : /new-landing."
 ---
 
 # landing-page : produire une landing page de haut niveau pour {{COMPANY_NAME}}

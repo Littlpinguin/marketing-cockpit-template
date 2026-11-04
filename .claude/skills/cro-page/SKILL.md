@@ -1,6 +1,6 @@
 ---
 name: cro-page
-description: Optimiser la conversion d'une page marketing de {{COMPANY_NAME}} — homepage, landing page, page tarifs, page fonctionnalité, article. Analyse en 7 dimensions (proposition de valeur, headline, CTA, hiérarchie visuelle, preuve, objections, friction) et recommandations priorisées avec alternatives de copy. Utiliser quand l'utilisateur dit « CRO », « cette page ne convertit pas », « améliorer les conversions », « taux de rebond trop élevé », « revue de landing page » ou partage une URL pour feedback. Orchestrée par la skill landing-page pour la structure et la revue finale.
+description: "Optimise la conversion d'une page de {{COMPANY_NAME}} (homepage, landing, tarifs, article) : analyse en 7 dimensions, recommandations priorisées. À utiliser sur « CRO », « cette page ne convertit pas », « taux de rebond », « revue de landing page » ou une URL à commenter."
 ---
 
 # cro-page — optimisation de conversion des pages

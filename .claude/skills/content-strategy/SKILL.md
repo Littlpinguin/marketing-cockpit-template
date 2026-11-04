@@ -1,6 +1,6 @@
 ---
 name: content-strategy
-description: Planification stratégique du contenu {{COMPANY_NAME}} — calendrier éditorial, équilibre des piliers, idées de contenu, coordination cross-canal. À utiliser pour planifier, pas pour rédiger.
+description: "Planification stratégique du contenu {{COMPANY_NAME}} : calendrier éditorial, équilibre des piliers, idées de contenu, coordination cross-canal. À utiliser pour planifier, pas pour rédiger."
 ---
 
 # content-strategy — planification éditoriale {{COMPANY_NAME}}

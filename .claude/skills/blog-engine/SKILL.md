@@ -1,6 +1,6 @@
 ---
 name: blog-engine
-description: Moteur de production d'articles de blog pour {{COMPANY_NAME}} — workflow bout-en-bout (recherche → plan → rédaction → validation SEO → scoring qualité ≥ 90/100 → livraison), fact-checking avec fetch des sources citées, double optimisation Google (E-E-A-T) + citations IA (GEO/AEO), multilingue avec hreflang. Utiliser pour écrire, réécrire ou noter un article de blog. La stratégie et l'audit SEO restent dans la skill seo ; blog-engine = la production d'un article au standard publiable.
+description: "Production d'un article de blog publiable pour {{COMPANY_NAME}} : recherche, plan, rédaction, fact-checking, scoring qualité, E-E-A-T et GEO/AEO, multilingue. À utiliser pour écrire, réécrire ou noter un article. Stratégie et audit SEO : skill seo."
 ---
 
 # blog-engine — production d'articles {{COMPANY_NAME}}

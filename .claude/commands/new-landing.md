@@ -1,6 +1,6 @@
 ---
 name: new-landing
-description: Produire une landing page de conversion (offre, formation, événement, campagne, liste d'attente, capture) avec le playbook de la skill landing-page, de la doctrine et du cadrage jusqu'à la livraison d'un HTML statique dans 05-web-content/landing-pages/<slug>/, avec QA mesurable (qa-landing.py), quatre revues parallèles et une vague de corrections arbitrée.
+description: "Produit une landing page de conversion (offre, formation, événement, campagne, liste d'attente, capture) avec le playbook landing-page, du cadrage au HTML statique dans 05-web-content/landing-pages/, avec QA qa-landing.py et quatre revues parallèles."
 ---
 
 # /new-landing : lancer une landing page

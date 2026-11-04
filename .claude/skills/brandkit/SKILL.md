@@ -1,6 +1,6 @@
 ---
 name: brandkit
-description: Génération de planches d'identité de marque premium (brand boards, logo systems, identity decks) via la skill image-generation. Deux modes — exprimer la marque {{COMPANY_NAME}} existante (tokens 01-brand verrouillés) pour des supports de présentation de marque, ou concevoir une proposition d'identité pour un nouveau projet/prospect. Utiliser pour « planche de marque », « brand board », « moodboard d'identité », « présentation de la charte », « proposition de logo ». Vendorisée depuis taste-skill (brandkit, MIT, Leonxlnx) — voir docs/vendored-design2.md.
+description: "Planches d'identité de marque (brand board, logo system, identity deck) via image-generation, pour {{COMPANY_NAME}} ou un prospect. À utiliser pour « planche de marque », « brand board », « moodboard d'identité », « proposition de logo »."
 ---
 
 # brandkit — planches d'identité de marque premium

@@ -1,6 +1,6 @@
 ---
 name: copywriting
-description: Rédaction de pages web, landing pages et contenus longs pour {{COMPANY_NAME}}. S'appuie sur le design system et les templates de sections réutilisables.
+description: "Rédaction de pages web, landing pages et contenus longs pour {{COMPANY_NAME}}, appuyée sur le design system et les templates de sections réutilisables. À utiliser pour écrire ou réécrire le texte d'une page."
 ---
 
 # copywriting — rédaction web {{COMPANY_NAME}}

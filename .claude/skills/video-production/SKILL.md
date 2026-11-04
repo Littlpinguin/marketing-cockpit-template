@@ -1,6 +1,6 @@
 ---
 name: video-production
-description: Point d'entrée unique de toute demande vidéo pour {{COMPANY_NAME}} (Reel, Short, vidéo LinkedIn, explainer, vidéo produit ou de lancement, motion design, montage de rushes, clips tirés d'une vidéo longue, montage documentaire sur archives, animation à l'encre, 3D, Manim). Cadre l'objectif business, choisit la filière, tient le dossier de projet, les trois validations humaines (concept, script, storyboard), le contrat de coût, le journal de décisions, le contrôle avant rendu, la QA mesurée (qa-video.py, agent video-reviewer) et la livraison ; passe la main aux skills spécialisées et aux workflows HyperFrames par un BRIEF.md. Ne publie pas, ne décide pas la doctrine de marque, n'écrit pas le post qui accompagne la vidéo, ne fait pas de deck (skill slides).
+description: "Point d'entrée de toute demande vidéo de {{COMPANY_NAME}} : Reel, Short, explainer, lancement, motion design, montage de rushes, clips, documentaire, Manim. Choisit la filière, tient les trois validations, le contrat de coût et la QA, puis passe la main aux skills spécialisées."
 ---
 
 # video-production : de la demande au rendu livré

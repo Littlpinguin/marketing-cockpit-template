@@ -1,6 +1,6 @@
 ---
 name: design-redesign
-description: Audit et modernisation d'un site ou d'une page web existants de {{COMPANY_NAME}} (ou d'un client) sans casser le fonctionnel — détection des patterns IA génériques, diagnostic typographie/couleur/layout/états/contenu, correctifs ciblés par ordre d'impact. Utiliser pour toute refonte, rafraîchissement ou « ce site fait daté / fait IA », en amont d'une réécriture de landing page. Vendorisée depuis taste-skill (redesign-existing-projects, MIT, Leonxlnx) — voir docs/vendored-design2.md.
+description: "Audit et modernisation d'un site ou d'une page existants de {{COMPANY_NAME}} ou d'un client sans casser le fonctionnel : patterns IA, typo, couleur, layout, correctifs par impact. À utiliser pour une refonte, un rafraîchissement, « ce site fait daté » ou « fait IA »."
 ---
 
 # design-redesign — moderniser l'existant sans le casser

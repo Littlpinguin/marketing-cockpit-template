@@ -1,6 +1,6 @@
 ---
 name: print
-description: Produit un imprimé de {{COMPANY_NAME}} destiné à un imprimeur — carnet, brochure, programme, carton, carte de visite, affiche, kakémono, étiquette. Couvre la méthode complète : chemin de fer, contenus sourcés, maquette HTML/CSS sur grille, plaque opaque pour tout ce qui se superpose, chaîne d'export PDF/X-4 CMJN, contrôles automatiques, audits et préparation de la commande. Utiliser cette skill dès qu'un livrable doit être imprimé sur papier, y compris pour reprendre ou corriger un imprimé existant. Module `print` (dossier `14-print/`). Pour un deck projeté, utiliser `slides` ; pour un carrousel LinkedIn, `carousel`.
+description: "Imprimé de {{COMPANY_NAME}} pour un imprimeur (carnet, brochure, carte de visite, affiche, kakémono, étiquette) : chemin de fer, maquette HTML/CSS, export PDF/X-4 CMJN. À utiliser dès qu'un livrable part sur papier, y compris pour corriger un imprimé. Module 14-print."
 ---
 
 # print — imprimés {{COMPANY_NAME}}, de la maquette au fichier imprimeur

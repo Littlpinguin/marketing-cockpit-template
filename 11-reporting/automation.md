@@ -78,7 +78,7 @@ Dernier nœud : email au client — objet « Votre reporting {{MOIS}} est en lig
 
 ## Mode dégradé (sans n8n)
 
-Tout le workflow se fait à la main en ~30 min/mois : collecte via les exports des outils → remplir `data.json` selon le schéma → invoquer la skill `performance-report` dans une session Claude Code → relire → déployer (`deploy/README.md`). L'automatisation est un confort, pas un prérequis du module.
+Tout le workflow se fait à la main en ~30 min/mois : collecte via les exports des outils → remplir `data.json` selon le schéma → invoquer la skill `performance-report` dans une session Claude Code → relire → déployer avec `/deploy-reporting` (`deploy/README.md`). L'automatisation est un confort, pas un prérequis du module.
 
 ## Points de vigilance
 

@@ -1,6 +1,6 @@
 ---
 name: n8n-audit
-description: Revue d'un workflow n8n existant de {{COMPANY_NAME}} contre les conventions du module 10-automatisations — architecture (Trigger → Validation → Traitement → Sortie → Error Handler), error handling, nommage, programmation défensive (toArray, alwaysOutputData, retry), secrets hors vault, performance. Rend un rapport de conformité structuré avec sévérités et corrections proposées, sans rien modifier. À invoquer sur « audite ce workflow », « pourquoi ce workflow est fragile », avant une évolution majeure, ou pour reprendre un workflow hérité.
+description: "Revue d'un workflow n8n existant de {{COMPANY_NAME}} selon les conventions de 10-automatisations (architecture, error handling, nommage, secrets) : rapport de conformité, sans rien modifier. À utiliser sur « audite ce workflow », un workflow fragile ou hérité, avant une évolution majeure."
 ---
 
 # n8n-audit — passer un workflow au crible des conventions

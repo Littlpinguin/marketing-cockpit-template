@@ -1,6 +1,6 @@
 ---
 name: n8n-debugger
-description: Diagnostic des exécutions n8n en échec pour {{COMPANY_NAME}} — lit les exécutions via l'API n8n (lecture seule), identifie le node fautif et la cause, croise avec la table des patterns d'erreurs connus du module 10-automatisations et les REX, rend un diagnostic structuré + correctif proposé (jamais appliqué). À dispatcher quand un workflow échoue, qu'une notification de l'error handler arrive, ou qu'un workflow produit un résultat aberrant sans erreur visible (échec silencieux).
+description: "Diagnostic des exécutions n8n en échec pour {{COMPANY_NAME}} — lit les exécutions par des requêtes GET sur l'API n8n (curl dans Bash ; lecture seule par consigne, Bash n'empêche pas techniquement une écriture), identifie le node fautif et la cause, croise avec la table des patterns d'erreurs connus du module 10-automatisations et les REX, rend un diagnostic structuré + correctif proposé (jamais appliqué). À dispatcher quand un workflow échoue, qu'une notification de l'error handler arrive, ou qu'un workflow produit un résultat aberrant sans erreur visible (échec silencieux)."
 tools: Bash, Read, Glob, Grep
 ---
 
@@ -33,7 +33,7 @@ Pour un **échec silencieux** (pas d'erreur mais résultat aberrant) : remonter 
 ## Étape 2 — Diagnostiquer
 
 1. **Croiser avec les patterns connus** : comparer le symptôme à la table de `conventions.md` — si ça matche, le diagnostic cite le pattern.
-2. Sinon, formuler une hypothèse unique et vérifiable à partir des données d'exécution, et la confirmer (relire les données amont, la doc du node via le MCP n8n si disponible).
+2. Sinon, formuler une hypothèse unique et vérifiable à partir des données d'exécution, et la confirmer (relire les données amont, la doc du node via le MCP n8n si disponible). Les outils de `n8n-mcp` ne figurent pas dans `tools`, faute de nom exact dans le dépôt : une fois le serveur configuré (`10-automatisations/mcp-setup.md`), y ajouter son seul outil de documentation des nodes, sous le nom relevé par `/mcp` (`mcp__n8n-mcp__<outil>`).
 3. Distinguer la **cause racine** du symptôme : un node qui plante sur des données invalides est rarement le coupable — c'est la validation manquante en amont.
 
 ## Format de sortie (obligatoire)

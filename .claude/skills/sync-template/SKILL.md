@@ -1,6 +1,6 @@
 ---
 name: sync-template
-description: Synchronise un repo client dérivé du marketing-cockpit-template avec les évolutions du template public (git fetch upstream + merge upstream/main). Diff résumé avant merge, alerte si des fichiers de marque (01-brand/, profile/) sont touchés, résolution guidée des conflits. À utiliser quand l'utilisateur veut « récupérer les nouveautés du template », « mettre à jour depuis upstream » ou « synchroniser le template ».
+description: "Synchronise un repo client avec les évolutions du marketing-cockpit-template (fetch et merge upstream/main), diff résumé, alerte sur 01-brand/ et profile/, conflits guidés. À utiliser pour « récupérer les nouveautés du template », « mettre à jour depuis upstream »."
 ---
 
 # sync-template — récupérer les évolutions du template dans un repo client

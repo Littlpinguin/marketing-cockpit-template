@@ -1,6 +1,6 @@
 ---
 name: accessibility-web
-description: Référentiel accessibilité web WCAG 2.2 AA pour {{COMPANY_NAME}} — structure et alternatives textuelles, ARIA, clavier et focus, modales, formulaires, contrastes, contenus dynamiques, tableaux, liens. À charger avant de construire ou de relire tout livrable HTML (landing pages 05-web-content/, dashboard 11-reporting/) et pour toute question a11y. La revue automatisée avant livraison est déléguée à l'agent a11y-auditor. Enjeu légal : European Accessibility Act applicable depuis juin 2025.
+description: "Référentiel accessibilité web WCAG 2.2 AA pour {{COMPANY_NAME}} : ARIA, clavier et focus, modales, formulaires, contrastes. À charger avant de construire ou relire un livrable HTML (landing page, dashboard) et pour toute question a11y ou European Accessibility Act."
 ---
 
 # accessibility-web — référentiel WCAG 2.2 AA {{COMPANY_NAME}}

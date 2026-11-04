@@ -17,9 +17,10 @@ import yaml
 REPO = Path(__file__).resolve().parents[2]
 CLAUDE = REPO / ".claude"
 
-# Skills dont le frontmatter est encore invalide, à réparer (audit du 2026-11-03). La liste ne doit que
-# rétrécir : test_en_attente_toujours_invalides échoue dès qu'une skill réparée y reste.
-EN_ATTENTE = {"accessibility-web", "cro-popup", "landing-page", "n8n-builder", "print"}
+# Skills dont le frontmatter est encore invalide, à réparer. Vide depuis la correction de l'audit du
+# 2026-11-03 (A06) : tout frontmatter doit se lire en YAML strict. Ne l'utiliser que pour une exception
+# temporaire et datée ; test_en_attente_toujours_invalides échoue dès qu'une skill réparée y reste.
+EN_ATTENTE: set[str] = set()
 
 
 def fichiers():

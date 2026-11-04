@@ -1,6 +1,6 @@
 ---
 name: social-content
-description: Rédaction de contenu social media pour {{COMPANY_NAME}} — LinkedIn, Discord, WhatsApp et tout canal activé. Couvre la rédaction, l'anti-répétition par scan des fichiers produits, la promotion d'événements et la mise à jour du calendrier éditorial après production. Pour un carrousel PDF multipage, utiliser `carousel` ; pour un visuel isolé, `image-generation`.
+description: "Rédaction de contenu social media pour {{COMPANY_NAME}} (LinkedIn, Discord, WhatsApp, tout canal activé), anti-répétition, calendrier éditorial à jour. À utiliser pour écrire un post ou promouvoir un événement. Carrousel PDF : carousel ; visuel isolé : image-generation."
 ---
 
 # social-content — rédaction social media {{COMPANY_NAME}}

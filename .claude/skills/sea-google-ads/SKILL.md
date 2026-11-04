@@ -1,6 +1,6 @@
 ---
 name: sea-google-ads
-description: Conseil SEA Google Ads pour {{COMPANY_NAME}} — audit de compte (structure, mots-clés, quality score, annonces, landing pages, tracking), plan d'optimisation priorisé impact × effort, proposition de nouvelle campagne (annonces rédigées avec la doctrine de marque, budget recommandé), revue mensuelle versée dans le snapshot performance. Lit le compte via le MCP mcp-google-ads (lecture seule) et délègue l'analyse chiffrée à l'agent sea-analyst. À invoquer pour « audit Google Ads », « optimiser mes campagnes », « idée de campagne SEA », « revue Google Ads du mois ». Ne modifie JAMAIS le compte sans validation humaine explicite.
+description: "Conseil SEA Google Ads pour {{COMPANY_NAME}} : audit de compte, plan d'optimisation, nouvelle campagne, revue mensuelle, via le MCP mcp-google-ads en lecture seule et l'agent sea-analyst. À utiliser pour « audit Google Ads », « optimiser mes campagnes », « campagne SEA »."
 ---
 
 # sea-google-ads — conseil Google Ads {{COMPANY_NAME}}

@@ -1,6 +1,6 @@
 ---
 name: health-check
-description: Diagnostic continu. Vérifie .setup-completed, les placeholders, les credentials .env, les serveurs MCP réellement connectés, les modules actifs et leurs prérequis, la présence des CLAUDE.md, l'inbox 00-intel non traitée et le câblage des hooks. À lancer chaque mois ou dès qu'un truc cloche.
+description: "Diagnostic continu du cockpit : .setup-completed, placeholders, credentials .env, serveurs MCP connectés, modules actifs et prérequis, CLAUDE.md, inbox 00-intel, hooks. À lancer chaque mois ou dès qu'un truc cloche."
 ---
 
 # /health-check — vérifier la santé du système

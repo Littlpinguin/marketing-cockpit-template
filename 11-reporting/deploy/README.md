@@ -100,7 +100,7 @@ curl --ssl-reqd -T 11-reporting/dashboard/data/index.json \
 
 1. Snapshot validé dans `02-strategy/performance/YYYY-MM/` (analyse comprise).
 2. Copie vers `dashboard/data/` + mise à jour d'`index.json`.
-3. Vérification locale, confirmation humaine, puis push (lftp ou curl).
+3. Vérification locale, confirmation humaine, puis push (lftp ou curl) : la skill `/deploy-reporting` guide ces trois temps.
 4. Email de notification au client (court : « votre reporting est en ligne » + lien).
 
 Automatisation complète de cette routine : voir `../automation.md` (n8n + module `10-automatisations/`).

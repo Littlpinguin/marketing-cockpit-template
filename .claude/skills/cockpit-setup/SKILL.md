@@ -1,6 +1,6 @@
 ---
 name: cockpit-setup
-description: "Logique partagée des commandes du wizard (/start-cockpit, /brand-discover, /tools-setup, /modules, /validate-setup, /health-check). Centralise les vérifications préalables, la mutation du registre d'outils, le lint des placeholders, les règles de sécurité, le gate de confidentialité et le schéma de .setup-completed."
+description: "Logique partagée du wizard : vérifications préalables, registre d'outils, lint des placeholders, sécurité, gate de confidentialité, schéma de .setup-completed. À charger par /start-cockpit, /brand-discover, /tools-setup, /modules, /validate-setup, /health-check."
 ---
 
 # cockpit-setup — skill partagée du wizard

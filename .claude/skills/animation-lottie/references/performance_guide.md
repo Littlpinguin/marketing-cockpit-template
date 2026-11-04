@@ -2,6 +2,18 @@
 
 Comprehensive strategies for optimizing Lottie animation performance in production.
 
+## Table of Contents
+
+- [Performance Metrics](#performance-metrics)
+- [File Size Optimization](#file-size-optimization)
+- [Runtime Performance](#runtime-performance)
+- [Memory Management](#memory-management)
+- [Network Optimization](#network-optimization)
+- [Mobile Optimization](#mobile-optimization)
+- [Monitoring Performance](#monitoring-performance)
+- [Common Performance Issues](#common-performance-issues)
+- [Best Practices Summary](#best-practices-summary)
+
 ## Performance Metrics
 
 **Target Performance:**
