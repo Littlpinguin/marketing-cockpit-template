@@ -68,6 +68,7 @@
       "Read(./.env)",
       "Read(./.env.local)",
       "Read(./.mcp.json)",
+      "Read(~/.claude.json)",
       "Bash(rm -rf:*)",
       "Bash(rm -fr *)",
       "Bash(rm -r -f *)",
@@ -83,6 +84,7 @@
       "Bash(git * reset --hard*)",
       "Bash(launchctl unload:*)",
       "Bash(launchctl bootout *)",
+      "Bash(claude mcp get *)",
       "Bash(cat .env)",
       "Bash(cat .env.local)",
       "Bash(cat .setup-completed)"
