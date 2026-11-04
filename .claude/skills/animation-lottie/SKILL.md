@@ -313,18 +313,12 @@ import animationData from './animation.json';
 
 This skill includes:
 
-### scripts/
-- `generate_lottie_component.py` - Generate React/Vue/Svelte Lottie component boilerplate
-- `optimize_lottie.py` - Optimize Lottie JSON file size
-
 ### references/
 - `api_reference.md` - Complete API documentation for lottie-web, lottie-react, and dotlottie-web
 - `after_effects_export.md` - Guide for exporting animations from After Effects
 - `performance_guide.md` - Detailed performance optimization strategies
 
-### assets/
-- `starter_lottie/` - Complete React + Vite starter template with Lottie examples
-- `examples/` - Real-world Lottie animation patterns and use cases
+Les scripts et assets de la skill d'origine ne sont pas copiés dans ce template : voir `docs/vendored-animation.md`, section « Périmètre retenu ».
 
 ## Related Skills
 

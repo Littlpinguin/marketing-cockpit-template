@@ -40,12 +40,12 @@ Rapporter le code de sortie et les placeholders restants.
 
 ### 4. Serveurs MCP réellement connectés
 
-- **Hygiène `.mcp.json`** (avant tout) :
-  - Si des outils MCP sont attendus (n8n-mcp, google-ads, lemlist en mode clé API…) : `.mcp.json` existe à la racine ? Absent = 🟠 → suggérer `cp .mcp.json.example .mcp.json` puis remplir les valeurs réelles.
-  - `git check-ignore -q .mcp.json` doit réussir ET `git ls-files .mcp.json` doit être vide. `.mcp.json` tracké ou non ignoré = 🔴 (risque de commit de tokens) → `git rm --cached .mcp.json` + vérifier `.gitignore`, et révoquer tout token déjà poussé.
-  - Détecter le pattern cassé : `grep -c '\${' .mcp.json` — un compte non nul = 🟠 (Claude Code ne développe pas ces références depuis le `.env` du projet → 401) → l'utilisateur remplace les références par les valeurs réelles dans ce fichier local (voir `SECURITY.md`). `.mcp.json` est interdit en lecture à Claude (règle `deny` `Read(./.mcp.json)`) : si la commande est refusée, demander à l'utilisateur de la lancer lui-même.
-- `claude mcp list` — comparer avec `.mcp.json` et les MCP attendus par les outils configurés (ex. `magnific` si installé).
-- Pour chaque serveur : distinguer **déclaré** (présent dans la config) de **connecté** (le serveur démarre / répond). Un serveur déclaré mais en échec de connexion est un 🟠.
+- `claude mcp list` — liste les serveurs de toutes les portées (locale, projet, utilisateur) avec leur état, sans leurs variables ni leurs en-têtes. Comparer avec les MCP attendus par les outils configurés (n8n-mcp, google-ads, lemlist, `magnific` si installé…). Un serveur attendu absent = 🟠 → l'utilisateur le déclare en portée locale, dans son propre terminal, avec la commande du guide de l'outil (`10-automatisations/mcp-setup.md`, `12-acquisition/google-ads/setup.md`, `12-acquisition/setup-lemlist.md`) ; Claude l'affiche avec ses valeurs fictives et ne la lance pas.
+- Ne jamais lancer `claude mcp get <nom>` ni lire `~/.claude.json` (règles `deny` `Bash(claude mcp get *)` et `Read(~/.claude.json)`) : la commande affiche et le fichier contient les variables et en-têtes des serveurs en portée locale, jetons compris.
+- Pour chaque serveur : distinguer **déclaré** (présent dans la config) de **connecté** (le serveur démarre / répond). Un serveur déclaré mais en échec de connexion est un 🟠. Un même nom déclaré dans deux portées avec des cibles différentes, que `claude mcp list` signale = 🟠 → l'utilisateur garde la bonne entrée et retire l'autre (`claude mcp remove <nom> --scope <portée>`).
+- **Hygiène `.mcp.json`** (voie de repli ; son absence est normale quand les serveurs sont en portée locale, et ne se signale pas) :
+  - `git check-ignore -q .mcp.json` doit réussir ET `git ls-files .mcp.json` doit être vide. Les deux se lancent même sans le fichier : ils couvrent un `.mcp.json` créé plus tard (par `claude mcp add --scope project`, par exemple) ou supprimé du disque mais encore suivi. `.mcp.json` tracké ou non ignoré = 🔴 (risque de commit de tokens) → `git rm --cached .mcp.json` + vérifier `.gitignore`, et révoquer tout token déjà poussé.
+  - Seulement si le fichier existe, détecter le pattern cassé : `grep -c '\${' .mcp.json` — un compte non nul = 🟠 (Claude Code ne développe pas ces références depuis le `.env` du projet → 401) → l'utilisateur passe le serveur en portée locale, ou remplace les références par les valeurs réelles dans ce fichier local (voir `SECURITY.md`). `.mcp.json` est interdit en lecture à Claude (règle `deny` `Read(./.mcp.json)`) : si la commande est refusée, demander à l'utilisateur de la lancer lui-même.
 
 ### 5. Modules actifs et leurs prérequis
 

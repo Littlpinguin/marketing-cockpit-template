@@ -34,7 +34,7 @@ Toute demande commence par la question : **quel objectif business sert-elle ?** 
 | Vidéo (Reel, Short, explainer, vidéo produit, motion design, montage de rushes, clips, sous-titres) | module `video` : skill `video-production`, point d'entrée unique (filières HyperFrames, montage de rushes, clips, documentaire, encre, 3D, Manim) | `08-video/projets/<slug>/` (doctrine : `08-video/montage.md`, `narration.md`, `motion.md`, `documentaire.md`) |
 | Imprimé (carnet, brochure, programme, carton, carte de visite, affiche, kakémono) | module `print` — skill `print` + agents `print-preflight` et `print-editorial` | `14-print/productions/` (doctrines : `14-print/doctrine/`) |
 | Article SEO / blog | skill `seo` | `09-seo/` |
-| Audit SEO (technique, contenu, GEO) | plugin claude-seo (agents `seo-technical`, `seo-content`, `seo-geo`…) via la skill `seo` | synthèse dans `09-seo/` |
+| Audit SEO (technique, contenu, GEO) | skills `seo-audit`, `seo-schema`, `seo-geo` et agents `seo-technical`, `seo-content`, `seo-google`, internes au template, via la skill `seo` | synthèse dans `09-seo/` |
 | Campagne Google Ads (audit, optimisation, création) | skill `sea-google-ads` + agent `sea-analyst` (module `acquisition`) | `12-acquisition/google-ads/` |
 | Campagne outreach (cold email B2B) | module `acquisition` — MCP Lemlist, `12-acquisition/setup-lemlist.md` | `12-acquisition/campagnes/` |
 | Veille marché / concurrence | skill `veille-strategy` + agent `veille-analyst` (module `veille`) | `02-strategy/veille/`, `_sources/research/` |
@@ -62,7 +62,7 @@ Quand la demande n'indique ni canal ni format (« il faut communiquer sur X »),
 
 See `SECURITY.md` for the full rules. The short list:
 
-1. **Never paste API keys, tokens, or secrets in a chat message or commit.** Secrets live in `.env` (scripts/connectors) or in the local, untracked `.mcp.json` (MCP servers) — the versioned counterparts (`.env.example`, `.mcp.json.example`) carry placeholders only. `${VAR}` references in `.mcp.json` are NOT expanded from the project `.env` (see `SECURITY.md`). Before every push, grep the diff for secrets.
+1. **Never paste API keys, tokens, or secrets in a chat message or commit.** Secrets live in `.env` (scripts/connectors) or in Claude Code's local MCP scope (`claude mcp add --scope local`, run by the user in their own terminal, stored in `~/.claude.json` outside the repo; fallback: the local, untracked `.mcp.json`) — the versioned counterparts (`.env.example`, `.mcp.json.example`) carry placeholders only. `${VAR}` references in `.mcp.json` are NOT expanded from the project `.env` (see `SECURITY.md`). Never read `~/.claude.json` nor run `claude mcp get`, which print tokens in clear: check servers with `claude mcp list`. Before every push, grep the diff for secrets.
 2. **Never use destructive Bash commands without explicit user confirmation** — `rm -rf`, `git push --force`, `git reset --hard`, `launchctl` on system-wide agents, anything that sends email or hits an external API.
 3. **Dry-run before production push.** Any connector that writes to Notion / Airtable / Mailchimp / MailerLite / HubSpot / etc. must first emit the payload to stdout via `scripts/dry-run-push.py` and wait for confirmation.
 4. **Verify, do not trust.** Claude can hallucinate API endpoints, field names, package names. Check docs before invoking a new API.

@@ -133,12 +133,14 @@ Manim Community Edition lui-même (la bibliothèque Python) n'est pas copié : i
 Les fichiers de `references/`, `templates/` et `rules/` sont repris tels quels. Seuls les deux `SKILL.md` changent :
 
 - **Nom** : `manim-ce` remplace `manimce-best-practices` (convention de nommage par famille du template). `manim-composer` garde son nom.
-- **Description** : celle d'origine, avec une dernière ligne ajoutée : « Module vidéo du cockpit : l'entrée est la skill video-production. »
+- **Description** : réécrite en 300 caractères au plus (audit d'architecture, 2026-11-04), en gardant la dernière phrase « Entrée du module vidéo : video-production. » Les deux skills sont listées par leur nom seulement (`skillOverrides` de `.claude/settings.json`) : on y arrive par `video-production`.
 - **Note d'intégration** en français, juste après le frontmatter : source et commit, place dans la chaîne (`video-production` choisit la filière, `manim-composer` planifie, `manim-ce` code, le rendu MP4 entre comme plan dans une composition HyperFrames), couleurs et polices lues dans `01-brand/tokens.json`, installation de Manim à part.
 - **Renvois aux exemples Python** : dans `manim-ce/SKILL.md`, les huit renvois à `examples/*.py` et `templates/*.py` ne sont plus des liens. Le nom du fichier reste en texte, suivi de « (exemple non vendorisé : voir le dépôt source) ». Les liens vers `rules/*.md` sont conservés.
 - **Pied de page d'attribution** en fin de chaque `SKILL.md`.
 
-Un point de lecture : la description d'origine de `manim-composer` cite encore `manimce-best-practices` et `manimgl-best-practices`. Elle est gardée telle quelle, et la note d'intégration de la skill précise que le premier nom se lit `manim-ce` ici et que le second n'est pas vendorisé.
+Un point de lecture : le corps de `manim-composer` cite encore `manimce-best-practices` et `manimgl-best-practices`. La note d'intégration de la skill précise que le premier nom se lit `manim-ce` ici et que le second n'est pas vendorisé.
+
+Exception assumée : 27 fichiers de `rules/`, `references/` et `templates/` dépassent 100 lignes sans sommaire en tête, alors qu'Anthropic en recommande un (meilleures pratiques des skills). Ils restent tels quels, car l'étape 3 de la resynchronisation les écrase par la version amont et un sommaire ajouté serait perdu à chaque mise à jour. Chacun tient sur une lecture (300 lignes au plus) et se découpe en titres de niveau 2.
 
 ### Non repris, et pourquoi
 

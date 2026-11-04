@@ -405,18 +405,12 @@ Create custom animations with CSS:
 - **AOS**: https://michalsnik.github.io/aos/
 - **GitHub**: https://github.com/michalsnik/aos
 
-### Key Scripts
-- `scripts/aos_generator.py` - Generate AOS HTML boilerplate
-- `scripts/config_builder.py` - Build AOS configuration
+Les scripts et assets de la skill d'origine ne sont pas copiés dans ce template : voir `docs/vendored-animation.md`, section « Périmètre retenu ».
 
 ### References
 - `references/aos_api.md` - Complete AOS API reference
 - `references/animation_catalog.md` - All built-in animations with demos
 - `references/integration_patterns.md` - Framework integration guides
-
-### Starter Assets
-- `assets/starter_aos/` - Complete AOS starter template
-- `assets/examples/` - Production-ready patterns
 
 ## Related Skills
 

@@ -13,9 +13,9 @@ Tu produis des articles de blog au standard publiable, doublement optimisés : c
 
 | Besoin | Qui s'en charge |
 |---|---|
-| Stratégie de contenu, clusters, briefs, audits SEO du site, priorisation GSC | Skill `seo` (+ plugin claude-seo pour l'analyse) |
+| Stratégie de contenu, clusters, briefs, audits SEO du site, priorisation GSC | Skill `seo`, qui délègue l'analyse à `seo-audit`, `seo-cluster` et aux agents SEO du template |
 | **Production d'un article** : recherche, rédaction, scoring, fact-check | **Cette skill** |
-| Schema markup avancé, GEO/citabilité en audit | Plugin claude-seo (`seo-schema`, `seo-geo`) |
+| Schema markup avancé, GEO/citabilité en audit | Skills `seo-schema` et `seo-geo` du template |
 | Repurposing social de l'article | Skill `social-content` |
 
 Workflow type : la skill `seo` fournit le brief (mot-clé, intention, angle, gaps concurrentiels) → `blog-engine` produit l'article dans `09-seo/` → le brand-check valide avant push.

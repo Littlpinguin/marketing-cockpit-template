@@ -365,14 +365,7 @@ This skill includes bundled resources:
 - `easing_guide.md`: Visual easing reference with use cases
 - `common_patterns.md`: Copy-paste patterns for common scenarios
 
-### scripts/
-- `generate_animation.py`: Generate boilerplate GSAP code
-- `timeline_builder.py`: Interactive timeline sequence builder
-
-### assets/
-- `starter_scroll/`: Complete scroll-driven site template
-- `easings/`: Easing visualization HTML tool
-- `examples/`: Real-world ScrollTrigger examples
+Les scripts et assets de la skill d'origine ne sont pas copiés dans ce template : voir `docs/vendored-animation.md`, section « Périmètre retenu ».
 
 ## When to Use This Skill
 

@@ -44,17 +44,7 @@
       "Bash(python3 scripts/build-tokens.py *)",
       "Bash(python3 scripts/lint-placeholders.py *)",
       "Bash(python3 scripts/dry-run-push.py *)",
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(ls:*)",
-      "Bash(grep:*)",
       "Bash(rg:*)",
-      "Bash(cat .env.example)",
-      "Bash(cat docs/*)",
-      "Bash(cat CLAUDE.md)",
-      "Bash(cat SECURITY.md)",
-      "Bash(cat README.md)",
       "Bash(launchctl list:*)"
     ],
     "ask": [
@@ -78,6 +68,7 @@
       "Read(./.env)",
       "Read(./.env.local)",
       "Read(./.mcp.json)",
+      "Read(~/.claude.json)",
       "Bash(rm -rf:*)",
       "Bash(rm -fr *)",
       "Bash(rm -r -f *)",
@@ -93,6 +84,7 @@
       "Bash(git * reset --hard*)",
       "Bash(launchctl unload:*)",
       "Bash(launchctl bootout *)",
+      "Bash(claude mcp get *)",
       "Bash(cat .env)",
       "Bash(cat .env.local)",
       "Bash(cat .setup-completed)"

@@ -23,7 +23,7 @@ Pour chaque skill : **`SKILL.md` + `references/*.md` uniquement.**
 
 Ce qui n'a **pas** été copié, et pourquoi :
 
-- `scripts/*.py` (générateurs de boilerplate, timeline builders) : politique du template — aucun script externe n'est copié ni exécuté sans audit (cf. `vendored-design.md`, même règle). Les SKILL.md mentionnent encore ces scripts dans leur section « Resources » ; cette mention est inopérante et documentée ici.
+- `scripts/*.py` (générateurs de boilerplate, timeline builders) : politique du template — aucun script externe n'est copié ni exécuté sans audit (cf. `vendored-design.md`, même règle). Dans la section « Resources » des SKILL.md, les sous-sections qui citaient ces scripts et ces assets sont remplacées par un renvoi à ce registre (audit d'architecture, 2026-11-04) : une consigne vers un fichier absent ne mène nulle part.
 - `assets/` (starters HTML, visualiseurs d'easing, exemples) : redondants avec les templates du dossier `05-web-content/` et le catalogue de slides ; réduisent le bruit au fork.
 
 Adaptations effectuées :
@@ -44,5 +44,5 @@ Ces skills servent aux livrables web (`05-web-content/`) : landing pages, lead m
 ## Procédure de re-synchronisation
 
 1. `claude plugin marketplace add freshtechbro/claudedesignskills` puis `claude plugin install <plugin>@claude-design-skillstack`.
-2. Comparer `~/.claude/plugins/cache/claude-design-skillstack/<plugin>/<version>/skills/<skill>/` avec la copie locale (`diff -ru`, en ignorant `name:` et `description:` du frontmatter, le footer, la section « Fichiers de référence », les renvois et les tables des matières ajoutées). Une section déplacée se compare au fichier de `references/` qui la contient.
+2. Comparer `~/.claude/plugins/cache/claude-design-skillstack/<plugin>/<version>/skills/<skill>/` avec la copie locale (`diff -ru`, en ignorant `name:` et `description:` du frontmatter, le footer, la section « Fichiers de référence », les renvois vers les sections déplacées, le renvoi qui remplace les scripts et assets non copiés, et les tables des matières ajoutées). Une section déplacée se compare au fichier de `references/` qui la contient.
 3. Reporter les changements utiles, conserver renommage + footer, mettre à jour la version dans ce registre.

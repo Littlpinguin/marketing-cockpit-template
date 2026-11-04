@@ -12,6 +12,9 @@
 # Without it the dispatch step no-ops (and the site has no other automatic
 # resync path — the token is required for the automation to work).
 #
+# Runs on the template repository only (job-level `if`): a fork or a client copy
+# skips it, so no bot commit lands on a client's main.
+#
 # Note: the repo's "About" description on GitHub cannot be updated from a
 # workflow (needs admin rights the default token does not have) — update it
 # manually when the counts change (gh repo edit --description "…").
@@ -35,6 +38,8 @@ concurrency:
 
 jobs:
   sync-and-dispatch:
+    # Template repository only: a fork or a client copy skips this job.
+    if: github.repository == 'Littlpinguin/marketing-cockpit-template'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

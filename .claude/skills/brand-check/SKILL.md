@@ -1,6 +1,6 @@
 ---
 name: brand-check
-description: "Valide un draft marketing contre les standards de marque : filtre 5 points (vocabulaire, ton, preuve, audience, visuel), verdict, corrections. Obligatoire avant livraison de tout écrit dans 03-social-media, 04-email, 05-web-content, 07-events ou 09-seo."
+description: "Valide un draft marketing contre les standards de marque : filtre 5 points (vocabulaire, ton, preuve, audience, visuel), verdict, corrections. Obligatoire avant livraison de tout écrit dans 03-social-media, 04-email, 05-web-content, 07-events, 08-video, 09-seo et des decks HTML."
 ---
 
 # brand-check — gardien qualité avant livraison
@@ -15,8 +15,12 @@ Tu es le brand manager de {{COMPANY_NAME}}. Ton travail : lire un draft **avant*
 - `03-social-media/` — posts LinkedIn, Discord, WhatsApp
 - `04-email/` — newsletters, promos, sales outreach, nurturing
 - `05-web-content/` — landing pages, artefacts HTML
+- `06-graphic-design/presentations/` — decks HTML
 - `07-events/` — plans de com événementiels, scripts
+- `08-video/` — scripts, voix off, sous-titres et textes à l'écran
 - `09-seo/` — articles, briefs, plans de contenu
+
+Les pièces imprimées (`14-print/`, module `print`) passent par la checklist de la skill `print` avant toute commande.
 
 **Exceptions** (pas de brand check) :
 - `CLAUDE.md`, `README.md`, `STATUS.md`, `.gitignore` (fichiers méta)
